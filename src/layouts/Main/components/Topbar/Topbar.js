@@ -10,7 +10,10 @@ import InputIcon from '@material-ui/icons/Input';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    boxShadow: 'none'
+    boxShadow: 'none',
+    [theme.breakpoints.up('lg')]: {
+      width: 'calc(100% - 240px)'
+    }
   },
   flexGrow: {
     flexGrow: 1
