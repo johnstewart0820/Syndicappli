@@ -6,15 +6,16 @@ import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
 import {
   Dashboard as DashboardView,
-  ProductList as ProductListView,
-  UserList as UserListView,
-  Typography as TypographyView,
-  Icons as IconsView,
-  Account as AccountView,
-  Settings as SettingsView,
-  SignUp as SignUpView,
+  Buildings as BuildingsView,
+  Companies as CompaniesView,
+  DiscountCodes as DiscountCodesView,
+  Managers as ManagersView,
+  Orders as OrdersView,
+  Owners as OwnersView,
+  Products as ProductsView,
+  Users as UsersView,
   SignIn as SignInView,
-  NotFound as NotFoundView
+  SignUp as SignUpView
 } from './views';
 
 const Routes = () => {
@@ -32,40 +33,40 @@ const Routes = () => {
         path="/dashboard"
       />
       <RouteWithLayout
-        component={UserListView}
+        component={BuildingsView}
+        exact
+        layout={MainLayout}
+        path="/buildings"
+      />
+      <RouteWithLayout
+        component={UsersView}
         exact
         layout={MainLayout}
         path="/users"
       />
       <RouteWithLayout
-        component={ProductListView}
+        component={ProductsView}
         exact
         layout={MainLayout}
         path="/products"
       />
       <RouteWithLayout
-        component={TypographyView}
+        component={CompaniesView}
         exact
         layout={MainLayout}
-        path="/typography"
+        path="/companies"
       />
       <RouteWithLayout
-        component={IconsView}
+        component={DiscountCodesView}
         exact
         layout={MainLayout}
-        path="/icons"
+        path="/discountcodes"
       />
       <RouteWithLayout
-        component={AccountView}
+        component={ManagersView}
         exact
         layout={MainLayout}
-        path="/account"
-      />
-      <RouteWithLayout
-        component={SettingsView}
-        exact
-        layout={MainLayout}
-        path="/settings"
+        path="/managers"
       />
       <RouteWithLayout
         component={SignUpView}
@@ -80,10 +81,16 @@ const Routes = () => {
         path="/sign-in"
       />
       <RouteWithLayout
-        component={NotFoundView}
+        component={OrdersView}
         exact
-        layout={MinimalLayout}
-        path="/not-found"
+        layout={MainLayout}
+        path="/orders"
+      />
+      <RouteWithLayout
+        component={OwnersView}
+        exact
+        layout={MainLayout}
+        path="/owners"
       />
       <Redirect to="/not-found" />
     </Switch>

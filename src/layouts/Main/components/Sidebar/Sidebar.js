@@ -49,40 +49,45 @@ const Sidebar = props => {
       icon: <DashboardIcon />
     },
     {
+      title: 'Buildings',
+      href: '/buildings',
+      icon: <PeopleIcon />
+    },
+    {
       title: 'Users',
       href: '/users',
-      icon: <PeopleIcon />
+      icon: <ShoppingBasketIcon />
     },
     {
       title: 'Products',
       href: '/products',
-      icon: <ShoppingBasketIcon />
-    },
-    {
-      title: 'Authentication',
-      href: '/sign-in',
       icon: <LockOpenIcon />
     },
     {
-      title: 'Typography',
-      href: '/typography',
+      title: 'Companies',
+      href: '/companies',
       icon: <TextFieldsIcon />
     },
     {
-      title: 'Icons',
-      href: '/icons',
+      title: 'Discount Codes',
+      href: '/discountcodes',
       icon: <ImageIcon />
     },
     {
-      title: 'Account',
-      href: '/account',
+      title: 'Managers',
+      href: '/managers',
       icon: <AccountBoxIcon />
     },
     {
-      title: 'Settings',
-      href: '/settings',
+      title: 'Orders',
+      href: '/orders',
       icon: <SettingsIcon />
-    }
+    },
+    {
+      title: 'Owners',
+      href: '/owners',
+      icon: <SettingsIcon />
+    },
   ];
 
   return (

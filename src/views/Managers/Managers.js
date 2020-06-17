@@ -5,7 +5,7 @@ const useStyles = makeStyles(theme => ({
   
 }));
 
-const Dashboard = () => {
+const Managers = () => {
   const classes = useStyles();
 
   return (
@@ -15,4 +15,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Managers;
