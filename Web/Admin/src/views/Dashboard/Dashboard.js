@@ -1,0 +1,95 @@
+import React from 'react';
+import { makeStyles } from '@material-ui/styles';
+import { Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import MySelect from '../../components/MySelect';
+import {
+  Budget,
+  TotalUsers,
+  LatestSales,
+} from './components';
+import CurveChart from './components/CurveChart';
+const useStyles = makeStyles(theme => ({
+  root: {
+    paddingLeft: theme.spacing(5),
+    paddingRight: theme.spacing(4),
+  },
+  tool: {
+    minHeight: '67px'
+  },
+  title:{
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
+  },
+}));
+
+const Dashboard = () => {
+  const classes = useStyles();
+  const cellList = [20, 50, 100, 200];
+  return (
+    <div className={classes.root}>
+      <div className={classes.title}>
+        <Grid item container justify="space-around">
+          <Grid item xs={12} sm={6} container justify="flex-start" >
+            <Grid item>
+              <Typography variant="h2" style={{fontSize:35}}>
+                <b>Mes Gestionnaires</b>
+              </Typography>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} sm={6} container justify="flex-end" ></Grid>
+        </Grid>
+      </div>
+      <div className={classes.tool}>
+      <Grid container spacing={2} direction="row-reverse" >
+        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
+        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
+        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
+        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
+      </Grid>
+      </div> 
+      <div className={classes.body}>
+        <Grid item container spacing={6}>
+          <Grid item
+            container
+            direction="row"
+            spacing={6}
+          >
+            <Grid item lg={3} container direction="column" justify="space-between">
+              <Grid item>
+                <Budget />
+              </Grid>
+              <Grid item>
+                <TotalUsers />
+              </Grid>
+            </Grid>
+            <Grid item container lg={9} direction="row" justify="space-evenly" spacing={2}>
+              <Grid item lg={6} sm={6} xl={6} >
+                <LatestSales />
+              </Grid>
+              <Grid item lg={6} sm={6} xl={6}>
+                <CurveChart />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item container justify="space-evenly" spacing={2}>
+            <Grid item lg={3} sm={6} xl={3} xs={12}>
+              <TotalUsers />
+            </Grid>
+            <Grid item lg={3} sm={6} xl={3} xs={12}>
+              <TotalUsers />
+            </Grid>
+            <Grid item lg={3} sm={6} xl={3} xs={12}>
+              <TotalUsers />
+            </Grid>
+            <Grid item lg={3} sm={6} xl={3} xs={12}>
+              <TotalUsers />
+            </Grid>
+          </Grid>
+        </Grid>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
