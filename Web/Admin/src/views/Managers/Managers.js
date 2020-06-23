@@ -9,6 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddManager from './AddManager';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,13 +37,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const Managers = (props) => {
+  const {history}=props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
     setOpen(true);
   };
-
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/managers/edit/'+id);
+  }
   const handleClose = () => {
     setOpen(false);
   };
@@ -72,7 +77,7 @@ const Managers = (props) => {
     ])
   }
   const cellList = [ 'name', 'price', 'stock']
-  const pages = {href: 'managers/edit'};
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -124,10 +129,10 @@ const Managers = (props) => {
       </Grid>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} pages={pages} cells={cellList}/>
+      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default Managers;
+export default withRouter(Managers);

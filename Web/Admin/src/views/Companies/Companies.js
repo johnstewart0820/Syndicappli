@@ -9,7 +9,7 @@ import AddCompany from './AddCompany';
 import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
-
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -41,9 +41,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const Companies = (props) => {
+  const {history}=props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/companies/edit/'+id);
+  }
   const handleOpen = () => {
     setOpen(true);
   };
@@ -77,7 +81,7 @@ const Companies = (props) => {
     ])
   };
   const cellList = [ 'name', 'price', 'stock']
-  const pages = {href: 'companies/edit'};
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -111,10 +115,10 @@ const Companies = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} pages={pages} cells={cellList}/>
+      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default Companies;
+export default withRouter(Companies);

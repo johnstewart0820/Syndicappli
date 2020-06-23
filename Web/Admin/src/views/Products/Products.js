@@ -9,6 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddProduct from './AddProduct';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,13 +37,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const Products = (props) => {
+  const {history} = props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
     setOpen(true);
   };
-
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/products/edit/'+id);
+  }
   const handleClose = () => {
     setOpen(false);
   };
@@ -72,7 +77,6 @@ const Products = (props) => {
     ])
   }
   const cellList = [ 'name', 'price', 'stock']
-  const pages = {href: 'products/edit'};
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -106,10 +110,10 @@ const Products = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} pages={pages} cells={cellList}/>
+      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default Products;
+export default withRouter(Products);

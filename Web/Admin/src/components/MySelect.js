@@ -3,7 +3,6 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
 import { rest } from 'underscore';
@@ -70,7 +69,7 @@ export default function CustomizedSelects(props) {
   return (
     <div>
       <FormControl className={classes.margin}>
-        <Select
+        <NativeSelect
           labelId="demo-customized-select-label"
           id="demo-customized-select"
           value={value}
@@ -79,9 +78,9 @@ export default function CustomizedSelects(props) {
         >
           {
             items.map((item, i) =>
-              <MenuItem value={i} key={item}>Voir {item}</MenuItem>
+              <option  value={i} key={item}>Voir {item}</option>
           )}
-        </Select>
+        </NativeSelect>
       </FormControl>
     </div>
   );

@@ -73,10 +73,8 @@ const Users = (props) => {
       { id: 9, name: 'Milk', price: 1.9, stock: 32 },
       { id: 10, name: 'Yoghurt', price: 2.4, stock: 12 },
     ])
-  }
-  const cellList = [ 'name', 'price', 'stock']
-    
-  const pages = {href: 'users/edit'};
+  };
+  const cellList = [ 'name', 'price', 'stock'];
   
   const handleClickEdit = (id) => {
     console.log(id);
@@ -116,7 +114,7 @@ const Users = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-        <MyTable products={dataList} pages={pages} cells={cellList} onClickEdit={handleClickEdit}/>
+        <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );

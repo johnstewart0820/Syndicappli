@@ -9,6 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddDiscountCode from './AddDiscountCode';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,9 +37,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const DiscountCodes = (props) => {
+  const {history}=props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/discountcodes/edit/'+id);
+  }
   const handleOpen = () => {
     setOpen(true);
   };
@@ -72,7 +77,7 @@ const DiscountCodes = (props) => {
     ])
   }
   const cellList = [ 'name', 'price', 'stock']
-  const pages = {href: 'discountcodes/edit'};
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -106,10 +111,10 @@ const DiscountCodes = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} pages={pages} cells={cellList}/>
+      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default DiscountCodes;
+export default withRouter(DiscountCodes);

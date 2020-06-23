@@ -29,8 +29,11 @@ export default function MyButton(props) {
   const classes = useStyles(props);
   const [flag, setFlag] = useState(false);
   const btnClick = ()=>{
+    if(props.handleCreate)
+      props.handleCreate();
     if(props.handleClose)
       props.handleClose();
+    
   };
   return (
     <div>

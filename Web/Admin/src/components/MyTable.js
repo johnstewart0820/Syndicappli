@@ -3,15 +3,19 @@ import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { makeStyles } from '@material-ui/core/styles';
-import { NavLink as RouterLink } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import theme from 'theme';
 import MySelect from './MySelect';
 import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
 import MyButton from './MyButton';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 const useStyles = makeStyles({
   root: {
     borderRadius: '30px',
@@ -85,17 +89,25 @@ const useSortableData = (items, config = null) => {
 
   return { items: sortedItems, requestSort, sortConfig };
 };
+
 export default function ProductTable  (props)  {
   const {onClickEdit, ...rest} = props;
 
   const classes = useStyles();
-  const{pages} = props;
 
   const [cells,setCells] = useState(props.cells);
   const {items, requestSort, sortConfig } = useSortableData(props.products);
   const [page , setPage] = useState(1);
   const [select, setSelect] = useState(20);
+  const [open, setOpen] = React.useState(false);
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const handleChange = (event,value)=>{
     setPage(value);
   }
@@ -115,7 +127,30 @@ export default function ProductTable  (props)  {
 
   return ( 
     <div >
-      
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">
+          Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Grid container direction="column" spacing={2}>
         <Grid item container direction="row-reverse">
@@ -157,8 +192,8 @@ export default function ProductTable  (props)  {
                   <TableCell align="right">
                       <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.id)}/>
                       &nbsp;&nbsp;
-                      <DeleteIcon className={classes.editItem}></DeleteIcon>
-                    </TableCell>
+                      <DeleteIcon className={classes.editItem} onClick={handleClickOpen}></DeleteIcon>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

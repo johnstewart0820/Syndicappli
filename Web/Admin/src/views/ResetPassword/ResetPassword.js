@@ -60,20 +60,20 @@ const ResetPassword = () => {
         <Grid item container xs={1} sm={2} md={4}></Grid>
         <Grid xs={10} sm={8} md={4} item container direction="column" className={classes.body} spacing={7} >
             <Grid item container justify="center">
-              <p style={{fontSize:35,padding:0}}><b>Connexion</b></p>
+              <p style={{fontSize:35,padding:0}}><b>Réinitialiser le mot de passe</b></p>
             </Grid>
             <Grid item container spacing={5} >
               <Grid xs={1} item></Grid>
               <Grid  xs={10} item container direction="column" spacing={2}>
-                <Grid item><p style={{fontSize:20}}>Email</p></Grid>
+                <Grid item><p style={{fontSize:20}}>Nouveau mot de passe</p></Grid>
                 <Grid item><TextField variant="outlined" fullWidth/></Grid>
-                <Grid item><p style={{fontSize:20}}>Mot de passe</p></Grid>
+                <Grid item><p style={{fontSize:20}}>Confirmez le mot de passe</p></Grid>
                 <Grid item><TextField variant="outlined" fullWidth/></Grid>
               </Grid>
               <Grid xs={1} item></Grid>
             </Grid>
             <Grid item container justify="center">
-              <MyButton name={"Se connecter"} color="1"/>
+              <MyButton name={"Réinitialiser"} color="1"/>
             </Grid>
         </Grid>
         <Grid item container xs={1} sm={2} md={4}></Grid>

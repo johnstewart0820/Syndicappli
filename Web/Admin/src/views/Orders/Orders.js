@@ -7,6 +7,7 @@ import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
 import AddOrder from './AddOrder';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,9 +35,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const Orders = (props) => {
+  const {history}=props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/orders/edit/'+id);
+  }
   const handleOpen = () => {
     setOpen(true);
   };
@@ -70,7 +75,7 @@ const Orders = (props) => {
     ])
   }
   const cellList = [ 'name', 'price', 'stock']
-  const pages = {href: 'orders/edit'};
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -104,10 +109,10 @@ const Orders = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} pages={pages} cells={cellList}/>
+      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default Orders;
+export default withRouter(Orders);

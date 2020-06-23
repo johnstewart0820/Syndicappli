@@ -9,6 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddBuilding from './AddBuilding';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,9 +34,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const Buildings = (props) => {
+  const {history}=props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/buildings/edit/'+id);
+  }
   const handleOpen = () => {
     setOpen(true);
   };
@@ -69,7 +74,7 @@ const Buildings = (props) => {
     ])
   }
   const cellList = [ 'name', 'price', 'stock']
-  const pages = {href: 'buildings/edit'};
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -103,10 +108,10 @@ const Buildings = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} pages={pages} cells={cellList}/>
+      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default Buildings;
+export default withRouter(Buildings);

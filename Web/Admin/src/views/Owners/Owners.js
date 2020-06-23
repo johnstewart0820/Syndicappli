@@ -9,6 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddOwner from './AddOwner';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,13 +37,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const Owners = (props) => {
+  const {history}=props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
     setOpen(true);
   };
-
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/owners/edit/'+id);
+  }
   const handleClose = () => {
     setOpen(false);
   };
@@ -72,7 +77,7 @@ const Owners = (props) => {
     ])
   }
   const cellList = [ 'name', 'price', 'stock']
-  const pages = {href: 'owners/edit'}; 
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -106,10 +111,10 @@ const Owners = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} pages={pages} cells={cellList}/>
+      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default Owners;
+export default withRouter(Owners);

@@ -58,7 +58,7 @@ const ForgotPassword = () => {
         <Grid item container xs={1} sm={2} md={4}></Grid>
         <Grid xs={10} sm={8} md={4} item container direction="column" className={classes.body} spacing={7} >
             <Grid item container justify="center">
-              <p style={{fontSize:35,padding:0}}><b>Connexion</b></p>
+              <p style={{fontSize:35,padding:0}}><b>Mot de passe oublié</b></p>
             </Grid>
             <Grid item container spacing={5} >
               <Grid xs={1} item></Grid>
@@ -69,22 +69,11 @@ const ForgotPassword = () => {
               <Grid xs={1} item></Grid>
             </Grid>
             <Grid item container justify="center">
-              <MyButton name={"Réinitialiser le mot de passe"} color="1"/>
+              <MyButton name={"Envoyer"} color="1"/>
             </Grid>
         </Grid>
         <Grid item container xs={1} sm={2} md={4}></Grid>
       </Grid>
-      <Grid item container justify="center">
-          <Grid item container xs={1} sm={2} md={4}></Grid>
-          <Grid item container xs={10} sm={8} md={4}>
-            <Grid item container direction="row-reverse">
-              <Link href="#" variant="body2">
-                <p className={classes.forgot}>J'ai oublié mon mot de passe</p>
-              </Link>
-            </Grid>
-          </Grid>
-          <Grid item container xs={1} sm={2} md={4}></Grid>
-        </Grid>
     </Grid>
 
   );

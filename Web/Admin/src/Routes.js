@@ -78,7 +78,7 @@ const Routes = () => {
         component={CompaniesEdit}
         exact
         layout={MainLayout}
-        path="/companies/edit"
+        path="/companies/edit/:id"
       />
       <RouteWithLayout
         component={DiscountCodesView}
