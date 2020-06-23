@@ -16,7 +16,7 @@ var table  = require('../constants/table')
 
 var authModel = {
   login: login,
-  logout: logout
+  logout: logout,
 }
 
 
@@ -41,7 +41,7 @@ function login(authData) {
               reject({ message: message.INVALID_PASSWORD })
             } else {
               if (result) {
-                resolve({ id:rows[0].id})  
+                resolve(rows[0].userID)  
               } else {
                 reject({ message: message.INVALID_PASSWORD })
               }

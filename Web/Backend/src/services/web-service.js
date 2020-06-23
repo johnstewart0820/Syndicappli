@@ -9,35 +9,35 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var authModel = require('../models/auth-model')
+var webModel = require('../models/web-model')
 var jwt = require('jsonwebtoken')
 var message = require('../constants/message')
 var code = require('../constants/code')
 var key = require('../config/key-config')
 var timer  = require('../constants/timer')
 
-var authService = {
-  login: login,
-  logout: logout
+var webService = {
+  getProfile: getProfile
 }
 
+
 /**
- * Function that check user login status with email and password
+ * Function that get profile data with uID
  *
  * @author  DongTuring <dong@turing.com>
  * @param   object authData
  * @return  json 
  */
-function login(authData) {
+function getProfile(uid) {
   return new Promise((resolve, reject) => {
-    authModel.login(authData).then((data) => {
+    webModel.getProfile(uid).then((data) => {
       if (data) {
-        let userId = data
+        let userId = data.userID
         let token = jwt.sign({ uid: userId }, key.JWT_SECRET_KEY, {
           expiresIn: timer.TOKEN_EXPIRATION
         })
         
-        resolve({ code: code.OK, message: '', data: { 'token': token } })
+        resolve({ code: code.OK, message: '', data: { 'token': token,  profile: data} })
       }
     }).catch((err) => {
       if (err.message === message.INTERNAL_SERVER_ERROR)
@@ -48,23 +48,4 @@ function login(authData) {
   })
 }
 
-/**
- * Function to logout
- *
- * @author  DongTuring <dong@turing.com>
- * @return  string 
- */
-function logout() {
-  return new Promise((resolve, reject) => {
-    authModel.logout().then((result) => {
-      resolve({ code: code.OK, message: '', data: {} })
-    }).catch((err) => {
-      if (err.message === message.INTERNAL_SERVER_ERROR)
-        reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-      else
-        reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-    })
-  })
-}
-
-module.exports = authService
+module.exports = webService

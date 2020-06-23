@@ -12,7 +12,8 @@
 
 const express = require('express')
 const router = express.Router()
-
+const authMiddleware = require('../../middleware/auth-middleware')
+const webService = require('../../services/web-service')
 const apiAdminRouter = require('./admin')
 const apiManagerRouter = require('./manager')
 const apiOwnerRouter = require('./owner')
@@ -32,4 +33,28 @@ router.use('/manager', apiManagerRouter)
  */
 router.use('/owner', apiOwnerRouter)
 
+/** 
+ * account api
+ */
+router.get('/profile', authMiddleware.checkToken, getProfile)
+
+
+
+/**
+ * Function that check user login status with email and password
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getProfile(req, res) {
+    let userId = req.decoded.uid
+  
+    webService.getProfile(userId).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+  }
 module.exports = router
