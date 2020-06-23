@@ -1,27 +1,36 @@
-import express from 'express';
-import validate from 'express-validation';
-import paramValidation from '../../config/param-validation';
-import authCtrl from '../controllers/auth.controller';
-
-import webRoutes from './web';
-import mobileRoutes from './mobile';
-
-const router = express.Router(); // eslint-disable-line new-cap
-
 /**
- * mount user routes at /api/web/*
- */
-router.use('/web', webRoutes);
-
-/**
- * mount standard routes at /api/mobile/*
+ * Index router file
+ *
+ * @package   backend/src/routes
+ * @author    DongTuring <dong@turing.com>
+ * @author    WangTuring <wangwang@turing.com>
+ * @copyright 2018 Turing Company
+ * @license   Turing License
+ * @version   2.0
+ * @link      https://turing.ly
  */
 
-router.use('/mobile', mobileRoutes);
+const express = require('express')
+const router = express.Router()
+
+const apiAuthRouter = require('./auth')
+const mobileRouter = require('./mobile')
+const webRouter = require('./web')
 
 /**
- * POST /api/login - Returns token if correct email and password is provided
+ * Authentication page API router
  */
-router.post('/login', validate(paramValidation.login), authCtrl.login);
+router.use('/auth', apiAuthRouter)
 
-export default router;
+/**
+ * Mobile API router
+ */
+router.use('/mobile', mobileRouter)
+
+/**
+ * Web API router
+ */
+router.use('/web', webRouter)
+
+
+module.exports = router

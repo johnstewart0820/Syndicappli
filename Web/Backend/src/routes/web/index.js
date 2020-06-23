@@ -1,17 +1,35 @@
-import express from 'express';
-import adminRoutes from './admin.route';
-import managerRoutes from './manager.route';
-import ownerRoutes from './owner.route';
+/**
+ * Index router file
+ *
+ * @package   backend/src/routes
+ * @author    DongTuring <dong@turing.com>
+ * @author    WangTuring <wangwang@turing.com>
+ * @copyright 2018 Turing Company
+ * @license   Turing License
+ * @version   2.0
+ * @link      https://turing.ly
+ */
 
-const router = express.Router(); // eslint-disable-line new-cap
+const express = require('express')
+const router = express.Router()
 
-// mount user admin routes at /admin
-router.use('/admin', adminRoutes);
+const apiAdminRouter = require('./admin')
+const apiManagerRouter = require('./manager')
+const apiOwnerRouter = require('./owner')
 
-// mount manager routes at /manager
-router.use('/manager', managerRoutes);
+/**
+ * admin API router
+ */
+router.use('/admin', apiAdminRouter)
 
-// mount owner routes at /owner
-router.use('/owner', ownerRoutes);
+/**
+ * manager API router
+ */
+router.use('/manager', apiManagerRouter)
 
-export default router;
+/**
+ * owner API router
+ */
+router.use('/owner', apiOwnerRouter)
+
+module.exports = router
