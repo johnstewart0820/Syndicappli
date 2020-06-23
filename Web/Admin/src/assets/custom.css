@@ -24,13 +24,15 @@ body {
   }
   
   thead button.ascending::after {
-    content: '👇';
+    content: '⯆';
+    color: '#9f9f9f';
     display: inline-block;
     margin-left: 1em;
   }
   
   thead button.descending::after {
-    content: '☝️';
+    content: '⯅';
+    color: '#9f9f9f';
     display: inline-block;
     margin-left: 1em;
   }

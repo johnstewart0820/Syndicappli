@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     padding: 32
   }
 }));
-const Buildings = () => {
+const Buildings = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -42,6 +42,9 @@ const Buildings = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleAdd = ()=>{
+
   };
   const [dataList, setDataList] = useState([]);
   useEffect(() => {
@@ -91,7 +94,7 @@ const Buildings = () => {
                   <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
                   <Grid xs={12} item ><p id="transition-modal-title" style={{fontSize:28}}><b>Nouvel immmeuble</b></p></Grid>
                 </Grid>
-                <AddBuilding />
+                <AddBuilding  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
             </Grid>
           </Grid>

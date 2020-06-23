@@ -3,10 +3,10 @@ import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
 import IconButton from "@material-ui/core/IconButton";
-import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../components/MySelect';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -31,9 +31,12 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const AddManager = () => {
+const AddManager = (props) => {
   const classes = useStyles();
   const cellList=[20, 50, 100, 200];
+  const handleClose = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} sm={12}>
@@ -69,14 +72,20 @@ const AddManager = () => {
                     <Grid xs={6}></Grid>
                 </Grid>
                 <Grid xs={12} item container direction="column" >
-                    <p>Photo</p>
+                    <p style={{fontSize:18}}>Photo</p>
                     <Grid item container justify="flex-start">
                     <IconButton xs={6}
                         color="primary"
                         aria-label="upload picture"
                         component="span"
+                        style={{
+                            border: '1px dashed rgba(112,112,112,0.43)',
+                            borderRadius: 8,
+                            width: 116,
+                            height: 92,
+                        }}
                         >
-                        <PhotoCamera />
+                        <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
                     </IconButton>
                     </Grid>
                 </Grid>
@@ -141,7 +150,7 @@ const AddManager = () => {
             <div className={classes.footer}>
                 <Grid container justify="space-between">
                     <MyButton name = {"Creer"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="grey"/>
+                    <MyButton name = {"Annuler"} bgColor="gray" handleClose={handleClose}/>
                 </Grid>
             </div>
         </div>

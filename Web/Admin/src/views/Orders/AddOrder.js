@@ -31,20 +31,24 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const AddOrder = () => {
+const AddOrder = (props) => {
   const classes = useStyles();
+  const cellList=[20, 50, 100, 200];
+  const handleClose = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
                 <Grid item container justify="center" alignItems="center">
                     <Grid xs={3} item container><p>Carbinets</p></Grid>
-                    <Grid xs={3} item container><MySelect /></Grid>
+                    <Grid xs={3} item container><MySelect color="gray" width="316px" data={cellList}/></Grid>
                     <Grid xs={6}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
                     <Grid xs={3} item container><p>Immeubles</p></Grid>
-                    <Grid xs={3} item container><MySelect /></Grid>
+                    <Grid xs={3} item container><MySelect color="gray" width="316px" data={cellList}/></Grid>
                     <Grid xs={6}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
@@ -91,41 +95,41 @@ const AddOrder = () => {
             <Grid container spacing={2}>
                 <Grid xs={6} item container direction="column">
                     <p>Cabinets</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p>Gestionnaires</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p>Immeuables</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p>Coproprietaires</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p>Commandes</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p>Prodults</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p>Codes Promo</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p>Utilisateurs</p>
-                    <MySelect />
+                    <MySelect color="gray" width="316px" data={cellList}/>
                 </Grid>
             </Grid>
             <div className={classes.footer}>
                 <Grid container justify="space-between">
                     <MyButton name = {"Creer"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="grey"/>
+                    <MyButton name = {"Annuler"} bgColor="grey" handleClose={handleClose}/>
                 </Grid>
             </div>
         </div>

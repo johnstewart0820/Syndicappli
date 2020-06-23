@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import MyTable from '../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
@@ -35,7 +36,9 @@ const useStyles = makeStyles(theme => ({
     color: 'gray'
   }
 }));
-const Users = () => {
+const Users = (props) => {
+  const { history } = props;
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -45,6 +48,9 @@ const Users = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleAdd = ()=>{
+
   };
   const [dataList, setDataList] = useState([]);
   useEffect(() => {
@@ -71,6 +77,12 @@ const Users = () => {
   const cellList = [ 'name', 'price', 'stock']
     
   const pages = {href: 'users/edit'};
+  
+  const handleClickEdit = (id) => {
+    console.log(id);
+    history.push('/users/edit/'+id);
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -95,7 +107,7 @@ const Users = () => {
                   <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
                   <Grid xs={12} item ><p id="transition-modal-title" style={{fontSize:28}}><b>Nouvel Utilisateur</b></p></Grid>
                 </Grid>
-                <AddUser />
+                <AddUser onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
             </Grid>
           </Grid>
@@ -104,10 +116,10 @@ const Users = () => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-        <MyTable products={dataList} pages={pages} cells={cellList}/>
+        <MyTable products={dataList} pages={pages} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>
   );
 };
 
-export default Users;
+export default withRouter(Users);

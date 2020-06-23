@@ -3,10 +3,11 @@ import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
 import IconButton from "@material-ui/core/IconButton";
-import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../components/MySelect';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { defaultProps } from 'recompose';
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -25,15 +26,18 @@ const useStyles = makeStyles(theme => ({
             width: 160
         },
         '& .MuiOutlinedInput-input':{
-            padding: '3px 26px 3px 12px',
-            fontSize: 16
+            padding: '8px 12px',
+            fontSize: 17
         },
     },
 }));
 
-const AddUser = () => {
+const AddUser = (props) => {
   const classes = useStyles();
   const cellList=[20, 50, 100, 200];
+  const handleClose = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} sm={12}>
@@ -49,12 +53,12 @@ const AddUser = () => {
                     <Grid xs={6}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>First Name</p></Grid>
+                    <Grid xs={3} item container><p style={{fontSize:18}}>Nom</p></Grid>
                     <Grid xs={3} item container><TextField id="outlined-basic" className={classes.text} variant="outlined" /></Grid>
                     <Grid xs={6}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Last Name</p></Grid>
+                    <Grid xs={3} item container><p style={{fontSize:18}}>Prénom</p></Grid>
                     <Grid xs={3} item container><TextField id="outlined-basic" className={classes.text} variant="outlined" /></Grid>
                     <Grid xs={6}></Grid>
                 </Grid>
@@ -64,24 +68,25 @@ const AddUser = () => {
                     <Grid xs={6}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Telephone</p></Grid>
-                    <Grid xs={3} item container><TextField id="outlined-basic" className={classes.text} variant="outlined" /></Grid>
-                    <Grid xs={6}></Grid>
-                </Grid>
-                <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Phone Number</p></Grid>
+                    <Grid xs={3} item container><p style={{fontSize:18}}>Téléphone</p></Grid>
                     <Grid xs={3} item container><TextField id="outlined-basic" className={classes.text} variant="outlined" /></Grid>
                     <Grid xs={6}></Grid>
                 </Grid>
                 <Grid xs={12} item container direction="column" >
-                    <p>Photo</p>
+                    <p style={{fontSize:18}}>Photo</p>
                     <Grid item container justify="flex-start">
                     <IconButton xs={6}
                         color="primary"
                         aria-label="upload picture"
                         component="span"
+                        style={{
+                            border: '1px dashed rgba(112,112,112,0.43)',
+                            borderRadius: 8,
+                            width: 116,
+                            height: 92,
+                        }}
                         >
-                        <PhotoCamera />
+                        <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
                     </IconButton>
                     </Grid>
                 </Grid>
@@ -126,7 +131,7 @@ const AddUser = () => {
             <div className={classes.footer}>
                 <Grid container justify="space-between">
                     <MyButton name = {"Creer"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="grey"/>
+                    <MyButton name = {"Annuler"} bgColor="grey" handleClose={handleClose}/>
                 </Grid>
             </div>
         </div>

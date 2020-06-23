@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 15,
   }
 }));
-const Login = () => {
+const ResetPassword = () => {
   const classes = useStyles();
   const logo = {
     url: '/images/Login.png',
@@ -94,4 +94,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

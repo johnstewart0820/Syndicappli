@@ -1,4 +1,4 @@
-import React from 'react';
+import React , {useState} from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import { Button } from '@material-ui/core';
@@ -27,9 +27,14 @@ const useStyles = makeStyles((theme,props) => ({
 
 export default function MyButton(props) {
   const classes = useStyles(props);
+  const [flag, setFlag] = useState(false);
+  const btnClick = ()=>{
+    if(props.handleClose)
+      props.handleClose();
+  };
   return (
     <div>
-      <Button className={props.color ? classes.button1 : classes.button2} style={{fontSize:20}}>{props.name}</Button>
+      <Button onClick={btnClick} className={props.color ? classes.button1 : classes.button2} style={{fontSize:20}}>{props.name}</Button>
     </div>
   );
 }

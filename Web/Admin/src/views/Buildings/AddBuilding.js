@@ -2,8 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
-import IconButton from "@material-ui/core/IconButton";
-import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 
@@ -31,9 +29,11 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const AddBuilding = () => {
+const AddBuilding = (props) => {
   const classes = useStyles();
-
+  const handleClose = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} >
@@ -50,7 +50,9 @@ const AddBuilding = () => {
                     <Grid item><p style={{fontSize:18}}>Adresse</p></Grid>
                     <Grid xs item container alignItems="stretch"><TextField id="outlined-basic" className={classes.text} rows={3} multiline variant="outlined" /></Grid>
                 </Grid>
-
+                <Grid item container alignItems="center" spacing={2}>
+                    <Grid item><p style={{fontSize:18}}>Clefs de répartition</p></Grid>
+                </Grid>
                 <Grid item container alignItems="center" spacing={2}>
                     <Grid item><p style={{fontSize:18}}>Compte Bancaire - Prélèvement SEPA</p></Grid>
                 </Grid>
@@ -73,7 +75,7 @@ const AddBuilding = () => {
             <div className={classes.footer}>
                 <Grid container justify="space-between">
                     <MyButton name = {"Créer"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="grey"/>  
+                    <MyButton name = {"Annuler"} bgColor="gray" handleClose={handleClose}/>  
                 </Grid>
             </div>
         </div>

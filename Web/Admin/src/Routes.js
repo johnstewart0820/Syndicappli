@@ -20,7 +20,10 @@ import Login from './views/SignIn/Login';
 import SignIn from './views/SignIn/SignIn';
 import CompaniesEdit from './views/Companies/CompaniesEdit';
 import ManagerEdit from './views/Managers/ManagerEdit';
+import UserEdit from './views/Users/UserEdit';
 import MyAccount from './views/MyAccount';
+import ForgotPassword from 'views/ForgotPassword';
+import ResetPassword from 'views/ResetPassword';
 const Routes = () => {
   return (
     <Switch>
@@ -52,6 +55,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/users"
+      />
+      <RouteWithLayout
+        component={UserEdit}
+        exact
+        layout={MainLayout}
+        path="/users/edit/:id"
       />
       <RouteWithLayout
         component={ProductsView}
@@ -100,6 +109,18 @@ const Routes = () => {
         exact
         layout={NormalLayout}
         path="/login"
+      />
+      <RouteWithLayout
+        component={ForgotPassword}
+        exact
+        layout={NormalLayout}
+        path="/forgotpassword"
+      />
+      <RouteWithLayout
+        component={ResetPassword}
+        exact
+        layout={NormalLayout}
+        path="/resetpassword"
       />
       <RouteWithLayout
         component={OrdersView}

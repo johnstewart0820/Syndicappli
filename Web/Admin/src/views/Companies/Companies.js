@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gary'
   }
 }));
-const Companies = () => {
+const Companies = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -50,6 +50,9 @@ const Companies = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleAdd = ()=>{
+
   };
   const [dataList, setDataList] = useState([]);
   useEffect(() => {
@@ -99,7 +102,7 @@ const Companies = () => {
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
                   <Grid item><p id="transition-modal-title" style={{fontSize:28}}><b>Nouveau Cabinet</b></p></Grid>
                 </Grid>
-                <AddCompany />
+                <AddCompany  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
             </Grid>
           </Grid>

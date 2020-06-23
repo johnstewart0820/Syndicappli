@@ -148,11 +148,11 @@ const Topbar = props => {
               }}
             >
               <RouterLink to={"/myaccount"}>
-                <MenuItem className={classes.menu_item} onClick={handleClose} >My account</MenuItem>
+                <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
               </RouterLink>
               <Divider />
               <RouterLink to={"/login"}>
-                <MenuItem className={classes.menu_item} onClick={handleClose}>Logout</MenuItem>
+                <MenuItem className={classes.menu_item} onClick={handleClose}>Déconnexion</MenuItem>
               </RouterLink>
             </Menu>
           </Paper>

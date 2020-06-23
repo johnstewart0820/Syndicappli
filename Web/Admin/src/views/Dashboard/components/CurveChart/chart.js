@@ -21,14 +21,14 @@ for (var i = 0; i <= elements; i++) {
   data3.push(65);
 }
 export const mainChart = {
-    labels: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+    labels: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
     datasets: [
       {
         label: 'My First dataset',
         backgroundColor: 'transparent',
-        borderColor: 'linear-gradient(top, #555555, #111111);',
-        pointHoverBackgroundColor: '#fff',
-        borderWidth: 15,
+        borderColor: '#03c9e4',
+        pointHoverBackgroundColor: brandPrimary,
+        borderWidth: 10,
         data: data1,
       },
       {

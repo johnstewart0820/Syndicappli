@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray'
   }
 }));
-const Managers = () => {
+const Managers = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -45,6 +45,9 @@ const Managers = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleAdd = ()=>{
+
   };
   const [dataList, setDataList] = useState([]);
   useEffect(() => {
@@ -94,7 +97,7 @@ const Managers = () => {
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
                   <Grid item><h2 id="transition-modal-title">Nouveau Gestionnaires</h2></Grid>
                 </Grid>
-                <AddManager />
+                <AddManager  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
             </Grid>
           </Grid>

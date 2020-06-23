@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 15,
   }
 }));
-const Login = () => {
+const ForgotPassword = () => {
   const classes = useStyles();
   const logo = {
     url: '/images/Login.png',
@@ -52,9 +52,7 @@ const Login = () => {
         <img src={logo.url} className={classes.img}/>
       </Grid>
       <Grid  item container justify="center">
-      <p className={classes.p}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut
-         tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae. 
-         Suspendisse vehicula laoreet ullamcorper. </p>
+      <p className={classes.p}>Mot de passe perdu? Veuillez saisir votre identifiant ou adresse mail. Vous recevrez un lien pour créer un nouveau mot de passe par e-mail. </p>
       </Grid>
       <Grid item container justify="center">
         <Grid item container xs={1} sm={2} md={4}></Grid>
@@ -65,15 +63,13 @@ const Login = () => {
             <Grid item container spacing={5} >
               <Grid xs={1} item></Grid>
               <Grid  xs={10} item container direction="column" spacing={2}>
-                <Grid item><p style={{fontSize:20}}>Email</p></Grid>
-                <Grid item><TextField variant="outlined" fullWidth/></Grid>
-                <Grid item><p style={{fontSize:20}}>Mot de passe</p></Grid>
+                <Grid item><p style={{fontSize:20}}>Nom d'utilisateur ou email</p></Grid>
                 <Grid item><TextField variant="outlined" fullWidth/></Grid>
               </Grid>
               <Grid xs={1} item></Grid>
             </Grid>
             <Grid item container justify="center">
-              <MyButton name={"Se connecter"} color="1"/>
+              <MyButton name={"Réinitialiser le mot de passe"} color="1"/>
             </Grid>
         </Grid>
         <Grid item container xs={1} sm={2} md={4}></Grid>
@@ -82,7 +78,7 @@ const Login = () => {
           <Grid item container xs={1} sm={2} md={4}></Grid>
           <Grid item container xs={10} sm={8} md={4}>
             <Grid item container direction="row-reverse">
-              <Link href="/forgotpassword" variant="body2">
+              <Link href="#" variant="body2">
                 <p className={classes.forgot}>J'ai oublié mon mot de passe</p>
               </Link>
             </Grid>
@@ -94,4 +90,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

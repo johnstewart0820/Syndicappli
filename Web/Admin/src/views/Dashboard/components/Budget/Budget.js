@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import MoneyIcon from '@material-ui/icons/Money';
+import { property } from 'underscore';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme, props)=> ({
   root: {
     height: '100%'
   },
@@ -32,19 +34,46 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   },
   differenceIcon: {
-    color: theme.palette.error.dark
+    color: props=>props.color
   },
   differenceValue: {
-    color: theme.palette.error.dark,
-    marginRight: theme.spacing(1)
+    color: props=>props.color,
+    marginRight: theme.spacing(1),
+    fontSize: 15
+  },
+  show: {
+    visibility: 'visible',
+    position: 'absolute',
+    color: props=>props.color,
+    zIndex: 0
+  },
+  hide: {
+    visibility : 'hidden',
+    color: props=>props.color,
+    zIndex: 1
   }
 }));
 
 const Budget = props => {
   const { className, ...rest } = props;
+  const [title, setTitle] = useState(props.title);
+  const [body, setBody] = useState(props.body);
+  const [pro, setPro] = useState(props.pro);
+  const [tail, setTail] = useState(props.tail); 
+  const [avatar, setAvatar] = useState(props.avatar);
+  const [income, setIncome] = useState(props.income);
+  const classes = useStyles(props);
+  let style1, style2 ;
+  if(income === 1){
 
-  const classes = useStyles();
-
+    style1 = classes.show;
+    style2 = classes.hide;
+  }
+  else{
+    style1 = classes.hide;
+    style2 = classes.show;
+  }
+  console.log(income);
   return (
     <Card
       {...rest}
@@ -57,14 +86,13 @@ const Budget = props => {
         >
           <Grid item>
             <Typography
-              className={classes.title}
-              color="textSecondary"
-              gutterBottom
-              variant="body2"
+            className={classes.caption}
+            variant="caption"
+              style={{fontSize:18}}
             >
-              BUDGET
+              {title}
             </Typography>
-            <Typography variant="h3">$24,000</Typography>
+            <p style={{fontSize: 31}}>{body}</p>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
@@ -73,18 +101,19 @@ const Budget = props => {
           </Grid>
         </Grid>
         <div className={classes.difference}>
-          <ArrowDownwardIcon className={classes.differenceIcon} />
-          <Typography
+          <ArrowDownwardIcon className={style1} />
+          <ArrowUpwardIcon className={style2} />
+          <p
             className={classes.differenceValue}
-            variant="body2"
           >
-            12%
-          </Typography>
+            {pro}
+          </p>
           <Typography
             className={classes.caption}
             variant="caption"
+            style={{fontSize: 15}}
           >
-            Since last month
+            {tail}
           </Typography>
         </div>
       </CardContent>

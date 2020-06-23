@@ -5,7 +5,6 @@ import Typography from '@material-ui/core/Typography';
 import MySelect from '../../components/MySelect';
 import {
   Budget,
-  TotalUsers,
   LatestSales,
 } from './components';
 import CurveChart from './components/CurveChart';
@@ -26,6 +25,8 @@ const useStyles = makeStyles(theme => ({
 const Dashboard = () => {
   const classes = useStyles();
   const cellList = [20, 50, 100, 200];
+  const incomeDirection = 2;
+  const incomeColor = "#FC5555";//#2DCE9C
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -57,10 +58,10 @@ const Dashboard = () => {
           >
             <Grid item lg={3} container direction="column" justify="space-between">
               <Grid item>
-                <Budget />
+                <Budget title="COMMANDES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
               </Grid>
               <Grid item>
-                <TotalUsers />
+              <Budget title="REVENUS" body="53 456€ HT" pro="1.17%" tail="en 1 mois" income={1} color={"#FC5555"}/>
               </Grid>
             </Grid>
             <Grid item container lg={9} direction="row" justify="space-evenly" spacing={2}>
@@ -74,16 +75,16 @@ const Dashboard = () => {
           </Grid>
           <Grid item container justify="space-evenly" spacing={2}>
             <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <TotalUsers />
+            <Budget title="CABINETS" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
             </Grid>
             <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <TotalUsers />
+            <Budget title="GESTIONNAIRES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
             </Grid>
             <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <TotalUsers />
+            <Budget title="IMMEUBLES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
             </Grid>
             <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <TotalUsers />
+            <Budget title="COPROPRIETAIRES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
             </Grid>
           </Grid>
         </Grid>

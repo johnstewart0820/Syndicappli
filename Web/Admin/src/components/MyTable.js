@@ -18,18 +18,10 @@ const useStyles = makeStyles({
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
     marginBottom: theme.spacing(2),
     marginTop: theme.spacing(1),
-    '& thead button.ascending::after':{
-      content: "'⮟'",
-      color: 'gray',
-    },
-    '& thead button.descending::after':{
-      content: "'⮝'",
-      color: 'gray',
-    },
     '& thead button': {
       background: 'transparent',
       outline: 'transparent',
-      color: 'gray'
+      color: '#363636'
     },
     '& .MuiTableCell-root': {
       fontSize: 18
@@ -94,6 +86,8 @@ const useSortableData = (items, config = null) => {
   return { items: sortedItems, requestSort, sortConfig };
 };
 export default function ProductTable  (props)  {
+  const {onClickEdit, ...rest} = props;
+
   const classes = useStyles();
   const{pages} = props;
 
@@ -111,7 +105,7 @@ export default function ProductTable  (props)  {
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
-  const dataList=[20, 50, 100, 200];
+  const dataList=[20, 50, 100, 200, "all"];
 
   const handleChangeSelect = (value) => {
     setSelect(dataList[value]);
@@ -121,6 +115,8 @@ export default function ProductTable  (props)  {
 
   return ( 
     <div >
+      
+
       <Grid container direction="column" spacing={2}>
         <Grid item container direction="row-reverse">
           <MySelect color="#00b8d4" width="160px" data={dataList} onChangeSelect={handleChangeSelect}/>
@@ -159,9 +155,7 @@ export default function ProductTable  (props)  {
                   })
                   }
                   <TableCell align="right">
-                      <RouterLink to={pages.href}>
-                        <EditIcon className={classes.editItem} />
-                      </RouterLink>
+                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.id)}/>
                       &nbsp;&nbsp;
                       <DeleteIcon className={classes.editItem}></DeleteIcon>
                     </TableCell>

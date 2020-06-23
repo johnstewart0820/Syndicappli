@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray'
   }
 }));
-const Owners = () => {
+const Owners = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -45,6 +45,9 @@ const Owners = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleAdd = ()=>{
+
   };
   const [dataList, setDataList] = useState([]);
   useEffect(() => {
@@ -94,7 +97,7 @@ const Owners = () => {
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
                   <Grid item><h2 id="transition-modal-title">Nouveau Copropriétaires</h2></Grid>
                 </Grid>
-                <AddOwner />
+                <AddOwner  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
             </Grid>
           </Grid>

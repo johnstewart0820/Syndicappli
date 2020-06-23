@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray'
   }
 }));
-const DiscountCodes = () => {
+const DiscountCodes = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -45,6 +45,9 @@ const DiscountCodes = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleAdd = ()=>{
+
   };
   const [dataList, setDataList] = useState([]);
   useEffect(() => {
@@ -94,7 +97,7 @@ const DiscountCodes = () => {
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
                   <Grid item><h2 id="transition-modal-title">Nouveau Codes promo</h2></Grid>
                 </Grid>
-                <AddDiscountCode />
+                <AddDiscountCode  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
             </Grid>
           </Grid>

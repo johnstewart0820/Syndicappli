@@ -31,9 +31,11 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const AddDiscountCode = () => {
+const AddDiscountCode = (props) => {
   const classes = useStyles();
-
+  const handleClose = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} >
@@ -93,7 +95,7 @@ const AddDiscountCode = () => {
             <div className={classes.footer}>
                 <Grid container justify="space-between">
                     <MyButton name = {"Ajouter"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="grey"/>  
+                    <MyButton name = {"Annuler"} bgColor="gray" handleClose={handleClose}/>  
                 </Grid>
             </div>
         </div>
