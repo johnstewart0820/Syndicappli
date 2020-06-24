@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
-import { rest } from 'underscore';
 
 const BootstrapInput = withStyles((theme) => ({
   root: {
@@ -66,19 +63,20 @@ export default function CustomizedSelects(props) {
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
   };
+
   return (
     <div>
       <FormControl className={classes.margin}>
         <NativeSelect
           labelId="demo-customized-select-label"
           id="demo-customized-select"
-          value={value}
+          value={props.value}
           onChange={handleChange}
           input={<BootstrapInput />}
         >
           {
             items.map((item, i) =>
-              <option  value={i} key={item}>Voir {item}</option>
+              <option  value={i} key={item}> {item}</option>
           )}
         </NativeSelect>
       </FormControl>

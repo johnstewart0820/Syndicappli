@@ -3,20 +3,66 @@ import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import { makeStyles , withStyles} from '@material-ui/core/styles';
 import theme from 'theme';
 import MySelect from './MySelect';
 import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
 import MyButton from './MyButton';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+
+import FormControl from '@material-ui/core/FormControl';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import InputBase from '@material-ui/core/InputBase';
+import { rest } from 'underscore';
+
+const BootstrapInput = withStyles((theme) => ({
+  root: {
+    'label + &': {
+      marginTop: theme.spacing(3),
+    },
+  },
+  input: {
+    borderRadius: 4,
+    position: 'relative',
+    backgroundColor: theme.palette.background.paper,
+    border: '1px solid #ced4da',
+    fontSize: 17,
+    padding: '2px 26px 2px 12px',
+    height:33,
+    display: 'flex',
+    alignItems: 'center',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    '&:focus': {
+      borderRadius: 4,
+      borderColor: '#80bdff',
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+    },
+  },
+}))(InputBase);
 
 const useStyles = makeStyles({
+  margin: {
+    width: props => props.width,
+    '& .MuiSelect-select.MuiSelect-select': {
+      borderColor: props => props.color
+    },
+    '& .MuiSelect-icon': {
+      color: props => props.color
+    },
+  },
   root: {
     borderRadius: '30px',
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
@@ -56,61 +102,29 @@ const useStyles = makeStyles({
     visibility: 'visible'
   },
 });
-const useSortableData = (items, config = null) => {
-  const [sortConfig, setSortConfig] = React.useState(config);
-
-  const sortedItems = React.useMemo(() => {
-    let sortableItems = [...items];
-    if (sortConfig !== null) {
-      sortableItems.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortableItems;
-  }, [items, sortConfig]);
-
-  const requestSort = (key) => {
-    let direction = 'ascending';
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === 'ascending'
-    ) {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  return { items: sortedItems, requestSort, sortConfig };
-};
 
 export default function ProductTable  (props)  {
   const {onClickEdit, ...rest} = props;
 
   const classes = useStyles();
-
+  const [direction , setDirection] = useState(props.columns);
+  const tempDirection = props.columns;
+  let tempDirect=[];
+  if(tempDirection){
+    for(let i =0;i<tempDirection.length; i++)
+      tempDirect[i] = '⯆';
+  }
   const [cells,setCells] = useState(props.cells);
-  const {items, requestSort, sortConfig } = useSortableData(props.products);
-  const [page , setPage] = useState(1);
-  const [select, setSelect] = useState(20);
+  const items = props.products;
   const [open, setOpen] = React.useState(false);
-
+  const [direct, setDirect] = React.useState(tempDirect);
   const handleClickOpen = () => {
     setOpen(true);
   };
-
+  console.log(items);
   const handleClose = () => {
     setOpen(false);
   };
-  const handleChange = (event,value)=>{
-    setPage(value);
-  }
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -119,57 +133,67 @@ export default function ProductTable  (props)  {
   };
   const dataList=[20, 50, 100, 200, "all"];
 
-  const handleChangeSelect = (value) => {
-    setSelect(dataList[value]);
-    alert(select);
-    //api call
-  }
 
+  const [value, setValue] = React.useState(0);
+  const handleChange = (event) => {
+    props.onChangeSelect(event.target.value);
+    setValue(event.target.value);
+  };
+  const handleChangePage = (event, page) => {
+    props.onChangePage(page);
+    console.log(page);
+  };
+  const Sort = (index=0 )=>{
+    if(direction[index] === 'asc'){
+      tempDirection[index] = 'desc';
+      tempDirect[index] = '⯅';
+      setDirect(tempDirect);
+      setDirection(tempDirection);
+    }else{
+      tempDirection[index] = 'asc';
+      tempDirect[index] = '⯆';
+      setDirect(tempDirect);
+      setDirection(tempDirection);
+    }
+
+    props.onSelectSort(index, direction[index]);
+  }
   return ( 
     <div >
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        >
-        <DialogTitle id="alert-dialog-title">
-          Delete
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       <Grid container direction="column" spacing={2}>
         <Grid item container direction="row-reverse">
-          <MySelect color="#00b8d4" width="160px" data={dataList} onChangeSelect={handleChangeSelect}/>
+          <div>
+            <FormControl className={classes.margin}>
+              <NativeSelect
+                labelId="demo-customized-select-label"
+                id="demo-customized-select"
+                value={value}
+                onChange={handleChange}
+                input={<BootstrapInput />}
+              >
+                {
+                  dataList.map((select, i) =>
+                    <option  value={i} key={select}>Voir {select}</option>
+                )}
+              </NativeSelect>
+            </FormControl>
+          </div>
         </Grid>
         <Grid item container >
           <Table className={classes.root}>
             <TableHead>
               <TableRow >
                 {
-                  cells.map((cell)=>(
-                    <TableCell key={cell}>
+                  cells.map((cell,i)=>(
+                    <TableCell key={i}>
                     <button
                       type="button"
-                      onClick={() => requestSort(cell)}
-                      className={getClassNamesFor(cell)}
+                      onClick={() => Sort(i)}
                     >
-                      {cell}
+                      {cell.field}
                     </button>
+                      <i style={{fontStyle:'normal'}}>{direct[i]}</i>
+
                   </TableCell>
                   ))
                 }
@@ -178,21 +202,21 @@ export default function ProductTable  (props)  {
             </TableHead>
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.userID}>
                   {
                   cells.map((cell,i)=>{
-                    const value = item[cell];
+                    const value = item[cell.key];
                     return(
-                    <TableCell key={cell}>
+                    <TableCell key={cell.key}>
 
                       {value}
                   </TableCell>);
                   })
                   }
                   <TableCell align="right">
-                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.id)}/>
+                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.userID)}/>
                       &nbsp;&nbsp;
-                      <DeleteIcon className={classes.editItem} onClick={handleClickOpen}></DeleteIcon>
+                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.userID)}></DeleteIcon>
                   </TableCell>
                 </TableRow>
               ))}
@@ -209,7 +233,13 @@ export default function ProductTable  (props)  {
             <MyButton name={props.leftBtn} color={"1"} />
           </Grid>
           <Grid xs={6} item container direction="row-reverse">
-            <Pagination count={1} color="primary" page={page} onChange={handleChange} style={{fontSize:22}}/>
+            <Pagination 
+              count={props.totalpage} 
+              color="primary" 
+              page={props.page} 
+              onChange={handleChangePage} 
+              style={{fontSize:22}}
+            />
           </Grid>
         </Grid>
       </Grid>

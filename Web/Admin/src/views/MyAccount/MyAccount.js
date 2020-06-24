@@ -7,6 +7,10 @@ import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
+import {withRouter} from 'react-router-dom';
+import AdminService from './../../services/api.js';
+import Toast from './../../components/Toast.js';
+import { setSourceMapRange } from 'typescript';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,45 +60,134 @@ const useStyles = makeStyles(theme => ({
     fontSize: 25
   }
 }));
-const MyAccount = () => {
+const MyAccount = (props) => {
+  const {history} = props;
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
+  const [lastname , setLastName] = React.useState('');
+  const [firstname , setFirstName] = React.useState('');
+  const [email , setEmail] = React.useState('');
+  const [phone , setPhone] = React.useState('');
+  const [old_password , setOldPassword] = React.useState('');
+  const [new_password , setNewPassword] = React.useState('');
+  const [confirm_password , setConfirmPassword] = React.useState('');
+  const [avatarurl, setAvatarUrl] = React.useState("");
+  const [avatar, setAvatar] = React.useState(null);
+  const [state, setState] = React.useState('');
+  let msg;
+  const handleOpen = (value) => {
+    setState(value);
+    if(value === "success")
+      msg = "Updated successfull";
   };
 
   const handleClose = () => {
     setOpen(false);
   };
+  const handleChangeLastName = (event)=>{
+    setLastName(event.target.value);
+  }
+  const handleChangeFirstName = (event)=>{
+    setFirstName(event.target.value);
+  }
+  const handleChangeEmail = (event)=>{
+    setEmail(event.target.value);
+  }
+  const handleChangePhone = (event)=>{
+    setPhone(event.target.value);
+  }
+  const handleChangeOldPassword = (event)=>{
+    setOldPassword(event.target.value);
+  }
+  const handleChangeNewPassword = (event)=>{
+    setNewPassword(event.target.value);
+  }
+  const handleChangeConfirmPassword = (event)=>{
+    setConfirmPassword(event.target.value);
+  }
+  const handleLoadFront = (event) => {
+    setAvatar(event.target.files[0]);
+    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+  }
+  useEffect(()=>{
+
+    // setVisibleIndicator(true);
+    AdminService.getProfile()
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code != 200){
+          
+        } else {
+          localStorage.setItem("token", JSON.stringify(response.data.data.token));
+          const profile = response.data.data.profile;
+          setLastName(profile.lastname);
+          setFirstName(profile.firstname);
+          setEmail(profile.email);
+          setPhone(profile.phone);
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+        // const resMessage =
+        //     (error.response &&
+        //       error.response.data &&
+        //       error.response.data.message) ||
+        //     error.message ||
+        //     error.toString();
+      }
+    );   
+  }, []);
+  const onClickSave = (event)=>{
+    handleOpen("Updated successfull!");
+
+    var data={
+      'lastname' : lastname,
+      'firstname' : firstname,
+      'email' : email,
+      'phone' : phone,
+      'old_password' : old_password,
+      'new_password' : new_password
+    };
+    // setVisibleIndicator(true);
+    AdminService.updateProfile(data)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code != 200){
+          // if(response.data.status === 'Token is Expired') {
+          //   authService.logout();
+          //   history.push('/');
+          // }
+          console.log('error');
+        } else {
+           localStorage.setItem("token", JSON.stringify(response.data.data.token));
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+        // const resMessage =
+        //     (error.response &&
+        //       error.response.data &&
+        //       error.response.data.message) ||
+        //     error.message ||
+        //     error.toString();
+      }
+    );    
+  }
   const [dataList, setDataList] = useState([]);
   useEffect(() => {
     console.log('a');
   });
-  useEffect(() => {
-    console.log('b');
-    getDataList();
-  }, []);
-  const getDataList = () => {
-    setDataList([
-      {id: 1, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 2, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
-      { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
-      { id: 5, name: 'Butter', price: 0.9, stock: 99 },
-      { id: 6, name: 'Sour Cream ', price: 2.9, stock: 86 },
-      { id: 7, name: 'Fancy French Cheese 🇫🇷', price: 99, stock: 12 },
-      { id: 8, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 9, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 10, name: 'Yoghurt', price: 2.4, stock: 12 },
-    ])
-  }
+
   const user = {
     name: 'Shen Zhi',
     avatar: '/images/avatars/avatar_11.png',
     bio: 'Brain Director'
   };
-  const pages = {href: 'users/users-edit'};
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -120,7 +213,13 @@ const MyAccount = () => {
                 <Grid item container alignItems="center" spacing={2}>
                     <Grid item><p className={classes.text}>Nom</p></Grid>
                     <Grid xs item container alignItems="stretch">
-                      <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                      <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        variant="outlined"
+                        value={lastname}
+                        onChange={handleChangeLastName}
+                      />
                     </Grid>
                 </Grid>
               </Grid>
@@ -151,46 +250,83 @@ const MyAccount = () => {
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Prénom</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined"
+                  value={firstname}
+                  onChange={handleChangeFirstName}
+                />
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Email</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined"
+                  value={email}
+                  onChange={handleChangeEmail}
+                />
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Telephone</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined"
+                  value={phone}
+                  onChange={handleChangePhone}
+                />
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Mot de passe actuel</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined"
+                  value={old_password}
+                  onChange={handleChangeOldPassword}
+                />
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Nouveau mot de passe</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined"
+                  value={new_password}
+                  onChange={handleChangeNewPassword}
+                />
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Confirmer le nouveau mot de passe</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined"
+                  value={confirm_password}
+                  onChange={handleChangeConfirmPassword}
+                />
               </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton   name={"Sauvegarder"} color={"1"}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClickSave = {onClickSave}/>
             </Grid>
           </Grid>
       </div>
+      <Toast state={state} msg={msg}/>
     </div>
   );
 };
 
-export default MyAccount;
+export default withRouter(MyAccount);

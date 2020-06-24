@@ -47,7 +47,11 @@ const useStyles = makeStyles(theme => ({
 
 const AddUser = (props) => {
   const classes = useStyles();
-  const cellList=[20, 50, 100, 200];
+  
+  const companiesList=[20, 50, 100, 200];
+  const buildingsList=[20, 50, 100, 200];
+  const permissionList = ['Editer', 'Voir', 'Refusé'];
+
   const [avatarurl, setAvatarUrl] = React.useState("");
   const [avatar, setAvatar] = React.useState(null);
   const [companies, setCompanies] = React.useState('');
@@ -127,7 +131,7 @@ const handleChangeUsersPermission = (val) => {
                         <MySelect 
                             color="gray" 
                             width="289px" 
-                            data={cellList} 
+                            data={companiesList} 
                             onChangeSelect={handleChangeCompanies}
                             value={companies}
                         />
@@ -140,7 +144,7 @@ const handleChangeUsersPermission = (val) => {
                         <MySelect 
                             color="gray" 
                             width="289px" 
-                            data={cellList} 
+                            data={buildingsList} 
                             onChangeSelect={handleChangeBuildings}
                             value={buildings}
                         />
@@ -224,7 +228,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeCompaniesPermission}
                         value={companiesPermission}
                     />
@@ -234,7 +238,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeManagersPermission}
                         value={managersPermission}
                     />
@@ -244,7 +248,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeBuildingsPermission}
                         value={buildingsPermission}
                     />
@@ -254,7 +258,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeOwnersPermission}
                         value={ownersPermission}
                     />
@@ -264,7 +268,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeOrdersPermission}
                         value={ordersPermission}
                     />
@@ -274,7 +278,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeProductsPermission}
                         value={productsPermission}
                     />
@@ -284,7 +288,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeDiscountCodesPermission}
                         value={discountCodesPermission}
                     />
@@ -294,7 +298,7 @@ const handleChangeUsersPermission = (val) => {
                     <MySelect 
                         color="gray" 
                         width="176px" 
-                        data={cellList} 
+                        data={permissionList} 
                         onChangeSelect={handleChangeUsersPermission}
                         value={usersPermission}
                     />

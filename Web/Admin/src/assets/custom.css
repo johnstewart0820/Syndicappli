@@ -22,20 +22,7 @@ body {
     padding: 0.5em;
     margin-bottom: 1px;
   }
-  
-  thead button.ascending::after {
-    content: '⯆';
-    color: '#9f9f9f';
-    display: inline-block;
-    margin-left: 1em;
-  }
-  
-  thead button.descending::after {
-    content: '⯅';
-    color: '#9f9f9f';
-    display: inline-block;
-    margin-left: 1em;
-  }
+
   
   tbody td {
     padding: 0.5em;

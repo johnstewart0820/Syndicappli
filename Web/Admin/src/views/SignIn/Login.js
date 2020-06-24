@@ -1,9 +1,11 @@
 import React from 'react';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
+import AdminService from './../../services/api.js';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,8 +43,55 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 15,
   }
 }));
-const Login = () => {
+const Login = (props) => {
   const classes = useStyles();
+  const {history} = props;
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const handleChangeEmail = (event) => {
+    setEmail(event.target.value);
+  }
+
+  const handleChangePassword = (event) => {
+    setPassword(event.target.value);
+  }
+
+  const handleClickLogin = () => {
+    var data={};
+    data['email'] = email;
+    data['password'] = password;
+    // setVisibleIndicator(true);
+    AdminService.login(data)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code != 200){
+          // if(response.data.status === 'Token is Expired') {
+          //   authService.logout();
+          //   history.push('/');
+          // }
+          console.log('error');
+        } else {
+          console.log('success');
+          localStorage.setItem("token", JSON.stringify(response.data.data.token));
+          history.push('/')
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+        // const resMessage =
+        //     (error.response &&
+        //       error.response.data &&
+        //       error.response.data.message) ||
+        //     error.message ||
+        //     error.toString();
+      }
+    );    
+  }
+
   const logo = {
     url: '/images/Login.png',
   };
@@ -66,14 +115,28 @@ const Login = () => {
               <Grid xs={1} item></Grid>
               <Grid  xs={10} item container direction="column" spacing={2}>
                 <Grid item><p style={{fontSize:20}}>Email</p></Grid>
-                <Grid item><TextField variant="outlined" fullWidth/></Grid>
+                <Grid item>
+                  <TextField 
+                    variant="outlined" 
+                    fullWidth
+                    value={email}
+                    onChange={handleChangeEmail}
+                  />
+                </Grid>
                 <Grid item><p style={{fontSize:20}}>Mot de passe</p></Grid>
-                <Grid item><TextField variant="outlined" fullWidth/></Grid>
+                <Grid item>
+                  <TextField 
+                    variant="outlined" 
+                    fullWidth
+                    value={password}
+                    onChange={handleChangePassword}
+                  />
+                </Grid>
               </Grid>
               <Grid xs={1} item></Grid>
             </Grid>
             <Grid item container justify="center">
-              <MyButton name={"Se connecter"} color="1"/>
+              <MyButton name={"Se connecter"} color="1" onLoginClick={handleClickLogin}/>
             </Grid>
         </Grid>
         <Grid item container xs={1} sm={2} md={4}></Grid>
@@ -94,4 +157,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withRouter(Login);

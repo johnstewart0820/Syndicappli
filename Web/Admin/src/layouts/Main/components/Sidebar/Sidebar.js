@@ -12,6 +12,7 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import HomeIcon from '@material-ui/icons/Home';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { Profile, SidebarNav, UpgradePlan } from './components';
 
@@ -96,6 +97,8 @@ const Sidebar = props => {
       open={open}
       variant={variant}
     >
+    <Scrollbars style={{ height: "100vh" }}>
+
       <div
         {...rest}
         className={clsx(classes.root, className)}
@@ -109,6 +112,8 @@ const Sidebar = props => {
         </div>
         <UpgradePlan />
       </div>
+    </Scrollbars>
+
     </Drawer>
   );
 };
