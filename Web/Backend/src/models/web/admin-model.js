@@ -99,7 +99,7 @@ function updateProfile(uid, data) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.USER + ' WHERE lastname like ? or firstname like ? or email like ? or phone = ?'
+      let query = 'SELECT * FROM ' + table.USER + ' WHERE lastname like ? or firstname like ? or email like ? or phone like ?'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -123,7 +123,36 @@ function getUserList(data) {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
-          resolve(rows)  
+          getCountUserList(data).then((data) => {
+              if (data) {
+                resolve({rows: rows, count: data}); 
+              } else {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+              }
+          })
+           
+        }
+      })
+    })
+  }
+
+  /**
+ * get count for user list for search filter
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCountUserList(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT count(*) count FROM ' + table.USER + ' WHERE lastname like ? or firstname like ? or email like ? or phone like ?'
+      search_key = '%' + data.search_key + '%'
+      
+      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(rows[0].count)  
         }
       })
     })

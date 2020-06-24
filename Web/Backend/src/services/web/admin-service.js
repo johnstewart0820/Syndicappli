@@ -85,13 +85,13 @@ function updateProfile(uid,data) {
  */
 function getUserList(uid, data) {
     return new Promise((resolve, reject) => {
-      adminWebModel.getUserList(data).then((data) => {
-        if (data) {
+      adminWebModel.getUserList(data).then((result) => {
+        if (result) {
           let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
             expiresIn: timer.TOKEN_EXPIRATION
           })
           
-          resolve({ code: code.OK, message: '', data: { 'token': token, 'userlist': data} })
+          resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(result.count / Number(data.row_count)), 'userlist': result.rows } })
         }
       }).catch((err) => {
         if (err.message === message.INTERNAL_SERVER_ERROR)
