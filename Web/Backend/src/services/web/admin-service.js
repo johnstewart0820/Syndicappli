@@ -20,7 +20,10 @@ var webService = {
   getProfile: getProfile,
   updateProfile: updateProfile,
   getUserList: getUserList,
-  getUser: getUser
+  getUser: getUser,
+  updateUser: updateUser,
+  getCompanyList: getCompanyList,
+  getBuildingList: getBuildingList,
 }
 
 
@@ -117,8 +120,12 @@ function getUser(uid, data) {
           let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
             expiresIn: timer.TOKEN_EXPIRATION
           })
+          if (result.buildings) {
+            resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  result.buildings} }})
+          } else {
+            resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  []} }})
+          }
           
-          resolve({ code: code.OK, message: '', data: { 'token': token,  'user': result } })
         }
       }).catch((err) => {
         if (err.message === message.INTERNAL_SERVER_ERROR)
@@ -129,5 +136,81 @@ function getUser(uid, data) {
     })
   }
 
+/**
+ * Function that update User data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function updateUser(uid, id, data) {
+    return new Promise((resolve, reject) => {
+      adminWebModel.updateUser(id, data).then((result) => {
+        if (result) {
+          let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+            expiresIn: timer.TOKEN_EXPIRATION
+          })
+          
+          resolve({ code: code.OK, message: '', data: { 'token': token } })
+        }
+      }).catch((err) => {
+        if (err.message === message.INTERNAL_SERVER_ERROR)
+          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+        else
+          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+      })
+    })
+  }
+
+/**
+ * Function that get company list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getCompanyList(uid, data) {
+    return new Promise((resolve, reject) => {
+        adminWebModel.getCompanyList(data).then((result) => {
+          if (result) {
+            let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+              expiresIn: timer.TOKEN_EXPIRATION
+            })
+            
+            resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(result.count / Number(data.row_count)), 'companylist': result.rows } })
+          }
+        }).catch((err) => {
+          if (err.message === message.INTERNAL_SERVER_ERROR)
+            reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+          else
+            reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+      })
+  }
   
+/**
+ * Function that get building list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getBuildingList(uid, data) {
+    return new Promise((resolve, reject) => {
+        adminWebModel.getBuildingList(data).then((result) => {
+          if (result) {
+            let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+              expiresIn: timer.TOKEN_EXPIRATION
+            })
+            
+            resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(result.count / Number(data.row_count)), 'buildinglist': result.rows } })
+          }
+        }).catch((err) => {
+          if (err.message === message.INTERNAL_SERVER_ERROR)
+            reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+          else
+            reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+    })
+  }
 module.exports = webService

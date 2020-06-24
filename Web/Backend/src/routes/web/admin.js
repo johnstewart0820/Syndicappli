@@ -13,7 +13,7 @@
 const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middleware/auth-middleware')
-const webService = require('../../services/web/admin-service')
+const adminService = require('../../services/web/admin-service')
 
 
 /** 
@@ -27,6 +27,19 @@ router.post('/profile', authMiddleware.checkToken, updateProfile)
  */
 router.post('/userList', authMiddleware.checkToken, getUserList)
 router.get('/user/:id', authMiddleware.checkToken, getUser)
+router.put('/user/:id', authMiddleware.checkToken, updateUser)
+
+/**
+ * company api
+ */
+router.post('/companyList', authMiddleware.checkToken, getCompanyList)
+
+/**
+ * building api
+ */
+router.post('/buildingList', authMiddleware.checkToken, getBuildingList)
+
+
 
 /**
  * Function that get profile data
@@ -39,7 +52,7 @@ router.get('/user/:id', authMiddleware.checkToken, getUser)
 function getProfile(req, res) {
     let userId = req.decoded.uid
   
-    webService.getProfile(userId).then((result) => {
+    adminService.getProfile(userId).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)
@@ -57,7 +70,7 @@ function getProfile(req, res) {
 function updateProfile(req, res) {
   let userId = req.decoded.uid
   let data = req.body;
-  webService.updateProfile(userId, data).then((result) => {
+  adminService.updateProfile(userId, data).then((result) => {
     res.json(result)
   }).catch((err) => {
     res.json(err)
@@ -75,7 +88,7 @@ function updateProfile(req, res) {
 function getUserList(req, res) {
     let userId = req.decoded.uid
     let data = req.body
-    webService.getUserList(userId, data).then((result) => {
+    adminService.getUserList(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)
@@ -94,7 +107,65 @@ function getUser(req, res) {
     
     let userId = req.decoded.uid
     let data = req.params.id
-    webService.getUser(userId, data).then((result) => {
+    adminService.getUser(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that update user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function updateUser(req, res) {
+    
+    let userId = req.decoded.uid
+    let id = req.params.id
+    let data = req.body
+    adminService.updateUser(userId, id, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that get company list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getCompanyList(req, res) {
+    
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.getCompanyList(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that get building list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getBuildingList(req, res) {
+    
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.getBuildingList(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)

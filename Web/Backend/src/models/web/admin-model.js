@@ -18,7 +18,10 @@ var adminModel = {
   getProfile: getProfile,
   updateProfile: updateProfile,
   getUserList: getUserList,
-  getUser: getProfile,
+  getUser: getUser,
+  updateUser: updateUser,
+  getCompanyList: getCompanyList,
+  getBuildingList: getBuildingList,
 }
 
 /**
@@ -30,7 +33,7 @@ var adminModel = {
  */
 function getProfile(uid) {
   return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM ' + table.USER + ' WHERE userID = ?'
+    let query = 'SELECT * FROM ' + table.USER + ' Left Join ' + table.COMPANIES + ' USING (companyID) WHERE userID = ?'
 
     db.query(query, [ uid ], (error, rows, fields) => {
       if (error) {
@@ -100,7 +103,7 @@ function updateProfile(uid, data) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and is_active = "true"'
+      let query = 'SELECT * FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and permission = "true"'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -137,7 +140,7 @@ function getUserList(data) {
     })
   }
 
-  /**
+/**
  * get count for user list for search filter
  *
  * @author  DongTuring <dong@turing.com>
@@ -146,7 +149,200 @@ function getUserList(data) {
  */
 function getCountUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and is_active = "true"'
+      let query = 'SELECT count(*) count FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and permission = "true"'
+      search_key = '%' + data.search_key + '%'
+      
+      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(rows[0].count)  
+        }
+      })
+    })
+  }
+
+/**
+ * get user data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getUser(uid) {
+    return new Promise((resolve, reject) => {
+      getProfile(uid).then((profile) => {
+        let query = 'SELECT buildingID, building_name FROM ' + table.USER + ' Left Join ' + table.BUILDING_MANAGER + ' USING (userID) Left Join ' + table.BUILDING + ' USING (buildingID) '
+                        + 'WHERE userID = ?'
+        db.query(query, [ uid ], (error, rows, fields) => {
+            if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if (rows[0].buildingID)
+                    resolve({profile: profile, buildings: rows})
+                else
+                    resolve({profile: profile})
+            }
+          })
+      })
+    })
+  }
+
+/**
+ * update user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateUser(id, data) {
+    return new Promise((resolve, reject) => {
+      let query = 'UPDATE ' + table.USER + ' SET  (lastname = ?, firstname = ?, email = ?, phone = ?) and permission = "true"'
+      search_key = '%' + data.search_key + '%'
+      
+      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(rows[0].count)  
+        }
+      })
+    })
+  }
+
+/**
+ * get company list with filter key
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCompanyList(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT * FROM ' + table.COMPANIES + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      sort_column = Number(data.sort_column);
+      row_count = Number(data.row_count);
+      page_num = Number(data.page_num);
+
+      search_key = '%' + data.search_key + '%'
+      if (sort_column === -1)
+        query += ' order by companyID desc';
+      else {
+          if (sort_column === 0)
+            query += ' order by company_name ';
+          else if (sort_column === 1)
+            query += ' order by company_address ';
+          else if (sort_column === 2)
+            query += ' order by company_email ';
+          else if (sort_column === 3)
+            query += ' order by company_phone ';
+          else if (sort_column === 4)
+            query += ' order by company_manager_count ';
+          else if (sort_column === 5)
+            query += ' order by company_member_count ';
+            
+          query += data.sort_method;
+      }
+      query += ' limit ' + page_num * row_count + ',' + row_count
+      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          getCountCompanyList(data).then((data) => {
+              if (data) {
+                resolve({rows: rows, count: data}); 
+              } else {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+              }
+          })
+           
+        }
+      })
+    })
+  }
+
+/**
+ * get count for company list for search filter
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCountCompanyList(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT count(*) count FROM ' + table.COMPANIES + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      search_key = '%' + data.search_key + '%'
+      
+      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(rows[0].count)  
+        }
+      })
+    })
+  }
+
+  /**
+ * get building list with filter key
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingList(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT * FROM ' + table.COMPANY + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      sort_column = Number(data.sort_column);
+      row_count = Number(data.row_count);
+      page_num = Number(data.page_num);
+      search_key = '%' + data.search_key + '%'
+      if (sort_column === -1)
+        query += ' order by companyID desc';
+      else {
+          if (sort_column === 0)
+            query += ' order by company_name ';
+          else if (sort_column === 1)
+            query += ' order by company_address ';
+          else if (sort_column === 2)
+            query += ' order by company_email ';
+          else if (sort_column === 3)
+            query += ' order by company_phone ';
+          else if (sort_column === 4)
+            query += ' order by company_manager_count ';
+          else if (sort_column === 5)
+            query += ' order by company_member_count ';
+            
+          query += data.sort_method;
+      }
+      query += ' limit ' + page_num * row_count + ',' + row_count
+      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          getCountCompanyList(data).then((data) => {
+              if (data) {
+                resolve({rows: rows, count: data}); 
+              } else {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+              }
+          })
+           
+        }
+      })
+    })
+  }
+
+/**
+ * get count for building list for search filter
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCountBuildingList(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT count(*) count FROM ' + table.COMPANY + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
       search_key = '%' + data.search_key + '%'
       
       db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {

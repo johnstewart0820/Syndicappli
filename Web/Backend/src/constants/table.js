@@ -13,7 +13,10 @@
  * Database table constants
  */
 const tables = {
-  USER : 'user'
+  USER : 'user',
+  COMPANIES: 'companies',
+  BUILDING_MANAGER: 'building_manager',
+  BUILDING: 'building',
 }
 
 module.exports = tables
