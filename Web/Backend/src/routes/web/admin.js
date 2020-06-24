@@ -28,6 +28,7 @@ router.post('/profile', authMiddleware.checkToken, updateProfile)
 router.post('/userList', authMiddleware.checkToken, getUserList)
 router.get('/user/:id', authMiddleware.checkToken, getUser)
 router.put('/user/:id', authMiddleware.checkToken, updateUser)
+router.delete('/user/:id', authMiddleware.checkToken, deleteUser)
 
 /**
  * company api
@@ -130,6 +131,24 @@ function updateUser(req, res) {
     let id = req.params.id
     let data = req.body
     adminService.updateUser(userId, id, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that get user list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function deleteUser(req, res) {
+    let userId = req.decoded.uid
+    let id = req.params.id
+    adminService.deleteUser(userId, id).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)

@@ -20,6 +20,7 @@ var adminModel = {
   getUserList: getUserList,
   getUser: getUser,
   updateUser: updateUser,
+  deleteUser: deleteUser,
   getCompanyList: getCompanyList,
   getAllCompanyList: getAllCompanyList,
   getBuildingList: getBuildingList,
@@ -216,6 +217,27 @@ function updateUser(id, data) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
           resolve(rows[0].count)  
+        }
+      })
+    })
+  }
+
+/**
+ * delete user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteUser(id) {
+    return new Promise((resolve, reject) => {
+      let query = 'UPDATE ' + table.USER + ' SET  permission = "false" where userID = ?'
+      
+      db.query(query, [ id ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(id)  
         }
       })
     })

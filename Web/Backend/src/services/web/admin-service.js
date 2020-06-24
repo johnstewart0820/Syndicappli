@@ -22,6 +22,7 @@ var webService = {
   getUserList: getUserList,
   getUser: getUser,
   updateUser: updateUser,
+  deleteUser: deleteUser,
   getCompanyList: getCompanyList,
   getAllCompanyList: getAllCompanyList,
   getBuildingList: getBuildingList,
@@ -144,6 +145,32 @@ function getUser(uid, data) {
 function updateUser(uid, id, data) {
     return new Promise((resolve, reject) => {
       adminWebModel.updateUser(id, data).then((result) => {
+        if (result) {
+          let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+            expiresIn: timer.TOKEN_EXPIRATION
+          })
+          
+          resolve({ code: code.OK, message: '', data: { 'token': token } })
+        }
+      }).catch((err) => {
+        if (err.message === message.INTERNAL_SERVER_ERROR)
+          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+        else
+          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+      })
+    })
+  }
+
+/**
+ * Function that delete User data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function deleteUser(uid, id) {
+    return new Promise((resolve, reject) => {
+      adminWebModel.deleteUser(id).then((result) => {
         if (result) {
           let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
             expiresIn: timer.TOKEN_EXPIRATION
