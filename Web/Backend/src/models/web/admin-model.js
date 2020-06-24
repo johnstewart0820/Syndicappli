@@ -16,7 +16,8 @@ var table  = require('../../constants/table')
 
 var adminModel = {
   getProfile: getProfile,
-  updateProfile: updateProfile
+  updateProfile: updateProfile,
+  getUserList: getUserList,
 }
 
 /**
@@ -89,4 +90,42 @@ function updateProfile(uid, data) {
   })
 }
 
+/**
+ * get user list with filter key
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getUserList(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT * FROM ' + table.USER + ' WHERE lastname like ? or firstname like ? or email like ? or phone = ?'
+      sort_column = Number(data.sort_column);
+      row_count = Number(data.row_count);
+      page_num = Number(data.page_num);
+      search_key = '%' + data.search_key + '%'
+      if (sort_column === -1)
+        query += ' order by userID desc';
+      else {
+          if (sort_column === 0)
+            query += ' order by lastname ';
+          else if (sort_column === 1)
+            query += ' order by firstname ';
+          else if (sort_column === 2)
+            query += ' order by email ';
+          else if (sort_column === 3)
+            query += ' order by phone ';
+         
+          query += data.sort_method;
+      }
+      query += ' limit ' + page_num * row_count + ',' + row_count
+      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(rows)  
+        }
+      })
+    })
+  }
 module.exports = adminModel

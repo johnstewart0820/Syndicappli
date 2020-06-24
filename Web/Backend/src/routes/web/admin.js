@@ -23,6 +23,11 @@ router.get('/profile', authMiddleware.checkToken, getProfile)
 router.post('/profile', authMiddleware.checkToken, updateProfile)
 
 /**
+ * user api
+ */
+router.get('/userList', authMiddleware.checkToken, getUserList)
+
+/**
  * Function that get profile data
  *
  * @author  DongTuring <dong@turing.com>
@@ -58,5 +63,22 @@ function updateProfile(req, res) {
   })
 }
 
+/**
+ * Function that get user list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getUserList(req, res) {
+    let userId = req.decoded.uid
+    let data = req.body
+    webService.getUserList(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
 
 module.exports = router

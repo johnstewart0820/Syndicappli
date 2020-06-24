@@ -19,6 +19,7 @@ var timer  = require('../../constants/timer')
 var webService = {
   getProfile: getProfile,
   updateProfile: updateProfile,
+  getUserList: getUserList,
 }
 
 
@@ -75,4 +76,31 @@ function updateProfile(uid,data) {
   })
 }
 
+/**
+ * Function that get User List with filter key
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getUserList(uid, data) {
+    return new Promise((resolve, reject) => {
+      adminWebModel.getUserList(data).then((data) => {
+        if (data) {
+          let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+            expiresIn: timer.TOKEN_EXPIRATION
+          })
+          
+          resolve({ code: code.OK, message: '', data: { 'token': token, 'userlist': data} })
+        }
+      }).catch((err) => {
+        if (err.message === message.INTERNAL_SERVER_ERROR)
+          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+        else
+          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+      })
+    })
+  }
+
+  
 module.exports = webService
