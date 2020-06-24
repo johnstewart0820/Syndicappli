@@ -15,7 +15,8 @@ var bcrypt = require('bcrypt-nodejs')
 var table  = require('../constants/table')
 
 var webModel = {
-  getProfile: getProfile
+  getProfile: getProfile,
+  updateProfile: updateProfile
 }
 
 /**
@@ -36,6 +37,55 @@ function getProfile(uid) {
         resolve(rows[0])  
       }
     })
+  })
+}
+
+/**
+ * update profile data for user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateProfile(uid, data) {
+  return new Promise((resolve, reject) => {
+    if (data.new_password === "" || data.new_password === undefined) {
+      let query = 'UPDATE ' + table.USER + ' SET lastname = ?, firstname = ?, email = ?, phone = ? WHERE userID = ?'
+      db.query(query, [ data.lastname, data.firstname, data.email, data.phone, uid], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(uid)  
+        }
+      })
+    } else {
+      getProfile(uid).then((profile) => {
+        if (profile) {
+          let hash_database_old_password = profile.userpasswd
+          let hash_new_password = bcrypt.hashSync(data.new_password)
+          bcrypt.compare(data.old_password, hash_database_old_password, function(error, result) {
+            if (error) {
+              reject({ message: message.INVALID_PASSWORD })
+            } else {
+              if (result) {
+                let query = 'UPDATE ' + table.USER + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, userpasswd = ? WHERE userID = ?'
+                db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, uid ], (error, rows, fields) => {
+                  if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                  } else {
+                    resolve(profile.userID)  
+                  }
+                })          
+              } else {
+                reject({ message: message.INVALID_PASSWORD })
+              }
+            }                
+          })
+        } else {
+          reject({ message: message.INTERNAL_SERVER_ERROR})
+        }
+      })
+    }
   })
 }
 

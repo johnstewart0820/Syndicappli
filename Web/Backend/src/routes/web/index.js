@@ -34,14 +34,13 @@ router.use('/manager', apiManagerRouter)
 router.use('/owner', apiOwnerRouter)
 
 /** 
- * account api
+ * profile api
  */
 router.get('/profile', authMiddleware.checkToken, getProfile)
-
-
+router.post('/profile', authMiddleware.checkToken, updateProfile)
 
 /**
- * Function that check user login status with email and password
+ * Function that get profile data
  *
  * @author  DongTuring <dong@turing.com>
  * @param   object req
@@ -56,5 +55,25 @@ function getProfile(req, res) {
     }).catch((err) => {
       res.json(err)
     })
-  }
+}
+
+/**
+ * Function that update profile data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function updateProfile(req, res) {
+  let userId = req.decoded.uid
+  let data = req.body;
+  webService.updateProfile(userId, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
+}
+
+
 module.exports = router
