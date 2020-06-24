@@ -9,12 +9,12 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var webModel = require('../models/web-model')
+var adminWebModel = require('../../models/web/admin-model')
 var jwt = require('jsonwebtoken')
-var message = require('../constants/message')
-var code = require('../constants/code')
-var key = require('../config/key-config')
-var timer  = require('../constants/timer')
+var message = require('../../constants/message')
+var code = require('../../constants/code')
+var key = require('../../config/key-config')
+var timer  = require('../../constants/timer')
 
 var webService = {
   getProfile: getProfile,
@@ -31,7 +31,7 @@ var webService = {
  */
 function getProfile(uid) {
   return new Promise((resolve, reject) => {
-    webModel.getProfile(uid).then((data) => {
+    adminWebModel.getProfile(uid).then((data) => {
       if (data) {
         let userId = data.userID
         let token = jwt.sign({ uid: userId }, key.JWT_SECRET_KEY, {
@@ -58,7 +58,7 @@ function getProfile(uid) {
  */
 function updateProfile(uid,data) {
   return new Promise((resolve, reject) => {
-    webModel.updateProfile(uid, data).then((data) => {
+    adminWebModel.updateProfile(uid, data).then((data) => {
       if (data) {
         let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
           expiresIn: timer.TOKEN_EXPIRATION

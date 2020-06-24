@@ -9,12 +9,12 @@
  * @link      https://turing.ly/
  */
 
-var db = require('../database/database')
-var message  = require('../constants/message')
+var db = require('../../database/database')
+var message  = require('../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
-var table  = require('../constants/table')
+var table  = require('../../constants/table')
 
-var webModel = {
+var adminModel = {
   getProfile: getProfile,
   updateProfile: updateProfile
 }
@@ -89,4 +89,4 @@ function updateProfile(uid, data) {
   })
 }
 
-module.exports = webModel
+module.exports = adminModel
