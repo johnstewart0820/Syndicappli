@@ -20,6 +20,7 @@ var webService = {
   getProfile: getProfile,
   updateProfile: updateProfile,
   getUserList: getUserList,
+  getUser: getUser
 }
 
 
@@ -92,6 +93,32 @@ function getUserList(uid, data) {
           })
           
           resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(result.count / Number(data.row_count)), 'userlist': result.rows } })
+        }
+      }).catch((err) => {
+        if (err.message === message.INTERNAL_SERVER_ERROR)
+          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+        else
+          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+      })
+    })
+  }
+
+/**
+ * Function that get User data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getUser(uid, data) {
+    return new Promise((resolve, reject) => {
+      adminWebModel.getUser(data).then((result) => {
+        if (result) {
+          let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+            expiresIn: timer.TOKEN_EXPIRATION
+          })
+          
+          resolve({ code: code.OK, message: '', data: { 'token': token,  'user': result } })
         }
       }).catch((err) => {
         if (err.message === message.INTERNAL_SERVER_ERROR)

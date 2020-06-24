@@ -18,6 +18,7 @@ var adminModel = {
   getProfile: getProfile,
   updateProfile: updateProfile,
   getUserList: getUserList,
+  getUser: getProfile,
 }
 
 /**

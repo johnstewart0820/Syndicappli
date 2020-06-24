@@ -25,7 +25,8 @@ router.post('/profile', authMiddleware.checkToken, updateProfile)
 /**
  * user api
  */
-router.get('/userList', authMiddleware.checkToken, getUserList)
+router.post('/userList', authMiddleware.checkToken, getUserList)
+router.get('/user/:id', authMiddleware.checkToken, getUser)
 
 /**
  * Function that get profile data
@@ -75,6 +76,25 @@ function getUserList(req, res) {
     let userId = req.decoded.uid
     let data = req.body
     webService.getUserList(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that get user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getUser(req, res) {
+    
+    let userId = req.decoded.uid
+    let data = req.params.id
+    webService.getUser(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)
