@@ -29,7 +29,7 @@ var authModel = {
  */
 function login(authData) {
   return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM ' + table.USER + ' WHERE email = ? and is_active = 1'
+    let query = 'SELECT * FROM ' + table.USER + ' WHERE email = ? and is_active = "true"'
 
     db.query(query, [ authData.email ], (error, rows, fields) => {
       if (error) {

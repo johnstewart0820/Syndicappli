@@ -99,7 +99,7 @@ function updateProfile(uid, data) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.USER + ' WHERE lastname like ? or firstname like ? or email like ? or phone like ?'
+      let query = 'SELECT * FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and is_active = "true"'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -145,7 +145,7 @@ function getUserList(data) {
  */
 function getCountUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.USER + ' WHERE lastname like ? or firstname like ? or email like ? or phone like ?'
+      let query = 'SELECT count(*) count FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and is_active = "true"'
       search_key = '%' + data.search_key + '%'
       
       db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
