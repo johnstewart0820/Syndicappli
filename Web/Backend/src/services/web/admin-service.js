@@ -23,8 +23,10 @@ var webService = {
   getUser: getUser,
   updateUser: updateUser,
   getCompanyList: getCompanyList,
+  getAllCompanyList: getAllCompanyList,
   getBuildingList: getBuildingList,
-  getBuildingListByCompany: getBuildingListByCompany
+  getBuildingListByCompany: getBuildingListByCompany,
+  getBuildingListByUserAndCompany: getBuildingListByUserAndCompany
 }
 
 
@@ -121,12 +123,7 @@ function getUser(uid, data) {
           let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
             expiresIn: timer.TOKEN_EXPIRATION
           })
-          if (result.buildings) {
-            resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  result.buildings} }})
-          } else {
-            resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  []} }})
-          }
-          
+          resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  result.buildings} }})
         }
       }).catch((err) => {
         if (err.message === message.INTERNAL_SERVER_ERROR)
@@ -190,6 +187,32 @@ function getCompanyList(uid, data) {
   }
   
 /**
+ * Function that get company list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getAllCompanyList(uid, data) {
+    return new Promise((resolve, reject) => {
+        adminWebModel.getAllCompanyList(data).then((result) => {
+          if (result) {
+            let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+              expiresIn: timer.TOKEN_EXPIRATION
+            })
+            
+            resolve({ code: code.OK, message: '', data: { 'token': token, 'companylist': result } })
+          }
+        }).catch((err) => {
+          if (err.message === message.INTERNAL_SERVER_ERROR)
+            reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+          else
+            reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+      })
+  }
+
+/**
  * Function that get building list
  *
  * @author  DongTuring <dong@turing.com>
@@ -215,7 +238,7 @@ function getBuildingList(uid, data) {
     })
   }
 
-  /**
+/**
  * Function that get building list by company
  *
  * @author  DongTuring <dong@turing.com>
@@ -225,6 +248,32 @@ function getBuildingList(uid, data) {
 function getBuildingListByCompany(uid, data) {
     return new Promise((resolve, reject) => {
         adminWebModel.getBuildingListByCompany(data.companyID).then((result) => {
+          if (result) {
+            let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+              expiresIn: timer.TOKEN_EXPIRATION
+            })
+            
+            resolve({ code: code.OK, message: '', data: { 'token': token, 'buildinglist': result } })
+          }
+        }).catch((err) => {
+          if (err.message === message.INTERNAL_SERVER_ERROR)
+            reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+          else
+            reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+    })
+  }
+
+/**
+ * Function that get building list by company and user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getBuildingListByUserAndCompany(uid, data) {
+    return new Promise((resolve, reject) => {
+        adminWebModel.getBuildingListByUserAndCompany(data).then((result) => {
           if (result) {
             let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
               expiresIn: timer.TOKEN_EXPIRATION

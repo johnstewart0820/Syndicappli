@@ -33,13 +33,14 @@ router.put('/user/:id', authMiddleware.checkToken, updateUser)
  * company api
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
+router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 
 /**
  * building api
  */
 router.post('/buildingList', authMiddleware.checkToken, getBuildingList)
 router.post('/buildingListByCompany', authMiddleware.checkToken, getBuildingListByCompany)
-
+router.post('/buildingListByUserAndCompany', authMiddleware.checkToken, getBuildingListByUserAndCompany)
 
 
 /**
@@ -155,6 +156,25 @@ function getCompanyList(req, res) {
 }
 
 /**
+ * Function that get all company list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getAllCompanyList(req, res) {
+    
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.getAllCompanyList(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
  * Function that get building list
  *
  * @author  DongTuring <dong@turing.com>
@@ -185,6 +205,24 @@ function getBuildingListByCompany(req, res) {
     let userId = req.decoded.uid
     let data = req.body
     adminService.getBuildingListByCompany(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that get building list by user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getBuildingListByUserAndCompany(req, res) {
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.getBuildingListByUserAndCompany(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)

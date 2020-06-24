@@ -21,8 +21,10 @@ var adminModel = {
   getUser: getUser,
   updateUser: updateUser,
   getCompanyList: getCompanyList,
+  getAllCompanyList: getAllCompanyList,
   getBuildingList: getBuildingList,
-  getBuildingListByCompany: getBuildingListByCompany
+  getBuildingListByCompany: getBuildingListByCompany,
+  getBuildingListByUserAndCompany: getBuildingListByUserAndCompany,
 }
 
 /**
@@ -174,15 +176,23 @@ function getUser(uid) {
     return new Promise((resolve, reject) => {
       getProfile(uid).then((profile) => {
         let query = 'SELECT buildingID, building_name FROM ' + table.USER + ' Left Join ' + table.BUILDING_MANAGER + ' USING (userID) Left Join ' + table.BUILDING + ' USING (buildingID) '
-                        + 'WHERE userID = ?'
+                        + 'WHERE userID = ? and ' + table.BUILDING + '.permission = "true"'
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
               reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                if (rows[0].buildingID)
-                    resolve({profile: profile, buildings: rows})
-                else
-                    resolve({profile: profile})
+                getBuildingListByCompany(profile.companyID).then((buildings) => {
+                    for (let i = 0; i < buildings.length; i ++) {
+                        buildings[i].selected = false;
+                    }
+                    for (let i = 0; i < buildings.length; i ++) {
+                        for (let j = 0; j < rows.length; j ++) {
+                            if (buildings[i].buildingID === rows[j].buildingID)
+                                buildings[i].selected = true;
+                        }
+                    }
+                    resolve({profile: profile, buildings: buildings})
+                })
             }
           })
       })
@@ -261,6 +271,28 @@ function getCompanyList(data) {
       })
     })
   }
+
+  /**
+ * get all company list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getAllCompanyList(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT * FROM ' + table.COMPANIES + ' WHERE permission = "true"'
+      
+      db.query(query, (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+            resolve(rows);
+        }
+      })
+    })
+  }
+
 
 /**
  * get count for company list for search filter
@@ -356,7 +388,7 @@ function getCountBuildingList(data) {
     })
   }
 
-  /**
+/**
  * get count for building list for search filter
  *
  * @author  DongTuring <dong@turing.com>
@@ -365,7 +397,7 @@ function getCountBuildingList(data) {
  */
 function getBuildingListByCompany(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.BUILDING + ' WHERE companyID = ?'
+      let query = 'SELECT * FROM ' + table.BUILDING + ' WHERE companyID = ? and permission = "true"'
       
       db.query(query, [ data ], (error, rows, fields) => {
         if (error) {
@@ -376,4 +408,37 @@ function getBuildingListByCompany(data) {
       })
     })
   }
+
+/**
+ * get count for building list for search filter
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingListByUserAndCompany(data) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT buildingID, building_name FROM ' + table.USER + ' Left Join ' + table.BUILDING_MANAGER + ' USING (userID) Left Join ' + table.BUILDING + ' USING (buildingID) '
+        + 'WHERE userID = ? and ' + table.BUILDING + '.permission = "true"'
+        db.query(query, [ data.userID ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                getBuildingListByCompany(data.companyID).then((buildings) => {
+                    for (let i = 0; i < buildings.length; i ++) {
+                        buildings[i].selected = false;
+                    }
+                    for (let i = 0; i < buildings.length; i ++) {
+                        for (let j = 0; j < rows.length; j ++) {
+                            if (buildings[i].buildingID === rows[j].buildingID)
+                                buildings[i].selected = true;
+                        }
+                    }
+                    resolve(buildings)
+                })
+            }
+        })
+    })
+  }
+
 module.exports = adminModel
