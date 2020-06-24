@@ -38,6 +38,7 @@ router.post('/companyList', authMiddleware.checkToken, getCompanyList)
  * building api
  */
 router.post('/buildingList', authMiddleware.checkToken, getBuildingList)
+router.post('/buildingListByCompany', authMiddleware.checkToken, getBuildingListByCompany)
 
 
 
@@ -166,6 +167,24 @@ function getBuildingList(req, res) {
     let userId = req.decoded.uid
     let data = req.body
     adminService.getBuildingList(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that get building list by company
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getBuildingListByCompany(req, res) {
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.getBuildingListByCompany(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)

@@ -22,6 +22,7 @@ var adminModel = {
   updateUser: updateUser,
   getCompanyList: getCompanyList,
   getBuildingList: getBuildingList,
+  getBuildingListByCompany: getBuildingListByCompany
 }
 
 /**
@@ -292,7 +293,7 @@ function getCountCompanyList(data) {
  */
 function getBuildingList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.COMPANY + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      let query = 'SELECT * FROM ' + table.BUILDING + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -320,7 +321,7 @@ function getBuildingList(data) {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
-          getCountCompanyList(data).then((data) => {
+            getCountBuildingList(data).then((data) => {
               if (data) {
                 resolve({rows: rows, count: data}); 
               } else {
@@ -342,7 +343,7 @@ function getBuildingList(data) {
  */
 function getCountBuildingList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.COMPANY + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      let query = 'SELECT count(*) count FROM ' + table.BUILDING + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
       search_key = '%' + data.search_key + '%'
       
       db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
@@ -350,6 +351,27 @@ function getCountBuildingList(data) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
           resolve(rows[0].count)  
+        }
+      })
+    })
+  }
+
+  /**
+ * get count for building list for search filter
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingListByCompany(data) {
+    return new Promise((resolve, reject) => {
+      let query = 'SELECT * FROM ' + table.BUILDING + ' WHERE companyID = ?'
+      
+      db.query(query, [ data ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(rows)  
         }
       })
     })

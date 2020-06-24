@@ -24,6 +24,7 @@ var webService = {
   updateUser: updateUser,
   getCompanyList: getCompanyList,
   getBuildingList: getBuildingList,
+  getBuildingListByCompany: getBuildingListByCompany
 }
 
 
@@ -213,4 +214,31 @@ function getBuildingList(uid, data) {
         })
     })
   }
+
+  /**
+ * Function that get building list by company
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getBuildingListByCompany(uid, data) {
+    return new Promise((resolve, reject) => {
+        adminWebModel.getBuildingListByCompany(data.companyID).then((result) => {
+          if (result) {
+            let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+              expiresIn: timer.TOKEN_EXPIRATION
+            })
+            
+            resolve({ code: code.OK, message: '', data: { 'token': token, 'buildinglist': result } })
+          }
+        }).catch((err) => {
+          if (err.message === message.INTERNAL_SERVER_ERROR)
+            reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+          else
+            reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+    })
+  }
+
 module.exports = webService
