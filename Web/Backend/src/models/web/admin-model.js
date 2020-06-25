@@ -38,7 +38,7 @@ var adminModel = {
  */
 function getProfile(uid) {
   return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE adminID = ? and status = "active"'
+    let query = 'SELECT * FROM ' + table.ADMIN + ' Left Join ' + table.ADMIN_ROLE + ' Using (adminID) WHERE adminID = ? and status = "active"'
 
     db.query(query, [ uid ], (error, rows, fields) => {
       if (error) {
@@ -131,7 +131,7 @@ function updateProfile(uid, data, file_name) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and permission = "true"'
+      let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and status = "active"'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -177,7 +177,7 @@ function getUserList(data) {
  */
 function getCountUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.USER + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and permission = "true"'
+      let query = 'SELECT count(*) count FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and status = "active"'
       search_key = '%' + data.search_key + '%'
       
       db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {

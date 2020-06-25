@@ -14,6 +14,7 @@
  */
 const tables = {
   ADMIN : 'admin',
+  ADMIN_ROLE: 'admin_role',
   COMPANIES: 'companies',
   BUILDING_MANAGER: 'building_manager',
   BUILDING: 'building',
