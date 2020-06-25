@@ -29,19 +29,19 @@ var authModel = {
  */
 function login(authData) {
   return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM ' + table.USER + ' WHERE email = ? and permission = "true"'
+    let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE email = ? and status = "active"'
 
     db.query(query, [ authData.email ], (error, rows, fields) => {
       if (error) {
         reject({ message: message.INTERNAL_SERVER_ERROR })
       } else {
         if (rows.length > 0) {
-          bcrypt.compare(authData.password, rows[0].userpasswd, function(error, result) {
+          bcrypt.compare(authData.password, rows[0].password, function(error, result) {
             if (error) {
               reject({ message: message.INVALID_PASSWORD })
             } else {
               if (result) {
-                resolve(rows[0].userID)  
+                resolve(rows[0].adminID)  
               } else {
                 reject({ message: message.INVALID_PASSWORD })
               }

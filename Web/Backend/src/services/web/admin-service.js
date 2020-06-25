@@ -20,6 +20,7 @@ var webService = {
   getProfile: getProfile,
   updateProfile: updateProfile,
   getUserList: getUserList,
+  createUser: createUser,
   getUser: getUser,
   updateUser: updateUser,
   deleteUser: deleteUser,
@@ -65,9 +66,9 @@ function getProfile(uid) {
  * @param   object authData
  * @return  json 
  */
-function updateProfile(uid,data) {
+function updateProfile(uid, data, file_name) {
   return new Promise((resolve, reject) => {
-    adminWebModel.updateProfile(uid, data).then((data) => {
+    adminWebModel.updateProfile(uid, data, file_name).then((data) => {
       if (data) {
         let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
           expiresIn: timer.TOKEN_EXPIRATION
@@ -100,6 +101,31 @@ function getUserList(uid, data) {
           })
           
           resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(result.count / Number(data.row_count)), 'userlist': result.rows } })
+        }
+      }).catch((err) => {
+        if (err.message === message.INTERNAL_SERVER_ERROR)
+          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+        else
+          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+      })
+    })
+  }
+
+/**
+ * Function that create User data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function createUser(uid, data) {
+    return new Promise((resolve, reject) => {
+      adminWebModel.createUser(data).then((result) => {
+        if (result) {
+          let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+            expiresIn: timer.TOKEN_EXPIRATION
+          })
+          resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  result.buildings} }})
         }
       }).catch((err) => {
         if (err.message === message.INTERNAL_SERVER_ERROR)

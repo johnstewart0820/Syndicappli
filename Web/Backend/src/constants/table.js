@@ -13,7 +13,7 @@
  * Database table constants
  */
 const tables = {
-  USER : 'user',
+  ADMIN : 'admin',
   COMPANIES: 'companies',
   BUILDING_MANAGER: 'building_manager',
   BUILDING: 'building',

@@ -11,6 +11,7 @@
  */
 
 const express = require('express')
+
 const router = express.Router()
 const authMiddleware = require('../../middleware/auth-middleware')
 const adminService = require('../../services/web/admin-service')
@@ -26,6 +27,7 @@ router.post('/profile', authMiddleware.checkToken, updateProfile)
  * user api
  */
 router.post('/userList', authMiddleware.checkToken, getUserList)
+router.post('/user', authMiddleware.checkToken, createUser)
 router.get('/user/:id', authMiddleware.checkToken, getUser)
 router.put('/user/:id', authMiddleware.checkToken, updateUser)
 router.delete('/user/:id', authMiddleware.checkToken, deleteUser)
@@ -70,14 +72,27 @@ function getProfile(req, res) {
  * @param   object res
  * @return  json 
  */
+const formidable = require('formidable');
+
 function updateProfile(req, res) {
-  let userId = req.decoded.uid
-  let data = req.body;
-  adminService.updateProfile(userId, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+    var form = new formidable.IncomingForm();
+    let file_name = "";
+    let userId = req.decoded.uid
+    form.parse(req, function (err, fields, files) {
+        adminService.updateProfile(userId, fields, file_name).then((result)=>{
+            res.json(result)
+        }).catch((err) => {
+            res.json(err)
+        });
+    });
+
+    form.on('fileBegin', function (name, file){
+        file_name = Date.now() + '.jpg';
+        file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
+    });
+
+    form.on('file', function (name, file){
+    });
 }
 
 /**
@@ -92,6 +107,25 @@ function getUserList(req, res) {
     let userId = req.decoded.uid
     let data = req.body
     adminService.getUserList(userId, data).then((result) => {
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    })
+}
+
+/**
+ * Function that get user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function createUser(req, res) {
+    
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.createUser(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)

@@ -18,6 +18,7 @@ var adminModel = {
   getProfile: getProfile,
   updateProfile: updateProfile,
   getUserList: getUserList,
+  createUser: createUser,
   getUser: getUser,
   updateUser: updateUser,
   deleteUser: deleteUser,
@@ -37,7 +38,7 @@ var adminModel = {
  */
 function getProfile(uid) {
   return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM ' + table.USER + ' Left Join ' + table.COMPANIES + ' USING (companyID) WHERE userID = ?'
+    let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE adminID = ? and status = "active"'
 
     db.query(query, [ uid ], (error, rows, fields) => {
       if (error) {
@@ -56,35 +57,58 @@ function getProfile(uid) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function updateProfile(uid, data) {
+function updateProfile(uid, data, file_name) {
   return new Promise((resolve, reject) => {
     if (data.new_password === "" || data.new_password === undefined) {
-      let query = 'UPDATE ' + table.USER + ' SET lastname = ?, firstname = ?, email = ?, phone = ? WHERE userID = ?'
-      db.query(query, [ data.lastname, data.firstname, data.email, data.phone, uid], (error, rows, fields) => {
-        if (error) {
-          reject({ message: message.INTERNAL_SERVER_ERROR })
+        if (file_name === "") {
+            let query = 'UPDATE ' + table.ADMIN + ' SET lastname = ?, firstname = ?, email = ?, phone = ? WHERE adminID = ?'
+            db.query(query, [ data.lastname, data.firstname, data.email, data.phone, uid], (error, rows, fields) => {
+              if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+              } else {
+                resolve(uid)  
+              }
+            })            
         } else {
-          resolve(uid)  
+            let query = 'UPDATE ' + table.ADMIN + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, photo_url = ? WHERE adminID = ?'
+            db.query(query, [ data.lastname, data.firstname, data.email, data.phone, file_name, uid], (error, rows, fields) => {
+              if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+              } else {
+                resolve(uid)  
+              }
+            })
         }
-      })
+
     } else {
       getProfile(uid).then((profile) => {
         if (profile) {
-          let hash_database_old_password = profile.userpasswd
+          let hash_database_old_password = profile.password
           let hash_new_password = bcrypt.hashSync(data.new_password)
           bcrypt.compare(data.old_password, hash_database_old_password, function(error, result) {
             if (error) {
               reject({ message: message.INVALID_PASSWORD })
             } else {
               if (result) {
-                let query = 'UPDATE ' + table.USER + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, userpasswd = ? WHERE userID = ?'
-                db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, uid ], (error, rows, fields) => {
-                  if (error) {
-                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                  if (file_name === "") {
+                    let query = 'UPDATE ' + table.ADMIN + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, password = ? WHERE adminID = ?'
+                    db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, file_name, uid ], (error, rows, fields) => {
+                      if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                      } else {
+                        resolve(profile.adminID)  
+                      }
+                    })
                   } else {
-                    resolve(profile.userID)  
-                  }
-                })          
+                    let query = 'UPDATE ' + table.ADMIN + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, password = ?, photo_url = ? WHERE adminID = ?'
+                    db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, file_name, uid ], (error, rows, fields) => {
+                      if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                      } else {
+                        resolve(profile.adminID)  
+                      }
+                    })
+                  }   
               } else {
                 reject({ message: message.INVALID_PASSWORD })
               }
@@ -162,6 +186,39 @@ function getCountUserList(data) {
         } else {
           resolve(rows[0].count)  
         }
+      })
+    })
+  }
+
+/**
+ * create user data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createUser(uid) {
+    return new Promise((resolve, reject) => {
+      getProfile(uid).then((profile) => {
+        let query = 'Insert into ' + table.USER + ' (lastname, firstname, email, phone, '
+        db.query(query, [ uid ], (error, rows, fields) => {
+            if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                getBuildingListByCompany(profile.companyID).then((buildings) => {
+                    for (let i = 0; i < buildings.length; i ++) {
+                        buildings[i].selected = false;
+                    }
+                    for (let i = 0; i < buildings.length; i ++) {
+                        for (let j = 0; j < rows.length; j ++) {
+                            if (buildings[i].buildingID === rows[j].buildingID)
+                                buildings[i].selected = true;
+                        }
+                    }
+                    resolve({profile: profile, buildings: buildings})
+                })
+            }
+          })
       })
     })
   }
