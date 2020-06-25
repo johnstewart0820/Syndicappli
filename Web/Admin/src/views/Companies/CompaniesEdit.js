@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import MyTable from '../../components/MyTable';
+import MyTableCard from '../../components/MyTableCard';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -11,6 +12,7 @@ import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import MyTextField from '../../components/MyTextField';
+import { setStatic } from 'recompose';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -58,12 +60,30 @@ const useStyles = makeStyles(theme => ({
   size: {
     width: 214,
     height: 214
-  }
+  },
+  input: {
+    display: 'none'
+  },
 }));
 const CompaniesEdit = (props) => {
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const {history} = props;
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [siret, setSiret] = useState('');
+  const [vat, setVat] = useState('');
+  const [contact, setContact] = useState(0);
+  const [accountname, setAccountName] = useState('');
+  const [accountaddress, setAccountAddress] = useState('');
+  const [IBAN, setIBAN] = useState('');
+  const [avatarurl, setAvatarUrl] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [amountcompany, setamountCompany] = useState('')
+  const [amountbuilding, setAmountBuilding] = useState('');
+
   const user = {
     name: 'Shen Zhi',
     avatar: '/images/avatars/avatar_11.png',
@@ -90,6 +110,53 @@ const CompaniesEdit = (props) => {
   };
   const cellList = [ 'name', 'price', 'stock'];
   const pages = {href: 'companies/edit'};
+
+  const handleChangeName = (event) => {
+    setName(event.target.value);
+  }
+
+  const handleChangeAddress = (event) => {
+    setAddress(event.target.value);
+  }
+
+  const handleChangeEmail = (event) => {
+    setEmail(event.target.value);
+  }
+
+  const handleChangePhone = (event) => {
+    setPhone(event.target.value);
+  }
+
+  const handleChangeSiret = (event) => {
+    setSiret(event.target.value);
+  }
+
+  const handleChangeVat = (event) => {
+    setVat(event.target.value);
+  }
+
+  const handleChangeContact = (value) => {
+    setContact(value);
+  }
+
+  const handleChangeAccountName = (event) => {
+      setAccountName(event.target.value);
+  }
+
+  const handleChangeAccountAddress = (event) => {
+      setAccountAddress(event.target.value);
+  }
+
+  const handleChangeIBAN = (event) => {
+      setIBAN(event.target.value);
+  }
+
+  const handleLoadFront = (event) => {
+    console.log(URL.createObjectURL(event.target.files[0]));
+    setAvatar(event.target.files[0]);
+    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -117,7 +184,14 @@ const CompaniesEdit = (props) => {
                 <Grid item container alignItems="center" spacing={2}>
                     <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
                     <Grid xs item container alignItems="stretch">
-                      <MyTextField width="662px" height="64px" font="22px" rows="1" placeholder="Cabinet Loiselet & Daigremant"/>
+                      <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        variant="outlined" 
+                        placeholder="Cabinet Loiselet & Daigremant"
+                        value={name}
+                        onChange={handleChangeName}
+                      />
                     </Grid>
                 </Grid>
               </Grid>
@@ -132,60 +206,113 @@ const CompaniesEdit = (props) => {
                     border: '2px solid gray',
                     padding: '1px 4px',
                   }}
-                  badgeContent={<EditOutlinedIcon style={{
-                    width: 54,
-                    height: 54,
-                    border: `2px solid ${theme.palette.background.paper}`,
-                    backgroundColor: 'white',
-                    borderRadius: '50%',
-                    color: 'gray'
-                  }}/>}
+                  badgeContent={
+                    <div>
+                      <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
+                      <label htmlFor="img_front">
+                        <EditOutlinedIcon 
+                          style={{
+                            width: 54,
+                            height: 54,
+                            border: `2px solid ${theme.palette.background.paper}`,
+                            backgroundColor: 'white',
+                            borderRadius: '50%',
+                            color: 'gray'
+                          }}
+                        />
+                      </label>
+                    </div>
+                  }
                 >
-                  <Avatar className={classes.size} alt="Travis Howard" src={user.avatar} />
-                </Badge>
-                {/* <Avatar className={classes.size} src={user.avatar}/> */}
+                  <Avatar className={classes.size} alt="Travis Howard" src={avatarurl} />
+                </Badge>               
               </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2} justify="space-between">
               <Grid item container direction="row" justify="space-between">
                 <Grid item><p style={{fontSize:25}}>Coordonnees</p></Grid>
-                <Grid item><p style={{fontSize:25}}>Nombre de gestionnaires : 80</p></Grid>
+                <Grid item>
+                  { 
+                    amountcompany === '' ? null:
+                     <p style={{fontSize:25}}>Nombre de gestionnaires : {amountcompany}</p>
+                  }
+                </Grid>
               </Grid>
               <Grid item container direction="row" justify="space-between">
                 <Grid xs={5} item container alignItems="stretch">
-                  <TextField id="outlined-basic" className={classes.text} rows={3} multiline variant="outlined" placeholder="41 route de"/>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    rows={3} multiline 
+                    variant="outlined" 
+                    placeholder="41 route de"
+                    value={address}
+                    onChange={handleChangeAddress}
+                  />
                 </Grid>
-                <Grid xs={5} item container direction="row-reverse"><p style={{fontSize:25}}>Nombre de lots : 120000</p></Grid>
+                <Grid xs={5} item container direction="row-reverse">
+                  {
+                    amountbuilding === '' ? null :
+                      <p style={{fontSize:25}}>Nombre de lots : {amountbuilding}</p>
+                  }
+                </Grid>
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>Email</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined" placeholder="johndoe@gmail.com"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined" 
+                  placeholder="johndoe@gmail.com"
+                  value={email}
+                  onChange={handleChangeEmail}
+                />
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>Telephone</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined" placeholder="0102030405"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined" 
+                  placeholder="0102030405"
+                  value={phone}
+                  onChange={handleChangePhone}
+                />
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>Contact</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <MySelect color="gray" width="160px" data={cellList} />
+                <MySelect color="gray" width="160px" data={cellList} value={contact} onChangeSelect={handleChangeContact}/>
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>SIRET</p></Grid>
               <Grid xs item container alignItems="stretch">
-                <TextField id="outlined-basic" className={classes.text} variant="outlined" placeholder="0123456789123456789"/>
+                <TextField 
+                  id="outlined-basic" 
+                  className={classes.text} 
+                  variant="outlined" 
+                  placeholder="0123456789123456789"
+                  value={siret}
+                  onChange={handleChangeSiret}
+                />
               </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2}>
                 <Grid item container><p style={{fontSize:25}}>TVA Intracommunautaire</p></Grid>
                 <Grid xs item container alignItems="stretch">
-                  <TextField id="outlined-basic" className={classes.text} variant="outlined" />
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined"
+                    value={vat}
+                    onChange={handleChangeVat} 
+                  />
                 </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
@@ -219,7 +346,7 @@ const CompaniesEdit = (props) => {
             </Grid>
           </Grid>
           <Grid  item sm={7}>
-              <MyTable products={dataList} pages={pages} cells={cellList} leftBtn="Ajouter uno  carte" />
+              <MyTableCard products={dataList} pages={pages} cells={cellList} leftBtn="Ajouter uno  carte" />
           </Grid>
         </Grid>
         <div>
@@ -232,7 +359,13 @@ const CompaniesEdit = (props) => {
                   <Grid item><p style={{fontSize:18}}>Nom du titulaire du compte</p></Grid>
                   <Grid xs item container direction="row-reverse">
                     <Grid item container alignItems="stretch" direction="column">
-                      <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                      <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        variant="outlined"
+                        value={accountname}
+                        onChange={handleChangeAccountName}
+                      />
                     </Grid>
                   </Grid>
               </Grid>
@@ -240,7 +373,15 @@ const CompaniesEdit = (props) => {
                   <Grid item><p style={{fontSize:18}}>Adresse</p></Grid>
                   <Grid xs item container direction="row-reverse">
                     <Grid item container alignItems="stretch" direction="column">
-                      <TextField id="outlined-basic" className={classes.text} rows={3} multiline variant="outlined"/>
+                      <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        rows={3} 
+                        multiline 
+                        variant="outlined"
+                        value={accountaddress}
+                        onChange={handleChangeAccountAddress}
+                      />
                     </Grid>
                   </Grid>
               </Grid>
@@ -248,7 +389,13 @@ const CompaniesEdit = (props) => {
                   <Grid item><p style={{fontSize:18}}>IBAN</p></Grid>
                   <Grid xs item container direction="row-reverse">
                     <Grid item container alignItems="stretch" direction="column">
-                      <TextField id="outlined-basic" className={classes.text} variant="outlined"/>
+                      <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        variant="outlined"
+                        value={IBAN}
+                        onChange={handleChangeIBAN}
+                      />
                     </Grid>
                   </Grid>
               </Grid>
