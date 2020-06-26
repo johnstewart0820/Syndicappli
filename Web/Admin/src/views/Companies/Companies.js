@@ -8,6 +8,11 @@ import MySelect from '../../components/MySelect';
 import AddCompany from './AddCompany';
 import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 const useStyles = makeStyles(theme => ({
@@ -44,6 +49,28 @@ const Companies = (props) => {
   const {history}=props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const [deleteId,setDeleteId] = React.useState(-1);
+  const [dataList, setDataList] = useState([]);
+  const [totalpage , setTotalPage] = useState(1);
+  const [row_count, setRowCount] = useState(20);
+  const [page_num , setPageNum] = useState(1);
+  const [sort_column, setSortColumn] = useState(-1);
+  const [sort_method , setSortMethod] = useState('asc');
+  const selectList=[20, 50, 100, 200, -1];
+  const cellList = [ 
+    {key : 'name' , field : 'Nom'}, 
+    {key : 'contact' , field : 'Contact'},
+    {key : 'email' , field : 'Email'}, 
+    {key : 'phone' , field : 'Téléphone'},
+    {key : 'managers' , field : 'Gestionnaires'},
+    {key : 'lots' , field : 'Lots'},
+  ];
+
+  const columns = [];
+  for(let i = 0; i < cellList.length; i++)
+    columns[i] = 'asc';
+  
   const handleClickEdit = (id) => {
     console.log(id);
     history.push('/companies/edit/'+id);
@@ -58,7 +85,7 @@ const Companies = (props) => {
   const handleAdd = ()=>{
 
   };
-  const [dataList, setDataList] = useState([]);
+
   useEffect(() => {
     console.log('a');
   });
@@ -66,6 +93,30 @@ const Companies = (props) => {
     console.log('b');
     getDataList();
   }, []);
+
+  const handleChangeSelect = (value) => {
+    setRowCount(selectList[value]);
+  }
+  const handleChangePagination = (value)=>{
+    setPageNum(value);
+  }
+  const handleSort = (index , direct)=>{
+    setSortColumn(index);
+    setSortMethod(direct);
+  }
+
+  const handleClickDelete = (id)=>{
+    setOpenDelete(true);
+    setDeleteId(id);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleDelete = ()=>{
+    handleCloseDelete();
+    setDeleteId(-1);
+  }
   const getDataList = () => {
     setDataList([
       { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
@@ -80,7 +131,6 @@ const Companies = (props) => {
       { id: 10, name: 'Yoghurt', price: 2.4, stock: 12 },
     ])
   };
-  const cellList = [ 'name', 'price', 'stock']
 
   return (
     <div className={classes.root}>
@@ -115,8 +165,43 @@ const Companies = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
+        <MyTable 
+          onChangeSelect={handleChangeSelect} 
+          onChangePage={handleChangePagination} 
+          onSelectSort={handleSort} 
+          page={page_num} 
+          columns={columns} 
+          products={dataList} 
+          totalpage={totalpage} 
+          cells={cellList} 
+          onClickEdit={handleClickEdit}
+          onClickDelete={handleClickDelete}
+        />
       </div>
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">
+          Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
