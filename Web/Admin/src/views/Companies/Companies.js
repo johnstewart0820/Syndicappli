@@ -10,6 +10,8 @@ import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
+import authService from '../../services/authService.js';
+import MyDialog from '../../components/MyDialog';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -42,6 +44,12 @@ const useStyles = makeStyles(theme => ({
 }));
 const Companies = (props) => {
   const {history}=props;
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
+  const accessCompanies = authService.getAccess('role_companies');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleClickEdit = (id) => {
@@ -95,7 +103,7 @@ const Companies = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <div onClick={handleOpen}><MyButton   name={"Nouveau Cabinet"} color={"1"}/></div>
+              <MyButton   name={"Nouveau Cabinet"} color={"1"} onClick={handleOpen}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -115,6 +123,7 @@ const Companies = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
+      <MyDialog role={accessCompanies} content="Access is denied!"/>
       <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>

@@ -34,6 +34,9 @@ const AddBuilding = (props) => {
   const handleClose = ()=>{
     props.onCancel();
   };
+  const handleClickAdd = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} >
@@ -74,8 +77,8 @@ const AddBuilding = (props) => {
             </Grid>
             <div className={classes.footer}>
                 <Grid container justify="space-between">
-                    <MyButton name = {"Créer"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="gray" handleClose={handleClose}/>  
+                    <MyButton name = {"Créer"} color={"1"} onClick={handleClickAdd}/>
+                    <MyButton name = {"Annuler"} bgColor="gray" onClick={handleClose}/>  
                 </Grid>
             </div>
         </div>

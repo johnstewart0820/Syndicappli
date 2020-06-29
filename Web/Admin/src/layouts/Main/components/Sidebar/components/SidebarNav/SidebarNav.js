@@ -27,10 +27,6 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: 'rgb(255,255,255,80%)',
       color:'#00bf82',
     },
-    '&:focus': {
-      backgroundColor: 'rgb(255,255,255)',
-      color:'#00bf82',
-    },
     padding: '10px 8px 8px 24px',
     justifyContent: 'flex-start',
     textTransform: 'none',

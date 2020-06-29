@@ -29,18 +29,17 @@ export default function MyButton(props) {
   const classes = useStyles(props);
   const [flag, setFlag] = useState(false);
   const btnClick = ()=>{
-    if(props.onClickSave)
-      props.onClickSave();
-    if(props.onLoginClick)
-      props.onLoginClick();
-    if(props.handleCreate)
-      props.handleCreate();
-    if(props.handleClose)
-      props.handleClose();
+    if(props.onClick)
+      props.onClick();
   };
   return (
     <div>
-      <Button onClick={btnClick} className={props.color ? classes.button1 : classes.button2} style={{fontSize:20}}>{props.name}</Button>
+      <Button onClick={btnClick} className={props.color ? classes.button1 : classes.button2} 
+        style={{fontSize:20}}
+        disabled={props.disabled == 'disabled'? true : false}
+        >
+          {props.name}
+      </Button>
     </div>
   );
 }

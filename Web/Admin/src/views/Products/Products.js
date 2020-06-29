@@ -10,7 +10,8 @@ import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddProduct from './AddProduct';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
-
+import authService from '../../services/authService.js';
+import MyDialog from '../../components/MyDialog';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -38,6 +39,13 @@ const useStyles = makeStyles(theme => ({
 }));
 const Products = (props) => {
   const {history} = props;
+
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
+  const accessProducts = authService.getAccess('role_products');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -90,7 +98,7 @@ const Products = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <div onClick={handleOpen}><MyButton name = {"Nouveau Produits"} color={"1"}/></div>
+              <MyButton name = {"Nouveau Produits"} color={"1"} onClick={handleOpen}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -110,6 +118,7 @@ const Products = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
+      <MyDialog role={accessProducts} content="Access is denied!"/>
       <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>

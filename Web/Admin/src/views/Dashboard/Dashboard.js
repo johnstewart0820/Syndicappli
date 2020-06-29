@@ -8,6 +8,7 @@ import {
   LatestSales,
 } from './components';
 import CurveChart from './components/CurveChart';
+import authService from '../../services/authService.js';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -22,11 +23,17 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Dashboard = () => {
+const Dashboard = (props) => {
+  const{history} = props;
   const classes = useStyles();
   const cellList = [20, 50, 100, 200];
   const incomeDirection = 2;
   const incomeColor = "#FC5555";//#2DCE9C
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
   return (
     <div className={classes.root}>
       <div className={classes.title}>

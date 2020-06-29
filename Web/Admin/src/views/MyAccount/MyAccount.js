@@ -10,8 +10,8 @@ import MyButton from '../../components/MyButton';
 import {withRouter} from 'react-router-dom';
 import AdminService from './../../services/api.js';
 import Toast from './../../components/Toast.js';
-import { setSourceMapRange } from 'typescript';
-
+import authService from '../../services/authService.js';
+import CircularProgress  from '@material-ui/core/CircularProgress';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -23,6 +23,12 @@ const useStyles = makeStyles(theme => ({
         padding: '17px 25px 17px 25px',
         fontSize: 22,
     },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 8
+    },
+    '& p': {
+      marginBottom: 0
+    }
   },
   tool: {
     minHeight: '67px'
@@ -54,14 +60,42 @@ const useStyles = makeStyles(theme => ({
   },
   size: {
     width: 214,
-    height: 214
+    height: 214,
+    cursor: 'pointer',
   },
   text: {
     fontSize: 25
+  },
+  input: {
+    display: 'none'
+  }, 
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
+  error:{
+    color: 'red'
   }
 }));
+var msg = '';
+var check = '';
 const MyAccount = (props) => {
   const {history} = props;
+
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
   const classes = useStyles();
   const [lastname , setLastName] = React.useState('');
   const [firstname , setFirstName] = React.useState('');
@@ -70,19 +104,23 @@ const MyAccount = (props) => {
   const [old_password , setOldPassword] = React.useState('');
   const [new_password , setNewPassword] = React.useState('');
   const [confirm_password , setConfirmPassword] = React.useState('');
-  const [avatarurl, setAvatarUrl] = React.useState("");
-  const [avatar, setAvatar] = React.useState(null);
-  const [state, setState] = React.useState('');
-  let msg;
-  const handleOpen = (value) => {
-    setState(value);
-    if(value === "success")
-      msg = "Updated successfull";
-  };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [errorsLastname , setErrorsLastName] = React.useState('');
+  const [errorsFirstname , setErrorsFirstName] = React.useState('');
+  const [errorsEmail , setErrorsEmail] = React.useState('');
+  const [errorsPhone , setErrorsPhone] = React.useState('');
+  const [errorsOldPassword , setErrorsOldPassword] = React.useState('');
+  const [errorsNewPassword , setErrorsNewPassword] = React.useState('');
+  const [errorsConfirmPassword , setErrorsConfirmPassword] = React.useState('');
+
+  const [avatarurl, setAvatarUrl] = React.useState('');
+  const [avatar, setAvatar] = React.useState(null);
+  const [openToast, setOpenToast] = React.useState(false);
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+
+  const handleToastClose = () => {
+    setOpenToast(false);
+  }
   const handleChangeLastName = (event)=>{
     setLastName(event.target.value);
   }
@@ -110,12 +148,11 @@ const MyAccount = (props) => {
   }
   useEffect(()=>{
 
-    // setVisibleIndicator(true);
+    setVisibleIndicator(true);
     AdminService.getProfile()
     .then(      
       response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
+        setVisibleIndicator(false);  
         if(response.data.code != 200){
           
         } else {
@@ -125,70 +162,83 @@ const MyAccount = (props) => {
           setFirstName(profile.firstname);
           setEmail(profile.email);
           setPhone(profile.phone);
+          setAvatarUrl((AdminService.getProfileAvatar() + profile.photo_url));
         }
       },
       error => {
         console.log('fail');        
-        // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
+          setVisibleIndicator(false);
       }
     );   
   }, []);
-  const onClickSave = (event)=>{
-    handleOpen("Updated successfull!");
 
-    var data={
-      'lastname' : lastname,
-      'firstname' : firstname,
-      'email' : email,
-      'phone' : phone,
-      'old_password' : old_password,
-      'new_password' : new_password
-    };
-    // setVisibleIndicator(true);
-    AdminService.updateProfile(data)
+  const onClickSave = (event)=>{
+    let cnt = 0;
+    if(lastname.length == 0) {setErrorsLastName('please enter your last name'); cnt++;}
+    else setErrorsLastName('');
+    if(firstname.length == 0) {setErrorsFirstName('please enter your first name'); cnt++;}
+    else setErrorsFirstName('');
+    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
+    else setErrorsEmail('');
+    if(phone.length == 0) {setErrorsPhone('please enter your phone number'); cnt++;}
+    else setErrorsPhone('');
+    // if(old_password.length == 0) {setErrorsOldPassword('please enter your current password'); }
+    if(new_password.length != 0 && new_password.length < 5) {setErrorsNewPassword('Password must be 5 characters long!'); }
+    else setErrorsNewPassword('');
+     // if(confirm_password.length == 0) {setErrorsConfirmPassword('please enter your confirm password');}
+    if(new_password != confirm_password) {setErrorsConfirmPassword('mismatch your new password'); cnt++}
+    else setErrorsConfirmPassword('');
+    if(cnt == 0) setData();
+  }
+  const setData = ()=>{
+    let formdata = new FormData();
+    
+    formdata.set('lastname', lastname);
+    formdata.set('firstname', firstname);
+    formdata.set('email', email);
+    formdata.set('phone', phone);
+    formdata.set('old_password', old_password);
+    formdata.set('new_password', new_password);
+    formdata.set('avatar', avatar == null? '':avatar);
+    setVisibleIndicator(true);
+    AdminService.updateProfile(formdata)
     .then(      
       response => {        
         console.log(response.data);
-        // setVisibleIndicator(false);  
+         setVisibleIndicator(false);  
         if(response.data.code != 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
           console.log('error');
+          msg=response.data.message;
+          check = "error";
+          setOpenToast(true);
+          setErrorsOldPassword('The current password is not correct');
         } else {
+           msg="success";
+           check="success";
+           setOpenToast(true);
+           setErrorsOldPassword('');
            localStorage.setItem("token", JSON.stringify(response.data.data.token));
         }
       },
       error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
+        console.log('fail');
+        msg="server fail";
+        check = "error";
+        setOpenToast(true);        
+         setVisibleIndicator(false);
       }
-    );    
+    );  
   }
-  const [dataList, setDataList] = useState([]);
-  useEffect(() => {
-    console.log('a');
-  });
-
   const user = {
     name: 'Shen Zhi',
     avatar: '/images/avatars/avatar_11.png',
     bio: 'Brain Director'
   };
   return (
+    <div>
+    {
+      visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+    }
     <div className={classes.root}>
       <div className={classes.title}>
         <Grid item container justify="space-around">
@@ -209,122 +259,160 @@ const MyAccount = (props) => {
       <Grid container direction="column" spacing={5}>
             <Grid item container spacing={2} direction="row" justify="space-between">
               <Grid item container direction="column" justify="space-between" xs={5}>
-                <Grid item container><p style={{fontSize:37}}>John Doe</p></Grid>
+                <Grid item container><p style={{fontSize:37}}>{firstname} {lastname}</p></Grid>
                 <Grid item container alignItems="center" spacing={2}>
                     <Grid item><p className={classes.text}>Nom</p></Grid>
-                    <Grid xs item container alignItems="stretch">
-                      <TextField 
-                        id="outlined-basic" 
-                        className={classes.text} 
-                        variant="outlined"
-                        value={lastname}
-                        onChange={handleChangeLastName}
-                      />
+                    <Grid xs item container alignItems="stretch" direction="column">
+                      <Grid item>
+                        <TextField 
+                          id="outlined-basic" 
+                          className={classes.text} 
+                          variant="outlined"
+                          value={lastname}
+                          onChange={handleChangeLastName}
+                        />
+                      </Grid>
+                      {errorsLastname.length > 0 && 
+                      <span className={classes.error}>{errorsLastname}</span>}
                     </Grid>
                 </Grid>
               </Grid>
               <Grid item container xs={5} direction="row-reverse">
-                <Badge
-                  overlap="circle"
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                    right: -20,
-                    top: 13,
-                    border: '2px solid gray',
-                    padding: '0 4px',
-                  }}
-                  badgeContent={<EditOutlinedIcon style={{
-                    width: 54,
-                    height: 54,
-                    backgroundColor: 'white',
-                    borderRadius: '50%',
-                    color: 'gray'
-                  }}/>}
-                >
-                  <Avatar className={classes.size} alt="Travis Howard" src={user.avatar} />
-                </Badge>
-                {/* <Avatar className={classes.size} src={user.avatar}/> */}
+                <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
+                <label htmlFor="img_front">
+                    {
+                      <Badge
+                      overlap="circle"
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                        right: -20,
+                        top: 13,
+                        border: '2px solid gray',
+                        padding: '0 4px',
+                      }}
+                      badgeContent={
+                        <EditOutlinedIcon style={{
+                          width: 54,
+                          height: 54,
+                          backgroundColor: 'white',
+                          borderRadius: '50%',
+                          color: 'gray'
+                        }}/>
+                      }
+                    >
+                      <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
+                    </Badge>
+                    }
+                </label>
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Prénom</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined"
-                  value={firstname}
-                  onChange={handleChangeFirstName}
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined"
+                    value={firstname}
+                    onChange={handleChangeFirstName}
+                  />
+                </Grid>  
+                {errorsFirstname.length > 0 && 
+                      <span className={classes.error}>{errorsFirstname}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Email</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined"
-                  value={email}
-                  onChange={handleChangeEmail}
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined"
+                    value={email}
+                    onChange={handleChangeEmail}
+                  />
+                </Grid>  
+                {errorsEmail.length > 0 && 
+                      <span className={classes.error}>{errorsEmail}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Telephone</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined"
-                  value={phone}
-                  onChange={handleChangePhone}
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined"
+                    value={phone}
+                    onChange={handleChangePhone}
+                  />
+                </Grid>  
+                {errorsPhone.length > 0 && 
+                      <span className={classes.error}>{errorsPhone}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Mot de passe actuel</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined"
-                  value={old_password}
-                  onChange={handleChangeOldPassword}
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined"
+                    value={old_password}
+                    type="password"
+                    onChange={handleChangeOldPassword}
+                  />
+                </Grid>
+                {errorsOldPassword.length > 0 && 
+                      <span className={classes.error}>{errorsOldPassword}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Nouveau mot de passe</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined"
-                  value={new_password}
-                  onChange={handleChangeNewPassword}
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined"
+                    value={new_password}
+                    type="password"
+                    onChange={handleChangeNewPassword}
+                  />
+                </Grid>
+                {errorsNewPassword.length > 0 && 
+                      <span className={classes.error}>{errorsNewPassword}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.text}>Confirmer le nouveau mot de passe</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined"
-                  value={confirm_password}
-                  onChange={handleChangeConfirmPassword}
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined"
+                    value={confirm_password}
+                    type="password"
+                    onChange={handleChangeConfirmPassword}
+                  />
+                </Grid>
+                {errorsConfirmPassword.length > 0 && 
+                      <span className={classes.error}>{errorsConfirmPassword}</span>}
               </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton   name={"Sauvegarder"} color={"1"} onClickSave = {onClickSave}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClick = {onClickSave}/>
+              <Toast openToast={openToast} msg={msg} state={check} onClose={handleToastClose}/>
             </Grid>
           </Grid>
       </div>
-      <Toast state={state} msg={msg}/>
+    </div>
     </div>
   );
 };

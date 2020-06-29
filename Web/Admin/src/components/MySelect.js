@@ -73,10 +73,11 @@ export default function CustomizedSelects(props) {
           value={props.value}
           onChange={handleChange}
           input={<BootstrapInput />}
+          disabled={props.disabled == 'disabled'? true : null}
         >
           {
             items.map((item, i) =>
-              <option  value={i} key={item}> {item}</option>
+              <option  value={i} key={item} > {item}</option>
           )}
         </NativeSelect>
       </FormControl>

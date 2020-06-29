@@ -10,7 +10,8 @@ import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddManager from './AddManager';
 import { withRouter } from 'react-router-dom';
-
+import authService from '../../services/authService.js';
+import MyDialog from '../../components/MyDialog';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -38,6 +39,12 @@ const useStyles = makeStyles(theme => ({
 }));
 const Managers = (props) => {
   const {history}=props;
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
+  const accessManagers = authService.getAccess('role_managers');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -91,7 +98,7 @@ const Managers = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <div onClick={handleOpen}><MyButton name = {"Nouveau Gestionnaires"} color={"1"}/></div>
+              <MyButton name = {"Nouveau Gestionnaires"} color={"1"} onClick={handleOpen}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -129,6 +136,7 @@ const Managers = (props) => {
       </Grid>
       </div> 
       <div className={classes.body}>
+      <MyDialog role={accessManagers} content="Access is denied!"/>
       <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>

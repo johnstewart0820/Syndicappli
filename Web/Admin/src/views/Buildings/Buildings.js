@@ -7,10 +7,11 @@ import MyButton from '../../components/MyButton';
 import Pagination from '@material-ui/lab/Pagination';
 import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
+import MyDialog from '../../components/MyDialog';
 import CloseIcon from '@material-ui/icons/Close';
 import AddBuilding from './AddBuilding';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
-
+import authService from '../../services/authService.js';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -35,12 +36,19 @@ const useStyles = makeStyles(theme => ({
 }));
 const Buildings = (props) => {
   const {history}=props;
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
+  const accessBuildings = authService.getAccess('role_buildings');  
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleClickEdit = (id) => {
     console.log(id);
     history.push('/buildings/edit/'+id);
   }
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -88,7 +96,7 @@ const Buildings = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <div onClick={handleOpen}><MyButton name = {"Nouvel Immeubles"} color={"1"}/></div>
+              <MyButton name = {"Nouvel Immeubles"} color={"1"}  onClick={handleOpen}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -108,6 +116,7 @@ const Buildings = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
+      <MyDialog role={accessBuildings} content="Access is denied!"/>
       <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>

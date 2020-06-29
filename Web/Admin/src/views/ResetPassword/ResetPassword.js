@@ -4,11 +4,18 @@ import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
-
+import authService from '../../services/authService.js';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: theme.spacing(19),
     justifyContent: 'center',
+    '& .MuiOutlinedInput-input':{
+      padding: '17px 25px 17px 25px',
+      fontSize: 22,
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 8
+    }
   },
   p: {
     [theme.breakpoints.up('sm')]: {
@@ -42,6 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const ResetPassword = () => {
+  
   const classes = useStyles();
   const logo = {
     url: '/images/Login.png',
@@ -78,17 +86,6 @@ const ResetPassword = () => {
         </Grid>
         <Grid item container xs={1} sm={2} md={4}></Grid>
       </Grid>
-      <Grid item container justify="center">
-          <Grid item container xs={1} sm={2} md={4}></Grid>
-          <Grid item container xs={10} sm={8} md={4}>
-            <Grid item container direction="row-reverse">
-              <Link href="/forgotpassword" variant="body2">
-                <p className={classes.forgot}>J'ai oublié mon mot de passe</p>
-              </Link>
-            </Grid>
-          </Grid>
-          <Grid item container xs={1} sm={2} md={4}></Grid>
-        </Grid>
     </Grid>
 
   );

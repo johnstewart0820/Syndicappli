@@ -7,8 +7,8 @@ import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { defaultProps } from 'recompose';
-
+import {COUNTRIES} from '../../components/countries';
+import Multiselect from '../../components/Multiselect.js';
 const useStyles = makeStyles(theme => ({
     paper: {
         backgroundColor: theme.palette.background.paper,
@@ -29,6 +29,9 @@ const useStyles = makeStyles(theme => ({
             padding: '8px 12px',
             fontSize: 17
         },
+        '& p':{
+            marginBottom: 0
+        },
     },
     input: {
         display: 'none'
@@ -42,20 +45,35 @@ const useStyles = makeStyles(theme => ({
         borderRadius: 8,
         width: 116,
         height: 92,
+    },
+    error:{
+        color: 'red'
     }
 }));
 
 const AddUser = (props) => {
   const classes = useStyles();
   
-  const companiesList=[20, 50, 100, 200];
-  const buildingsList=[20, 50, 100, 200];
-  const permissionList = ['Editer', 'Voir', 'Refusé'];
-
+  const permissionList = ['','Editer', 'Voir', 'Refusé'];
+  const selected = [
+    { label: "Albania"},
+    { label: "Argentina"},
+    { label: "Austria"},
+    { label: "Cocos Islands"},
+    { label: "Kuwait"},
+    { label: "Sweden"},
+    { label: "Venezuela"}
+  ];
+  const [companies, setCompanies] = React.useState(selected);
+  const [buildings, setBuildings] = React.useState(selected);
+  const companiesList = COUNTRIES.map((country,id) => {
+    return {
+      label: country
+    }
+  })
+  const buildingsList = companiesList;
   const [avatarurl, setAvatarUrl] = React.useState("");
   const [avatar, setAvatar] = React.useState(null);
-  const [companies, setCompanies] = React.useState('');
-  const [buildings, setBuildings] = React.useState('');
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -68,11 +86,60 @@ const AddUser = (props) => {
   const [productsPermission, setProductsPermission] = React.useState('');
   const [discountCodesPermission, setDiscountodesPermission] = React.useState('');
   const [usersPermission, setUsersPermission] = React.useState('');
+
+  const [errorsCompanies, setErrorsCompanies] = React.useState('');
+  const [errorsBuildings, setErrorsBuildings] = React.useState('');
+  const [errorsLastname, setErrorsLastname] = React.useState('');
+  const [errorsFirstname, setErrorsFirstname] = React.useState('');
+  const [errorsEmail, setErrorsEmail] = React.useState('');
+  const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
+  const [errorsCompaniesPermission, setErrorsCompaniesPermission] = React.useState('');
+  const [errorsBuildingsPermission, setErrorsBuildingsPermission] = React.useState('');
+  const [errorsManagersPermission, setErrorsManagersPermission] = React.useState('');
+  const [errorsOwnersPermission, setErrorsOwnersPermission] = React.useState('');
+  const [errorsOrdersPermission, setErrorsOrdersPermission] = React.useState('');
+  const [errorsProductsPermission, setErrorsProductsPermission] = React.useState('');
+  const [errorsDiscountcodesPermission, setErrorsDiscountcodesPermission] = React.useState('');
+  const [errorsUsersPermission, setErrorsUsersPermission] = React.useState('');
+
   const handleClose = ()=>{
     props.onCancel();
   };
   const handleCreate = ()=>{
-    
+    let cnt = 0;
+    if(lastname.length == 0) {setErrorsLastname('please enter your last name'); cnt++;}
+    else setErrorsLastname('');
+    if(firstname.length == 0) {setErrorsFirstname('please enter your first name'); cnt++;}
+    else setErrorsFirstname('');
+    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    else setErrorsCompanies('');
+    if(buildings.length == 0) {setErrorsBuildings('please select buildings'); cnt++;}
+    else setErrorsBuildings('');
+    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
+    else setErrorsEmail('');
+    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
+    else setErrorsPhonenumber('');
+    if(companiesPermission.length == 0) {setErrorsCompaniesPermission('please select permission to companies'); cnt++;}
+    else setErrorsCompaniesPermission('');
+    if(managersPermission.length == 0) {setErrorsManagersPermission('please select permission to managers'); cnt++;}
+    else setErrorsManagersPermission('');
+    if(buildingsPermission.length == 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
+    else setErrorsBuildingsPermission('');
+    if(ownersPermission.length == 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
+    else setErrorsOwnersPermission('');
+    if(ordersPermission.length == 0) {setErrorsOrdersPermission('please select permission to orders'); cnt++;}
+    else setErrorsOrdersPermission('');
+    if(productsPermission.length == 0) {setErrorsProductsPermission('please select permission to products'); cnt++;}
+    else setErrorsProductsPermission('');
+    if(discountCodesPermission.length == 0) {setErrorsDiscountcodesPermission('please select permission to discount codes'); cnt++;}
+    else setErrorsDiscountcodesPermission('');
+    if(usersPermission.length == 0) {setErrorsUsersPermission('please select permission to users'); cnt++;}
+    else setErrorsUsersPermission('');
+
+    if(cnt ==0){
+
+        handleClose();
+    }
   }
   const handleLoadFront = (event) => {
     setAvatar(event.target.files[0]);
@@ -127,33 +194,35 @@ const handleChangeUsersPermission = (val) => {
             <Grid container spacing={2} >
                 <Grid item container justify="center" alignItems="center">
                     <Grid xs={3} item container><p style={{fontSize:18}}>Carbinets</p></Grid>
-                    <Grid xs={3} item container>
-                        <MySelect 
-                            color="gray" 
-                            width="289px" 
-                            data={companiesList} 
-                            onChangeSelect={handleChangeCompanies}
-                            value={companies}
+                    <Grid xs={9} item container>
+                        <Multiselect
+                            selected={companies}
+                            no={'No companies found'}
+                            hint={'Add new Companies'}
+                            all={companiesList} 
+                            onSelected={handleChangeCompanies}
                         />
+                        {errorsCompanies.length > 0 && 
+                        <span className={classes.error}>{errorsCompanies}</span>}
                     </Grid>
-                    <Grid xs={6}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
                     <Grid xs={3} item container><p style={{fontSize:18}}>Immeubles</p></Grid>
-                    <Grid xs={3} item container>
-                        <MySelect 
-                            color="gray" 
-                            width="289px" 
-                            data={buildingsList} 
-                            onChangeSelect={handleChangeBuildings}
-                            value={buildings}
+                    <Grid xs={9} item container>
+                         <Multiselect
+                            selected={buildings}
+                            no={'No buildings found'}
+                            hint={'Add new Buildings'}
+                            all={buildingsList} 
+                            onSelected={handleChangeBuildings}
                         />
+                        {errorsBuildings.length > 0 && 
+                        <span className={classes.error}>{errorsBuildings}</span>}
                     </Grid>
-                    <Grid xs={6}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
                     <Grid xs={3} item container><p style={{fontSize:18}}>Nom</p></Grid>
-                    <Grid xs={3} item container>
+                    <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
                             className={classes.text} 
@@ -161,12 +230,14 @@ const handleChangeUsersPermission = (val) => {
                             value={lastname}
                             onChange={handleChangeLastName} 
                         />
+                        {errorsLastname.length > 0 && 
+                        <span className={classes.error}>{errorsLastname}</span>}
                     </Grid>
-                    <Grid xs={6}></Grid>
+                    <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
                     <Grid xs={3} item container><p style={{fontSize:18}}>Prénom</p></Grid>
-                    <Grid xs={3} item container>
+                    <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
                             className={classes.text} 
@@ -174,12 +245,14 @@ const handleChangeUsersPermission = (val) => {
                             value={firstname}
                             onChange={handleChangeFirstName} 
                         />
+                        {errorsFirstname.length > 0 && 
+                        <span className={classes.error}>{errorsFirstname}</span>}
                     </Grid>
-                    <Grid xs={6}></Grid>
+                    <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
                     <Grid xs={3} item container><p style={{fontSize:18}}>Email</p></Grid>
-                    <Grid xs={3} item container>
+                    <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
                             className={classes.text} 
@@ -187,12 +260,14 @@ const handleChangeUsersPermission = (val) => {
                             value={email}
                             onChange={handleChangeEmail} 
                         />
+                        {errorsEmail.length > 0 && 
+                        <span className={classes.error}>{errorsEmail}</span>}
                     </Grid>
-                    <Grid xs={6}></Grid>
+                    <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
                     <Grid xs={3} item container><p style={{fontSize:18}}>Téléphone</p></Grid>
-                    <Grid xs={3} item container>
+                    <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
                             className={classes.text} 
@@ -200,8 +275,10 @@ const handleChangeUsersPermission = (val) => {
                             value={phonenumber}
                             onChange={handleChangePhoneNumber} 
                         />
+                        {errorsPhonenumber.length > 0 && 
+                        <span className={classes.error}>{errorsPhonenumber}</span>}
                     </Grid>
-                    <Grid xs={6}></Grid>
+                    <Grid xs={3}></Grid>
                 </Grid>
                 <Grid xs={12} item container direction="column" >
                     <p style={{fontSize:18}}>Photo</p>
@@ -232,6 +309,8 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeCompaniesPermission}
                         value={companiesPermission}
                     />
+                    {errorsCompaniesPermission.length > 0 && 
+                        <span className={classes.error}>{errorsCompaniesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Gestionnaires</p>
@@ -242,6 +321,8 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeManagersPermission}
                         value={managersPermission}
                     />
+                    {errorsManagersPermission.length > 0 && 
+                        <span className={classes.error}>{errorsManagersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Immeuables</p>
@@ -252,6 +333,8 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeBuildingsPermission}
                         value={buildingsPermission}
                     />
+                    {errorsBuildingsPermission.length > 0 && 
+                        <span className={classes.error}>{errorsBuildingsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Coproprietaires</p>
@@ -262,6 +345,8 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeOwnersPermission}
                         value={ownersPermission}
                     />
+                    {errorsOwnersPermission.length > 0 && 
+                        <span className={classes.error}>{errorsOwnersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Commandes</p>
@@ -272,6 +357,8 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeOrdersPermission}
                         value={ordersPermission}
                     />
+                    {errorsOrdersPermission.length > 0 && 
+                        <span className={classes.error}>{errorsOrdersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Prodults</p>
@@ -282,6 +369,8 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeProductsPermission}
                         value={productsPermission}
                     />
+                    {errorsProductsPermission.length > 0 && 
+                        <span className={classes.error}>{errorsProductsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Codes Promo</p>
@@ -292,6 +381,8 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeDiscountCodesPermission}
                         value={discountCodesPermission}
                     />
+                    {errorsDiscountcodesPermission.length > 0 && 
+                        <span className={classes.error}>{errorsDiscountcodesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Utilisateurs</p>
@@ -302,12 +393,14 @@ const handleChangeUsersPermission = (val) => {
                         onChangeSelect={handleChangeUsersPermission}
                         value={usersPermission}
                     />
+                    {errorsUsersPermission.length > 0 && 
+                        <span className={classes.error}>{errorsUsersPermission}</span>}
                 </Grid>
             </Grid>
             <div className={classes.footer}>
                 <Grid container justify="space-between">
-                    <MyButton name = {"Creer"} color={"1"} handleCreate={handleCreate}/>
-                    <MyButton name = {"Annuler"} bgColor="grey" handleClose={handleClose}/>
+                    <MyButton name = {"Creer"} color={"1"} onClick={handleCreate}/>
+                    <MyButton name = {"Annuler"} bgColor="grey" onClick={handleClose}/>
                 </Grid>
             </div>
         </div>

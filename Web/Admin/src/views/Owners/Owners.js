@@ -10,7 +10,8 @@ import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddOwner from './AddOwner';
 import { withRouter } from 'react-router-dom';
-
+import authService from '../../services/authService.js';
+import MyDialog from '../../components/MyDialog';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -38,6 +39,13 @@ const useStyles = makeStyles(theme => ({
 }));
 const Owners = (props) => {
   const {history}=props;
+
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
+  const accessOwners = authService.getAccess('role_owners');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
@@ -91,7 +99,7 @@ const Owners = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <div onClick={handleOpen}><MyButton name = {"Nouveau Copropriétaires"} color={"1"}/></div>
+              <MyButton name = {"Nouveau Copropriétaires"} color={"1"} onClick={handleOpen}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -111,6 +119,7 @@ const Owners = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
+      <MyDialog role={accessOwners} content="Access is denied!"/>
       <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>

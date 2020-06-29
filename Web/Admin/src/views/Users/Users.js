@@ -15,7 +15,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import authService from '../../services/authService.js';
+import MyDialog from '../../components/MyDialog';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -44,6 +45,15 @@ const useStyles = makeStyles(theme => ({
 }));
 const Users = (props) => {
   const { history } = props;
+
+  const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
+  const accessUsers = authService.getAccess('role_users');
+
+  const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
 
   const [deleteId,setDeleteId] = useState(-1);
@@ -56,9 +66,6 @@ const Users = (props) => {
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method , setSortMethod] = useState('asc');
   const selectList=[20, 50, 100, 200, -1];
-  const handleOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -70,8 +77,19 @@ const Users = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
+  const handleCloseDialog = (val) => {
+    setOpenDialog(val);
+  };
   const handleAdd = ()=>{
 
+  };
+  const handleClickAdd = ()=>{
+    if(accessUsers == 'Edit'){
+      setOpen(true);
+    }
+    if(accessUsers == 'See'){
+      setOpenDialog(true);
+    }
   };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
@@ -83,8 +101,7 @@ const Users = (props) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  useEffect(() => {
-    // getDataList();
+  const getDatas = ()=>{
     const requestData = {
       'search_key': '',
       'page_num' : page_num-1,
@@ -122,7 +139,17 @@ const Users = (props) => {
         //     error.message ||
         //     error.toString();
       }
-    );    
+    );
+  }
+  useEffect(()=>{
+    if(accessUsers == 'Denied'){
+      setOpenDialog(true);
+    }
+  });
+  useEffect(() => {
+    // getDataList();
+    if(accessUsers != 'Denied')
+        getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
     {key : 'lastname' , field : 'Nom'}, 
@@ -137,12 +164,40 @@ const Users = (props) => {
     history.push('/users/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    setOpenDelete(true);
-    setDeleteId(id);
+    if(accessUsers == 'Edit'){
+      setOpenDelete(true);
+      setDeleteId(id);
+    }else{
+      setOpenDialog(true);
+    }
   };
   const handleDelete = ()=>{
     handleCloseDelete();
     setDeleteId(-1);
+    AdminService.deleteUser(deleteId)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code != 200){
+          // if(response.data.status === 'Token is Expired') {
+          //   authService.logout();
+          //   history.push('/');
+          // }
+          console.log('error');
+        } else {
+          console.log('success');
+          alert('Deleted successful');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+          getDatas();
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+      }
+    );
   }
   return (
     <div className={classes.root}>
@@ -157,7 +212,7 @@ const Users = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <div onClick={handleOpen}><MyButton name = {"Nouvel Utilisateur"} color={"1"}/></div>
+              <MyButton name = {"Nouvel Utilisateur"} color={"1"} onClick={handleClickAdd}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -177,6 +232,7 @@ const Users = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
+      <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog}/>
         <MyTable 
           onChangeSelect={handleChangeSelect} 
           onChangePage={handleChangePagination} 

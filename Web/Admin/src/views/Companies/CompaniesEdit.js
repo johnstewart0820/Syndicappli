@@ -11,7 +11,7 @@ import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import MyTextField from '../../components/MyTextField';
-
+import authService from '../../services/authService.js';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -64,6 +64,11 @@ const CompaniesEdit = (props) => {
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const {history} = props;
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
   const user = {
     name: 'Shen Zhi',
     avatar: '/images/avatars/avatar_11.png',

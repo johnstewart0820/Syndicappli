@@ -8,7 +8,8 @@ import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
 import AddOrder from './AddOrder';
 import { withRouter } from 'react-router-dom';
-
+import authService from '../../services/authService.js';
+import MyDialog from '../../components/MyDialog';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -36,6 +37,13 @@ const useStyles = makeStyles(theme => ({
 }));
 const Orders = (props) => {
   const {history}=props;
+
+  const token = authService.getToken();    
+  if (!token) {
+    history.push("/login");
+    window.location.reload();
+  }
+  const accessOrders = authService.getAccess('role_orders');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleClickEdit = (id) => {
@@ -89,7 +97,7 @@ const Orders = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <div onClick={handleOpen}><MyButton name = {"Nouveau Commandes"} color={"1"}/></div>
+              <MyButton name = {"Nouveau Commandes"} color={"1"} onClick={handleOpen}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -109,6 +117,7 @@ const Orders = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
+      <MyDialog role={accessOrders} content="Access is denied!"/>
       <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
       </div>
     </div>

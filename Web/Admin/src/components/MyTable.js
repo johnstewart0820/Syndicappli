@@ -121,7 +121,6 @@ export default function ProductTable  (props)  {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  console.log(items);
   const handleClose = () => {
     setOpen(false);
   };
@@ -207,28 +206,35 @@ export default function ProductTable  (props)  {
                   cells.map((cell,i)=>{
                     const value = item[cell.key];
                     return(
-                    <TableCell key={cell.key}>
+                    <TableCell key={cell.key} onClick={()=>props.onClickEdit(item.adminID)}>
 
                       {value}
                   </TableCell>);
                   })
                   }
                   <TableCell align="right">
-                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.userID)}/>
+                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.adminID)}/>
                       &nbsp;&nbsp;
-                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.userID)}></DeleteIcon>
+                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.adminID)}></DeleteIcon>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter className={props.tblFooter ? classes.show : classes.hide}>
-              <TableRow >
-
-              </TableRow>
+            <TableFooter className={(props.tblFooter|| items.length === 0) ? classes.show : classes.hide}>
+              {
+                items.length === 0 ?
+                  <TableRow>
+                    <TableCell colSpan="100%" style={{ textAlign: 'center'}}>{'No datas found'}</TableCell>
+                  </TableRow>
+                :
+                <TableRow>
+                  
+                </TableRow>
+              }
             </TableFooter>
           </Table>
         </Grid>
-        <Grid item container justify="space-between" className={classes.body} alignItems="center">
+        <Grid item container  className={classes.body} alignItems="center">
           <Grid xs={6} item container className={props.leftBtn ? classes.show : classes.hide} >
             <MyButton name={props.leftBtn} color={"1"} />
           </Grid>

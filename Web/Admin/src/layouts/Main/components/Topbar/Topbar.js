@@ -11,6 +11,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
+import authService from 'services/authService';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -83,7 +84,13 @@ const Topbar = props => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
+  const handleClickProfile = (event) => {
+    handleClose();
+  };
+  const handleClickLogin = (event) => {
+    authService.logout();
+    handleClose();
+  };
   const handleClose = () => {
     setAnchorEl(null);
 
@@ -107,6 +114,7 @@ const Topbar = props => {
           className={classes.searchBar}
           onChange={handleChange}
            onRequestSearch={value}
+          value={value}
         />
         <IconButton color="inherit" >
           <Badge
@@ -148,11 +156,11 @@ const Topbar = props => {
               }}
             >
               <RouterLink to={"/myaccount"}>
-                <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
+                <MenuItem className={classes.menu_item} onClick={handleClickProfile} >Mon compte</MenuItem>
               </RouterLink>
               <Divider />
               <RouterLink to={"/login"}>
-                <MenuItem className={classes.menu_item} onClick={handleClose}>Déconnexion</MenuItem>
+                <MenuItem className={classes.menu_item} onClick={handleClickLogin}>Déconnexion</MenuItem>
               </RouterLink>
             </Menu>
           </Paper>

@@ -10,9 +10,11 @@ import MyButton from 'components/MyButton';
 import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import MyTextField from '../../components/MyTextField';
 import AdminService from '../../services/api.js';
-
+import authService from '../../services/authService.js';
+import {COUNTRIES} from '../../components/countries';
+import Multiselect from '../../components/Multiselect.js';
+import MyDialog from '../../components/MyDialog.js';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -20,14 +22,13 @@ const useStyles = makeStyles(theme => ({
     '& .MuiTextField-root': {
         // width: '100%'
     },
-    '& .MuiOutlinedInput-multiline':{
-        padding: '3px 26px 3px 12px',
-        fontSize: 16,
+    '& .MuiOutlinedInput-input':{
+        padding: '17px 25px',
+        fontSize: 22,
     },
-    // '& .MuiOutlinedInput-input':{
-    //     padding: '3px 26px 3px 12px',
-    //     fontSize: 16,
-    // },
+    '& p':{
+      marginBottom: 0
+    }
   },
   tool: {
     minHeight: '67px'
@@ -58,10 +59,39 @@ const useStyles = makeStyles(theme => ({
   },
   size: {
     width: 214,
-    height: 214
-  }
+    height: 214,
+    cursor: 'pointer',
+  },
+  input: {
+    display: 'none',
+  }, 
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
+  error:{
+    color: 'red'
+  },
 }));
 const UserEdit = (props) => {
+  const {history} = props;
+
+  const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
+  const accessUsers = authService.getAccess('role_users');
+  const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
   const [profile, setProfile] = useState({});
   const companiesList=[];
@@ -70,9 +100,7 @@ const UserEdit = (props) => {
   const itemBuildings ={'edit' : 0 };
   const permissionList = ['Editer', 'Voir', 'Refusé'];
   const itemPermission ={'edit' : 0 , 'see' : 1, 'denied' : 2};
-  const {history} = props;
-  const [companies, setCompanies] = React.useState('');
-  const [buildings, setBuildings] = React.useState('');
+
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -85,103 +113,177 @@ const UserEdit = (props) => {
   const [productsPermission, setProductsPermission] = React.useState('');
   const [discountCodesPermission, setDiscountodesPermission] = React.useState('');
   const [usersPermission, setUsersPermission] = React.useState('');
+  const [avatarurl, setAvatarUrl] = React.useState('');
+  const [avatar, setAvatar] = React.useState(null);
+
+  const [errorsCompanies, setErrorsCompanies] = React.useState('');
+  const [errorsBuildings, setErrorsBuildings] = React.useState('');
+  const [errorsLastname, setErrorsLastname] = React.useState('');
+  const [errorsFirstname, setErrorsFirstname] = React.useState('');
+  const [errorsEmail, setErrorsEmail] = React.useState('');
+  const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
+  const [errorsCompaniesPermission, setErrorsCompaniesPermission] = React.useState('');
+  const [errorsBuildingsPermission, setErrorsBuildingsPermission] = React.useState('');
+  const [errorsManagersPermission, setErrorsManagersPermission] = React.useState('');
+  const [errorsOwnersPermission, setErrorsOwnersPermission] = React.useState('');
+  const [errorsOrdersPermission, setErrorsOrdersPermission] = React.useState('');
+  const [errorsProductsPermission, setErrorsProductsPermission] = React.useState('');
+  const [errorsDiscountcodesPermission, setErrorsDiscountcodesPermission] = React.useState('');
+  const [errorsUsersPermission, setErrorsUsersPermission] = React.useState('');
   const user = {
     name: 'Shen Zhi',
     avatar: '/images/avatars/avatar_11.png',
     bio: 'Brain Director'
   };
-
+  const selected = [
+    { label: "Albania",value: "Albania"},
+    { label: "Argentina",value: "Argentina"},
+    { label: "Austria",value: "Austria"},
+    { label: "Cocos Islands",value: "Cocos Islands"},
+    { label: "Kuwait",value: "Kuwait"},
+    { label: "Sweden",value: "Sweden"},
+    { label: "Venezuela",value: "Venezuela"}
+  ];
+  const [companies, setCompanies] = React.useState(selected);
+  const [buildings, setBuildings] = React.useState(selected);
+  const allCompanies =  COUNTRIES.map((country,id) => {
+    return {
+      label: country, value: country
+    }
+  })
+  const allBuildings = allCompanies;
   useEffect(() => {
-    AdminService.getAllCompanyList()
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code != 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          {
-            data.companylist.map((companylist,i)=>{
-              companiesList.push(companylist.company_name);
-            })
+    if(accessUsers == 'Denied'){
+      setOpenDialog(true);
+    }
+    if(accessUsers != 'Denied'){
+      AdminService.getAllCompanyList()
+      .then(      
+        response => {        
+          console.log(response.data);
+          // setVisibleIndicator(false);  
+          if(response.data.code != 200){
+            // if(response.data.status === 'Token is Expired') {
+            //   authService.logout();
+            //   history.push('/');
+            // }
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            {
+              data.companylist.map((companylist,i)=>{
+                companiesList.push(companylist.company_name);
+              })
+            }
           }
+        },
+        error => {
+          console.log('fail');        
+          // setVisibleIndicator(false);
+          // const resMessage =
+          //     (error.response &&
+          //       error.response.data &&
+          //       error.response.data.message) ||
+          //     error.message ||
+          //     error.toString();
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
-      }
-    );    
-    AdminService.getUser(props.match.params.id)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code != 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          const profile = data.user.profile;
-          {
-            data.user.building.map((building,i)=>{
-              buildingsList.push(building.building_name);
-            })
-          }
-          setLastName(profile.lastname);
-          setFirstName(profile.firstname);
-          setEmail(profile.email);
-          setPhoneNumber(profile.phone);
-          setCompanies(itemCompanies[profile.company_name]);
-          setBuildings(itemBuildings[profile.company_name]);
-          setCompaniesPermission(itemPermission[profile.company_permission]);
-          setManagersPermission(itemPermission[profile.manager_permission]);
-          setBuildingsPermission(itemPermission[profile.building_permission]);
-          setOwnersPermission(itemPermission[profile.owner_permission]);
-          setOrdersPermission(itemPermission[profile.orders_permission]);
-          setProductsPermission(itemPermission[profile.products_permission]);
-          setDiscountodesPermission(itemPermission[profile.discount_code_permission]);
-          setUsersPermission(itemPermission[profile.users_permission]);
+      );    
+      AdminService.getUser(props.match.params.id)
+      .then(      
+        response => {        
+          console.log(response.data);
+          // setVisibleIndicator(false);  
+          if(response.data.code != 200){
+            // if(response.data.status === 'Token is Expired') {
+            //   authService.logout();
+            //   history.push('/');
+            // }
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            const profile = data.user.profile;
+            {
+              data.user.building.map((building,i)=>{
+                buildingsList.push(building.building_name);
+              })
+            }
+            setLastName(profile.lastname);
+            setFirstName(profile.firstname);
+            setEmail(profile.email);
+            setPhoneNumber(profile.phone);
+            // setCompanies(itemCompanies[profile.company_name]);
+            // setBuildings(itemBuildings[profile.company_name]);
+            setCompaniesPermission(itemPermission[profile.company_permission]);
+            setManagersPermission(itemPermission[profile.manager_permission]);
+            setBuildingsPermission(itemPermission[profile.building_permission]);
+            setOwnersPermission(itemPermission[profile.owner_permission]);
+            setOrdersPermission(itemPermission[profile.orders_permission]);
+            setProductsPermission(itemPermission[profile.products_permission]);
+            setDiscountodesPermission(itemPermission[profile.discount_code_permission]);
+            setUsersPermission(itemPermission[profile.users_permission]);
 
+          }
+        },
+        error => {
+          console.log('fail');        
+          // setVisibleIndicator(false);
+          // const resMessage =
+          //     (error.response &&
+          //       error.response.data &&
+          //       error.response.data.message) ||
+          //     error.message ||
+          //     error.toString();
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
-      }
-    );    
+      );    
+    }
   }, []);
 
   const handleClick = ()=>{
     history.goBack();
   };
   const onClickSave = ()=>{
+    let cnt = 0;
+    if(lastname.length == 0) {setErrorsLastname('please enter your last name'); cnt++;}
+    else setErrorsLastname('');
+    if(firstname.length == 0) {setErrorsFirstname('please enter your first name'); cnt++;}
+    else setErrorsFirstname('');
+    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    else setErrorsCompanies('');
+    if(buildings.length == 0) {setErrorsBuildings('please select buildings'); cnt++;}
+    else setErrorsBuildings('');
+    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
+    else setErrorsEmail('');
+    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
+    else setErrorsPhonenumber('');
+    if(companiesPermission.length == 0) {setErrorsCompaniesPermission('please select permission to companies'); cnt++;}
+    else setErrorsCompaniesPermission('');
+    if(managersPermission.length == 0) {setErrorsManagersPermission('please select permission to managers'); cnt++;}
+    else setErrorsManagersPermission('');
+    if(buildingsPermission.length == 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
+    else setErrorsBuildingsPermission('');
+    if(ownersPermission.length == 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
+    else setErrorsOwnersPermission('');
+    if(ordersPermission.length == 0) {setErrorsOrdersPermission('please select permission to orders'); cnt++;}
+    else setErrorsOrdersPermission('');
+    if(productsPermission.length == 0) {setErrorsProductsPermission('please select permission to products'); cnt++;}
+    else setErrorsProductsPermission('');
+    if(discountCodesPermission.length == 0) {setErrorsDiscountcodesPermission('please select permission to discount codes'); cnt++;}
+    else setErrorsDiscountcodesPermission('');
+    if(usersPermission.length == 0) {setErrorsUsersPermission('please select permission to users'); cnt++;}
+    else setErrorsUsersPermission('');
 
+    if(cnt ==0){
+
+        handleClose();
+    }
   }
+  const handleCloseDialog = (val) => {
+    setOpenDialog(val);
+  };
 const handleChangeLastName = (event) => {
   setLastName(event.target.value);
 }
@@ -196,7 +298,9 @@ const handleChangePhoneNumber = (event) => {
 }
 const handleChangeCompanies = (val) => {
   setCompanies(val);
+  console.log(companies);
 }
+
 const handleChangeBuildings = (val) => {
   setBuildings(val);
 }
@@ -224,6 +328,10 @@ const handleChangeProductsPermission = (val) => {
 const handleChangeUsersPermission = (val) => {
   setUsersPermission(val);
 }
+const handleLoadFront = (event) => {
+  setAvatar(event.target.files[0]);
+  setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+}
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -244,33 +352,22 @@ const handleChangeUsersPermission = (val) => {
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
+        <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
           <Grid container direction="column" spacing={5}>
-            <Grid item container spacing={2} direction="row" justify="space-between">
-              <Grid item container direction="column" justify="space-between" xs={5}>
-                <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
-                <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:25}}>Carbinets</p></Grid>
-                    <Grid xs item container alignItems="stretch">
-                      <MySelect 
-                        color="gray" 
-                        width="289px" 
-                        data={companiesList}
-                        value={companies}
-                        onChangeSelect={handleChangeCompanies}
-                      />
-                    </Grid>
-                </Grid>
-              </Grid>
-              <Grid item container xs={5} direction="row-reverse">
+            <Grid item container spacing={2} direction="row-reverse">
+            <Grid item container xs={12} sm={4} direction="row-reverse">
+                <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
+                <label htmlFor="img_front">
+                {
                 <Badge
                   overlap="circle"
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',
-                    right: -20,
-                    top: 10,
-                    border: '2px solid gray',
-                    padding: '1px 4px',
+                    // right: -20,
+                    // top: 10,
+                    // border: '2px solid gray',
+                    // padding: '1px 4px',
                   }}
                   badgeContent={<EditOutlinedIcon style={{
                     width: 54,
@@ -281,84 +378,125 @@ const handleChangeUsersPermission = (val) => {
                     color: 'gray'
                   }}/>}
                 >
-                  <Avatar className={classes.size} alt="Travis Howard" src={user.avatar} />
+                  <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
                 </Badge>
+                }
+                </label>
+                <Grid xs={12} item container direction="row-reverse"><p style={{fontSize:25}}>Nombre de gestionnaires : 80</p></Grid>
+                <Grid xs={12} item container direction="row-reverse"><p style={{fontSize:25}}>Nombre de lots : 120000</p></Grid>
+              </Grid>
+              <Grid item container direction="column" justify="space-between" xs={12} sm={8}>
+                <Grid item container><p  style={{fontSize:35}}></p></Grid>
+                <Grid item container alignItems="center" spacing={2}>
+                    <Grid item><p style={{fontSize:25}}>Carbinets</p></Grid>
+                    <Grid xs item container alignItems="stretch">
+                      <Multiselect
+                        selected={companies}
+                        no={'No companies found'}
+                        hint={'Add new Company'}
+                        all={allCompanies} 
+                        onSelected={handleChangeCompanies}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        />
+                        {errorsCompanies.length > 0 && 
+                        <span className={classes.error}>{errorsCompanies}</span>}
+                    </Grid>
+
+                </Grid>
               </Grid>
             </Grid>
-            <Grid item container direction="column" spacing={2} justify="space-between">
-              <Grid item container direction="row" justify="space-between">
-                <Grid item container direction="column" justify="space-between" xs={5}>
+            <Grid item container direction="column" spacing={2}>
+              <Grid item container direction="row" >
+                <Grid item container direction="column"  xs={12} sm={8}>
                     <Grid item container alignItems="center" spacing={2}>
                         <Grid item><p style={{fontSize:25}}>Immeubles</p></Grid>
                         <Grid xs item container alignItems="stretch">
-                          <MySelect 
-                            color="gray" 
-                            width="289px" 
-                            data={buildingsList}
-                            value={buildings}
-                            onChangeSelect={handleChangeBuildings}
-                          />
+                          <Multiselect
+                            selected={buildings}
+                            no={'No buildings found'}
+                            hint={'Add new Buildings'}
+                            all={allBuildings} 
+                            onSelected={handleChangeBuildings}
+                            disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                            />
+                          {errorsBuildings.length > 0 && 
+                          <span className={classes.error}>{errorsBuildings}</span>}
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item><p style={{fontSize:25}}>Nombre de gestionnaires : 80</p></Grid>
-              </Grid>
-              <Grid item container direction="row" justify="space-between">
-                <Grid xs={5} item container alignItems="stretch">
-                </Grid>
-                <Grid xs={5} item container direction="row-reverse"><p style={{fontSize:25}}>Nombre de lots : 120000</p></Grid>
+                
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined" 
-                  placeholder="johndoe@gmail.com"
-                  value={lastname}
-                  onChange={handleChangeLastName} 
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined" 
+                    placeholder="johndoe@gmail.com"
+                    value={lastname}
+                    onChange={handleChangeLastName} 
+                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                  />
+                </Grid>
+                {errorsLastname.length > 0 && 
+                <span className={classes.error}>{errorsLastname}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>Prénom</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined" 
-                  placeholder="johndoe@gmail.com"
-                  value={firstname}
-                  onChange={handleChangeFirstName} 
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined" 
+                    placeholder="johndoe@gmail.com"
+                    value={firstname}
+                    onChange={handleChangeFirstName} 
+                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                  />
+                </Grid>  
+                {errorsFirstname.length > 0 && 
+                <span className={classes.error}>{errorsFirstname}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>Email</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined" 
-                  placeholder="johndoe@gmail.com"
-                  value={email}
-                  onChange={handleChangeEmail} 
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined" 
+                    placeholder="johndoe@gmail.com"
+                    value={email}
+                    onChange={handleChangeEmail} 
+                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                  />
+                </Grid>  
+                {errorsEmail.length > 0 && 
+                <span className={classes.error}>{errorsEmail}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p style={{fontSize:25}}>Téléphone</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined" 
-                  placeholder="0102030405"
-                  value={phonenumber}
-                  onChange={handleChangePhoneNumber} 
-                />
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField 
+                    id="outlined-basic" 
+                    className={classes.text} 
+                    variant="outlined" 
+                    placeholder="0102030405"
+                    value={phonenumber}
+                    onChange={handleChangePhoneNumber} 
+                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                  />
+                </Grid>  
+                {errorsPhonenumber.length > 0 && 
+                <span className={classes.error}>{errorsPhonenumber}</span>}
               </Grid>
             </Grid>
 
@@ -374,7 +512,10 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={companiesPermission}
                         onChangeSelect={handleChangeCompaniesPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                       />
+                      {errorsCompaniesPermission.length > 0 && 
+                      <span className={classes.error}>{errorsCompaniesPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
                       <p style={{fontSize:24}}>Gestionnaires</p>
@@ -384,7 +525,10 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={managersPermission}
                         onChangeSelect={handleChangeManagersPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                         />
+                        {errorsManagersPermission.length > 0 && 
+                        <span className={classes.error}>{errorsManagersPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
                       <p style={{fontSize:24}}>Immeuables</p>
@@ -394,7 +538,10 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={buildingsPermission}
                         onChangeSelect={handleChangeBuildingsPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                       />
+                      {errorsBuildingsPermission.length > 0 && 
+                      <span className={classes.error}>{errorsBuildingsPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
                       <p style={{fontSize:24}}>Coproprietaires</p>
@@ -404,7 +551,10 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={ownersPermission}
                         onChangeSelect={handleChangeOwnersPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                       />
+                      {errorsOwnersPermission.length > 0 && 
+                      <span className={classes.error}>{errorsOwnersPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
                       <p style={{fontSize:24}}>Commandes</p>
@@ -414,7 +564,10 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={ordersPermission}
                         onChangeSelect={handleChangeOrdersPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                       />
+                      {errorsOrdersPermission.length > 0 && 
+                      <span className={classes.error}>{errorsOrdersPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
                       <p style={{fontSize:24}}>Prodults</p>
@@ -424,7 +577,10 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={productsPermission}
                         onChangeSelect={handleChangeProductsPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                       />
+                      {errorsProductsPermission.length > 0 && 
+                        <span className={classes.error}>{errorsProductsPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
                       <p style={{fontSize:24}}>Codes Promo</p>
@@ -434,7 +590,10 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={discountCodesPermission}
                         onChangeSelect={handleChangeDiscountCodesPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                       />
+                      {errorsDiscountcodesPermission.length > 0 && 
+                      <span className={classes.error}>{errorsDiscountcodesPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
                       <p style={{fontSize:24}}>Utilisateurs</p>
@@ -444,13 +603,17 @@ const handleChangeUsersPermission = (val) => {
                         data={permissionList}
                         value={usersPermission}
                         onChangeSelect={handleChangeUsersPermission}
+                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
                       />
+                      {errorsUsersPermission.length > 0 && 
+                      <span className={classes.error}>{errorsUsersPermission}</span>}
                     </Grid>
                 </Grid> 
                 </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton   name={"Sauvegarder"} color={"1"} onClickSave={onClickSave}/>
+              <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessUsers =='See'? 'disabled' : !'disabled')}/>
             </Grid>
         </div>
       </Grid>

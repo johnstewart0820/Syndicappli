@@ -37,6 +37,9 @@ const AddManager = (props) => {
   const handleClose = ()=>{
     props.onCancel();
   };
+  const handleClickAdd = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} sm={12}>
@@ -149,8 +152,8 @@ const AddManager = (props) => {
             </Grid>
             <div className={classes.footer}>
                 <Grid container justify="space-between">
-                    <MyButton name = {"Creer"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="gray" handleClose={handleClose}/>
+                    <MyButton name = {"Creer"} color={"1"} onClick={handleClickAdd}/>
+                    <MyButton name = {"Annuler"} bgColor="gray" onClick={handleClose}/>
                 </Grid>
             </div>
         </div>

@@ -36,6 +36,9 @@ const AddDiscountCode = (props) => {
   const handleClose = ()=>{
     props.onCancel();
   };
+  const handleClickAdd = ()=>{
+    props.onCancel();
+  };
   return (
     <div className={classes.root}>
         <div className={classes.paper} >
@@ -93,9 +96,9 @@ const AddDiscountCode = (props) => {
                 </Grid>
             </Grid>
             <div className={classes.footer}>
-                <Grid container justify="space-between">
+                <Grid container justify="space-between" onClick={handleClickAdd}>
                     <MyButton name = {"Ajouter"} color={"1"}/>
-                    <MyButton name = {"Annuler"} bgColor="gray" handleClose={handleClose}/>  
+                    <MyButton name = {"Annuler"} bgColor="gray" onClick={handleClose}/>  
                 </Grid>
             </div>
         </div>
