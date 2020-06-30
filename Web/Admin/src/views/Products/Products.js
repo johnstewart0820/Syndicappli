@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import MyTable from '../../components/MyTable';
+import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
-import Pagination from '@material-ui/lab/Pagination';
 import Dialog from '@material-ui/core/Dialog';
-import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AddProduct from './AddProduct';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import authService from '../../services/authService.js';
 import MyDialog from '../../components/MyDialog';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Box from '@material-ui/core/Box';
+import AdminService from '../../services/api.js';
+import ProductsManager from './components/ProductsManager';
+import ProductsBuilding from './components/ProductsBuilding';
+import ProductsOwner from './components/ProductsOwner';
+import { transform } from 'typescript';
+
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4)
+    paddingRight: theme.spacing(4),
+    '& .MuiTab-root': {
+      textTransform: 'none'
+    },
+    '& .PrivateTabIndicator-colorSecondary-49': {
+      backgroundColor: '#363636'
+    }
   },
   tool: {
     minHeight: '67px'
@@ -29,14 +42,47 @@ const useStyles = makeStyles(theme => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+
   },
   padding: {
     padding: 32
   },
   close : {
     color: 'gray'
-  }
+  },
+
 }));
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
 const Products = (props) => {
   const {history} = props;
 
@@ -45,46 +91,33 @@ const Products = (props) => {
     history.push("/login");
     window.location.reload();
   }
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
   const accessProducts = authService.getAccess('role_products');
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+
+  const [deleteId,setDeleteId] = useState(-1);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-  const handleClickEdit = (id) => {
-    console.log(id);
-    history.push('/products/edit/'+id);
-  }
   const handleClose = () => {
     setOpen(false);
   };
   const handleAdd = ()=>{
 
   };
-  const [dataList, setDataList] = useState([]);
-  useEffect(() => {
-    console.log('a');
-  });
-  useEffect(() => {
-    console.log('b');
-    getDataList();
-  }, []);
-  const getDataList = () => {
-    setDataList([
-      { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 2, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
-      { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
-      { id: 5, name: 'Butter', price: 0.9, stock: 99 },
-      { id: 6, name: 'Sour Cream ', price: 2.9, stock: 86 },
-      { id: 7, name: 'Fancy French Cheese 🇫🇷', price: 99, stock: 12 },
-      { id: 8, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 9, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 10, name: 'Yoghurt', price: 2.4, stock: 12 },
-    ])
-  }
-  const cellList = [ 'name', 'price', 'stock']
+  const handleClickAdd = ()=>{
+    if(accessProducts == 'Edit'){
+      setOpen(true);
+    }
+    if(accessProducts == 'See'){
+      setOpenDialog(true);
+    }
+  };
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -98,7 +131,7 @@ const Products = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <MyButton name = {"Nouveau Produits"} color={"1"} onClick={handleOpen}/>
+              <MyButton name = {"Nouveau Produits"} color={"1"} onClick={handleClickAdd}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -116,10 +149,22 @@ const Products = (props) => {
         </Grid>
       </div>
       <div className={classes.tool}>
+        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+          <Tab label="Gestionnaires" {...a11yProps(0)} style={{fontSize:20}}/>
+          <Tab label="Copropriétaires" {...a11yProps(1)} style={{fontSize:20}}/>
+          <Tab label="Copropriété" {...a11yProps(2)} style={{fontSize:20}}/>
+        </Tabs>
       </div> 
       <div className={classes.body}>
-      <MyDialog role={accessProducts} content="Access is denied!"/>
-      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
+        <TabPanel value={value} index={0}>
+          <ProductsManager />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <ProductsOwner />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <ProductsBuilding />
+        </TabPanel>
       </div>
     </div>
   );

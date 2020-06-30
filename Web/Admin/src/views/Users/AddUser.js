@@ -56,13 +56,13 @@ const AddUser = (props) => {
   
   const permissionList = ['','Editer', 'Voir', 'Refusé'];
   const selected = [
-    { label: "Albania"},
-    { label: "Argentina"},
-    { label: "Austria"},
-    { label: "Cocos Islands"},
-    { label: "Kuwait"},
-    { label: "Sweden"},
-    { label: "Venezuela"}
+    { label: "Albania",value: "Albania"},
+    { label: "Argentina",value: "Argentina"},
+    { label: "Austria",value: "Austria"},
+    { label: "Cocos Islands",value: "Cocos Islands"},
+    { label: "Kuwait",value: "Kuwait"},
+    { label: "Sweden",value: "Sweden"},
+    { label: "Venezuela",value: "Venezuela"}
   ];
   const [companies, setCompanies] = React.useState(selected);
   const [buildings, setBuildings] = React.useState(selected);

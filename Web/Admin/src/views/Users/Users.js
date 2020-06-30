@@ -232,7 +232,7 @@ const Users = (props) => {
       <div className={classes.tool}>
       </div> 
       <div className={classes.body}>
-      <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog}/>
+        <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog}/>
         <MyTable 
           onChangeSelect={handleChangeSelect} 
           onChangePage={handleChangePagination} 

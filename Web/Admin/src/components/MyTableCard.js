@@ -116,12 +116,12 @@ export default function ProductTable  (props)  {
   }
   const [cells,setCells] = useState(props.cells);
   const items = props.products;
-  const footer = props.footerItems ? props.footerItems: [];
   const [open, setOpen] = React.useState(false);
   const [direct, setDirect] = React.useState(tempDirect);
   const handleClickOpen = () => {
     setOpen(true);
   };
+  console.log(items);
   const handleClose = () => {
     setOpen(false);
   };
@@ -133,7 +133,7 @@ export default function ProductTable  (props)  {
   };
   const dataList=[20, 50, 100, 200, "all"];
 
-  console.log(props.tblFooter);
+
   const [value, setValue] = React.useState(0);
   const handleChange = (event) => {
     props.onChangeSelect(event.target.value);
@@ -181,69 +181,39 @@ export default function ProductTable  (props)  {
         </Grid>
         <Grid item container >
           <Table className={classes.root}>
-            <TableHead>
-              <TableRow >
-                {
-                  cells.map((cell,i)=>(
-                    <TableCell key={i}>
-                    <button
-                      type="button"
-                      onClick={() => Sort(i)}
-                    >
-                      {cell.field}
-                    </button>
-                      <i style={{fontStyle:'normal'}}>{direct[i]}</i>
-
-                  </TableCell>
-                  ))
-                }
-                <TableCell align="right"></TableCell>
-              </TableRow>
-            </TableHead>
+            <TableHead />
             <TableBody>
               {items.map((item) => (
                 <TableRow key={item.userID}>
+                    <TableCell>
+                        <img src="/images/card.png"></img>
+                    </TableCell>
                   {
                   cells.map((cell,i)=>{
                     const value = item[cell.key];
                     return(
-                    <TableCell key={cell.key} onClick={()=>props.onClickEdit(item.adminID)}>
+                    <TableCell key={cell.key}>
 
                       {value}
                   </TableCell>);
                   })
                   }
                   <TableCell align="right">
-                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.adminID)}/>
+                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.userID)}/>
                       &nbsp;&nbsp;
-                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.adminID)}></DeleteIcon>
+                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.userID)}></DeleteIcon>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter className={(props.tblFooter === 'true' || items.length === 0) ? classes.show : classes.hide}>
-              {
-                items.length === 0 ?
-                  <TableRow>
-                    <TableCell colSpan="100%" style={{ textAlign: 'center'}}>{'No datas found'}</TableCell>
-                  </TableRow>
-                :
-                <TableRow>
-                  {
-                    footer.map((footerItem,i)=>{
-                      return(
-                        <TableCell key={i}>
-                          {footerItem}
-                        </TableCell>
-                      );
-                    })
-                  }
-                </TableRow>
-              }
+            <TableFooter className={props.tblFooter ? classes.show : classes.hide}>
+              <TableRow >
+
+              </TableRow>
             </TableFooter>
           </Table>
         </Grid>
-        <Grid item container  className={classes.body} alignItems="center">
+        <Grid item container justify="space-between" className={classes.body} alignItems="center">
           <Grid xs={6} item container className={props.leftBtn ? classes.show : classes.hide} >
             <MyButton name={props.leftBtn} color={"1"} />
           </Grid>
