@@ -26,9 +26,6 @@ const useStyles = makeStyles(theme => ({
     '& .MuiTab-root': {
       textTransform: 'none'
     },
-    '& .PrivateTabIndicator-colorSecondary-49': {
-      backgroundColor: '#363636'
-    }
   },
   tool: {
     minHeight: '67px'
@@ -149,10 +146,16 @@ const Products = (props) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-          <Tab label="Gestionnaires" {...a11yProps(0)} style={{fontSize:20}}/>
-          <Tab label="Copropriétaires" {...a11yProps(1)} style={{fontSize:20}}/>
-          <Tab label="Copropriété" {...a11yProps(2)} style={{fontSize:20}}/>
+        <Tabs value={value} onChange={handleChange} 
+              TabIndicatorProps={{
+                style: {
+                  backgroundColor: "#363636"
+                }
+              }}
+        >
+          <Tab xs={12} sm={4} label="Gestionnaires" {...a11yProps(0)} style={{fontSize:20}}/>
+          <Tab xs={12} sm={4} label="Copropriétaires" {...a11yProps(1)} style={{fontSize:20}}/>
+          <Tab xs={12} sm={4} label="Copropriété" {...a11yProps(2)} style={{fontSize:20}}/>
         </Tabs>
       </div> 
       <div className={classes.body}>

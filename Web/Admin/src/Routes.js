@@ -110,7 +110,7 @@ const Routes = () => {
         component={ManagerEdit}
         exact
         layout={MainLayout}
-        path="/managers/edit"
+        path="/managers/edit/:id"
       />
       <RouteWithLayout
         component={SignUpView}

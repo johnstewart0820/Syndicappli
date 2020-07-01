@@ -72,10 +72,10 @@ const ProductsManager = (props) => {
   }, []);
   const getDataList = () => {
     setDataList([
-      { id: 1, productname: 'Cheese', price: 4.9},
-      { id: 2, productname: 'Milk', price: 1.9},
-      { id: 3, productname: 'Yoghurt', price: 2.4},
-      { id: 4, productname: 'Heavy Cream', price: 3.9 },
+      { userID: 1, productname: 'Cheese', price: 4.9},
+      { userID: 2, productname: 'Milk', price: 1.9},
+      { userID: 3, productname: 'Yoghurt', price: 2.4},
+      { userID: 4, productname: 'Heavy Cream', price: 3.9 },
     ])
   }
   const getDatas = ()=>{
@@ -127,7 +127,7 @@ const ProductsManager = (props) => {
     {key : 'price' , field : 'Prix'},
   ];
   const columns = [];
-  for(let i = 0; i < 4; i++)
+  for(let i = 0; i < 2; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/products/edit/'+id);

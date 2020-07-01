@@ -193,7 +193,7 @@ const BuildingsEdit = (props) => {
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
-          <Grid container direction="column" spacing={5} xs={12} sm={10} md={8}>
+          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8}>
             <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p style={{fontSize:25}}>Nom</p></Grid>

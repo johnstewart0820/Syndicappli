@@ -97,7 +97,7 @@ const Sidebar = props => {
       open={open}
       variant={variant}
     >
-    <Scrollbars style={{ height: "100vh" }}>
+    {/* <Scrollbars style={{ height: "100vh" }}> */}
 
       <div
         {...rest}
@@ -112,7 +112,7 @@ const Sidebar = props => {
         </div>
         <UpgradePlan />
       </div>
-    </Scrollbars>
+    {/* </Scrollbars> */}
 
     </Drawer>
   );

@@ -65,7 +65,6 @@ export default function CustomizedSelects(props) {
   };
 
   return (
-    <div>
       <FormControl className={classes.margin}>
         <NativeSelect
           labelId="demo-customized-select-label"
@@ -81,6 +80,5 @@ export default function CustomizedSelects(props) {
           )}
         </NativeSelect>
       </FormControl>
-    </div>
   );
 }

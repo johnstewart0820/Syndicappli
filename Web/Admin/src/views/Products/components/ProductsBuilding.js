@@ -117,7 +117,7 @@ const ProductsBuilding = (props) => {
     {key : 'price' , field : 'Prix'},
   ];
   const columns = [];
-  for(let i = 0; i < 4; i++)
+  for(let i = 0; i < 2; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/products/edit/'+id);

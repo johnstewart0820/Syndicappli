@@ -12,10 +12,20 @@ import AddManager from './AddManager';
 import { withRouter } from 'react-router-dom';
 import authService from '../../services/authService.js';
 import MyDialog from '../../components/MyDialog';
+import AdminService from '../../services/api.js';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
     paddingRight: theme.spacing(4),
+    '& p': {
+      marginBottom: 0
+    }
   },
   tool: {
     minHeight: '67px'
@@ -37,54 +47,167 @@ const useStyles = makeStyles(theme => ({
     color: 'gray'
   }
 }));
+var  footerItems;
 const Managers = (props) => {
   const {history}=props;
   const token = authService.getToken();    
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   const accessManagers = authService.getAccess('role_managers');
+
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+
+  const [deleteId,setDeleteId] = useState(-1);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [dataList, setDataList] = useState([]);
+  const [totalpage , setTotalPage] = useState(1);
+  const [row_count, setRowCount] = useState(20);
+  const [page_num , setPageNum] = useState(1);
+  const [sort_column, setSortColumn] = useState(-1);
+  const [sort_method , setSortMethod] = useState('asc');
+  const selectList=[20, 50, 100, 200, -1];
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-  const handleClickEdit = (id) => {
-    console.log(id);
-    history.push('/managers/edit/'+id);
-  }
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleCloseDialog = (val) => {
+    setOpenDialog(val);
   };
   const handleAdd = ()=>{
 
   };
-  const [dataList, setDataList] = useState([]);
-  useEffect(() => {
-    console.log('a');
+  const handleClickAdd = ()=>{
+    if(accessManagers == 'Edit'){
+      setOpen(true);
+    }
+    if(accessManagers == 'See'){
+      setOpenDialog(true);
+    }
+  };
+  const handleChangeSelect = (value) => {
+    setRowCount(selectList[value]);
+  }
+  const handleChangePagination = (value)=>{
+    setPageNum(value);
+  }
+  const handleSort = (index , direct)=>{
+    setSortColumn(index);
+    setSortMethod(direct);
+  }
+  const getDatas = ()=>{
+    const requestData = {
+      'search_key': '',
+      'page_num' : page_num-1,
+      'row_count' : row_count,
+      'sort_column' : sort_column,
+      'sort_method' : sort_method
+    }
+    AdminService.getUserList(requestData)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code != 200){
+          // if(response.data.status === 'Token is Expired') {
+          //   authService.logout();
+          //   history.push('/');
+          // }
+          console.log('error');
+        } else {
+          console.log('success');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+
+          setTotalPage(data.totalpage);
+          setDataList(data.userlist);
+              let amount_connection = 0;
+          for(let i = 0; i < dataList.length; i++)
+            amount_connection += dataList[i].amount_connection;
+          footerItems = ['Total',dataList.length,amount_connection, amount_connection, amount_connection];
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+        // const resMessage =
+        //     (error.response &&
+        //       error.response.data &&
+        //       error.response.data.message) ||
+        //     error.message ||
+        //     error.toString();
+      }
+    );
+  }
+  useEffect(()=>{
+    if(accessManagers == 'Denied'){
+      setOpenDialog(true);
+    }
   });
   useEffect(() => {
-    console.log('b');
-    getDataList();
-  }, []);
-  const getDataList = () => {
-    setDataList([
-      { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 2, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
-      { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
-      { id: 5, name: 'Butter', price: 0.9, stock: 99 },
-      { id: 6, name: 'Sour Cream ', price: 2.9, stock: 86 },
-      { id: 7, name: 'Fancy French Cheese 🇫🇷', price: 99, stock: 12 },
-      { id: 8, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 9, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 10, name: 'Yoghurt', price: 2.4, stock: 12 },
-    ])
+    // getDataList();
+    if(accessManagers != 'Denied')
+        getDatas();
+  }, [page_num, row_count,sort_column, sort_method]);
+  const cellList = [ 
+    {key : 'fullname' , field : 'Nom Prénom'}, 
+    {key : 'email' , field : 'Email'},
+    {key : 'connection' , field : 'Connexions/mois'}, 
+    {key : 'dailytime' , field : 'Temps connexion/jour'},
+    {key : 'apartment' , field : 'Lots'}
+  ];
+  const columns = [];
+  for(let i = 0; i < 5; i++)
+    columns[i] = 'asc';
+  const handleClickEdit = (id) => {
+    history.push('/managers/edit/'+id);
+  };
+  const handleClickDelete = (id)=>{
+    if(accessManagers == 'Edit'){
+      setOpenDelete(true);
+      setDeleteId(id);
+    }else{
+      setOpenDialog(true);
+    }
+  };
+  const handleDelete = ()=>{
+    handleCloseDelete();
+    setDeleteId(-1);
+    AdminService.deleteUser(deleteId)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code != 200){
+          // if(response.data.status === 'Token is Expired') {
+          //   authService.logout();
+          //   history.push('/');
+          // }
+          console.log('error');
+        } else {
+          console.log('success');
+          alert('Deleted successful');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+          getDatas();
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+      }
+    );
   }
-  const cellList = [ 'name', 'price', 'stock']
-
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -98,7 +221,7 @@ const Managers = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <MyButton name = {"Nouveau Gestionnaires"} color={"1"} onClick={handleOpen}/>
+              <MyButton name = {"Nouveau Gestionnaires"} color={"1"} onClick={handleClickAdd}/>
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -121,7 +244,13 @@ const Managers = (props) => {
             <Grid item ><p>Carbinet</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
-                <MySelect color="gray" width="316px" data={cellList}/>
+                <MySelect 
+                    color="gray" 
+                    width="316px" 
+                    data={selectList} 
+                    // onChangeSelect={handleChangeCompanies}
+                    // value={companies}
+                />
               </Grid>
             </Grid>
         </Grid>
@@ -129,16 +258,59 @@ const Managers = (props) => {
             <Grid item ><p>Immeuble</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
-                <MySelect color="gray" width="316px" data={cellList}/>
+                <MySelect 
+                    color="gray" 
+                    width="316px" 
+                    data={selectList} 
+                    // onChangeSelect={handleChangeBuildings}
+                    // value={buildings}
+                />
               </Grid>
             </Grid>
         </Grid>
       </Grid>
       </div> 
       <div className={classes.body}>
-      <MyDialog role={accessManagers} content="Access is denied!"/>
-      <MyTable products={dataList} cells={cellList} onClickEdit={handleClickEdit}/>
+        <MyDialog open={openDialog} role={accessManagers} onClose={handleCloseDialog}/>
+        <MyTable 
+          onChangeSelect={handleChangeSelect} 
+          onChangePage={handleChangePagination} 
+          onSelectSort={handleSort} 
+          page={page_num} 
+          columns={columns} 
+          products={dataList} 
+          totalpage={totalpage} 
+          cells={cellList} 
+          onClickEdit={handleClickEdit}
+          onClickDelete={handleClickDelete}
+          tblFooter = "true"
+          footerItems = {footerItems}
+        />
       </div>
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle id="alert-dialog-title">
+          Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

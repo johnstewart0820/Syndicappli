@@ -50,10 +50,34 @@ const Dashboard = (props) => {
       </div>
       <div className={classes.tool}>
       <Grid container spacing={2} direction="row-reverse" >
-        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
-        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
-        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
-        <Grid item><MySelect color="gray" width="239px" data={cellList}/></Grid>
+        <Grid item>
+          <MySelect 
+            color="gray" 
+            width="239px" 
+            data={cellList}
+            />
+        </Grid>
+        <Grid item>
+          <MySelect 
+            color="gray" 
+            width="239px" 
+            data={cellList}
+          />
+        </Grid>
+        <Grid item>
+          <MySelect 
+            color="gray" 
+            width="239px" 
+            data={cellList}
+          />
+        </Grid>
+        <Grid item>
+          <MySelect 
+            color="gray" 
+            width="239px" 
+            data={cellList}
+          />
+        </Grid>
       </Grid>
       </div> 
       <div className={classes.body}>

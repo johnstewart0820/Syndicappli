@@ -14,7 +14,7 @@ const Multiselect = (props)=> {
       props.onSelected(value);
     }
     return (
-      <div style={{width: '100%'}}>
+      <div style={{width: '80%'}}>
         <Select 
           options={suggestions} 
           defaultValue={tags}

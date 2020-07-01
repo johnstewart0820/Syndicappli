@@ -10,17 +10,18 @@ const useStyles = makeStyles((theme,props) => ({
   button1: {
     background: 'linear-gradient(90deg, #00C9FF 10%, #0CC77C 90%)',
     border: 0,
-    borderRadius: '40px',
+    borderRadius: '52px',
     color: 'white',
-    padding: '10px 30px',
-    textTransform: 'none'
+    padding: '15px 30px',
+    textTransform: 'none',
+    border: '1px solid',
   },
   button2: {
     border: '1px solid',
     borderColor: props=>props.bgColor,
-    borderRadius: '40px',
+    borderRadius: '52px',
     color: props=>props.bgColor,
-    padding: '10px 30px',
+    padding: '15px 30px',
     textTransform: 'none'
   },
 }));
@@ -33,13 +34,11 @@ export default function MyButton(props) {
       props.onClick();
   };
   return (
-    <div>
       <Button onClick={btnClick} className={props.color ? classes.button1 : classes.button2} 
         style={{fontSize:20}}
         disabled={props.disabled == 'disabled'? true : false}
         >
           {props.name}
       </Button>
-    </div>
   );
 }

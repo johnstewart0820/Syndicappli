@@ -1,32 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import MyTable from '../../components/MyTable';
-import MyTableCard from '../../components/MyTableCard';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import { Avatar } from '@material-ui/core';
 import MySelect from '../../components/MySelect';
 import MyButton from 'components/MyButton';
-import theme from 'theme';
-import Badge from '@material-ui/core/Badge';
-import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import MyTextField from '../../components/MyTextField';
 import authService from '../../services/authService.js';
-import { setStatic } from 'recompose';
 import Multiselect from '../../components/Multiselect.js';
 import {COUNTRIES} from '../../components/countries';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { Checkbox } from '@material-ui/core';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
     paddingRight: theme.spacing(4),
     '& .MuiTextField-root': {
-        // width: '100%'
+         width: '80%'
     },
     '& .MuiOutlinedInput-multiline':{
-        padding: '3px 26px 3px 12px',
-        fontSize: 16,
+        padding: '3px 12px 3px 12px',
+        fontSize: 22,
     },
     '& p':{
         marginBottom : 0
@@ -72,26 +65,28 @@ const useStyles = makeStyles(theme => ({
 }));
 const ProductsEdit = (props) => {
   const {history}=props;
-  const token = authService.getToken();    
+  const token = authService.getToken();  
+  const priceTypeList = ['','Editer', 'Voir', 'Refusé'];  
   if (!token) {
     history.push("/login");
     window.location.reload();
   }
   const accessBuildings = authService.getAccess('role_buildings');  
   const classes = useStyles();
-  const [dataList, setDataList] = useState([]);
 
-  const [name, setName] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [accountHolder, setAccountHolder] = React.useState('');
-  const [accountAddress, setAccountAddress] = React.useState('');
-  const [accountIban, setAccountIban] = React.useState('');
-  const [errorsName, setErrorsName] = React.useState('');
-  const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsAccountHolder, setErrorsAccountHolder] = React.useState('');
-  const [errorsAccountAddress, setErrorsAccountAddress] = React.useState('');
-  const [errorsAccountIban, setErrorsAccountIban] = React.useState('');
-  const [errorsCompanies, setErrorsCompanies] = React.useState('');
+  const [renewal, setRenewal] = useState(false);
+  const [productName, setProductName] = useState('');
+  const [productDescription, setProductDescription] = useState('');
+  const [priceType, setPriceType] = useState('');
+  const [price, setPrice] = useState('');
+
+  const [errorsCategorie, setErrorsCategorie] = useState('');
+  const [errorsBillingCycle, setErrorsBillingCycle] = useState('');
+  const [errorsRenewal, setErrorsRenewal] = useState('');
+  const [errorsProductName, setErrorsProductName] = useState('');
+  const [errorsProductDescription, setErrorsProductDescription] = useState('');
+  const [errorsPriceType, setErrorsPriceType] = useState('');
+  const [errorsPrice, setErrorsPrice] = useState('');
 
   const user = {
     name: 'Shen Zhi',
@@ -107,67 +102,61 @@ const ProductsEdit = (props) => {
     { label: "Sweden",value: "Sweden"},
     { label: "Venezuela",value: "Venezuela"}
   ];
-  const [companies, setCompanies] = React.useState(selected);
-  const allCompanies =  COUNTRIES.map((country,id) => {
+  const [categorie, setCategorie] = React.useState(selected);
+  const [billingCycle, setBillingCycle] = React.useState(selected);
+  const companiesList =  COUNTRIES.map((country,id) => {
     return {
       label: country, value: country
     }
   })
+  const buildingsList = companiesList;
   useEffect(() => {
     if (!token) {
         history.push("/login");
         window.location.reload();
     }
   });
-  useEffect(() => {
-    console.log('b');
-    getDataList();
-  }, []);
-  const getDataList = () => {
-    setDataList([
-      { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 2, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
-      { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
-      { id: 5, name: 'Butter', price: 0.9, stock: 99 },
-    ])
-  };
+
   const handleClick = ()=>{
     history.goBack();
   };
 
-  const handleChangeCompanies = (val) =>{
-    setCompanies(val);
-  };
-  const handleChangeName = (event) =>{
-    setName(event.target.value);
-  };
-  const handleChangeAddress = (event) =>{
-    setAddress(event.target.value);
-  };
-  const handleChangeAccountHolder = (event) =>{
-    setAccountHolder(event.target.value);
-  };
-  const handleChangeAccountAddress = (event) =>{
-    setAccountAddress(event.target.value);
-  };
-  const handleChangeAccountIban = (event) =>{
-    setAccountIban(event.target.value);
-  };
+  const handleChangeProductName = (event) => {
+    setProductName(event.target.value);
+}
+const handleChangeProductDescription = (event) => {
+  setProductDescription(event.target.value);
+}
+const handleChangePrice = (event) => {
+  setPrice(event.target.value);
+}
+const handleChangePriceType = (val) => {
+  setPriceType(val);
+}
+const handleChangeCategorie = (val) => {
+  setCategorie(val);
+}
+const handleChangeBillingCycle = (val) => {
+  setBillingCycle(val);
+}
+const handleChangeRenewal = (event) => {
+  setRenewal(event.target.checked);
+}
   const handleClickAdd = ()=>{
     let cnt = 0;
-    if(name.length == 0) {setErrorsName('please enter your name'); cnt++;}
-    else setErrorsName('');
-    if(address.length == 0) {setErrorsAddress('please enter your first name'); cnt++;}
-    else setErrorsAddress('');
-    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
-    else setErrorsCompanies('');
-    // if(AccountAddress.length == 0) {setErrorsAccountAddress('please select buildings'); cnt++;}
-    // else setErrorsAccountAddress('');
-    // if(AccountHolder.length == 0) {setErrorsAccountHolder('please enter your email'); cnt++;}
-    // else setErrorsAccountHolder('');
-    // if(AccountIban.length == 0) {setErrorsAccountIban('please enter your phone number'); cnt++;}
-    // else setErrorsAccountIban('');
+    if(productName.length == 0) {setErrorsProductName('please enter your product name'); cnt++;}
+    else setErrorsProductName('');
+    if(productDescription.length == 0) {setErrorsProductDescription('please enter your product description'); cnt++;}
+    else setErrorsProductDescription('');
+    if(categorie.length == 0) {setErrorsCategorie('please select categorie'); cnt++;}
+    else setErrorsCategorie('');
+    if(billingCycle.length == 0) {setErrorsBillingCycle('please select billing cycle'); cnt++;}
+    else setErrorsBillingCycle('');
+    if(price.length == 0) {setErrorsPrice('please enter price'); cnt++;}
+    else setErrorsPrice('');
+    if(priceType.length == 0) {setErrorsPriceType('please enter your price type'); cnt++;}
+    else setErrorsPriceType('');
+
     if(cnt ==0){
 
         handleClose();
@@ -193,122 +182,107 @@ const ProductsEdit = (props) => {
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
-          <Grid container direction="column" spacing={5} xs={12} sm={10} md={8}>
+          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8}>
             <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  variant="outlined" 
-                  placeholder="Cabinet Loiselet & Daigremant"
-                  value={name}
-                  fullWidth
-                  onChange={handleChangeName}
-                  disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
-                />
-                {errorsName.length > 0 && 
-                <span className={classes.error}>{errorsName}</span>}
-              </Grid>
+                <Grid item><p style={{fontSize:25}}>Catégorie</p></Grid>
+                <Grid xs item container direction="column">
+                    <Multiselect
+                        selected={categorie}
+                        no={'No companies found'}
+                        hint={'Add new Companies'}
+                        all={companiesList} 
+                        onSelected={handleChangeCategorie}
+                    />
+                    {errorsCategorie.length > 0 && 
+                    <span className={classes.error}>{errorsCategorie}</span>}
+                </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p style={{fontSize:25}}>Carbinets</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <Multiselect
-                  selected={companies}
-                  no={'No companies found'}
-                  hint={'Add new Company'}
-                  all={allCompanies} 
-                  onSelected={handleChangeCompanies}
-                  disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
-                />
-                {errorsCompanies.length > 0 && 
-                <span className={classes.error}>{errorsCompanies}</span>}
-              </Grid>
+                <Grid item><p style={{fontSize:25}}>Récurrence</p></Grid>
+                <Grid xs item container direction="column">
+                    <Multiselect
+                        selected={billingCycle}
+                        no={'No buildings found'}
+                        hint={'Add new Buildings'}
+                        all={buildingsList} 
+                        onSelected={handleChangeBillingCycle}
+                    />
+                    {errorsBillingCycle.length > 0 && 
+                    <span className={classes.error}>{errorsBillingCycle}</span>}
+                </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+                <Grid item><p style={{fontSize:25}}>Renouvellement automatique</p></Grid>
+                <Grid xs item container direction="column">
+                    <Checkbox 
+                        checked={renewal}
+                        onChange={handleChangeRenewal} 
+                    />
+                    {errorsRenewal.length > 0 && 
+                    <span className={classes.error}>{errorsRenewal}</span>}
+                </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+                <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
+                <Grid xs item container direction="column">
+                    <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        variant="outlined"
+                        value={productName}
+                        onChange={handleChangeProductName} 
+                    />
+                    {errorsProductName.length > 0 && 
+                    <span className={classes.error}>{errorsProductName}</span>}
+                </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2}>
-              <Grid item><p style={{fontSize:25}}>Adresse</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <TextField 
-                  id="outlined-basic" 
-                  className={classes.text} 
-                  rows={3} multiline 
-                  variant="outlined" 
-                  placeholder="41 route de"
-                  value={address}
-                  onChange={handleChangeAddress}
-                  disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
-                />
-                {errorsAddress.length > 0 && 
-                <span className={classes.error}>{errorsAddress}</span>}
-              </Grid>
+                <Grid item><p style={{fontSize:25}}>Description</p></Grid>
+                <Grid xs item container direction="column">
+                    <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        variant="outlined" 
+                        value={productDescription}
+                        onChange={handleChangeProductDescription} 
+                        multiline
+                        rows={5}
+                    />
+                    {errorsProductDescription.length > 0 && 
+                    <span className={classes.error}>{errorsProductDescription}</span>}
+                </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>Clefs de répartition</p></Grid>
+                <Grid item ><p style={{fontSize:25}}>Tarification</p></Grid>
+                <Grid xs item container direction="column">
+                    <MySelect 
+                        color="gray" 
+                        data={priceTypeList} 
+                        onChangeSelect={handleChangePriceType}
+                        value={priceType}
+                        width="80%"
+                    />
+                    {errorsPriceType.length > 0 && 
+                    <span className={classes.error}>{errorsPriceType}</span>}
+                </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+                <Grid item><p style={{fontSize:25}}>Prix (€ HT par lot)</p></Grid>
+                <Grid xs item container direction="column">
+                    <TextField 
+                        id="outlined-basic" 
+                        className={classes.text} 
+                        variant="outlined" 
+                        value={price}
+                        onChange={handleChangePrice} 
+                    />
+                    {errorsPrice.length > 0 && 
+                    <span className={classes.error}>{errorsPrice}</span>}
+                </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
               <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/>
-            </Grid>
-          </Grid>
-        </div>
-        <div>
-          <Grid xs={12} sm={6} item container justify="flex-start" direction="column" spacing={5} className={classes.item}>
-            <Grid item>
-              <p style={{fontSize:28}}><b>Compte bancaire - Prelevement SEPA</b></p>
-            </Grid>
-            <Grid item container direction="column" spacing={2} >
-              <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>Nom du titulaire du compte</p></Grid>
-                <Grid xs item container direction="row-reverse">
-                  <Grid item container alignItems="stretch" direction="column">
-                    <TextField 
-                      id="outlined-basic" 
-                      className={classes.text} 
-                      variant="outlined"
-                      value={accountHolder}
-                      onChange={handleChangeAccountHolder}
-                      disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item container alignItems="flex-start" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>Adresse</p></Grid>
-                <Grid xs item container direction="row-reverse">
-                  <Grid item container alignItems="stretch" direction="column">
-                    <TextField 
-                      id="outlined-basic" 
-                      className={classes.text} 
-                      rows={3} 
-                      multiline 
-                      variant="outlined"
-                      value={accountAddress}
-                      onChange={handleChangeAccountAddress}
-                      disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>IBAN</p></Grid>
-                <Grid xs item container direction="row-reverse">
-                  <Grid item container alignItems="stretch" direction="column">
-                    <TextField 
-                      id="outlined-basic" 
-                      className={classes.text} 
-                      variant="outlined"
-                      value={accountIban}
-                      onChange={handleChangeAccountIban}
-                      disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid  item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name = {"Editer le mandat"} color={"1"} disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/></Grid>
-              <Grid item><MyButton name = {"Supprimer"} bgColor="grey" disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/>  </Grid>
             </Grid>
           </Grid>
         </div>
