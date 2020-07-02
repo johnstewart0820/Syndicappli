@@ -167,88 +167,7 @@ const ManagerEdit = (props) => {
       setOpenDialog(true);
     }
     if(accessManagers != 'Denied'){
-      AdminService.getAllCompanyList()
-      .then(      
-        response => {        
-          console.log(response.data);
-          // setVisibleIndicator(false);  
-          if(response.data.code != 200){
-            // if(response.data.status === 'Token is Expired') {
-            //   authService.logout();
-            //   history.push('/');
-            // }
-            console.log('error');
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            {
-              data.companylist.map((companylist,i)=>{
-                companiesList.push(companylist.company_name);
-              })
-            }
-          }
-        },
-        error => {
-          console.log('fail');        
-          // setVisibleIndicator(false);
-          // const resMessage =
-          //     (error.response &&
-          //       error.response.data &&
-          //       error.response.data.message) ||
-          //     error.message ||
-          //     error.toString();
-        }
-      );    
-      AdminService.getUser(props.match.params.id)
-      .then(      
-        response => {        
-          console.log(response.data);
-          // setVisibleIndicator(false);  
-          if(response.data.code != 200){
-            // if(response.data.status === 'Token is Expired') {
-            //   authService.logout();
-            //   history.push('/');
-            // }
-            console.log('error');
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            const profile = data.user.profile;
-            {
-              data.user.building.map((building,i)=>{
-                buildingsList.push(building.building_name);
-              })
-            }
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhoneNumber(profile.phone);
-            // setCompanies(itemCompanies[profile.company_name]);
-            // setBuildings(itemBuildings[profile.company_name]);
-            setCompaniesPermission(itemPermission[profile.company_permission]);
-            setManagersPermission(itemPermission[profile.manager_permission]);
-            setBuildingsPermission(itemPermission[profile.building_permission]);
-            setOwnersPermission(itemPermission[profile.owner_permission]);
-            setOrdersPermission(itemPermission[profile.orders_permission]);
-            setProductsPermission(itemPermission[profile.products_permission]);
-            setDiscountodesPermission(itemPermission[profile.discount_code_permission]);
-            setUsersPermission(itemPermission[profile.users_permission]);
-
-          }
-        },
-        error => {
-          console.log('fail');        
-          // setVisibleIndicator(false);
-          // const resMessage =
-          //     (error.response &&
-          //       error.response.data &&
-          //       error.response.data.message) ||
-          //     error.message ||
-          //     error.toString();
-        }
-      );    
+      //  
     }
   }, []);
 
@@ -298,7 +217,6 @@ const ManagerEdit = (props) => {
 
     if(cnt ==0){
 
-        handleClose();
     }
   }
   const handleCloseDialog = (val) => {

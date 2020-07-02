@@ -97,7 +97,7 @@ const AddDiscountCode = (props) => {
             </Grid>
             <div className={classes.footer}>
                 <Grid container justify="space-between" onClick={handleClickAdd}>
-                    <MyButton name = {"Ajouter"} color={"1"}/>
+                    <MyButton name = {"Créer"} color={"1"}/>
                     <MyButton name = {"Annuler"} bgColor="gray" onClick={handleClose}/>  
                 </Grid>
             </div>

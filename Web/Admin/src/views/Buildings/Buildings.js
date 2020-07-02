@@ -156,7 +156,6 @@ const Buildings = (props) => {
           alert('Deleted successful');
           const data = response.data.data;
           localStorage.setItem("token", JSON.stringify(data.token));
-          getDatas();
         }
       },
       error => {

@@ -117,11 +117,11 @@ const ProductsManager = (props) => {
       setOpenDialog(true);
     }
   });
-//   useEffect(() => {
-//     //  getDataList();
-//     if(accessProducts != 'Denied')
-//         getDatas();
-//   }, [page_num, row_count,sort_column, sort_method]);
+  useEffect(() => {
+    //  getDataList();
+    if(accessProducts != 'Denied')
+        getDatas();
+  }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
     {key : 'productname' , field : 'Nom'}, 
     {key : 'price' , field : 'Prix'},

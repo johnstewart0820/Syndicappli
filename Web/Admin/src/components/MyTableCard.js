@@ -125,12 +125,6 @@ export default function ProductTable  (props)  {
   const handleClose = () => {
     setOpen(false);
   };
-  const getClassNamesFor = (name) => {
-    if (!sortConfig) {
-      return;
-    }
-    return sortConfig.key === name ? sortConfig.direction : undefined;
-  };
   const dataList=[20, 50, 100, 200, "all"];
 
 

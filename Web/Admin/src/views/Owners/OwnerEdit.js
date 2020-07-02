@@ -1,86 +1,106 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import MyButton from '../../components/MyButton';
-import IconButton from "@material-ui/core/IconButton";
-import ScrollBar from 'react-perfect-scrollbar';
+import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import { Avatar } from '@material-ui/core';
 import MySelect from '../../components/MySelect';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import MyButton from 'components/MyButton';
+import theme from 'theme';
+import Badge from '@material-ui/core/Badge';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import AdminService from '../../services/api.js';
+import authService from '../../services/authService.js';
 import {COUNTRIES} from '../../components/countries';
 import Multiselect from '../../components/Multiselect.js';
+import MyDialog from '../../components/MyDialog.js';
 const useStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: 5,
-        padding: theme.spacing(2, 4, 3),
+  root: {
+    paddingLeft: theme.spacing(5),
+    paddingRight: theme.spacing(4),
+    '& .MuiTextField-root': {
+        // width: '100%'
     },
-    footer: {
-        paddingTop: 89,
+    '& .MuiOutlinedInput-input':{
+        padding: '17px 25px',
+        fontSize: 22,
     },
-    root: {
-        '& .MuiTextField-root': {
-            width: '500',
-        },
-        '& .MuiOutlinedInput-root':{
-            width: 150
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '8px 12px',
-            fontSize: 17
-        },
-        '& p':{
-            marginBottom: 0
-        },
-    },
-    input: {
-        display: 'none'
-    },
-    img: {
-        cursor: 'pointer',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        border: '1px dashed rgba(112,112,112,0.43)',
-        borderRadius: 8,
-        width: 116,
-        height: 92,
-    },
-    error:{
-        color: 'red'
+    '& p':{
+      marginBottom: 0
     }
+  },
+  tool: {
+    minHeight: '67px'
+  },
+  title:{
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
+  },
+  body:{
+    marginTop: theme.spacing(8),
+    borderRadius: '30px',
+    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
+    padding: theme.spacing(5)
+  },
+  item:{
+    marginTop: theme.spacing(5),
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+  size: {
+    width: 214,
+    height: 214,
+    cursor: 'pointer',
+  },
+  input: {
+    display: 'none',
+  }, 
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
+  error:{
+    color: 'red'
+  },
 }));
+const OwnerEdit = (props) => {
+  const {history} = props;
 
-const AddOwner = (props) => {
+  const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
+  const accessOwners = authService.getAccess('role_Owners');
+  const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
-  
   const permissionList = ['','Editer', 'Voir', 'Refusé'];
-  const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision or PACS'];
-  const selected = [
-    { label: "Albania",value: "Albania"},
-    { label: "Argentina",value: "Argentina"},
-    { label: "Austria",value: "Austria"},
-    { label: "Cocos Islands",value: "Cocos Islands"},
-    { label: "Kuwait",value: "Kuwait"},
-    { label: "Sweden",value: "Sweden"},
-    { label: "Venezuela",value: "Venezuela"}
-  ];
-  const [companies, setCompanies] = React.useState(selected);
-  const [buildings, setBuildings] = React.useState(selected);
-  const companiesList = COUNTRIES.map((country,id) => {
-    return {
-      label: country
-    }
-  })
-  const buildingsList = companiesList;
+
   const [avatarurl, setAvatarUrl] = React.useState("");
   const [avatar, setAvatar] = React.useState(null);
-  const [ownerTitle, setOwnerTitle] = React.useState('');
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [phonenumber, setPhoneNumber] = React.useState('');
-
   const [buildingsPermission, setBuildingsPermission] = React.useState('');
   const [chatPermission, setChatPermission] = React.useState('');
   const [ownersPermission, setOwnersPermission] = React.useState('');
@@ -97,7 +117,6 @@ const AddOwner = (props) => {
   
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
-  const [errorsOwnerTitle, setErrorsOwnerTitle] = React.useState('');
   const [errorsLastname, setErrorsLastname] = React.useState('');
   const [errorsFirstname, setErrorsFirstname] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
@@ -115,25 +134,53 @@ const AddOwner = (props) => {
   const [errorsAddonsPermission, setErrorsAddonsPermission] = React.useState('');
   const [errorsInvoicesPermission, setErrorsInvoicesPermission] = React.useState('');
   const [errorsPaymentMethodsPermission, setErrorsPaymentMethodsPermission] = React.useState('');
-
-  const handleClose = ()=>{
-    props.onCancel();
+  const user = {
+    name: 'Shen Zhi',
+    avatar: '/images/avatars/avatar_11.png',
+    bio: 'Brain Director'
   };
-  const handleCreate = ()=>{
+  const selected = [
+    { label: "Albania",value: "Albania"},
+    { label: "Argentina",value: "Argentina"},
+    { label: "Austria",value: "Austria"},
+    { label: "Cocos Islands",value: "Cocos Islands"},
+    { label: "Kuwait",value: "Kuwait"},
+    { label: "Sweden",value: "Sweden"},
+    { label: "Venezuela",value: "Venezuela"}
+  ];
+  const [companies, setCompanies] = React.useState(selected);
+  const [buildings, setBuildings] = React.useState(selected);
+  const allCompanies =  COUNTRIES.map((country,id) => {
+    return {
+      label: country, value: country
+    }
+  })
+  const allBuildings = allCompanies;
+  useEffect(() => {
+    if(accessOwners == 'Denied'){
+      setOpenDialog(true);
+    }
+    if(accessOwners != 'Denied'){
+      //    
+    }
+  }, []);
+
+  const handleClick = ()=>{
+    history.goBack();
+  };
+  const onClickSave = ()=>{
     let cnt = 0;
-    if(ownerTitle.length == 0) {setErrorsOwnerTitle('please enter owner title'); cnt++;}
-    else setErrorsOwnerTitle('');
-    if(lastname.length == 0) {setErrorsLastname('please enter owner last name'); cnt++;}
+    if(lastname.length == 0) {setErrorsLastname('please enter your last name'); cnt++;}
     else setErrorsLastname('');
-    if(firstname.length == 0) {setErrorsFirstname('please enter owner first name'); cnt++;}
+    if(firstname.length == 0) {setErrorsFirstname('please enter your first name'); cnt++;}
     else setErrorsFirstname('');
     if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
     if(buildings.length == 0) {setErrorsBuildings('please select buildings'); cnt++;}
     else setErrorsBuildings('');
-    if(email.length == 0) {setErrorsEmail('please enter owner email'); cnt++;}
+    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
     else setErrorsEmail('');
-    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter owner phone number'); cnt++;}
+    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
     else setErrorsPhonenumber('');
     if(buildingsPermission.length == 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
     else setErrorsBuildingsPermission('');
@@ -164,195 +211,260 @@ const AddOwner = (props) => {
 
     if(cnt ==0){
 
-        handleClose();
     }
   }
-  const handleLoadFront = (event) => {
-    setAvatar(event.target.files[0]);
-    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
-  }
-const handleChangeOwnerTitle = (val) => {
-    setOwnerTitle(val);
-}
+  const handleCloseDialog = (val) => {
+    setOpenDialog(val);
+  };
 const handleChangeLastName = (event) => {
-    setLastName(event.target.value);
+  setLastName(event.target.value);
 }
 const handleChangeFirstName = (event) => {
-    setFirstName(event.target.value);
+  setFirstName(event.target.value);
 }
 const handleChangeEmail = (event) => {
-    setEmail(event.target.value);
+  setEmail(event.target.value);
 }
 const handleChangePhoneNumber = (event) => {
-    setPhoneNumber(event.target.value);
+  setPhoneNumber(event.target.value);
 }
 const handleChangeCompanies = (val) => {
-    setCompanies(val);
+  setCompanies(val);
+  console.log(companies);
 }
+
 const handleChangeBuildings = (val) => {
-    setBuildings(val);
+  setBuildings(val);
+}
+const handleLoadFront = (event) => {
+  setAvatar(event.target.files[0]);
+  setAvatarUrl(URL.createObjectURL(event.target.files[0]));
 }
 const handleChangeBuildingsPermission = (val) => {
-    setBuildingsPermission(val);
+  setBuildingsPermission(val);
 }
 const handleChangeOwnersPermission = (val) => {
-    setOwnersPermission(val);
+  setOwnersPermission(val);
 }
 const handleChangeChatPermission = (val) => {
-    setChatPermission(val);
+  setChatPermission(val);
 }
 const handleChangeIncidentsPermission = (val) => {
-    setIncidentsPermission(val);
+  setIncidentsPermission(val);
 }
 const handleChangeAssembliesPermission = (val) => {
-    setAssembliesPermission(val);
+  setAssembliesPermission(val);
 }
 const handleChangeEventsPermission = (val) => {
-    setEventsPermission(val);
+  setEventsPermission(val);
 }
 const handleChangeTeamPermission = (val) => {
-    setTeamPermission(val);
+  setTeamPermission(val);
 }
 const handleChangeProvidersPermission = (val) => {
-    setProvidersPermission(val);
+  setProvidersPermission(val);
 }
 const handleChangeAnnouncementsPermission = (val) => {
-    setAnnouncementsPermission(val);
+  setAnnouncementsPermission(val);
 }
 const handleChangeCompanyPermission = (val) => {
-    setCompanyPermission(val);
+  setCompanyPermission(val);
 }
 const handleChangeAddonsPermission = (val) => {
-    setAddonsPermission(val);
+  setAddonsPermission(val);
 }
 const handleChangeInvoicesPermission = (val) => {
-    setInvoicesPermission(val);
+  setInvoicesPermission(val);
 }
 const handleChangePaymentMethodsPermission = (val) => {
-    setPaymentMethodsPermission(val);
+  setPaymentMethodsPermission(val);
 }
   return (
     <div className={classes.root}>
-        <div className={classes.paper} sm={12}>
-            <Grid container spacing={2} >
-                <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Carbinet</p></Grid>
-                    <Grid xs item container>
-                        <Multiselect
-                            selected={companies}
-                            no={'No companies found'}
-                            hint={'Add new Companies'}
-                            all={companiesList} 
-                            onSelected={handleChangeCompanies}
-                        />
-                        {errorsCompanies.length > 0 && 
-                        <span className={classes.error}>{errorsCompanies}</span>}
-                    </Grid>
-                </Grid>
-                <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Immeuble</p></Grid>
-                    <Grid xs item container>
-                         <Multiselect
-                            selected={buildings}
-                            no={'No buildings found'}
-                            hint={'Add new Buildings'}
-                            all={buildingsList} 
-                            onSelected={handleChangeBuildings}
-                        />
-                        {errorsBuildings.length > 0 && 
-                        <span className={classes.error}>{errorsBuildings}</span>}
-                    </Grid>
-                </Grid>
-                <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Civilité</p></Grid>
-                    <Grid xs item container direction="column">
-                        <MySelect 
-                            color="gray" 
-                            data={titleList} 
-                            onChangeSelect={handleChangeOwnerTitle}
-                            value={ownerTitle}
-                            width="134px"
-                        />
-                        {errorsOwnerTitle.length > 0 && 
-                        <span className={classes.error}>{errorsOwnerTitle}</span>}
-                    </Grid>
-                </Grid>
-                <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nom</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined"
-                            value={lastname}
-                            onChange={handleChangeLastName} 
-                        />
-                        {errorsLastname.length > 0 && 
-                        <span className={classes.error}>{errorsLastname}</span>}
-                    </Grid>
-                </Grid>
-                <Grid xs={6} item container  alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Prénom</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined" 
-                            value={firstname}
-                            onChange={handleChangeFirstName} 
-                        />
-                        {errorsFirstname.length > 0 && 
-                        <span className={classes.error}>{errorsFirstname}</span>}
-                    </Grid>
-                </Grid>
-                <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item ><p style={{fontSize:18}}>Email</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined"
-                            value={email}
-                            onChange={handleChangeEmail} 
-                        />
-                        {errorsEmail.length > 0 && 
-                        <span className={classes.error}>{errorsEmail}</span>}
-                    </Grid>
-                </Grid>
-                <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Téléphone</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined" 
-                            value={phonenumber}
-                            onChange={handleChangePhoneNumber} 
-                        />
-                        {errorsPhonenumber.length > 0 && 
-                        <span className={classes.error}>{errorsPhonenumber}</span>}
-                    </Grid>
-                </Grid>
-                <Grid xs={12} item container direction="column" >
-                    <p style={{fontSize:18}}>Photo de profil</p>
-                    <Grid item container justify="flex-start">
-                    <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
-                    <label htmlFor="img_front">
-                        {
-                            avatarurl === '' ?
-                             <div className={classes.img}>
-                                <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
-                             </div> :
-                             <img className={classes.img} src={avatarurl}/>
-                        }
-                    </label>
-                    </Grid>
-                </Grid>
+      <div className={classes.title}>
+        <Grid item container justify="space-around" alignItems="center">
+          <Grid item xs={12} sm={6} container justify="flex-start" >
+            <Grid item>
+              <Typography variant="h2" style={{fontSize:35}}>
+                <b>Stéphane Dubois</b>
+              </Typography>
             </Grid>
-            <br/>
-            <p style={{fontSize:18}}><b>Permissions</b></p>
-            <br />
-            <Grid container spacing={2}>
+          </Grid>
+          <Grid item xs={12} sm={6} container justify="flex-end" >
+          </Grid>
+        </Grid>
+      </div>
+      <div className={classes.tool}>
+          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Copropriétaires</p>
+      </div> 
+      <Grid container direction="column" >
+        <div className={classes.body}>
+          <Grid item container justify="space-between" direction="row-reverse" spacing={2}>
+            <Grid xs item container  direction="column" spacing={2}>
+                <Grid item container direction="row-reverse">
+                  <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
+                  <label htmlFor="img_front">
+                  {
+                  <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                      right: -20,
+                      top: 10,
+                      border: '2px solid gray',
+                      padding: '1px 4px',
+                    }}
+                    badgeContent={<EditOutlinedIcon style={{
+                      width: 54,
+                      height: 54,
+                      border: `2px solid ${theme.palette.background.paper}`,
+                      backgroundColor: 'white',
+                      borderRadius: '50%',
+                      color: 'gray'
+                    }}/>}
+                  >
+                    <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
+                  </Badge>
+                  }
+                  </label>
+                </Grid>
+                <Grid  item container direction="row-reverse">
+                  <p style={{fontSize:25}}>Connexions/mois : 90</p>
+                </Grid>
+                <Grid item container direction="row-reverse">
+                  <p style={{fontSize:25}}>Temps connexion/jour : 1h</p>
+                </Grid>
+                <Grid item container direction="row-reverse">
+                  <p style={{fontSize:25}}>Lots : 120000</p>
+                </Grid>
+                <Grid item container direction="row-reverse">
+                  <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                </Grid>
+                <Grid item container direction="row-reverse">
+                  <MyButton   name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                </Grid>
+                <Grid item container direction="row-reverse">
+                  <MyButton   name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                </Grid>
+                <Grid item container direction="row-reverse">
+                  <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                </Grid>
+              </Grid>
+            <Grid xs item container direction="column" spacing={5}>
+              <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
+
+              <Grid item></Grid>
+              <Grid item container alignItems="center" spacing={2}>
+                  <Grid item><p style={{fontSize:25}}>Carbinets</p></Grid>
+                  <Grid xs item container alignItems="stretch">
+                    <Multiselect
+                      selected={companies}
+                      no={'No companies found'}
+                      hint={'Add new Company'}
+                      all={allCompanies} 
+                      onSelected={handleChangeCompanies}
+                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      />
+                      {errorsCompanies.length > 0 && 
+                      <span className={classes.error}>{errorsCompanies}</span>}
+                  </Grid>
+              </Grid>
+              <Grid item container alignItems="center" spacing={2}>
+                  <Grid item><p style={{fontSize:25}}>Immeubles</p></Grid>
+                  <Grid xs item container alignItems="stretch">
+                    <Multiselect
+                      selected={buildings}
+                      no={'No buildings found'}
+                      hint={'Add new Buildings'}
+                      all={allBuildings} 
+                      onSelected={handleChangeBuildings}
+                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      />
+                    {errorsBuildings.length > 0 && 
+                    <span className={classes.error}>{errorsBuildings}</span>}
+                  </Grid>
+              </Grid>
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
+                <Grid xs item container alignItems="stretch" direction="column">
+                  <Grid item>
+                    <TextField 
+                      id="outlined-basic" 
+                      className={classes.text} 
+                      variant="outlined" 
+                      placeholder="johndoe@gmail.com"
+                      value={lastname}
+                      onChange={handleChangeLastName} 
+                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                    />
+                  </Grid>
+                  {errorsLastname.length > 0 && 
+                  <span className={classes.error}>{errorsLastname}</span>}
+                </Grid>
+              </Grid>
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p style={{fontSize:25}}>Prénom</p></Grid>
+                <Grid xs item container alignItems="stretch" direction="column">
+                  <Grid item>
+                    <TextField 
+                      id="outlined-basic" 
+                      className={classes.text} 
+                      variant="outlined" 
+                      placeholder="johndoe@gmail.com"
+                      value={firstname}
+                      onChange={handleChangeFirstName} 
+                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                    />
+                  </Grid>  
+                  {errorsFirstname.length > 0 && 
+                  <span className={classes.error}>{errorsFirstname}</span>}
+                </Grid>
+              </Grid>
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p style={{fontSize:25}}>Email</p></Grid>
+                <Grid xs item container alignItems="stretch" direction="column">
+                  <Grid item>
+                    <TextField 
+                      id="outlined-basic" 
+                      className={classes.text} 
+                      variant="outlined" 
+                      placeholder="johndoe@gmail.com"
+                      value={email}
+                      onChange={handleChangeEmail} 
+                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                    />
+                  </Grid>  
+                  {errorsEmail.length > 0 && 
+                  <span className={classes.error}>{errorsEmail}</span>}
+                </Grid>
+              </Grid>
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p style={{fontSize:25}}>Téléphone</p></Grid>
+                <Grid xs item container alignItems="stretch" direction="column">
+                  <Grid item>
+                    <TextField 
+                      id="outlined-basic" 
+                      className={classes.text} 
+                      variant="outlined" 
+                      placeholder="0102030405"
+                      value={phonenumber}
+                      onChange={handleChangePhoneNumber} 
+                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                    />
+                  </Grid>  
+                  {errorsPhonenumber.length > 0 && 
+                  <span className={classes.error}>{errorsPhonenumber}</span>}
+                </Grid>
+              </Grid>
+
+              <Grid item></Grid>
+            </Grid>
+          </Grid>
+          <Grid item ><p style={{fontSize:30}}><b>Permissions</b></p></Grid>
+          <Grid item container spacing={2}>
+            <Grid item container ></Grid>
+            <Grid item container spacing={2}>
                 <Grid xs={6} item container direction="column">
                     <p style={{fontSize:18}}>Immeubles</p>
                     <MySelect 
@@ -509,17 +621,16 @@ const handleChangePaymentMethodsPermission = (val) => {
                     {errorsPaymentMethodsPermission.length > 0 && 
                         <span className={classes.error}>{errorsPaymentMethodsPermission}</span>}
                 </Grid>
+            </Grid> 
+          </Grid>
+            <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
+              <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
             </Grid>
-            <div className={classes.footer}>
-                <Grid container justify="space-between">
-                    <MyButton name = {"Creer"} color={"1"} onClick={handleCreate}/>
-                    <MyButton name = {"Annuler"} bgColor="grey" onClick={handleClose}/>
-                </Grid>
-            </div>
         </div>
-        <ScrollBar/>
+      </Grid>
     </div>
   );
 };
 
-export default AddOwner;
+export default withRouter(OwnerEdit);

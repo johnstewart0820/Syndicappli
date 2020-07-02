@@ -26,6 +26,8 @@ import ForgotPassword from 'views/ForgotPassword';
 import ResetPassword from 'views/ResetPassword';
 import BuildingsEdit from 'views/Buildings/BuildingsEdit';
 import ProductsEdit from 'views/Products/ProductsEdit';
+import OwnerEdit from 'views/Owners/OwnerEdit';
+import DiscountCodesEdit from 'views/DiscountCodes/DiscountCodesEdit';
 const Routes = () => {
   return (
     <Switch>
@@ -101,6 +103,12 @@ const Routes = () => {
         path="/discountcodes"
       />
       <RouteWithLayout
+        component={DiscountCodesEdit}
+        exact
+        layout={MainLayout}
+        path="/discountcodes/edit/:id"
+      />
+      <RouteWithLayout
         component={ManagersView}
         exact
         layout={MainLayout}
@@ -147,6 +155,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/owners"
+      />
+      <RouteWithLayout
+        component={OwnerEdit}
+        exact
+        layout={MainLayout}
+        path="/owners/edit/:id"
       />
       <Redirect to="/not-found" />
     </Switch>

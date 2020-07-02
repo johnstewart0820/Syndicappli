@@ -71,7 +71,7 @@ const ProductsEdit = (props) => {
     history.push("/login");
     window.location.reload();
   }
-  const accessBuildings = authService.getAccess('role_buildings');  
+  const accessProducts = authService.getAccess('role_products');  
   const classes = useStyles();
 
   const [renewal, setRenewal] = useState(false);
@@ -159,7 +159,6 @@ const handleChangeRenewal = (event) => {
 
     if(cnt ==0){
 
-        handleClose();
     }
   };
   return (
@@ -178,7 +177,7 @@ const handleChangeRenewal = (event) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Immeubles</p>
+          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Produit</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
@@ -282,7 +281,7 @@ const handleChangeRenewal = (event) => {
                 </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/>
+              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts =='See'? 'disabled' : !'disabled')}/>
             </Grid>
           </Grid>
         </div>

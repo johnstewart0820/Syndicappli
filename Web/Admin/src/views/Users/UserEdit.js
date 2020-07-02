@@ -278,7 +278,6 @@ const UserEdit = (props) => {
 
     if(cnt ==0){
 
-        handleClose();
     }
   }
   const handleCloseDialog = (val) => {

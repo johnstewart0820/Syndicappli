@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import MyTable from '../../components/MyTable';
-import MyTableCard from '../../components/MyTableCard';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import { Avatar } from '@material-ui/core';
-import MySelect from '../../components/MySelect';
 import MyButton from 'components/MyButton';
-import theme from 'theme';
-import Badge from '@material-ui/core/Badge';
-import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import MyTextField from '../../components/MyTextField';
 import authService from '../../services/authService.js';
-import { setStatic } from 'recompose';
 import Multiselect from '../../components/Multiselect.js';
 import {COUNTRIES} from '../../components/countries';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
+import MyDialog from '../../components/MyDialog.js';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),
@@ -79,7 +71,7 @@ const BuildingsEdit = (props) => {
   }
   const accessBuildings = authService.getAccess('role_buildings');  
   const classes = useStyles();
-  const [dataList, setDataList] = useState([]);
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');
@@ -119,19 +111,15 @@ const BuildingsEdit = (props) => {
         window.location.reload();
     }
   });
+
   useEffect(() => {
-    console.log('b');
-    getDataList();
+    if(accessBuildings == 'Denied'){
+      setOpenDialog(true);
+    }
+    if(accessBuildings != 'Denied'){
+      //  
+    }
   }, []);
-  const getDataList = () => {
-    setDataList([
-      { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 2, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
-      { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
-      { id: 5, name: 'Butter', price: 0.9, stock: 99 },
-    ])
-  };
   const handleClick = ()=>{
     history.goBack();
   };
@@ -154,6 +142,9 @@ const BuildingsEdit = (props) => {
   const handleChangeAccountIban = (event) =>{
     setAccountIban(event.target.value);
   };
+  const handleCloseDialog = (val) => {
+    setOpenDialog(val);
+  };
   const handleClickAdd = ()=>{
     let cnt = 0;
     if(name.length == 0) {setErrorsName('please enter your name'); cnt++;}
@@ -170,7 +161,6 @@ const BuildingsEdit = (props) => {
     // else setErrorsAccountIban('');
     if(cnt ==0){
 
-        handleClose();
     }
   };
   return (
@@ -307,6 +297,7 @@ const BuildingsEdit = (props) => {
               </Grid>
             </Grid>
             <Grid  item container justify="space-between" spacing={1}>
+              <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog}/>
               <Grid item><MyButton name = {"Editer le mandat"} color={"1"} disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/></Grid>
               <Grid item><MyButton name = {"Supprimer"} bgColor="grey" disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/>  </Grid>
             </Grid>
