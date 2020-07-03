@@ -7,7 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import {withRouter } from 'react-router-dom';
 const ResponsiveDialog= (props)=> {
   const {history}=props;
   const theme = useTheme();
@@ -19,18 +19,18 @@ const ResponsiveDialog= (props)=> {
     case 'Denied': content = "you can't access"; break;
   }
   React.useEffect(()=>{
-    if(props.role != 'Edit'){
+    if(props.role !== 'Edit'){
       setOpen(props.open);
     }
-  });
+  },[props.role]);
   const handleClose = () => {
     setOpen(false);
-    if(props.role =='Denied'){
+    if(props.role ==='Denied'){
       props.onClose(false);
 
       history.goBack();
     }
-    if(props.role == 'See')
+    if(props.role === 'See')
       props.onClose(false);
   };
   return (

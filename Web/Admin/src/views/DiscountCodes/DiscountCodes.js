@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import {withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import MyTable from '../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import AddDiscountCode from './AddDiscountCode';
-import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AdminService from '../../services/api.js';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -46,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 const DiscountCodes = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  //const token = authService.getToken();    
   // if (!token) {
   //   history.push("/login");
   //   window.location.reload();
@@ -70,9 +69,9 @@ const DiscountCodes = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleOpenDelete = () => {
-    setOpenDelete(true);
-  };
+  // const handleOpenDelete = () => {
+  //   setOpenDelete(true);
+  // };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -84,10 +83,10 @@ const DiscountCodes = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessDiscountCodes == 'Edit'){
+    if(accessDiscountCodes === 'Edit'){
       setOpen(true);
     }
-    if(accessDiscountCodes == 'See'){
+    if(accessDiscountCodes === 'See'){
       setOpenDialog(true);
     }
   };
@@ -114,7 +113,7 @@ const DiscountCodes = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');
@@ -142,13 +141,13 @@ const DiscountCodes = (props) => {
     );
   }
   useEffect(()=>{
-    if(accessDiscountCodes == 'Denied'){
+    if(accessDiscountCodes === 'Denied'){
       setOpenDialog(true);
     }
   });
   useEffect(() => {
     // getDataList();
-    if(accessDiscountCodes != 'Denied')
+    if(accessDiscountCodes !== 'Denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -167,7 +166,7 @@ const DiscountCodes = (props) => {
     history.push('/discountcodes/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessDiscountCodes == 'Edit'){
+    if(accessDiscountCodes === 'Edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{
@@ -182,7 +181,7 @@ const DiscountCodes = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');

@@ -1,6 +1,5 @@
 import React , {useState} from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
+import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 
 const useStyles = makeStyles((theme,props) => ({
@@ -9,7 +8,6 @@ const useStyles = makeStyles((theme,props) => ({
   },
   button1: {
     background: 'linear-gradient(90deg, #00C9FF 10%, #0CC77C 90%)',
-    border: 0,
     borderRadius: '52px',
     color: 'white',
     padding: '15px 30px',
@@ -28,7 +26,6 @@ const useStyles = makeStyles((theme,props) => ({
 
 export default function MyButton(props) {
   const classes = useStyles(props);
-  const [flag, setFlag] = useState(false);
   const btnClick = ()=>{
     if(props.onClick)
       props.onClick();
@@ -36,7 +33,7 @@ export default function MyButton(props) {
   return (
       <Button onClick={btnClick} className={props.color ? classes.button1 : classes.button2} 
         style={{fontSize:20}}
-        disabled={props.disabled == 'disabled'? true : false}
+        disabled={props.disabled === 'disabled'? true : false}
         >
           {props.name}
       </Button>

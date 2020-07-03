@@ -3,7 +3,7 @@ import MyTable from '../../../components/MyTable';
 import authService from '../../../services/authService.js';
 import MyDialog from '../../../components/MyDialog';
 import AdminService from '../../../services/api.js';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -50,10 +50,10 @@ const ProductsManager = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessProducts == 'Edit'){
+    if(accessProducts === 'Edit'){
       setOpen(true);
     }
-    if(accessProducts == 'See'){
+    if(accessProducts === 'See'){
       setOpenDialog(true);
     }
   };
@@ -91,7 +91,7 @@ const ProductsManager = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');
@@ -113,13 +113,13 @@ const ProductsManager = (props) => {
     );
   }
   useEffect(()=>{
-    if(accessProducts == 'Denied'){
+    if(accessProducts === 'Denied'){
       setOpenDialog(true);
     }
   });
   useEffect(() => {
     //  getDataList();
-    if(accessProducts != 'Denied')
+    if(accessProducts !== 'Denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -133,7 +133,7 @@ const ProductsManager = (props) => {
     history.push('/products/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessProducts == 'Edit'){
+    if(accessProducts === 'Edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{
@@ -148,7 +148,7 @@ const ProductsManager = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');

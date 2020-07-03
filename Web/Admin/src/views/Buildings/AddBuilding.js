@@ -88,19 +88,19 @@ const AddBuilding = (props) => {
   };
   const handleClickAdd = ()=>{
     let cnt = 0;
-    if(name.length == 0) {setErrorsName('please enter your name'); cnt++;}
+    if(name.length === 0) {setErrorsName('please enter your name'); cnt++;}
     else setErrorsName('');
-    if(address.length == 0) {setErrorsAddress('please enter your first name'); cnt++;}
+    if(address.length === 0) {setErrorsAddress('please enter your first name'); cnt++;}
     else setErrorsAddress('');
-    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    // if(AccountAddress.length == 0) {setErrorsAccountAddress('please select buildings'); cnt++;}
+    // if(AccountAddress.length === 0) {setErrorsAccountAddress('please select buildings'); cnt++;}
     // else setErrorsAccountAddress('');
-    // if(AccountHolder.length == 0) {setErrorsAccountHolder('please enter your email'); cnt++;}
+    // if(AccountHolder.length === 0) {setErrorsAccountHolder('please enter your email'); cnt++;}
     // else setErrorsAccountHolder('');
-    // if(AccountIban.length == 0) {setErrorsAccountIban('please enter your phone number'); cnt++;}
+    // if(AccountIban.length === 0) {setErrorsAccountIban('please enter your phone number'); cnt++;}
     // else setErrorsAccountIban('');
-    if(cnt ==0){
+    if(cnt ===0){
 
         handleClose();
     }

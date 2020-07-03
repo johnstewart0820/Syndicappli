@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import MyTable from '../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import AddUser from './AddUser';
-import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
 import AdminService from '../../services/api.js';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -46,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 const Users = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  //const token = authService.getToken();    
   // if (!token) {
   //   history.push("/login");
   //   window.location.reload();
@@ -70,9 +69,9 @@ const Users = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleOpenDelete = () => {
-    setOpenDelete(true);
-  };
+  // const handleOpenDelete = () => {
+  //   setOpenDelete(true);
+  // };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -84,10 +83,10 @@ const Users = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessUsers == 'Edit'){
+    if(accessUsers === 'Edit'){
       setOpen(true);
     }
-    if(accessUsers == 'See'){
+    if(accessUsers === 'See'){
       setOpenDialog(true);
     }
   };
@@ -114,7 +113,7 @@ const Users = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');
@@ -142,13 +141,13 @@ const Users = (props) => {
     );
   }
   useEffect(()=>{
-    if(accessUsers == 'Denied'){
+    if(accessUsers === 'Denied'){
       setOpenDialog(true);
     }
   });
   useEffect(() => {
     // getDataList();
-    if(accessUsers != 'Denied')
+    if(accessUsers !== 'Denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -164,7 +163,7 @@ const Users = (props) => {
     history.push('/users/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessUsers == 'Edit'){
+    if(accessUsers === 'Edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{
@@ -179,7 +178,7 @@ const Users = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');

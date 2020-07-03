@@ -113,10 +113,10 @@ const BuildingsEdit = (props) => {
   });
 
   useEffect(() => {
-    if(accessBuildings == 'Denied'){
+    if(accessBuildings === 'Denied'){
       setOpenDialog(true);
     }
-    if(accessBuildings != 'Denied'){
+    if(accessBuildings !== 'Denied'){
       //  
     }
   }, []);
@@ -147,19 +147,19 @@ const BuildingsEdit = (props) => {
   };
   const handleClickAdd = ()=>{
     let cnt = 0;
-    if(name.length == 0) {setErrorsName('please enter your name'); cnt++;}
+    if(name.length === 0) {setErrorsName('please enter your name'); cnt++;}
     else setErrorsName('');
-    if(address.length == 0) {setErrorsAddress('please enter your first name'); cnt++;}
+    if(address.length === 0) {setErrorsAddress('please enter your first name'); cnt++;}
     else setErrorsAddress('');
-    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    // if(AccountAddress.length == 0) {setErrorsAccountAddress('please select buildings'); cnt++;}
+    // if(AccountAddress.length === 0) {setErrorsAccountAddress('please select buildings'); cnt++;}
     // else setErrorsAccountAddress('');
-    // if(AccountHolder.length == 0) {setErrorsAccountHolder('please enter your email'); cnt++;}
+    // if(AccountHolder.length === 0) {setErrorsAccountHolder('please enter your email'); cnt++;}
     // else setErrorsAccountHolder('');
-    // if(AccountIban.length == 0) {setErrorsAccountIban('please enter your phone number'); cnt++;}
+    // if(AccountIban.length === 0) {setErrorsAccountIban('please enter your phone number'); cnt++;}
     // else setErrorsAccountIban('');
-    if(cnt ==0){
+    if(cnt ===0){
 
     }
   };
@@ -196,7 +196,7 @@ const BuildingsEdit = (props) => {
                   value={name}
                   fullWidth
                   onChange={handleChangeName}
-                  disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
                 />
                 {errorsName.length > 0 && 
                 <span className={classes.error}>{errorsName}</span>}
@@ -211,7 +211,7 @@ const BuildingsEdit = (props) => {
                   hint={'Add new Company'}
                   all={allCompanies} 
                   onSelected={handleChangeCompanies}
-                  disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
                 />
                 {errorsCompanies.length > 0 && 
                 <span className={classes.error}>{errorsCompanies}</span>}
@@ -228,7 +228,7 @@ const BuildingsEdit = (props) => {
                   placeholder="41 route de"
                   value={address}
                   onChange={handleChangeAddress}
-                  disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
                 />
                 {errorsAddress.length > 0 && 
                 <span className={classes.error}>{errorsAddress}</span>}
@@ -238,7 +238,7 @@ const BuildingsEdit = (props) => {
                 <Grid item><p style={{fontSize:18}}>Clefs de répartition</p></Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/>
+              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/>
             </Grid>
           </Grid>
         </div>
@@ -258,7 +258,7 @@ const BuildingsEdit = (props) => {
                       variant="outlined"
                       value={accountHolder}
                       onChange={handleChangeAccountHolder}
-                      disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -275,7 +275,7 @@ const BuildingsEdit = (props) => {
                       variant="outlined"
                       value={accountAddress}
                       onChange={handleChangeAccountAddress}
-                      disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -290,7 +290,7 @@ const BuildingsEdit = (props) => {
                       variant="outlined"
                       value={accountIban}
                       onChange={handleChangeAccountIban}
-                      disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -298,8 +298,8 @@ const BuildingsEdit = (props) => {
             </Grid>
             <Grid  item container justify="space-between" spacing={1}>
               <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog}/>
-              <Grid item><MyButton name = {"Editer le mandat"} color={"1"} disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/></Grid>
-              <Grid item><MyButton name = {"Supprimer"} bgColor="grey" disabled={(accessBuildings =='See'? 'disabled' : !'disabled')}/>  </Grid>
+              <Grid item><MyButton name = {"Editer le mandat"} color={"1"} disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/></Grid>
+              <Grid item><MyButton name = {"Supprimer"} bgColor="grey" disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/>  </Grid>
             </Grid>
           </Grid>
         </div>

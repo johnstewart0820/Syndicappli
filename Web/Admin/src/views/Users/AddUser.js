@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
-import IconButton from "@material-ui/core/IconButton";
 import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../components/MySelect';
@@ -107,36 +106,36 @@ const AddUser = (props) => {
   };
   const handleCreate = ()=>{
     let cnt = 0;
-    if(lastname.length == 0) {setErrorsLastname('please enter your last name'); cnt++;}
+    if(lastname.length === 0) {setErrorsLastname('please enter your last name'); cnt++;}
     else setErrorsLastname('');
-    if(firstname.length == 0) {setErrorsFirstname('please enter your first name'); cnt++;}
+    if(firstname.length === 0) {setErrorsFirstname('please enter your first name'); cnt++;}
     else setErrorsFirstname('');
-    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    if(buildings.length == 0) {setErrorsBuildings('please select buildings'); cnt++;}
+    if(buildings.length === 0) {setErrorsBuildings('please select buildings'); cnt++;}
     else setErrorsBuildings('');
-    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
+    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
     else setErrorsEmail('');
-    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
+    if(phonenumber.length === 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
     else setErrorsPhonenumber('');
-    if(companiesPermission.length == 0) {setErrorsCompaniesPermission('please select permission to companies'); cnt++;}
+    if(companiesPermission.length === 0) {setErrorsCompaniesPermission('please select permission to companies'); cnt++;}
     else setErrorsCompaniesPermission('');
-    if(managersPermission.length == 0) {setErrorsManagersPermission('please select permission to managers'); cnt++;}
+    if(managersPermission.length === 0) {setErrorsManagersPermission('please select permission to managers'); cnt++;}
     else setErrorsManagersPermission('');
-    if(buildingsPermission.length == 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
+    if(buildingsPermission.length === 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
     else setErrorsBuildingsPermission('');
-    if(ownersPermission.length == 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
+    if(ownersPermission.length === 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
     else setErrorsOwnersPermission('');
-    if(ordersPermission.length == 0) {setErrorsOrdersPermission('please select permission to orders'); cnt++;}
+    if(ordersPermission.length === 0) {setErrorsOrdersPermission('please select permission to orders'); cnt++;}
     else setErrorsOrdersPermission('');
-    if(productsPermission.length == 0) {setErrorsProductsPermission('please select permission to products'); cnt++;}
+    if(productsPermission.length === 0) {setErrorsProductsPermission('please select permission to products'); cnt++;}
     else setErrorsProductsPermission('');
-    if(discountCodesPermission.length == 0) {setErrorsDiscountcodesPermission('please select permission to discount codes'); cnt++;}
+    if(discountCodesPermission.length === 0) {setErrorsDiscountcodesPermission('please select permission to discount codes'); cnt++;}
     else setErrorsDiscountcodesPermission('');
-    if(usersPermission.length == 0) {setErrorsUsersPermission('please select permission to users'); cnt++;}
+    if(usersPermission.length === 0) {setErrorsUsersPermission('please select permission to users'); cnt++;}
     else setErrorsUsersPermission('');
 
-    if(cnt ==0){
+    if(cnt ===0){
 
         handleClose();
     }
@@ -290,7 +289,7 @@ const handleChangeUsersPermission = (val) => {
                              <div className={classes.img}>
                                 <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
                              </div> :
-                             <img className={classes.img} src={avatarurl}/>
+                             <img className={classes.img} src={avatarurl} alt=""/>
                         }
                     </label>
                     </Grid>

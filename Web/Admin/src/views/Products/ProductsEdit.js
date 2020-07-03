@@ -8,7 +8,7 @@ import MyButton from 'components/MyButton';
 import authService from '../../services/authService.js';
 import Multiselect from '../../components/Multiselect.js';
 import {COUNTRIES} from '../../components/countries';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Checkbox } from '@material-ui/core';
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,15 +65,15 @@ const useStyles = makeStyles(theme => ({
 }));
 const ProductsEdit = (props) => {
   const {history}=props;
-  const token = authService.getToken();  
   const priceTypeList = ['','Editer', 'Voir', 'Refusé'];  
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  //const token = authService.getToken();  
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   const accessProducts = authService.getAccess('role_products');  
   const classes = useStyles();
-
+  const [openDialog, setOpenDialog] = React.useState(false);
   const [renewal, setRenewal] = useState(false);
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
@@ -88,11 +88,6 @@ const ProductsEdit = (props) => {
   const [errorsPriceType, setErrorsPriceType] = useState('');
   const [errorsPrice, setErrorsPrice] = useState('');
 
-  const user = {
-    name: 'Shen Zhi',
-    avatar: '/images/avatars/avatar_11.png',
-    bio: 'Brain Director'
-  };
   const selected = [
     { label: "Albania",value: "Albania"},
     { label: "Argentina",value: "Argentina"},
@@ -111,11 +106,14 @@ const ProductsEdit = (props) => {
   })
   const buildingsList = companiesList;
   useEffect(() => {
-    if (!token) {
-        history.push("/login");
-        window.location.reload();
+    if(accessProducts === 'Denied'){
+      setOpenDialog(true);
     }
-  });
+    if(accessProducts !== 'Denied'){
+      
+    }
+  }, [accessProducts]);
+
 
   const handleClick = ()=>{
     history.goBack();
@@ -144,20 +142,20 @@ const handleChangeRenewal = (event) => {
 }
   const handleClickAdd = ()=>{
     let cnt = 0;
-    if(productName.length == 0) {setErrorsProductName('please enter your product name'); cnt++;}
+    if(productName.length === 0) {setErrorsProductName('please enter your product name'); cnt++;}
     else setErrorsProductName('');
-    if(productDescription.length == 0) {setErrorsProductDescription('please enter your product description'); cnt++;}
+    if(productDescription.length === 0) {setErrorsProductDescription('please enter your product description'); cnt++;}
     else setErrorsProductDescription('');
-    if(categorie.length == 0) {setErrorsCategorie('please select categorie'); cnt++;}
+    if(categorie.length === 0) {setErrorsCategorie('please select categorie'); cnt++;}
     else setErrorsCategorie('');
-    if(billingCycle.length == 0) {setErrorsBillingCycle('please select billing cycle'); cnt++;}
+    if(billingCycle.length === 0) {setErrorsBillingCycle('please select billing cycle'); cnt++;}
     else setErrorsBillingCycle('');
-    if(price.length == 0) {setErrorsPrice('please enter price'); cnt++;}
+    if(price.length === 0) {setErrorsPrice('please enter price'); cnt++;}
     else setErrorsPrice('');
-    if(priceType.length == 0) {setErrorsPriceType('please enter your price type'); cnt++;}
+    if(priceType.length === 0) {setErrorsPriceType('please enter your price type'); cnt++;}
     else setErrorsPriceType('');
 
-    if(cnt ==0){
+    if(cnt ===0){
 
     }
   };
@@ -192,6 +190,7 @@ const handleChangeRenewal = (event) => {
                         hint={'Add new Companies'}
                         all={companiesList} 
                         onSelected={handleChangeCategorie}
+                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
                     />
                     {errorsCategorie.length > 0 && 
                     <span className={classes.error}>{errorsCategorie}</span>}
@@ -206,6 +205,7 @@ const handleChangeRenewal = (event) => {
                         hint={'Add new Buildings'}
                         all={buildingsList} 
                         onSelected={handleChangeBillingCycle}
+                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
                     />
                     {errorsBillingCycle.length > 0 && 
                     <span className={classes.error}>{errorsBillingCycle}</span>}
@@ -217,6 +217,7 @@ const handleChangeRenewal = (event) => {
                     <Checkbox 
                         checked={renewal}
                         onChange={handleChangeRenewal} 
+                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
                     />
                     {errorsRenewal.length > 0 && 
                     <span className={classes.error}>{errorsRenewal}</span>}
@@ -231,6 +232,7 @@ const handleChangeRenewal = (event) => {
                         variant="outlined"
                         value={productName}
                         onChange={handleChangeProductName} 
+                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
                     />
                     {errorsProductName.length > 0 && 
                     <span className={classes.error}>{errorsProductName}</span>}
@@ -247,6 +249,7 @@ const handleChangeRenewal = (event) => {
                         onChange={handleChangeProductDescription} 
                         multiline
                         rows={5}
+                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
                     />
                     {errorsProductDescription.length > 0 && 
                     <span className={classes.error}>{errorsProductDescription}</span>}
@@ -261,6 +264,7 @@ const handleChangeRenewal = (event) => {
                         onChangeSelect={handleChangePriceType}
                         value={priceType}
                         width="80%"
+                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
                     />
                     {errorsPriceType.length > 0 && 
                     <span className={classes.error}>{errorsPriceType}</span>}
@@ -275,13 +279,14 @@ const handleChangeRenewal = (event) => {
                         variant="outlined" 
                         value={price}
                         onChange={handleChangePrice} 
+                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
                     />
                     {errorsPrice.length > 0 && 
                     <span className={classes.error}>{errorsPrice}</span>}
                 </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts =='See'? 'disabled' : !'disabled')}/>
+              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}/>
             </Grid>
           </Grid>
         </div>

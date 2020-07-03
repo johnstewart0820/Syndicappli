@@ -4,13 +4,11 @@ import MyTable from '../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
-import Pagination from '@material-ui/lab/Pagination';
 import Dialog from '@material-ui/core/Dialog';
-import MySelect from '../../components/MySelect';
 import MyDialog from '../../components/MyDialog';
 import CloseIcon from '@material-ui/icons/Close';
 import AddBuilding from './AddBuilding';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import {  withRouter } from 'react-router-dom';
 import authService from '../../services/authService.js';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -102,7 +100,7 @@ const Buildings = (props) => {
   };
 
   const handleClickDelete = (id)=>{
-    if(accessBuildings == 'Edit'){
+    if(accessBuildings === 'Edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{
@@ -110,10 +108,10 @@ const Buildings = (props) => {
     }
   };
   useEffect(()=>{
-    if(accessBuildings == 'Denied'){
+    if(accessBuildings === 'Denied'){
       setOpenDialog(true);
     }
-  });
+  },[accessBuildings]);
   useEffect(() => {
     getDataList();
   }, []);
@@ -145,7 +143,7 @@ const Buildings = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');

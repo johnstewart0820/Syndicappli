@@ -88,20 +88,20 @@ const AddProducts = (props) => {
   };
   const handleCreate = ()=>{
     let cnt = 0;
-    if(productName.length == 0) {setErrorsProductName('please enter your product name'); cnt++;}
+    if(productName.length === 0) {setErrorsProductName('please enter your product name'); cnt++;}
     else setErrorsProductName('');
-    if(productDescription.length == 0) {setErrorsProductDescription('please enter your product description'); cnt++;}
+    if(productDescription.length === 0) {setErrorsProductDescription('please enter your product description'); cnt++;}
     else setErrorsProductDescription('');
-    if(categorie.length == 0) {setErrorsCategorie('please select categorie'); cnt++;}
+    if(categorie.length === 0) {setErrorsCategorie('please select categorie'); cnt++;}
     else setErrorsCategorie('');
-    if(billingCycle.length == 0) {setErrorsBillingCycle('please select billing cycle'); cnt++;}
+    if(billingCycle.length === 0) {setErrorsBillingCycle('please select billing cycle'); cnt++;}
     else setErrorsBillingCycle('');
-    if(price.length == 0) {setErrorsPrice('please enter price'); cnt++;}
+    if(price.length === 0) {setErrorsPrice('please enter price'); cnt++;}
     else setErrorsPrice('');
-    if(priceType.length == 0) {setErrorsPriceType('please enter your price type'); cnt++;}
+    if(priceType.length === 0) {setErrorsPriceType('please enter your price type'); cnt++;}
     else setErrorsPriceType('');
 
-    if(cnt ==0){
+    if(cnt ===0){
 
         handleClose();
     }

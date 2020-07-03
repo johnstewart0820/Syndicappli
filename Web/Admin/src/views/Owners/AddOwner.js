@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
-import IconButton from "@material-ui/core/IconButton";
 import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../components/MySelect';
@@ -121,48 +120,48 @@ const AddOwner = (props) => {
   };
   const handleCreate = ()=>{
     let cnt = 0;
-    if(ownerTitle.length == 0) {setErrorsOwnerTitle('please enter owner title'); cnt++;}
+    if(ownerTitle.length === 0) {setErrorsOwnerTitle('please enter owner title'); cnt++;}
     else setErrorsOwnerTitle('');
-    if(lastname.length == 0) {setErrorsLastname('please enter owner last name'); cnt++;}
+    if(lastname.length === 0) {setErrorsLastname('please enter owner last name'); cnt++;}
     else setErrorsLastname('');
-    if(firstname.length == 0) {setErrorsFirstname('please enter owner first name'); cnt++;}
+    if(firstname.length === 0) {setErrorsFirstname('please enter owner first name'); cnt++;}
     else setErrorsFirstname('');
-    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    if(buildings.length == 0) {setErrorsBuildings('please select buildings'); cnt++;}
+    if(buildings.length === 0) {setErrorsBuildings('please select buildings'); cnt++;}
     else setErrorsBuildings('');
-    if(email.length == 0) {setErrorsEmail('please enter owner email'); cnt++;}
+    if(email.length === 0) {setErrorsEmail('please enter owner email'); cnt++;}
     else setErrorsEmail('');
-    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter owner phone number'); cnt++;}
+    if(phonenumber.length === 0) {setErrorsPhonenumber('please enter owner phone number'); cnt++;}
     else setErrorsPhonenumber('');
-    if(buildingsPermission.length == 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
+    if(buildingsPermission.length === 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
     else setErrorsBuildingsPermission('');
-    if(ownersPermission.length == 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
+    if(ownersPermission.length === 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
     else setErrorsOwnersPermission('');
-    if(chatPermission.length == 0) {setErrorsChatPermission('please select permission to chat'); cnt++;}
+    if(chatPermission.length === 0) {setErrorsChatPermission('please select permission to chat'); cnt++;}
     else setErrorsChatPermission('');
-    if(incidentsPermission.length == 0) {setErrorsIncidentsPermission('please select permission to incidents'); cnt++;}
+    if(incidentsPermission.length === 0) {setErrorsIncidentsPermission('please select permission to incidents'); cnt++;}
     else setErrorsIncidentsPermission('');
-    if(assembliesPermission.length == 0) {setErrorsAssembliesPermission('please select permission to assemblies'); cnt++;}
+    if(assembliesPermission.length === 0) {setErrorsAssembliesPermission('please select permission to assemblies'); cnt++;}
     else setErrorsAssembliesPermission('');
-    if(eventsPermission.length == 0) {setErrorsEventsPermission('please select permission to events'); cnt++;}
+    if(eventsPermission.length === 0) {setErrorsEventsPermission('please select permission to events'); cnt++;}
     else setErrorsEventsPermission('');
-    if(teamPermission.length == 0) {setErrorsTeamPermission('please select permission to team'); cnt++;}
+    if(teamPermission.length === 0) {setErrorsTeamPermission('please select permission to team'); cnt++;}
     else setErrorsTeamPermission('');
-    if(providersPermission.length == 0) {setErrorsProvidersPermission('please select permission to providers'); cnt++;}
+    if(providersPermission.length === 0) {setErrorsProvidersPermission('please select permission to providers'); cnt++;}
     else setErrorsProvidersPermission('');
-    if(announcementsPermission.length == 0) {setErrorsAnnouncementsPermission('please select permission to announcements'); cnt++;}
+    if(announcementsPermission.length === 0) {setErrorsAnnouncementsPermission('please select permission to announcements'); cnt++;}
     else setErrorsAnnouncementsPermission('');
-    if(companyPermission.length == 0) {setErrorsCompanyPermission('please select permission to company'); cnt++;}
+    if(companyPermission.length === 0) {setErrorsCompanyPermission('please select permission to company'); cnt++;}
     else setErrorsCompanyPermission('');
-    if(addonsPermission.length == 0) {setErrorsAddonsPermission('please select permission to addons'); cnt++;}
+    if(addonsPermission.length === 0) {setErrorsAddonsPermission('please select permission to addons'); cnt++;}
     else setErrorsAddonsPermission('');
-    if(invoicesPermission.length == 0) {setErrorsInvoicesPermission('please select permission to invoices'); cnt++;}
+    if(invoicesPermission.length === 0) {setErrorsInvoicesPermission('please select permission to invoices'); cnt++;}
     else setErrorsInvoicesPermission('');
-    if(paymentMethodsPermission.length == 0) {setErrorsPaymentMethodsPermission('please select permission to payment methods'); cnt++;}
+    if(paymentMethodsPermission.length === 0) {setErrorsPaymentMethodsPermission('please select permission to payment methods'); cnt++;}
     else setErrorsPaymentMethodsPermission('');
 
-    if(cnt ==0){
+    if(cnt ===0){
 
         handleClose();
     }
@@ -343,7 +342,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                              <div className={classes.img}>
                                 <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
                              </div> :
-                             <img className={classes.img} src={avatarurl}/>
+                             <img className={classes.img} src={avatarurl} alt=""/>
                         }
                     </label>
                     </Grid>

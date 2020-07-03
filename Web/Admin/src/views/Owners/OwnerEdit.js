@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import {  withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -10,7 +10,6 @@ import MyButton from 'components/MyButton';
 import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import AdminService from '../../services/api.js';
 import authService from '../../services/authService.js';
 import {COUNTRIES} from '../../components/countries';
 import Multiselect from '../../components/Multiselect.js';
@@ -85,7 +84,7 @@ const useStyles = makeStyles(theme => ({
 const OwnerEdit = (props) => {
   const {history} = props;
 
-  const token = authService.getToken();    
+  //const token = authService.getToken();    
   // if (!token) {
   //   history.push("/login");
   //   window.location.reload();
@@ -96,7 +95,7 @@ const OwnerEdit = (props) => {
   const permissionList = ['','Editer', 'Voir', 'Refusé'];
 
   const [avatarurl, setAvatarUrl] = React.useState("");
-  const [avatar, setAvatar] = React.useState(null);
+  // const [avatar, setAvatar] = React.useState(null);
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -134,11 +133,7 @@ const OwnerEdit = (props) => {
   const [errorsAddonsPermission, setErrorsAddonsPermission] = React.useState('');
   const [errorsInvoicesPermission, setErrorsInvoicesPermission] = React.useState('');
   const [errorsPaymentMethodsPermission, setErrorsPaymentMethodsPermission] = React.useState('');
-  const user = {
-    name: 'Shen Zhi',
-    avatar: '/images/avatars/avatar_11.png',
-    bio: 'Brain Director'
-  };
+
   const selected = [
     { label: "Albania",value: "Albania"},
     { label: "Argentina",value: "Argentina"},
@@ -157,59 +152,59 @@ const OwnerEdit = (props) => {
   })
   const allBuildings = allCompanies;
   useEffect(() => {
-    if(accessOwners == 'Denied'){
+    if(accessOwners === 'Denied'){
       setOpenDialog(true);
     }
-    if(accessOwners != 'Denied'){
+    if(accessOwners !== 'Denied'){
       //    
     }
-  }, []);
+  }, [accessOwners]);
 
   const handleClick = ()=>{
     history.goBack();
   };
   const onClickSave = ()=>{
     let cnt = 0;
-    if(lastname.length == 0) {setErrorsLastname('please enter your last name'); cnt++;}
+    if(lastname.length === 0) {setErrorsLastname('please enter your last name'); cnt++;}
     else setErrorsLastname('');
-    if(firstname.length == 0) {setErrorsFirstname('please enter your first name'); cnt++;}
+    if(firstname.length === 0) {setErrorsFirstname('please enter your first name'); cnt++;}
     else setErrorsFirstname('');
-    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    if(buildings.length == 0) {setErrorsBuildings('please select buildings'); cnt++;}
+    if(buildings.length === 0) {setErrorsBuildings('please select buildings'); cnt++;}
     else setErrorsBuildings('');
-    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
+    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
     else setErrorsEmail('');
-    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
+    if(phonenumber.length === 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
     else setErrorsPhonenumber('');
-    if(buildingsPermission.length == 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
+    if(buildingsPermission.length === 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
     else setErrorsBuildingsPermission('');
-    if(ownersPermission.length == 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
+    if(ownersPermission.length === 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
     else setErrorsOwnersPermission('');
-    if(chatPermission.length == 0) {setErrorsChatPermission('please select permission to chat'); cnt++;}
+    if(chatPermission.length === 0) {setErrorsChatPermission('please select permission to chat'); cnt++;}
     else setErrorsChatPermission('');
-    if(incidentsPermission.length == 0) {setErrorsIncidentsPermission('please select permission to incidents'); cnt++;}
+    if(incidentsPermission.length === 0) {setErrorsIncidentsPermission('please select permission to incidents'); cnt++;}
     else setErrorsIncidentsPermission('');
-    if(assembliesPermission.length == 0) {setErrorsAssembliesPermission('please select permission to assemblies'); cnt++;}
+    if(assembliesPermission.length === 0) {setErrorsAssembliesPermission('please select permission to assemblies'); cnt++;}
     else setErrorsAssembliesPermission('');
-    if(eventsPermission.length == 0) {setErrorsEventsPermission('please select permission to events'); cnt++;}
+    if(eventsPermission.length === 0) {setErrorsEventsPermission('please select permission to events'); cnt++;}
     else setErrorsEventsPermission('');
-    if(teamPermission.length == 0) {setErrorsTeamPermission('please select permission to team'); cnt++;}
+    if(teamPermission.length === 0) {setErrorsTeamPermission('please select permission to team'); cnt++;}
     else setErrorsTeamPermission('');
-    if(providersPermission.length == 0) {setErrorsProvidersPermission('please select permission to providers'); cnt++;}
+    if(providersPermission.length === 0) {setErrorsProvidersPermission('please select permission to providers'); cnt++;}
     else setErrorsProvidersPermission('');
-    if(announcementsPermission.length == 0) {setErrorsAnnouncementsPermission('please select permission to announcements'); cnt++;}
+    if(announcementsPermission.length === 0) {setErrorsAnnouncementsPermission('please select permission to announcements'); cnt++;}
     else setErrorsAnnouncementsPermission('');
-    if(companyPermission.length == 0) {setErrorsCompanyPermission('please select permission to company'); cnt++;}
+    if(companyPermission.length === 0) {setErrorsCompanyPermission('please select permission to company'); cnt++;}
     else setErrorsCompanyPermission('');
-    if(addonsPermission.length == 0) {setErrorsAddonsPermission('please select permission to addons'); cnt++;}
+    if(addonsPermission.length === 0) {setErrorsAddonsPermission('please select permission to addons'); cnt++;}
     else setErrorsAddonsPermission('');
-    if(invoicesPermission.length == 0) {setErrorsInvoicesPermission('please select permission to invoices'); cnt++;}
+    if(invoicesPermission.length === 0) {setErrorsInvoicesPermission('please select permission to invoices'); cnt++;}
     else setErrorsInvoicesPermission('');
-    if(paymentMethodsPermission.length == 0) {setErrorsPaymentMethodsPermission('please select permission to payment methods'); cnt++;}
+    if(paymentMethodsPermission.length === 0) {setErrorsPaymentMethodsPermission('please select permission to payment methods'); cnt++;}
     else setErrorsPaymentMethodsPermission('');
 
-    if(cnt ==0){
+    if(cnt ===0){
 
     }
   }
@@ -237,7 +232,7 @@ const handleChangeBuildings = (val) => {
   setBuildings(val);
 }
 const handleLoadFront = (event) => {
-  setAvatar(event.target.files[0]);
+  // setAvatar(event.target.files[0]);
   setAvatarUrl(URL.createObjectURL(event.target.files[0]));
 }
 const handleChangeBuildingsPermission = (val) => {
@@ -339,16 +334,16 @@ const handleChangePaymentMethodsPermission = (val) => {
                   <p style={{fontSize:25}}>Lots : 120000</p>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
                 </Grid>
               </Grid>
             <Grid xs item container direction="column" spacing={5}>
@@ -364,7 +359,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                       hint={'Add new Company'}
                       all={allCompanies} 
                       onSelected={handleChangeCompanies}
-                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsCompanies.length > 0 && 
                       <span className={classes.error}>{errorsCompanies}</span>}
@@ -379,7 +374,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                       hint={'Add new Buildings'}
                       all={allBuildings} 
                       onSelected={handleChangeBuildings}
-                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                       />
                     {errorsBuildings.length > 0 && 
                     <span className={classes.error}>{errorsBuildings}</span>}
@@ -396,7 +391,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                       placeholder="johndoe@gmail.com"
                       value={lastname}
                       onChange={handleChangeLastName} 
-                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                     />
                   </Grid>
                   {errorsLastname.length > 0 && 
@@ -414,7 +409,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                       placeholder="johndoe@gmail.com"
                       value={firstname}
                       onChange={handleChangeFirstName} 
-                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                     />
                   </Grid>  
                   {errorsFirstname.length > 0 && 
@@ -432,7 +427,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                       placeholder="johndoe@gmail.com"
                       value={email}
                       onChange={handleChangeEmail} 
-                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                     />
                   </Grid>  
                   {errorsEmail.length > 0 && 
@@ -450,7 +445,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                       placeholder="0102030405"
                       value={phonenumber}
                       onChange={handleChangePhoneNumber} 
-                      disabled={(accessOwners =='See'? 'disabled' : !'disabled')}
+                      disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                     />
                   </Grid>  
                   {errorsPhonenumber.length > 0 && 
@@ -625,7 +620,7 @@ const handleChangePaymentMethodsPermission = (val) => {
           </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
               <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog}/>
-              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessOwners =='See'? 'disabled' : !'disabled')}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
             </Grid>
         </div>
       </Grid>

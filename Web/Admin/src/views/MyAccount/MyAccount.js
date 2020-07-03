@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {  useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import Badge from '@material-ui/core/Badge';
@@ -153,7 +153,7 @@ const MyAccount = (props) => {
     .then(      
       response => {        
         setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           
         } else {
           localStorage.setItem("token", JSON.stringify(response.data.data.token));
@@ -174,21 +174,21 @@ const MyAccount = (props) => {
 
   const onClickSave = (event)=>{
     let cnt = 0;
-    if(lastname.length == 0) {setErrorsLastName('please enter your last name'); cnt++;}
+    if(lastname.length === 0) {setErrorsLastName('please enter your last name'); cnt++;}
     else setErrorsLastName('');
-    if(firstname.length == 0) {setErrorsFirstName('please enter your first name'); cnt++;}
+    if(firstname.length === 0) {setErrorsFirstName('please enter your first name'); cnt++;}
     else setErrorsFirstName('');
-    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
+    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
     else setErrorsEmail('');
-    if(phone.length == 0) {setErrorsPhone('please enter your phone number'); cnt++;}
+    if(phone.length === 0) {setErrorsPhone('please enter your phone number'); cnt++;}
     else setErrorsPhone('');
-    // if(old_password.length == 0) {setErrorsOldPassword('please enter your current password'); }
-    if(new_password.length != 0 && new_password.length < 5) {setErrorsNewPassword('Password must be 5 characters long!'); }
+    // if(old_password.length === 0) {setErrorsOldPassword('please enter your current password'); }
+    if(new_password.length !== 0 && new_password.length < 5) {setErrorsNewPassword('Password must be 5 characters long!'); }
     else setErrorsNewPassword('');
-     // if(confirm_password.length == 0) {setErrorsConfirmPassword('please enter your confirm password');}
-    if(new_password != confirm_password) {setErrorsConfirmPassword('mismatch your new password'); cnt++}
+     // if(confirm_password.length === 0) {setErrorsConfirmPassword('please enter your confirm password');}
+    if(new_password !== confirm_password) {setErrorsConfirmPassword('mismatch your new password'); cnt++}
     else setErrorsConfirmPassword('');
-    if(cnt == 0) setData();
+    if(cnt === 0) setData();
   }
   const setData = ()=>{
     let formdata = new FormData();
@@ -199,14 +199,14 @@ const MyAccount = (props) => {
     formdata.set('phone', phone);
     formdata.set('old_password', old_password);
     formdata.set('new_password', new_password);
-    formdata.set('avatar', avatar == null? '':avatar);
+    formdata.set('avatar', avatar === null? '':avatar);
     setVisibleIndicator(true);
     AdminService.updateProfile(formdata)
     .then(      
       response => {        
         console.log(response.data);
          setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           console.log('error');
           msg=response.data.message;
           check = "error";
@@ -229,11 +229,7 @@ const MyAccount = (props) => {
       }
     );  
   }
-  const user = {
-    name: 'Shen Zhi',
-    avatar: '/images/avatars/avatar_11.png',
-    bio: 'Brain Director'
-  };
+
   return (
     <div>
     {

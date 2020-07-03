@@ -3,8 +3,6 @@ import { makeStyles } from '@material-ui/styles';
 import MyTable from '../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Pagination from '@material-ui/lab/Pagination';
-import MySelect from '../../components/MySelect';
 import AddCompany from './AddCompany';
 import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
@@ -14,9 +12,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import authService from '../../services/authService.js';
-import MyDialog from '../../components/MyDialog';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(5),

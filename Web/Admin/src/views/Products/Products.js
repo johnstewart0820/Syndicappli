@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import { makeStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
@@ -7,17 +7,14 @@ import MyButton from '../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
 import AddProduct from './AddProduct';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import {withRouter } from 'react-router-dom';
 import authService from '../../services/authService.js';
-import MyDialog from '../../components/MyDialog';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
-import AdminService from '../../services/api.js';
 import ProductsManager from './components/ProductsManager';
 import ProductsBuilding from './components/ProductsBuilding';
 import ProductsOwner from './components/ProductsOwner';
-import { transform } from 'typescript';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -107,10 +104,10 @@ const Products = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessProducts == 'Edit'){
+    if(accessProducts === 'Edit'){
       setOpen(true);
     }
-    if(accessProducts == 'See'){
+    if(accessProducts === 'See'){
       setOpenDialog(true);
     }
   };

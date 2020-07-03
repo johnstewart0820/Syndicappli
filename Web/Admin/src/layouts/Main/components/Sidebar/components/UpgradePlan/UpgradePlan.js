@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { Typography, Button, colors } from '@material-ui/core';
+import { Typography} from '@material-ui/core';
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
 
 const useStyles = makeStyles(theme => ({

@@ -3,8 +3,6 @@ import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
 import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
-import authService from '../../services/authService.js';
 const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: theme.spacing(19),
@@ -49,7 +47,7 @@ const ForgotPassword = () => {
   return (
     <Grid   container direction="column" justify="flex-start" className={classes.root}>
       <Grid  item container justify="center">
-        <img src={logo.url} className={classes.img}/>
+        <img src={logo.url} className={classes.img} alt=""/>
       </Grid>
       <Grid  item container justify="center">
       <p className={classes.p}>Mot de passe perdu? Veuillez saisir votre identifiant ou adresse mail. Vous recevrez un lien pour créer un nouveau mot de passe par e-mail. </p>

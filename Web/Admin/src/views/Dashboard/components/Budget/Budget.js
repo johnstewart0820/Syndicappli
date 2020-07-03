@@ -6,7 +6,6 @@ import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import MoneyIcon from '@material-ui/icons/Money';
-import { property } from 'underscore';
 
 const useStyles = makeStyles((theme, props)=> ({
   root: {
@@ -60,7 +59,7 @@ const Budget = props => {
   const [body, setBody] = useState(props.body);
   const [pro, setPro] = useState(props.pro);
   const [tail, setTail] = useState(props.tail); 
-  const [avatar, setAvatar] = useState(props.avatar);
+  //const [avatar, setAvatar] = useState(props.avatar);
   const [income, setIncome] = useState(props.income);
   const classes = useStyles(props);
   let style1, style2 ;

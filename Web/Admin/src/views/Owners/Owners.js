@@ -4,7 +4,6 @@ import MyTable from '../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
-import Pagination from '@material-ui/lab/Pagination';
 import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
@@ -50,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 var  footerItems;
 const Owners = (props) => {
   const {history}=props;
-  const token = authService.getToken();    
+  //const token = authService.getToken();    
   // if (!token) {
   //   history.push("/login");
   //   window.location.reload();
@@ -74,9 +73,9 @@ const Owners = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleOpenDelete = () => {
-    setOpenDelete(true);
-  };
+  // const handleOpenDelete = () => {
+  //   setOpenDelete(true);
+  // };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -88,10 +87,10 @@ const Owners = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessOwners == 'Edit'){
+    if(accessOwners === 'Edit'){
       setOpen(true);
     }
-    if(accessOwners == 'See'){
+    if(accessOwners === 'See'){
       setOpenDialog(true);
     }
   };
@@ -118,7 +117,7 @@ const Owners = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');
@@ -150,13 +149,13 @@ const Owners = (props) => {
     );
   }
   useEffect(()=>{
-    if(accessOwners == 'Denied'){
+    if(accessOwners === 'Denied'){
       setOpenDialog(true);
     }
-  });
+  },[]);
   useEffect(() => {
     // getDataList();
-    if(accessOwners != 'Denied')
+    if(accessOwners !== 'Denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -174,7 +173,7 @@ const Owners = (props) => {
     history.push('/owners/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessOwners == 'Edit'){
+    if(accessOwners === 'Edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{
@@ -189,7 +188,7 @@ const Owners = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');

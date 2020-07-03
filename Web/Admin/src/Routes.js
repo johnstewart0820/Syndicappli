@@ -17,7 +17,6 @@ import {
   SignUp as SignUpView,
 } from './views';
 import Login from './views/SignIn/Login';
-import SignIn from './views/SignIn/SignIn';
 import CompaniesEdit from './views/Companies/CompaniesEdit';
 import ManagerEdit from './views/Managers/ManagerEdit';
 import UserEdit from './views/Users/UserEdit';

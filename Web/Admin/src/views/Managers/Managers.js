@@ -4,7 +4,6 @@ import MyTable from '../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
-import Pagination from '@material-ui/lab/Pagination';
 import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../components/MySelect';
 import CloseIcon from '@material-ui/icons/Close';
@@ -50,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 var  footerItems;
 const Managers = (props) => {
   const {history}=props;
-  const token = authService.getToken();    
+  //const token = authService.getToken();    
   // if (!token) {
   //   history.push("/login");
   //   window.location.reload();
@@ -74,9 +73,9 @@ const Managers = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleOpenDelete = () => {
-    setOpenDelete(true);
-  };
+  // const handleOpenDelete = () => {
+  //   setOpenDelete(true);
+  // };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -88,10 +87,10 @@ const Managers = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessManagers == 'Edit'){
+    if(accessManagers === 'Edit'){
       setOpen(true);
     }
-    if(accessManagers == 'See'){
+    if(accessManagers === 'See'){
       setOpenDialog(true);
     }
   };
@@ -118,7 +117,7 @@ const Managers = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');
@@ -149,14 +148,12 @@ const Managers = (props) => {
       }
     );
   }
-  useEffect(()=>{
-    if(accessManagers == 'Denied'){
+
+  useEffect(() => {
+    if(accessManagers === 'Denied'){
       setOpenDialog(true);
     }
-  });
-  useEffect(() => {
-    // getDataList();
-    if(accessManagers != 'Denied')
+    if(accessManagers !== 'Denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -173,7 +170,7 @@ const Managers = (props) => {
     history.push('/managers/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessManagers == 'Edit'){
+    if(accessManagers === 'Edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{
@@ -188,7 +185,7 @@ const Managers = (props) => {
       response => {        
         console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code != 200){
+        if(response.data.code !== 200){
           // if(response.data.status === 'Token is Expired') {
           //   authService.logout();
           //   history.push('/');

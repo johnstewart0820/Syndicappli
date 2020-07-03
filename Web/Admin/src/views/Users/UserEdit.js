@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -93,11 +93,8 @@ const UserEdit = (props) => {
   const accessUsers = authService.getAccess('role_users');
   const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
-  const [profile, setProfile] = useState({});
   const companiesList=[];
-  const itemCompanies ={'Apporto' : 0 };
   const buildingsList=[];
-  const itemBuildings ={'edit' : 0 };
   const permissionList = ['Editer', 'Voir', 'Refusé'];
   const itemPermission ={'edit' : 0 , 'see' : 1, 'denied' : 2};
 
@@ -153,16 +150,16 @@ const UserEdit = (props) => {
   })
   const allBuildings = allCompanies;
   useEffect(() => {
-    if(accessUsers == 'Denied'){
+    if(accessUsers === 'Denied'){
       setOpenDialog(true);
     }
-    if(accessUsers != 'Denied'){
+    if(accessUsers !== 'Denied'){
       AdminService.getAllCompanyList()
       .then(      
         response => {        
           console.log(response.data);
           // setVisibleIndicator(false);  
-          if(response.data.code != 200){
+          if(response.data.code !== 200){
             // if(response.data.status === 'Token is Expired') {
             //   authService.logout();
             //   history.push('/');
@@ -195,7 +192,7 @@ const UserEdit = (props) => {
         response => {        
           console.log(response.data);
           // setVisibleIndicator(false);  
-          if(response.data.code != 200){
+          if(response.data.code !== 200){
             // if(response.data.status === 'Token is Expired') {
             //   authService.logout();
             //   history.push('/');
@@ -247,36 +244,36 @@ const UserEdit = (props) => {
   };
   const onClickSave = ()=>{
     let cnt = 0;
-    if(lastname.length == 0) {setErrorsLastname('please enter your last name'); cnt++;}
+    if(lastname.length === 0) {setErrorsLastname('please enter your last name'); cnt++;}
     else setErrorsLastname('');
-    if(firstname.length == 0) {setErrorsFirstname('please enter your first name'); cnt++;}
+    if(firstname.length === 0) {setErrorsFirstname('please enter your first name'); cnt++;}
     else setErrorsFirstname('');
-    if(companies.length == 0) {setErrorsCompanies('please select companies'); cnt++;}
+    if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    if(buildings.length == 0) {setErrorsBuildings('please select buildings'); cnt++;}
+    if(buildings.length === 0) {setErrorsBuildings('please select buildings'); cnt++;}
     else setErrorsBuildings('');
-    if(email.length == 0) {setErrorsEmail('please enter your email'); cnt++;}
+    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
     else setErrorsEmail('');
-    if(phonenumber.length == 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
+    if(phonenumber.length === 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
     else setErrorsPhonenumber('');
-    if(companiesPermission.length == 0) {setErrorsCompaniesPermission('please select permission to companies'); cnt++;}
+    if(companiesPermission.length === 0) {setErrorsCompaniesPermission('please select permission to companies'); cnt++;}
     else setErrorsCompaniesPermission('');
-    if(managersPermission.length == 0) {setErrorsManagersPermission('please select permission to managers'); cnt++;}
+    if(managersPermission.length === 0) {setErrorsManagersPermission('please select permission to managers'); cnt++;}
     else setErrorsManagersPermission('');
-    if(buildingsPermission.length == 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
+    if(buildingsPermission.length === 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
     else setErrorsBuildingsPermission('');
-    if(ownersPermission.length == 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
+    if(ownersPermission.length === 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
     else setErrorsOwnersPermission('');
-    if(ordersPermission.length == 0) {setErrorsOrdersPermission('please select permission to orders'); cnt++;}
+    if(ordersPermission.length === 0) {setErrorsOrdersPermission('please select permission to orders'); cnt++;}
     else setErrorsOrdersPermission('');
-    if(productsPermission.length == 0) {setErrorsProductsPermission('please select permission to products'); cnt++;}
+    if(productsPermission.length === 0) {setErrorsProductsPermission('please select permission to products'); cnt++;}
     else setErrorsProductsPermission('');
-    if(discountCodesPermission.length == 0) {setErrorsDiscountcodesPermission('please select permission to discount codes'); cnt++;}
+    if(discountCodesPermission.length === 0) {setErrorsDiscountcodesPermission('please select permission to discount codes'); cnt++;}
     else setErrorsDiscountcodesPermission('');
-    if(usersPermission.length == 0) {setErrorsUsersPermission('please select permission to users'); cnt++;}
+    if(usersPermission.length === 0) {setErrorsUsersPermission('please select permission to users'); cnt++;}
     else setErrorsUsersPermission('');
 
-    if(cnt ==0){
+    if(cnt ===0){
 
     }
   }
@@ -395,7 +392,7 @@ const handleLoadFront = (event) => {
                         hint={'Add new Company'}
                         all={allCompanies} 
                         onSelected={handleChangeCompanies}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                         />
                         {errorsCompanies.length > 0 && 
                         <span className={classes.error}>{errorsCompanies}</span>}
@@ -416,7 +413,7 @@ const handleLoadFront = (event) => {
                             hint={'Add new Buildings'}
                             all={allBuildings} 
                             onSelected={handleChangeBuildings}
-                            disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                            disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                             />
                           {errorsBuildings.length > 0 && 
                           <span className={classes.error}>{errorsBuildings}</span>}
@@ -437,7 +434,7 @@ const handleLoadFront = (event) => {
                     placeholder="johndoe@gmail.com"
                     value={lastname}
                     onChange={handleChangeLastName} 
-                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                    disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                   />
                 </Grid>
                 {errorsLastname.length > 0 && 
@@ -455,7 +452,7 @@ const handleLoadFront = (event) => {
                     placeholder="johndoe@gmail.com"
                     value={firstname}
                     onChange={handleChangeFirstName} 
-                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                    disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                   />
                 </Grid>  
                 {errorsFirstname.length > 0 && 
@@ -473,7 +470,7 @@ const handleLoadFront = (event) => {
                     placeholder="johndoe@gmail.com"
                     value={email}
                     onChange={handleChangeEmail} 
-                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                    disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                   />
                 </Grid>  
                 {errorsEmail.length > 0 && 
@@ -491,7 +488,7 @@ const handleLoadFront = (event) => {
                     placeholder="0102030405"
                     value={phonenumber}
                     onChange={handleChangePhoneNumber} 
-                    disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                    disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                   />
                 </Grid>  
                 {errorsPhonenumber.length > 0 && 
@@ -511,7 +508,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={companiesPermission}
                         onChangeSelect={handleChangeCompaniesPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsCompaniesPermission.length > 0 && 
                       <span className={classes.error}>{errorsCompaniesPermission}</span>}
@@ -524,7 +521,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={managersPermission}
                         onChangeSelect={handleChangeManagersPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                         />
                         {errorsManagersPermission.length > 0 && 
                         <span className={classes.error}>{errorsManagersPermission}</span>}
@@ -537,7 +534,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={buildingsPermission}
                         onChangeSelect={handleChangeBuildingsPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsBuildingsPermission.length > 0 && 
                       <span className={classes.error}>{errorsBuildingsPermission}</span>}
@@ -550,7 +547,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={ownersPermission}
                         onChangeSelect={handleChangeOwnersPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsOwnersPermission.length > 0 && 
                       <span className={classes.error}>{errorsOwnersPermission}</span>}
@@ -563,7 +560,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={ordersPermission}
                         onChangeSelect={handleChangeOrdersPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsOrdersPermission.length > 0 && 
                       <span className={classes.error}>{errorsOrdersPermission}</span>}
@@ -576,7 +573,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={productsPermission}
                         onChangeSelect={handleChangeProductsPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsProductsPermission.length > 0 && 
                         <span className={classes.error}>{errorsProductsPermission}</span>}
@@ -589,7 +586,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={discountCodesPermission}
                         onChangeSelect={handleChangeDiscountCodesPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsDiscountcodesPermission.length > 0 && 
                       <span className={classes.error}>{errorsDiscountcodesPermission}</span>}
@@ -602,7 +599,7 @@ const handleLoadFront = (event) => {
                         data={permissionList}
                         value={usersPermission}
                         onChangeSelect={handleChangeUsersPermission}
-                        disabled={(accessUsers =='See'? 'disabled' : !'disabled')}
+                        disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
                       />
                       {errorsUsersPermission.length > 0 && 
                       <span className={classes.error}>{errorsUsersPermission}</span>}
@@ -612,7 +609,7 @@ const handleLoadFront = (event) => {
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
               <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog}/>
-              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessUsers =='See'? 'disabled' : !'disabled')}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}/>
             </Grid>
         </div>
       </Grid>

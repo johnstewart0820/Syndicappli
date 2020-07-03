@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
@@ -71,7 +71,6 @@ var msg = '';
 var check = '';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const validateForm = (errors) => {
-  console.log(errors);
   let valid = true;
   Object.values(errors).forEach(
     (val) => val.length > 0 && (valid = false)
@@ -110,10 +109,8 @@ const Login = (props) => {
     setOpenToast(false);
   }
   const handleClickButton = () => {
-    console.info('InValid Form')
 
     if(validateForm(errorsEmail) && validateForm(errorsPassword)) {
-      console.info('Valid Form')
 
     var data={};
     data['email'] = email;
@@ -122,10 +119,8 @@ const Login = (props) => {
     AdminService.login(data)
     .then(      
       response => {        
-        console.log(response.data);
          setVisibleIndicator(false);  
-        if(response.data.code != 200){
-          console.log('error');
+        if(response.data.code !== 200){
           msg=response.data.message;
           check="error";
           setOpenToast(true);
@@ -135,7 +130,6 @@ const Login = (props) => {
           setOpenToast(true);
           let profile = response.data.data.profile;
           localStorage.setItem("token", JSON.stringify(response.data.data.token));
-          console.log(response.data.data.token);
           localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
           localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
           localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
@@ -148,7 +142,6 @@ const Login = (props) => {
         }
       },
       error => {
-        console.log('fail');
         msg="fail";  
         check="error";      
          setVisibleIndicator(false);
@@ -170,7 +163,7 @@ const Login = (props) => {
 
     <Grid   container direction="column" justify="flex-start" className={classes.root}>
       <Grid  item container justify="center">
-        <img src={logo.url} className={classes.img}/>
+        <img src={logo.url} className={classes.img} alt=""/>
       </Grid>
       <Grid  item container justify="center">
       <p className={classes.p}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut
