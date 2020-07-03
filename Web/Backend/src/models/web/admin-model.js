@@ -38,7 +38,7 @@ var adminModel = {
  */
 function getProfile(uid) {
   return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM ' + table.ADMIN + ' Left Join ' + table.ADMIN_ROLE + ' Using (adminID) WHERE adminID = ? and status = "active"'
+    let query = 'SELECT * FROM ' + table.ADMIN + ' Left Join ' + table.ADMIN_ROLE + ' Using (adminID) WHERE adminID = ? and permission = "active"'
 
     db.query(query, [ uid ], (error, rows, fields) => {
       if (error) {
@@ -92,7 +92,7 @@ function updateProfile(uid, data, file_name) {
               if (result) {
                   if (file_name === "") {
                     let query = 'UPDATE ' + table.ADMIN + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, password = ? WHERE adminID = ?'
-                    db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, file_name, uid ], (error, rows, fields) => {
+                    db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, uid ], (error, rows, fields) => {
                       if (error) {
                         reject({ message: message.INTERNAL_SERVER_ERROR })
                       } else {
@@ -137,7 +137,7 @@ function getUserList(data) {
       page_num = Number(data.page_num);
       search_key = '%' + data.search_key + '%'
       if (sort_column === -1)
-        query += ' order by userID desc';
+        query += ' order by adminID desc';
       else {
           if (sort_column === 0)
             query += ' order by lastname ';
@@ -150,7 +150,9 @@ function getUserList(data) {
          
           query += data.sort_method;
       }
-      query += ' limit ' + page_num * row_count + ',' + row_count
+      if (row_count !== -1) {
+        query += ' limit ' + page_num * row_count + ',' + row_count
+      }
       db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -233,8 +235,8 @@ function createUser(uid) {
 function getUser(uid) {
     return new Promise((resolve, reject) => {
       getProfile(uid).then((profile) => {
-        let query = 'SELECT buildingID, building_name FROM ' + table.USER + ' Left Join ' + table.BUILDING_MANAGER + ' USING (userID) Left Join ' + table.BUILDING + ' USING (buildingID) '
-                        + 'WHERE userID = ? and ' + table.BUILDING + '.permission = "true"'
+        let query = 'SELECT buildingID, building_name FROM ' + table.USER + ' Left Join ' + table.BUILDING_MANAGER + ' USING (adminID) Left Join ' + table.BUILDING + ' USING (buildingID) '
+                        + 'WHERE adminID = ? and ' + table.BUILDING + '.permission = "true"'
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
               reject({ message: message.INTERNAL_SERVER_ERROR })
