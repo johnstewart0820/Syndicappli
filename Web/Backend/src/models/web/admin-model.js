@@ -131,7 +131,7 @@ function updateProfile(uid, data, file_name) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and status = "active"'
+      let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ?) and permission = "active"'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -153,7 +153,7 @@ function getUserList(data) {
       if (row_count !== -1) {
         query += ' limit ' + page_num * row_count + ',' + row_count
       }
-      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+      db.query(query, [ search_key, search_key ], (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
@@ -179,10 +179,10 @@ function getUserList(data) {
  */
 function getCountUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ? or email like ? or phone like ?) and status = "active"'
+      let query = 'SELECT count(*) count FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ?) and permission = "active"'
       search_key = '%' + data.search_key + '%'
       
-      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+      db.query(query, [ search_key, search_key ], (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
