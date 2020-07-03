@@ -36,6 +36,7 @@ router.delete('/user/:id', authMiddleware.checkToken, deleteUser)
  * company api
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
+router.post('/company', authMiddleware.checkToken, createCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 
 /**
@@ -122,14 +123,24 @@ function getUserList(req, res) {
  * @return  json 
  */
 function createUser(req, res) {
-    
-    let userId = req.decoded.uid
-    let data = req.body
-    adminService.createUser(userId, data).then((result) => {
-      res.json(result)
-    }).catch((err) => {
-      res.json(err)
-    })
+  var form = new formidable.IncomingForm();
+  let file_name = "";
+  let userId = req.decoded.uid
+  form.parse(req, function (err, fields, files) {
+      adminService.createUser(userId, fields, file_name).then((result)=>{
+          res.json(result)
+      }).catch((err) => {
+          res.json(err)
+      });
+  });
+
+  form.on('fileBegin', function (name, file){
+      file_name = Date.now() + '.jpg';
+      file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
+  });
+
+  form.on('file', function (name, file){
+  });
 }
 
 /**
@@ -206,6 +217,35 @@ function getCompanyList(req, res) {
     }).catch((err) => {
       res.json(err)
     })
+}
+
+/**
+ * Function that create company
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function createCompany(req, res) {
+  var form = new formidable.IncomingForm();
+  let file_name = "";
+  let userId = req.decoded.uid
+  form.parse(req, function (err, fields, files) {
+      adminService.createCompany(userId, fields, file_name).then((result)=>{
+          res.json(result)
+      }).catch((err) => {
+          res.json(err)
+      });
+  });
+
+  form.on('fileBegin', function (name, file){
+      file_name = Date.now() + '.jpg';
+      file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
+  });
+
+  form.on('file', function (name, file){
+  });
 }
 
 /**

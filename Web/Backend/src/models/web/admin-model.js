@@ -23,6 +23,7 @@ var adminModel = {
   updateUser: updateUser,
   deleteUser: deleteUser,
   getCompanyList: getCompanyList,
+  createCompany: createCompany,
   getAllCompanyList: getAllCompanyList,
   getBuildingList: getBuildingList,
   getBuildingListByCompany: getBuildingListByCompany,
@@ -38,7 +39,7 @@ var adminModel = {
  */
 function getProfile(uid) {
   return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM ' + table.ADMIN + ' Left Join ' + table.ADMIN_ROLE + ' Using (adminID) WHERE adminID = ? and permission = "active"'
+    let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE adminID = ? and permission = "active"'
 
     db.query(query, [ uid ], (error, rows, fields) => {
       if (error) {
@@ -131,7 +132,7 @@ function updateProfile(uid, data, file_name) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ?) and permission = "active"'
+      let query = 'SELECT * FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ?) and permission not like "deleted"'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -175,7 +176,7 @@ function getUserList(data) {
  */
 function getCountUserList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ?) and permission = "active"'
+      let query = 'SELECT count(*) count FROM ' + table.ADMIN + ' WHERE (lastname like ? or firstname like ?) and permission not like "deleted"'
       search_key = '%' + data.search_key + '%'
       
       db.query(query, [ search_key, search_key ], (error, rows, fields) => {
@@ -195,28 +196,17 @@ function getCountUserList(data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createUser(uid) {
+function createUser(data, file_name) {
     return new Promise((resolve, reject) => {
-      getProfile(uid).then((profile) => {
-        let query = 'Insert into ' + table.USER + ' (lastname, firstname, email, phone, '
-        db.query(query, [ uid ], (error, rows, fields) => {
-            if (error) {
-              reject({ message: message.INTERNAL_SERVER_ERROR })
-            } else {
-                getBuildingListByCompany(profile.companyID).then((buildings) => {
-                    for (let i = 0; i < buildings.length; i ++) {
-                        buildings[i].selected = false;
-                    }
-                    for (let i = 0; i < buildings.length; i ++) {
-                        for (let j = 0; j < rows.length; j ++) {
-                            if (buildings[i].buildingID === rows[j].buildingID)
-                                buildings[i].selected = true;
-                        }
-                    }
-                    resolve({profile: profile, buildings: buildings})
-                })
-            }
-          })
+      let password = bcrypt.hashSync("123456")
+      let query = 'Insert into ' + table.ADMIN + ' (lastname, firstname, email, phone, photo_url, password, role_companies, role_managers, role_buildings, role_owners, role_orders, role_products, role_discountcodes, role_admins) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      
+      db.query(query, [ data.lastname, data.firstname, data.email, data.phone, file_name, password, data.role_companies, data.role_managers, data.role_buildings, data.role_owners, data.role_orders, data.role_products, data.role_discountcodes, data.role_admins], (error, rows, fields) => {
+          if (error) {
+            reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+            resolve("ok");
+          }
       })
     })
   }
@@ -307,7 +297,7 @@ function deleteUser(id) {
  */
 function getCompanyList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.COMPANIES + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      let query = 'SELECT * FROM ' + table.COMPANIES + ' WHERE (name like ?) and permission not like "deleted"'
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -317,22 +307,22 @@ function getCompanyList(data) {
         query += ' order by companyID desc';
       else {
           if (sort_column === 0)
-            query += ' order by company_name ';
+            query += ' order by name ';
           else if (sort_column === 1)
-            query += ' order by company_address ';
+            query += ' order by address ';
           else if (sort_column === 2)
-            query += ' order by company_email ';
+            query += ' order by email ';
           else if (sort_column === 3)
-            query += ' order by company_phone ';
-          else if (sort_column === 4)
-            query += ' order by company_manager_count ';
-          else if (sort_column === 5)
-            query += ' order by company_member_count ';
+            query += ' order by phone ';
+          // else if (sort_column === 4)
+          //   query += ' order by company_manager_count ';
+          // else if (sort_column === 5)
+          //   query += ' order by company_member_count ';
             
           query += data.sort_method;
       }
       query += ' limit ' + page_num * row_count + ',' + row_count
-      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+      db.query(query, [ search_key ], (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
@@ -349,6 +339,26 @@ function getCompanyList(data) {
     })
   }
 
+/**
+ * create company data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createCompany(data, file_name) {
+  return new Promise((resolve, reject) => {
+    let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    
+    db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve("ok");
+        }
+    })
+  })
+}
   /**
  * get all company list
  *
@@ -371,6 +381,7 @@ function getAllCompanyList(data) {
   }
 
 
+
 /**
  * get count for company list for search filter
  *
@@ -380,10 +391,10 @@ function getAllCompanyList(data) {
  */
 function getCountCompanyList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.COMPANIES + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      let query = 'SELECT count(*) count FROM ' + table.COMPANIES + ' WHERE (name like ?) and permission not like "deleted"'
       search_key = '%' + data.search_key + '%'
       
-      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+      db.query(query, [ search_key ], (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {

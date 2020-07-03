@@ -25,6 +25,7 @@ var webService = {
   updateUser: updateUser,
   deleteUser: deleteUser,
   getCompanyList: getCompanyList,
+  createCompany: createCompany,
   getAllCompanyList: getAllCompanyList,
   getBuildingList: getBuildingList,
   getBuildingListByCompany: getBuildingListByCompany,
@@ -118,23 +119,24 @@ function getUserList(uid, data) {
  * @param   object authData
  * @return  json 
  */
-function createUser(uid, data) {
-    return new Promise((resolve, reject) => {
-      adminWebModel.createUser(data).then((result) => {
-        if (result) {
-          let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
-            expiresIn: timer.TOKEN_EXPIRATION
-          })
-          resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  result.buildings} }})
-        }
-      }).catch((err) => {
-        if (err.message === message.INTERNAL_SERVER_ERROR)
-          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-        else
-          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-      })
+function createUser(uid, data, file_name) {
+  return new Promise((resolve, reject) => {
+    adminWebModel.createUser(data, file_name).then((data) => {
+      if (data) {
+        let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+          expiresIn: timer.TOKEN_EXPIRATION
+        })
+        
+        resolve({ code: code.OK, message: '', data: { 'token': token} })
+      }
+    }).catch((err) => {
+      if (err.message === message.INTERNAL_SERVER_ERROR)
+        reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+      else
+        reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
     })
-  }
+  })
+}
 
 /**
  * Function that get User data
@@ -239,6 +241,32 @@ function getCompanyList(uid, data) {
       })
   }
   
+/**
+ * Function that create company data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function createCompany(uid, data, file_name) {
+  return new Promise((resolve, reject) => {
+    adminWebModel.createCompany(data, file_name).then((data) => {
+      if (data) {
+        let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+          expiresIn: timer.TOKEN_EXPIRATION
+        })
+        
+        resolve({ code: code.OK, message: '', data: { 'token': token} })
+      }
+    }).catch((err) => {
+      if (err.message === message.INTERNAL_SERVER_ERROR)
+        reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+      else
+        reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+    })
+  })
+}
+
 /**
  * Function that get company list
  *
