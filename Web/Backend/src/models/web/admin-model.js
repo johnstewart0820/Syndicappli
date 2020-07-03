@@ -158,11 +158,7 @@ function getUserList(data) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
           getCountUserList(data).then((data) => {
-              if (data) {
-                resolve({rows: rows, count: data}); 
-              } else {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
-              }
+            resolve({rows: rows, count: data}); 
           })
            
         }
