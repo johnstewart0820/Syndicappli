@@ -11,9 +11,7 @@ import MyButton from 'components/MyButton';
 import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import MyTextField from '../../components/MyTextField';
 import authService from '../../services/authService.js';
-import { setStatic } from 'recompose';
 
 const useStyles = makeStyles(theme => ({
   root: {

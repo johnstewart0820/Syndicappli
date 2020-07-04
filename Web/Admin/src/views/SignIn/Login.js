@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
+import useStyles from './useStyles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
 import TextField from '@material-ui/core/TextField';
@@ -8,65 +8,7 @@ import Link from '@material-ui/core/Link';
 import AdminService from './../../services/api.js';
 import Toast from '../../components/Toast.js';
 import CircularProgress  from '@material-ui/core/CircularProgress';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingTop: theme.spacing(19),
-    justifyContent: 'center',
-    '& .MuiOutlinedInput-input':{
-      padding: '17px 25px 17px 25px',
-      fontSize: 22,
-    },
-    '& .MuiOutlinedInput-root': {
-      borderRadius: 8
-    }
-  },
-  p: {
-    [theme.breakpoints.up('sm')]: {
-     width: 958,
-     padding: 61,
-    },
-    fontSize: 20,
-    color: 'white',
-    textIndent: -10,
-    textAlign: 'center'
-  },
-  img:{
-    [theme.breakpoints.down('sm')]: {
-      width: 219,
-      height: 45
-    }
 
-  },  
-  forgot: {
-    fontSize:18 , 
-    color: 'white',
-    textDecoration: 'underline',
-    paddingTop: theme.spacing(5),
-    paddingBottom: theme.spacing(2),
-    paddingRight:4
-  },
-  body: {
-    paddingTop:theme.spacing(3),
-    backgroundColor: 'white',
-    borderRadius: 15,
-  },
-  div_indicator: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    position: 'fixed',
-    paddingLeft: '50%',
-    alignItems: 'center',
-    marginTop: '-60px',
-    zIndex: 999,
-  },
-  indicator: {
-    color: 'gray'
-  },
-  error:{
-    color: 'red'
-  }
-}));
 var msg = '';
 var check = '';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
@@ -163,23 +105,24 @@ const Login = (props) => {
 
     <Grid   container direction="column" justify="flex-start" className={classes.root}>
       <Grid  item container justify="center">
-        <img src={logo.url} className={classes.img} alt=""/>
+        <img src={logo.url} className={classes.logo} alt=""/>
       </Grid>
       <Grid  item container justify="center">
-      <p className={classes.p}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut
+      <p className={classes.title}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut
          tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae. 
          Suspendisse vehicula laoreet ullamcorper. </p>
       </Grid>
       <Grid item container justify="center">
         <Grid item container xs={1} sm={2} md={4}></Grid>
-        <Grid xs={10} sm={8} md={4} item container direction="column" className={classes.body} spacing={7} >
+        <Grid xs={10} sm={7} md={4} item container direction="column" className={classes.body}>
+            <Grid item></Grid>
             <Grid item container justify="center">
-              <p style={{fontSize:35,padding:0}}><b>Connexion</b></p>
+              <p className={classes.boxTitle}><b>Connexion</b></p>
             </Grid>
-            <Grid item container spacing={5} >
+            <Grid item container className={classes.input}>
               <Grid xs={1} item></Grid>
               <Grid  xs={10} item container direction="column" spacing={2}>
-                <Grid item><p style={{fontSize:20}}>Email</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Email</p></Grid>
                 <Grid item>
                   <TextField 
                     name = "email"
@@ -193,7 +136,7 @@ const Login = (props) => {
                 </Grid>
                 {errorsEmail.length > 0 && 
                 <span className={classes.error}>{errorsEmail}</span>}
-                <Grid item><p style={{fontSize:20}}>Mot de passe</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Mot de passe</p></Grid>
                 <Grid item>
                   <TextField 
                     name="password"
@@ -219,7 +162,7 @@ const Login = (props) => {
       </Grid>
       <Grid item container justify="center">
           <Grid item container xs={1} sm={2} md={4}></Grid>
-          <Grid item container xs={10} sm={8} md={4}>
+          <Grid item container xs={10} sm={7} md={4}>
             <Grid item container direction="row-reverse">
               <Link href="/forgotpassword" variant="body2">
                 <p className={classes.forgot}>J'ai oublié mon mot de passe</p>
