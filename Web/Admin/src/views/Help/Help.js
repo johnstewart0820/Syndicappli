@@ -1,5 +1,4 @@
 import React, {  useEffect } from 'react';
-import {ToastsContainer, ToastsContainerPosition, ToastsStore} from 'react-toasts';
 import { makeStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import Badge from '@material-ui/core/Badge';
@@ -9,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../components/MyButton';
 import {withRouter} from 'react-router-dom';
-import AdminService from './../../services/api.js';
+import AdminService from '../../services/api.js';
 import authService from '../../services/authService.js';
 import CircularProgress  from '@material-ui/core/CircularProgress';
 const useStyles = makeStyles(theme => ({
@@ -56,18 +55,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   tool: {
-    [theme.breakpoints.up('xl')]: {
-      minHeight: 67
-    },
-    [theme.breakpoints.down('lg')]: {
-      minHeight: 47
-    },
-    [theme.breakpoints.down('md')]: {
-      minHeight: 33
-    },
-    [theme.breakpoints.down('sm')]: {
-      minHeight: 23
-    },
+    minHeight: '67px'
   },
   title:{
     paddingTop: theme.spacing(2),
@@ -197,31 +185,10 @@ const useStyles = makeStyles(theme => ({
       [theme.breakpoints.down('sm')]: {
         fontSize :13
       },
-  },
-  editAvatar:{
-    [theme.breakpoints.up('xl')]: {
-      width: 54,
-      height: 54,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width: 38,
-      height: 38,
-    },
-    [theme.breakpoints.down('md')]: {
-      width: 27,
-      height: 27,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 19,
-      height: 19,
-    },
-      backgroundColor: 'white',
-      borderRadius: '50%',
-      color: 'gray'
   }
 }));
 
-const MyAccount = (props) => {
+const Help = (props) => {
   const {history} = props;
 
   // const token = authService.getToken();    
@@ -249,6 +216,7 @@ const MyAccount = (props) => {
   const [avatarurl, setAvatarUrl] = React.useState('');
   const [avatar, setAvatar] = React.useState(null);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+
 
   const handleChangeLastName = (event)=>{
     setLastName(event.target.value);
@@ -321,8 +289,7 @@ const MyAccount = (props) => {
   }
   const setData = ()=>{
     let formdata = new FormData();
-    let a = [1,2,3];
-    formdata.set('a', a);
+    
     formdata.set('lastname', lastname);
     formdata.set('firstname', firstname);
     formdata.set('email', email);
@@ -337,15 +304,14 @@ const MyAccount = (props) => {
         console.log(response.data);
          setVisibleIndicator(false);  
         if(response.data.code !== 200){
+          console.log('error');
           setErrorsOldPassword('The current password is not correct');
         } else {
-            ToastsStore.success("Updated successfully!");
            setErrorsOldPassword('');
            localStorage.setItem("token", JSON.stringify(response.data.data.token));
         }
       },
-      error => {
-        ToastsStore.error(error);     
+      error => {     
          setVisibleIndicator(false);
       }
     );  
@@ -362,7 +328,7 @@ const MyAccount = (props) => {
           <Grid item xs={6} container justify="flex-start" >
             <Grid item>
               <Typography variant="h2" className={classes.headerTitle}>
-                <b>Mon Compte</b>
+                <b>D'aide</b>
               </Typography>
             </Grid>
           </Grid>
@@ -408,7 +374,13 @@ const MyAccount = (props) => {
                         padding: '0 4px',
                       }}
                       badgeContent={
-                        <EditOutlinedIcon className={classes.editAvatar}/>
+                        <EditOutlinedIcon style={{
+                          width: 54,
+                          height: 54,
+                          backgroundColor: 'white',
+                          borderRadius: '50%',
+                          color: 'gray'
+                        }}/>
                       }
                     >
                       <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
@@ -516,9 +488,8 @@ const MyAccount = (props) => {
           </Grid>
       </div>
     </div>
-    <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
     </div>
   );
 };
 
-export default withRouter(MyAccount);
+export default withRouter(Help);

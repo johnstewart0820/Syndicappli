@@ -9,39 +9,26 @@ import {
 } from './components';
 import CurveChart from './components/CurveChart';
 import authService from '../../services/authService.js';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-}));
-
+import useStyles from './useStyles';
 const Dashboard = (props) => {
   const{history} = props;
   const classes = useStyles();
   const cellList = [20, 50, 100, 200];
   const incomeDirection = 2;
   const incomeColor = "#FC5555";//#2DCE9C
-  const token = authService.getToken();    
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   return (
     <div className={classes.root}>
       <div className={classes.title}>
         <Grid item container justify="space-around">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
-                <b>Mes Gestionnaires</b>
+              <Typography variant="h2" className={classes.titleText}>
+                <b>Accueil</b>
               </Typography>
             </Grid>
           </Grid>

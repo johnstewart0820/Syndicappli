@@ -26,6 +26,7 @@ import ResetPassword from 'views/ResetPassword';
 import BuildingsEdit from 'views/Buildings/BuildingsEdit';
 import ProductsEdit from 'views/Products/ProductsEdit';
 import OwnerEdit from 'views/Owners/OwnerEdit';
+import HelpView from 'views/Help/Help';
 import DiscountCodesEdit from 'views/DiscountCodes/DiscountCodesEdit';
 const Routes = () => {
   return (
@@ -160,6 +161,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/owners/edit/:id"
+      />
+      <RouteWithLayout
+        component={HelpView}
+        exact
+        layout={MainLayout}
+        path="/help"
       />
       <Redirect to="/not-found" />
     </Switch>

@@ -17,36 +17,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& p': {
-      marginBottom: 0
-    }
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  padding: {
-    padding: 32
-  },
-  close: {
-    color: 'gray'
-  }
-}));
-var  footerItems;
+import useStyles from './useStyles';
 const Managers = (props) => {
   const {history}=props;
   //const token = authService.getToken();    
@@ -58,9 +29,19 @@ const Managers = (props) => {
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-
+  const [footerItems, setFooterItems] = useState([]);
   const [deleteId,setDeleteId] = useState(-1);
   const classes = useStyles();
+  let company = [];
+  const [companies, setCompanies] = useState('');
+  const [companyList, setCompanyList] = useState([]);
+  const [companyID, setCompanyID] = useState(-1);
+
+  let building = [];
+  const [buildings, setBuildings] = useState('');
+  const [buildingList, setBuildingList] = useState([]);
+  const [buildingID, setBuildingID] = useState(-1);
+
   const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
   const [totalpage , setTotalPage] = useState(1);
@@ -73,10 +54,20 @@ const Managers = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  // const handleOpenDelete = () => {
-  //   setOpenDelete(true);
-  // };
-
+  const handleChangeCompanies = (val) =>{
+    setCompanies(val);
+    if(val < companyList.length)
+      setCompanyID(companyList[val].companyID);
+    else
+      setCompanyID(-1);
+  };
+  const handleChangeBuildings = (val) =>{
+    setBuildings(val);
+    if(val < buildingList.length)
+      setBuildingID(buildingList[val].buildingID);
+    else
+      setBuildingID(-1);
+  };
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
@@ -104,60 +95,23 @@ const Managers = (props) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  const getDatas = ()=>{
-    const requestData = {
-      'search_key': '',
-      'page_num' : page_num-1,
-      'row_count' : row_count,
-      'sort_column' : sort_column,
-      'sort_method' : sort_method
+  useEffect(()=>{
+    if(accessManagers === 'Denied'){
+      setOpenDialog(true);
+    }else{
+      getCompanies();
     }
-    AdminService.getUserList(requestData)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-
-          setTotalPage(data.totalpage);
-          setDataList(data.userlist);
-              let amount_connection = 0;
-          for(let i = 0; i < dataList.length; i++)
-            amount_connection += dataList[i].amount_connection;
-          footerItems = ['Total',dataList.length,amount_connection, amount_connection, amount_connection];
-        }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
-      }
-    );
-  }
-
+  },[accessManagers]);
   useEffect(() => {
     if(accessManagers === 'Denied'){
       setOpenDialog(true);
     }
     if(accessManagers !== 'Denied')
-        getDatas();
+        getManagers();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
-    {key : 'fullname' , field : 'Nom Prénom'}, 
+    {key : 'lastname' , field : 'Nom'},
+    {key : 'firstname' , field : 'Prénom'} ,
     {key : 'email' , field : 'Email'},
     {key : 'connection' , field : 'Connexions/mois'}, 
     {key : 'dailytime' , field : 'Temps connexion/jour'},
@@ -196,7 +150,105 @@ const Managers = (props) => {
           alert('Deleted successful');
           const data = response.data.data;
           localStorage.setItem("token", JSON.stringify(data.token));
-          getDatas();
+          // getDatas();
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+      }
+    );
+  }
+  const getBuildings = ()=>{
+    const requestData = {
+      'search_key': '',
+      'page_num' : page_num-1,
+      'row_count' : row_count,
+      'sort_column' : sort_column,
+      'sort_method' : sort_method,
+      'companyID' : companyID
+    }
+    AdminService.getBuildingList(requestData)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code !== 200){
+          console.log('error');
+        } else {
+          console.log('success');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+          data.buildinglist.map((item)=>(
+            building.push(item.name)
+          )
+          );
+          setBuildingList(data.buildinglist);
+          setBuildingID(data.buildinglist[0].buildingID);
+          building.push('all');
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+      }
+    );
+  }
+  const getManagers = ()=>{
+    const requestData = {
+      'search_key': '',
+      'page_num' : page_num-1,
+      'row_count' : row_count,
+      'sort_column' : sort_column,
+      'sort_method' : sort_method,
+      'companyID' : companyID,
+      'buildingID' : buildingID
+    }
+    AdminService.getManagerList(requestData)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code !== 200){
+          console.log('error');
+        } else {
+          console.log('success');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+
+          setTotalPage(data.totalpage);
+          setDataList(data.managerlist);
+              let amount_connection = 0;
+          const items = ['Total',data.totalcount,amount_connection, amount_connection, amount_connection];
+          setFooterItems(items);
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+      }
+    );
+  }
+  const getCompanies = ()=>{
+    AdminService.getCompanyListByUser()
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code !== 200){
+          console.log('error');
+        } else {
+          console.log('success');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+          data.companylist.map((item)=>(
+            company.push(item.name)
+          )
+          );
+          setCompanyList(data.companylist);
+          setCompanyID(data.companylist[0].companyID);
+          company.push('all');
+          getBuildings();
         }
       },
       error => {
@@ -211,7 +263,7 @@ const Managers = (props) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.titleText}>
                 <b>Mes Gestionnaires</b>
               </Typography>
             </Grid>
@@ -227,7 +279,7 @@ const Managers = (props) => {
               >
                 <Grid item container className={classes.padding} justify="space-between">
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid item><h2 id="transition-modal-title">Nouveau Gestionnaires</h2></Grid>
+                  <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Gestionnaires</h2></Grid>
                 </Grid>
                 <AddManager  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
@@ -237,30 +289,28 @@ const Managers = (props) => {
       </div>
       <div className={classes.tool}>
       <Grid container spacing={2} direction="column">
-        <Grid xs={6} item container alignItems="center" spacing={2}>
-            <Grid item ><p>Carbinet</p></Grid>
+        <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
                 <MySelect 
                     color="gray" 
-                    width="316px" 
-                    data={selectList} 
-                    // onChangeSelect={handleChangeCompanies}
-                    // value={companies}
+                    data={company} 
+                    onChangeSelect={handleChangeCompanies}
+                    value={companies}
                 />
               </Grid>
             </Grid>
         </Grid>
-        <Grid xs={6} item container alignItems="center" spacing={2}>
-            <Grid item ><p>Immeuble</p></Grid>
+        <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
                 <MySelect 
                     color="gray" 
-                    width="316px" 
-                    data={selectList} 
-                    // onChangeSelect={handleChangeBuildings}
-                    // value={buildings}
+                    data={building} 
+                    onChangeSelect={handleChangeBuildings}
+                    value={buildings}
                 />
               </Grid>
             </Grid>

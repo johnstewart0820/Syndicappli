@@ -1,40 +1,9 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../components/MySelect';
-const useStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: 5,
-        padding: theme.spacing(2, 4, 3),
-    },
-    footer: {
-        paddingTop: 89,
-    },
-    root: {
-        '& .MuiTextField-root': {
-            width: '500',
-        },
-        '& .MuiOutlinedInput-root':{
-            width: 200
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '8px 12px',
-            fontSize: 17
-        },
-        '& p':{
-            marginBottom: 0
-        },
-    },
-    input: {
-        display: 'none'
-    },
-    error:{
-        color: 'red'
-    }
-}));
+import {AddDiscountCodeStyles as useStyles} from './useStyles';
 
 const AddDiscountCode = (props) => {
   const classes = useStyles();
@@ -125,7 +94,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Catégorie</p></Grid>
+                    <Grid item><p className={classes.title}>Catégorie</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
@@ -139,7 +108,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nom</p></Grid>
+                    <Grid item><p className={classes.title}>Nom</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -153,7 +122,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container  alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Date de début</p></Grid>
+                    <Grid item><p className={classes.title}>Date de début</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 
@@ -169,7 +138,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item ><p style={{fontSize:18}}>Date de fin</p></Grid>
+                    <Grid item ><p className={classes.title}>Date de fin</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 
@@ -185,7 +154,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Type de réduction</p></Grid>
+                    <Grid item><p className={classes.title}>Type de réduction</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
@@ -199,7 +168,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Montant</p></Grid>
+                    <Grid item><p className={classes.title}>Montant</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -213,7 +182,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Appliqué sur</p></Grid>
+                    <Grid item><p className={classes.title}>Appliqué sur</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
@@ -227,7 +196,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nombre maximal d'activations</p></Grid>
+                    <Grid item><p className={classes.title}>Nombre maximal d'activations</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -241,7 +210,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nombre maximal d'activations par utilisateur</p></Grid>
+                    <Grid item><p className={classes.title}>Nombre maximal d'activations par utilisateur</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 

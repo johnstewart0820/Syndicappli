@@ -16,17 +16,49 @@ import InputBase from '@material-ui/core/InputBase';
 const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
-      marginTop: theme.spacing(3),
+      [theme.breakpoints.up('xl')]: {
+        marginTop: 24,
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        marginTop: 17,
+      },
+      [theme.breakpoints.between('md','md')]: {
+        marginTop: 12,
+      },
+      [theme.breakpoints.between('sm','sm')]: {
+        marginTop: 8,
+      },
+      [theme.breakpoints.down('sm')]: {
+        marginTop: 6,
+      },
     },
   },
   input: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 17,
+      height:47,
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      fontSize: 12,
+      height:33,
+    },
+    [theme.breakpoints.between('md','md')]: {
+      fontSize: 8,
+      height:23,
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      fontSize: 6,
+      height:16,
+    },
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 6,
+      height:15,
+    },
     borderRadius: 4,
     position: 'relative',
     backgroundColor: theme.palette.background.paper,
     border: '1px solid #ced4da',
-    fontSize: 17,
-    padding: '2px 26px 2px 12px',
-    height:33,
+    padding: '2px 12px',
     display: 'flex',
     alignItems: 'center',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
@@ -62,29 +94,108 @@ const useStyles = makeStyles({
     },
   },
   root: {
-    borderRadius: '30px',
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(1),
+    '& tbody tr:last-child td':{
+      borderBottom: 'none'
+    },
+    '& tfoot tr:last-child td':{
+      borderBottom: 'none'
+    },
+    [theme.breakpoints.up('xl')]: {
+      marginBottom: 16,
+      marginTop: 8,
+      borderRadius: '30px',
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      marginBottom: 11,
+      marginTop: 6,
+      borderRadius: '21px',
+    },
+    [theme.breakpoints.between('md','md')]: {
+      marginBottom: 8,
+      marginTop: 4,
+      borderRadius: '15px',
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      marginBottom: 6,
+      marginTop: 3,
+      borderRadius: '11px',
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: 4,
+      marginTop: 2,
+      borderRadius: '8px',
+    },
     '& thead button': {
       background: 'transparent',
       outline: 'transparent',
       color: '#363636'
     },
     '& .MuiTableCell-root': {
-      fontSize: 18
+      //  textAlign: 'center',
+      [theme.breakpoints.up('xl')]: {
+        fontSize :18,
+        padding: 16
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        fontSize :14,
+        padding: 11
+      },
+      [theme.breakpoints.between('md','md')]: {
+        fontSize :10,
+        padding: 8
+      },
+      [theme.breakpoints.between('sm','sm')]: {
+        fontSize :7,
+        padding: 6
+      },
+      [theme.breakpoints.down('sm')]: {
+        fontSize :5,
+        padding: 5
+      },
     }
   },
   body:{
-    marginBottom: 16,
+    [theme.breakpoints.up('xl')]: {
+      marginBottom: 16,
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      marginBottom: 11,
+    },
+    [theme.breakpoints.between('md','md')]: {
+      marginBottom: 8,
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      marginBottom: 6,
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: 4,
+    },
     '& .MuiPaginationItem-textPrimary.Mui-selected': {
       background: 'linear-gradient(90deg, #00b8d4 10%, #00bf82 90%)',
     },
     '& .MuiPaginationItem-root': {
-      fontSize: 22,
-      width: 47,
-      height: 47,
-      borderRadius: 24
+      borderRadius: '50%',
+      [theme.breakpoints.up('xl')]: {
+        fontSize: 22,
+        width: 47,
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        fontSize: 15,
+        width: 33,
+      },
+      [theme.breakpoints.between('md','md')]: {
+        fontSize: 11,
+        width: 23,
+      },
+      [theme.breakpoints.between('sm','sm')]: {
+        fontSize: 8,
+        width: 16,
+      },
+      [theme.breakpoints.down('sm')]: {
+        fontSize: 6,
+        width: 11,
+      },
     }
   },
   editItem: {
@@ -195,21 +306,21 @@ export default function ProductTable  (props)  {
             </TableHead>
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.userID}>
+                <TableRow key={item.ID}>
                   {
                   cells.map((cell,i)=>{
                     const value = item[cell.key];
                     return(
-                    <TableCell key={cell.key} onClick={()=>props.onClickEdit(item.adminID)}>
+                    <TableCell  key={cell.key} onClick={()=>props.onClickEdit(item.ID)}>
 
                       {value}
                   </TableCell>);
                   })
                   }
                   <TableCell align="right">
-                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.adminID)}/>
+                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.ID)}/>
                       &nbsp;&nbsp;
-                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.adminID)}></DeleteIcon>
+                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.ID)}></DeleteIcon>
                   </TableCell>
                 </TableRow>
               ))}
@@ -246,7 +357,6 @@ export default function ProductTable  (props)  {
               color="primary" 
               page={props.page} 
               onChange={handleChangePage} 
-              style={{fontSize:22}}
             />
           </Grid>
         </Grid>

@@ -10,39 +10,16 @@ import AddOrder from './AddOrder';
 import { withRouter } from 'react-router-dom';
 import authService from '../../services/authService.js';
 import MyDialog from '../../components/MyDialog';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4)
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  padding: {
-    padding: 32
-  },
-  close: {
-    color: 'gray'
-  }
-}));
+import useStyles from './useStyles';
+
 const Orders = (props) => {
   const {history}=props;
 
-  const token = authService.getToken();    
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   const accessOrders = authService.getAccess('role_orders');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -90,7 +67,7 @@ const Orders = (props) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.titleText}>
                 <b>Mes Commandes</b>
               </Typography>
             </Grid>
@@ -106,7 +83,7 @@ const Orders = (props) => {
               >
                 <Grid item container className={classes.padding} justify="space-between">
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid><h2 id="transition-modal-title">Nouveau Commandes</h2></Grid> 
+                  <Grid><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Commandes</h2></Grid> 
                 </Grid>
                 <AddOrder  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>

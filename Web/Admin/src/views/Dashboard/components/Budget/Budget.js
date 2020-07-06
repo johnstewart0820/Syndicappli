@@ -6,52 +6,7 @@ import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import MoneyIcon from '@material-ui/icons/Money';
-
-const useStyles = makeStyles((theme, props)=> ({
-  root: {
-    height: '100%'
-  },
-  content: {
-    alignItems: 'center',
-    display: 'flex'
-  },
-  title: {
-    fontWeight: 700
-  },
-  avatar: {
-    backgroundColor: theme.palette.error.main,
-    height: 56,
-    width: 56
-  },
-  icon: {
-    height: 32,
-    width: 32
-  },
-  difference: {
-    marginTop: theme.spacing(2),
-    display: 'flex',
-    alignItems: 'center'
-  },
-  differenceIcon: {
-    color: props=>props.color
-  },
-  differenceValue: {
-    color: props=>props.color,
-    marginRight: theme.spacing(1),
-    fontSize: 15
-  },
-  show: {
-    visibility: 'visible',
-    position: 'absolute',
-    color: props=>props.color,
-    zIndex: 0
-  },
-  hide: {
-    visibility : 'hidden',
-    color: props=>props.color,
-    zIndex: 1
-  }
-}));
+import {BudgetStyles as useStyles} from '../../useStyles';
 
 const Budget = props => {
   const { className, ...rest } = props;
@@ -87,11 +42,10 @@ const Budget = props => {
             <Typography
             className={classes.caption}
             variant="caption"
-              style={{fontSize:18}}
             >
               {title}
             </Typography>
-            <p style={{fontSize: 31}}>{body}</p>
+            <p className={classes.bodyTitle}>{body}</p>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
@@ -108,9 +62,8 @@ const Budget = props => {
             {pro}
           </p>
           <Typography
-            className={classes.caption}
+            className={classes.tail}
             variant="caption"
-            style={{fontSize: 15}}
           >
             {tail}
           </Typography>

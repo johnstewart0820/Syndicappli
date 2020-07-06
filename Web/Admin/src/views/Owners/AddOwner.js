@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
 import ScrollBar from 'react-perfect-scrollbar';
@@ -8,52 +7,8 @@ import MySelect from '../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Checkbox} from '@material-ui/core';
 import IdCard from 'components/IdCard';
-const useStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: 5,
-        padding: theme.spacing(2, 4, 3),
-    },
-    footer: {
-        paddingTop: 89,
-    },
-    root: {
-        '& .MuiTextField-root': {
-            width: '500',
-        },
-        '& .MuiOutlinedInput-root':{
-            // width: 150
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '8px 12px',
-            fontSize: 17
-        },
-        '& p':{
-            marginBottom: 0
-        },
-    },
-    input: {
-        display: 'none'
-    },
-    img: {
-        cursor: 'pointer',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        border: '1px dashed rgba(112,112,112,0.43)',
-        borderRadius: 8,
-        width: 116,
-        height: 92,
-        marginTop: 20,
-        marginBottom: 20
-    },
+import {AddOwnerStyles as useStyles} from './useStyles';
 
-    error:{
-        color: 'red'
-    }
-}));
-let idcardUrlsTemp=[];
-let idcardsTemp=[];
 const AddOwner = (props) => {
   const classes = useStyles();
   const [state,setState] = React.useState(false);
@@ -120,17 +75,17 @@ const handleLoadFront = (event) => {
 }
 
 const handleLoadIdcard = (event) => {
-    idcardUrlsTemp.push(URL.createObjectURL(event.target.files[0]));
-    idcardsTemp.push(event.target.files[0])
-    setIdcards(idcardsTemp);
-    setIdcardUrls(idcardUrlsTemp);
+    idcardurls.push(URL.createObjectURL(event.target.files[0]));
+    idcards.push(event.target.files[0])
+    setIdcards(idcards);
+    setIdcardUrls(idcardurls);
     setState(!state);
   }
   const handleClickCloseIdcard = (num)=>{
-    delete idcardUrlsTemp[num];
-    delete idcardsTemp[num];
-    setIdcards(idcardsTemp);
-    setIdcardUrls(idcardUrlsTemp);
+    delete idcardurls[num];
+    delete idcards[num];
+    setIdcards(idcards);
+    setIdcardUrls(idcardurls);
     setState(!state);
   }
 const handleChangeApartNumber = (event) => {
@@ -172,49 +127,49 @@ const handleChangeBuildings = (val) => {
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Carbinet</p></Grid>
+                    <Grid item><p className={classes.title}>Carbinet</p></Grid>
                     <Grid xs item container>
                         <MySelect 
                             color="gray" 
-                            width="316px" 
                             data={companiesList} 
                             onChangeSelect={handleChangeCompanies}
                             value={companies}
+                            width="50%"
                         />
                         {errorsCompanies.length > 0 && 
                         <span className={classes.error}>{errorsCompanies}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Immeuble</p></Grid>
+                    <Grid item><p className={classes.title}>Immeuble</p></Grid>
                     <Grid xs item container>
                         <MySelect 
                             color="gray" 
-                            width="316px" 
                             data={buildingsList} 
                             onChangeSelect={handleChangeBuildings}
                             value={buildings}
+                            width="50%"
                         />
                         {errorsBuildings.length > 0 && 
                         <span className={classes.error}>{errorsBuildings}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Civilité</p></Grid>
+                    <Grid item><p className={classes.title}>Civilité</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
                             data={titleList} 
                             onChangeSelect={handleChangeOwnerTitle}
                             value={ownerTitle}
-                            width="134px"
+                            width="50%"
                         />
                         {errorsOwnerTitle.length > 0 && 
                         <span className={classes.error}>{errorsOwnerTitle}</span>}
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nom</p></Grid>
+                    <Grid item><p className={classes.title}>Nom</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -228,7 +183,7 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container  alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Prénom</p></Grid>
+                    <Grid item><p className={classes.title}>Prénom</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -242,7 +197,7 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                 </Grid>
                 <Grid item container spacing={1} direction="column">
-                    <Grid item><p style={{fontSize:18}}>Adresse</p></Grid>
+                    <Grid item><p className={classes.title}>Adresse</p></Grid>
                     <Grid  item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -259,7 +214,7 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item ><p style={{fontSize:18}}>Email</p></Grid>
+                    <Grid item ><p className={classes.title}>Email</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -273,7 +228,7 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Téléphone</p></Grid>
+                    <Grid item><p className={classes.title}>Téléphone</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -289,7 +244,7 @@ const handleChangeBuildings = (val) => {
                 <Grid item container justify="space-between" direction="row">
                     <Grid  item>
                         <Grid container   alignItems="center" spacing={1}>
-                            <Grid item ><p style={{fontSize:18}}>Locataire</p></Grid>
+                            <Grid item ><p className={classes.title}>Locataire</p></Grid>
                             <Grid xs item container>
                                 <Checkbox 
                                     checked={isSubAccount}
@@ -300,7 +255,7 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                     <Grid  item>
                         <Grid  container  alignItems="center" spacing={1}>
-                            <Grid item><p style={{fontSize:18}}>Membre du Conseil Syndical</p></Grid>
+                            <Grid item><p className={classes.title}>Membre du Conseil Syndical</p></Grid>
                             <Grid xs item container>
                                 <Checkbox 
                                     checked={isMemberCouncil}
@@ -311,14 +266,14 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                 </Grid>
                 <Grid xs={12} item container direction="column" >
-                    <p style={{fontSize:18}}>Photo de profil</p>
+                    <p className={classes.title}>Photo de profil</p>
                     <Grid item container justify="flex-start">
                     <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
                     <label htmlFor="img_front">
                         {
                             avatarurl === '' ?
                              <div className={classes.img}>
-                                <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
+                                <AddCircleOutlineIcon className={classes.plus}/>
                              </div> :
                              <img className={classes.img} src={avatarurl} alt=""/>
                         }
@@ -326,7 +281,7 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={5}>
-                    <Grid item><p style={{fontSize:18}}>Lot</p></Grid>
+                    <Grid item><p className={classes.title}>Lot</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 
@@ -340,10 +295,10 @@ const handleChangeBuildings = (val) => {
                     </Grid>
                 </Grid>
                 <br/>
-                <Grid item><p style={{fontSize:18}}>Clefs de répartition du lot</p></Grid>
+                <Grid item><p className={classes.title}>Clefs de répartition du lot</p></Grid>
                 <br/>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Clef 1 :</p></Grid>
+                    <Grid item><p className={classes.title}>Clef 1 :</p></Grid>
                     <Grid  item >
                         <TextField 
                             id="outlined-basic" 
@@ -355,27 +310,23 @@ const handleChangeBuildings = (val) => {
                             type="number"
                         />
                     </Grid>
-                    <Grid  item><p style={{fontSize:18}}>tantièmes</p></Grid>
+                    <Grid  item><p className={classes.title}>tantièmes</p></Grid>
                 </Grid>
                 <Grid item style={{marginTop: 10, marginBottom: 10}}><MyButton name = {"Ajouter un lot"} bgColor="grey"/></Grid>
                 <Grid xs={12} item container direction="column" style={{marginTop: 30}}>
-                    <p style={{fontSize:18}}>Pièce d'identité</p>
+                    <p className={classes.title}>Pièce d'identité</p>
                     <Grid item container justify="flex-start">
                         <IdCard 
                             onClose = {handleClickCloseIdcard}
                             idcardurls={idcardurls} 
                             state={state}
-                            width={116}
-                            height={92}
-                            badgeSize={31}
-                            badgePos={20}
                         />
                         
                         <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard}/>
                         <label htmlFor="img_idcard">
                             {
                                 <div className={classes.img}>
-                                    <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
+                                    <AddCircleOutlineIcon className={classes.plus}/>
                                 </div> 
                             }
                         </label>

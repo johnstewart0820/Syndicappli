@@ -1,5 +1,4 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, {useEffect} from 'react';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
 import ScrollBar from 'react-perfect-scrollbar';
@@ -8,47 +7,8 @@ import MySelect from '../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import {COUNTRIES} from '../../components/countries';
 import Multiselect from '../../components/Multiselect.js';
-const useStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: 5,
-        padding: theme.spacing(2, 4, 3),
-    },
-    footer: {
-        paddingTop: 89,
-    },
-    root: {
-        '& .MuiTextField-root': {
-            width: '500',
-        },
-        '& .MuiOutlinedInput-root':{
-            width: 160
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '8px 12px',
-            fontSize: 17
-        },
-        '& p':{
-            marginBottom: 0
-        },
-    },
-    input: {
-        display: 'none'
-    },
-    img: {
-        cursor: 'pointer',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        border: '1px dashed rgba(112,112,112,0.43)',
-        borderRadius: 8,
-        width: 116,
-        height: 92,
-    },
-    error:{
-        color: 'red'
-    }
-}));
+import {AddManagerStyles as useStyles} from './useStyles';
+import AdminService from '../../services/api.js';
 
 const AddManager = (props) => {
   const classes = useStyles();
@@ -63,7 +23,7 @@ const AddManager = (props) => {
     { label: "Sweden",value: "Sweden"},
     { label: "Venezuela",value: "Venezuela"}
   ];
-  const [companies, setCompanies] = React.useState(selected);
+//   const [companies, setCompanies] = React.useState(selected);
   const [buildings, setBuildings] = React.useState(selected);
   const companiesList = COUNTRIES.map((country,id) => {
     return {
@@ -77,6 +37,11 @@ const AddManager = (props) => {
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [phonenumber, setPhoneNumber] = React.useState('');
+
+  let company = [];
+  const [companies, setCompanies] = React.useState('');
+  const [companyList, setCompanyList] = React.useState([]);
+  const [companyID, setCompanyID] = React.useState(-1);
 
   const [buildingsPermission, setBuildingsPermission] = React.useState('');
   const [chatPermission, setChatPermission] = React.useState('');
@@ -178,9 +143,13 @@ const handleChangeEmail = (event) => {
 const handleChangePhoneNumber = (event) => {
     setPhoneNumber(event.target.value);
 }
-const handleChangeCompanies = (val) => {
+const handleChangeCompanies = (val) =>{
     setCompanies(val);
-}
+    if(val < companyList.length)
+      setCompanyID(companyList[val].companyID);
+    else
+      setCompanyID(-1);
+  };
 const handleChangeBuildings = (val) => {
     setBuildings(val);
 }
@@ -223,26 +192,57 @@ const handleChangeInvoicesPermission = (val) => {
 const handleChangePaymentMethodsPermission = (val) => {
     setPaymentMethodsPermission(val);
 }
+useEffect(()=>{
+    getCompanies();
+},[companies]);
+const getCompanies = ()=>{
+    AdminService.getCompanyListByUser()
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code !== 200){
+          console.log('error');
+        } else {
+          console.log('success');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+          data.companylist.map((item)=>(
+            company.push(item.name)
+          )
+          );
+          setCompanyList(data.companylist);
+          setCompanyID(data.companylist[0].companyID);
+          company.push('all');
+        //   getBuildings();
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+      }
+    );
+  }
   return (
     <div className={classes.root}>
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
                 <Grid item container justify="center" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Carbinet</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Carbinet</p></Grid>
                     <Grid xs={9} item container>
-                        <Multiselect
-                            selected={companies}
-                            no={'No companies found'}
-                            hint={'Add new Companies'}
-                            all={companiesList} 
-                            onSelected={handleChangeCompanies}
+                        <MySelect 
+                            color="gray" 
+                            data={company} 
+                            onChangeSelect={handleChangeCompanies}
+                            value={companies}
+                            width="80%"
                         />
                         {errorsCompanies.length > 0 && 
                         <span className={classes.error}>{errorsCompanies}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Immeubles</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Immeubles</p></Grid>
                     <Grid xs={9} item container>
                          <Multiselect
                             selected={buildings}
@@ -256,7 +256,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                     </Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Nom</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -271,7 +271,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Prénom</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -286,7 +286,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Email</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -301,7 +301,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Téléphone</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -316,14 +316,14 @@ const handleChangePaymentMethodsPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid xs={12} item container direction="column" >
-                    <p style={{fontSize:18}}>Photo</p>
+                    <p className={classes.title}>Photo</p>
                     <Grid item container justify="flex-start">
                     <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
                     <label htmlFor="img_front">
                         {
                             avatarurl === '' ?
                              <div className={classes.img}>
-                                <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
+                                <AddCircleOutlineIcon className={classes.plus}/>
                              </div> :
                              <img className={classes.img} src={avatarurl} alt=""/>
                         }
@@ -332,14 +332,13 @@ const handleChangePaymentMethodsPermission = (val) => {
                 </Grid>
             </Grid>
             <br/>
-            <p style={{fontSize:18}}><b>Permissions</b></p>
+            <p className={classes.title}><b>Permissions</b></p>
             <br />
             <Grid container spacing={2}>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Immeubles</p>
+                    <p className={classes.title}>Immeubles</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeBuildingsPermission}
                         value={buildingsPermission}
@@ -348,10 +347,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsBuildingsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Copropriétaires</p>
+                    <p className={classes.title}>Copropriétaires</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeOwnersPermission}
                         value={ownersPermission}
@@ -360,10 +358,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsOwnersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Messagerie</p>
+                    <p className={classes.title}>Messagerie</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeChatPermission}
                         value={chatPermission}
@@ -372,10 +369,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsChatPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Incidents</p>
+                    <p className={classes.title}>Incidents</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeIncidentsPermission}
                         value={incidentsPermission}
@@ -384,10 +380,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsIncidentsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Assemblées</p>
+                    <p className={classes.title}>Assemblées</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeAssembliesPermission}
                         value={assembliesPermission}
@@ -396,10 +391,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsAssembliesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Événements</p>
+                    <p className={classes.title}>Événements</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeEventsPermission}
                         value={eventsPermission}
@@ -408,10 +402,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsEventsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Équipe</p>
+                    <p className={classes.title}>Équipe</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeTeamPermission}
                         value={teamPermission}
@@ -420,10 +413,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsTeamPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Prestataires</p>
+                    <p className={classes.title}>Prestataires</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeProvidersPermission}
                         value={providersPermission}
@@ -432,10 +424,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsProvidersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Annonces</p>
+                    <p className={classes.title}>Annonces</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeAnnouncementsPermission}
                         value={announcementsPermission}
@@ -444,10 +435,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsAnnouncementsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Cabinet</p>
+                    <p className={classes.title}>Cabinet</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeCompanyPermission}
                         value={companyPermission}
@@ -456,10 +446,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsCompanyPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Modules</p>
+                    <p className={classes.title}>Modules</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeAddonsPermission}
                         value={addonsPermission}
@@ -468,10 +457,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsAddonsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Factures</p>
+                    <p className={classes.title}>Factures</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeInvoicesPermission}
                         value={invoicesPermission}
@@ -480,10 +468,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsInvoicesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Moyens de paiement</p>
+                    <p className={classes.title}>Moyens de paiement</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangePaymentMethodsPermission}
                         value={paymentMethodsPermission}

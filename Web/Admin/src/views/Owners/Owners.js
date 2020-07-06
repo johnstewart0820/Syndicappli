@@ -17,36 +17,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import useStyles from './useStyles';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& p': {
-      marginBottom: 0
-    }
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  padding: {
-    padding: 32
-  },
-  close: {
-    color: 'gray'
-  }
-}));
-var  footerItems;
 const Owners = (props) => {
   const {history}=props;
   //const token = authService.getToken();    
@@ -118,10 +90,6 @@ const Owners = (props) => {
         console.log(response.data);
         // setVisibleIndicator(false);  
         if(response.data.code !== 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
           console.log('error');
         } else {
           console.log('success');
@@ -130,21 +98,11 @@ const Owners = (props) => {
 
           setTotalPage(data.totalpage);
           setDataList(data.userlist);
-              let amount_connection = 0;
-          for(let i = 0; i < dataList.length; i++)
-            amount_connection += dataList[i].amount_connection;
-          footerItems = ['Total',dataList.length,amount_connection, amount_connection, amount_connection];
         }
       },
       error => {
         console.log('fail');        
         // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
       }
     );
   }
@@ -214,7 +172,7 @@ const Owners = (props) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.titleText}>
                 <b>Mes Copropriétaires</b>
               </Typography>
             </Grid>
@@ -230,7 +188,7 @@ const Owners = (props) => {
               >
                 <Grid item container className={classes.padding} justify="space-between">
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid item><h2 id="transition-modal-title">Nouveau Copropriétaire</h2></Grid>
+                  <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Copropriétaire</h2></Grid>
                 </Grid>
                 <AddOwner  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
@@ -240,13 +198,12 @@ const Owners = (props) => {
       </div>
       <div className={classes.tool}>
       <Grid container spacing={2} direction="column">
-        <Grid xs={6} item container alignItems="center" spacing={2}>
-            <Grid item ><p>Carbinet</p></Grid>
+        <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
                 <MySelect 
                     color="gray" 
-                    width="316px" 
                     data={selectList} 
                     // onChangeSelect={handleChangeCompanies}
                     // value={companies}
@@ -254,13 +211,12 @@ const Owners = (props) => {
               </Grid>
             </Grid>
         </Grid>
-        <Grid xs={6} item container alignItems="center" spacing={2}>
-            <Grid item ><p>Immeuble</p></Grid>
+        <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
                 <MySelect 
                     color="gray" 
-                    width="316px" 
                     data={selectList} 
                     // onChangeSelect={handleChangeBuildings}
                     // value={buildings}
@@ -268,13 +224,12 @@ const Owners = (props) => {
               </Grid>
             </Grid>
         </Grid>
-        <Grid xs={6} item container alignItems="center" spacing={2}>
-            <Grid item ><p>Rôle</p></Grid>
+        <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Rôle</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
                 <MySelect 
                     color="gray" 
-                    width="316px" 
                     data={selectList} 
                     // onChangeSelect={handleChangeBuildings}
                     // value={buildings}
@@ -297,8 +252,6 @@ const Owners = (props) => {
           cells={cellList} 
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
-          tblFooter = "true"
-          footerItems = {footerItems}
         />
       </div>
       <Dialog

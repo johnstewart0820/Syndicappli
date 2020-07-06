@@ -5,22 +5,54 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles(theme => ({
   root: {
+    [theme.breakpoints.up('xl')]: {
+      minHeight: 209,
+      padding: 16,
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      minHeight: 146,
+      padding: 11,
+    },
+    [theme.breakpoints.between('md','md')]: {
+      minHeight: 102,
+      padding: 8,
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      minHeight: 71,
+      padding: 6,
+    },
+    [theme.breakpoints.down('sm')]: {
+      minHeight: 50,
+      padding: 4,
+    },
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    minHeight: '209px',
-    padding: '16px',
     justifyContent: 'center'
   },
   avatar: {
-    width:199,
-    height: 41,
+    [theme.breakpoints.up('xl')]: {
+      width:199,
+      height: 41,
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      width:140,
+      height: 28,
+    },
+    [theme.breakpoints.between('md','md')]: {
+      width:98,
+      height: 20,
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      width:69,
+      height: 14,
+    },
+    [theme.breakpoints.down('sm')]: {
+      width:48,
+      height: 10,
+    },
     display: 'flex',
-
   },
-  name: {
-
-  }
 }));
 
 const Profile = props => {

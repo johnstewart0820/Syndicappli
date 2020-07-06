@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -10,59 +9,61 @@ import Multiselect from '../../components/Multiselect.js';
 import {COUNTRIES} from '../../components/countries';
 import { withRouter } from 'react-router-dom';
 import { Checkbox } from '@material-ui/core';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& .MuiTextField-root': {
-         width: '80%'
-    },
-    '& .MuiOutlinedInput-multiline':{
-        padding: '3px 12px 3px 12px',
-        fontSize: 22,
-    },
-    '& p':{
-        marginBottom : 0
-    },
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  body:{
-    marginTop: theme.spacing(8),
-    borderRadius: '30px',
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    padding: theme.spacing(5)
-  },
-  item:{
-    marginTop: theme.spacing(5),
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  size: {
-    width: 214,
-    height: 214
-  },
-  input: {
-    display: 'none'
-  },
-  error:{
-    color: 'red'
-  }
-}));
+import {EditProductStyles as useStyles} from './useStyles';
+
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     paddingLeft: theme.spacing(5),
+//     paddingRight: theme.spacing(4),
+//     '& .MuiTextField-root': {
+//          width: '80%'
+//     },
+//     '& .MuiOutlinedInput-multiline':{
+//         padding: '3px 12px 3px 12px',
+//         fontSize: 22,
+//     },
+//     '& p':{
+//         marginBottom : 0
+//     },
+//   },
+//   tool: {
+//     minHeight: '67px'
+//   },
+//   title:{
+//     paddingTop: theme.spacing(2),
+//     paddingBottom: theme.spacing(2)
+//   },
+//   body:{
+//     marginTop: theme.spacing(8),
+//     borderRadius: '30px',
+//     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
+//     padding: theme.spacing(5)
+//   },
+//   item:{
+//     marginTop: theme.spacing(5),
+//   },
+//   modal: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   paper: {
+//     backgroundColor: theme.palette.background.paper,
+//     border: '2px solid #000',
+//     boxShadow: theme.shadows[5],
+//     padding: theme.spacing(2, 4, 3),
+//   },
+//   size: {
+//     width: 214,
+//     height: 214
+//   },
+//   input: {
+//     display: 'none'
+//   },
+//   error:{
+//     color: 'red'
+//   }
+// }));
 const ProductsEdit = (props) => {
   const {history}=props;
   const priceTypeList = ['','Editer', 'Voir', 'Refusé'];  
@@ -165,7 +166,7 @@ const handleChangeRenewal = (event) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.headerTitle}>
                 <b>Résidence les Pinsons</b>
               </Typography>
             </Grid>
@@ -175,14 +176,14 @@ const handleChangeRenewal = (event) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Produit</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Produit</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
-          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8}>
-            <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
+          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8} lg={6} xl={4}>
+            <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:25}}>Catégorie</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Catégorie</p></Grid>
                 <Grid xs item container direction="column">
                     <Multiselect
                         selected={categorie}
@@ -197,7 +198,7 @@ const handleChangeRenewal = (event) => {
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:25}}>Récurrence</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Récurrence</p></Grid>
                 <Grid xs item container direction="column">
                     <Multiselect
                         selected={billingCycle}
@@ -212,7 +213,7 @@ const handleChangeRenewal = (event) => {
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:25}}>Renouvellement automatique</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Renouvellement automatique</p></Grid>
                 <Grid xs item container direction="column">
                     <Checkbox 
                         checked={renewal}
@@ -224,7 +225,7 @@ const handleChangeRenewal = (event) => {
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
                 <Grid xs item container direction="column">
                     <TextField 
                         id="outlined-basic" 
@@ -239,7 +240,7 @@ const handleChangeRenewal = (event) => {
                 </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2}>
-                <Grid item><p style={{fontSize:25}}>Description</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Description</p></Grid>
                 <Grid xs item container direction="column">
                     <TextField 
                         id="outlined-basic" 
@@ -256,7 +257,7 @@ const handleChangeRenewal = (event) => {
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item ><p style={{fontSize:25}}>Tarification</p></Grid>
+                <Grid item ><p className={classes.itemTitle}>Tarification</p></Grid>
                 <Grid xs item container direction="column">
                     <MySelect 
                         color="gray" 
@@ -271,7 +272,7 @@ const handleChangeRenewal = (event) => {
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:25}}>Prix (€ HT par lot)</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Prix (€ HT par lot)</p></Grid>
                 <Grid xs item container direction="column">
                     <TextField 
                         id="outlined-basic" 

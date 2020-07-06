@@ -16,7 +16,50 @@ import { Profile, SidebarNav, UpgradePlan } from './components';
 
 const useStyles = makeStyles(theme => ({
   drawer: {
-    width: 333,
+    [theme.breakpoints.up('xl')]: {
+      width: 333,
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      width: 233,
+    },
+    [theme.breakpoints.between('md','md')]: {
+      width: 163,
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      width: 114,
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 80,
+    },
+  },
+  icon: {
+    '&:hover,&:focus': {
+      // backgroundColor: 'white',
+      color:'#00bf82',
+    },
+    [theme.breakpoints.up('xl')]: {
+      width: 24,
+      height: 24,
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      width: 17,
+      height: 17,
+    },
+    [theme.breakpoints.between('md','md')]: {
+      width: 12,
+      height: 12,
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      width: 8,
+      height: 8,
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 6,
+      height: 6,
+    },
+    display: 'flex',
+    alignItems: 'center',
+    marginRight: theme.spacing(2)
   },
   root: {
     background: 'linear-gradient(0deg, #00C9FF 30%, #0CC77C 100%)',
@@ -43,47 +86,47 @@ const Sidebar = props => {
     {
       title: 'Dashboard',
       href: '/dashboard',
-      icon: <HomeIcon />
+      icon: <HomeIcon className={classes.icon}/>
     },
     {
       title: 'Companies',
       href: '/companies',
-      icon: <TextFieldsIcon />
+      icon: <TextFieldsIcon className={classes.icon}/>
     },
     {
       title: 'Managers',
       href: '/managers',
-      icon: <AccountBoxIcon />
+      icon: <AccountBoxIcon className={classes.icon}/>
     },
     {
       title: 'Buildings',
       href: '/buildings',
-      icon: <PeopleIcon />
+      icon: <PeopleIcon className={classes.icon}/>
     },
     {
       title: 'Owners',
       href: '/owners',
-      icon: <SettingsIcon />
+      icon: <SettingsIcon className={classes.icon}/>
     },
     {
       title: 'Orders',
       href: '/orders',
-      icon: <SettingsIcon />
+      icon: <SettingsIcon className={classes.icon}/>
     },
     {
       title: 'Products',
       href: '/products',
-      icon: <LockOpenIcon />
+      icon: <LockOpenIcon className={classes.icon}/>
     },
     {
       title: 'Discount Codes',
       href: '/discountcodes',
-      icon: <ImageIcon />
+      icon: <ImageIcon className={classes.icon}/>
     },
     {
       title: 'Users',
       href: '/users',
-      icon: <ShoppingBasketIcon />
+      icon: <ShoppingBasketIcon className={classes.icon}/>
     },
   ];
 

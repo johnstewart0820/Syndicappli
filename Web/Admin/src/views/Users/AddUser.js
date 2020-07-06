@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
+import {AddUserStyles as useStyles} from './useStyles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
 import ScrollBar from 'react-perfect-scrollbar';
@@ -8,47 +8,6 @@ import MySelect from '../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import {COUNTRIES} from '../../components/countries';
 import Multiselect from '../../components/Multiselect.js';
-const useStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: 5,
-        padding: theme.spacing(2, 4, 3),
-    },
-    footer: {
-        paddingTop: 89,
-    },
-    root: {
-        '& .MuiTextField-root': {
-            width: '500',
-        },
-        '& .MuiOutlinedInput-root':{
-            width: 160
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '8px 12px',
-            fontSize: 17
-        },
-        '& p':{
-            marginBottom: 0
-        },
-    },
-    input: {
-        display: 'none'
-    },
-    img: {
-        cursor: 'pointer',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        border: '1px dashed rgba(112,112,112,0.43)',
-        borderRadius: 8,
-        width: 116,
-        height: 92,
-    },
-    error:{
-        color: 'red'
-    }
-}));
 
 const AddUser = (props) => {
   const classes = useStyles();
@@ -192,7 +151,7 @@ const handleChangeUsersPermission = (val) => {
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
                 <Grid item container justify="center" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Carbinets</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Carbinets</p></Grid>
                     <Grid xs={9} item container>
                         <Multiselect
                             selected={companies}
@@ -206,7 +165,7 @@ const handleChangeUsersPermission = (val) => {
                     </Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Immeubles</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Immeubles</p></Grid>
                     <Grid xs={9} item container>
                          <Multiselect
                             selected={buildings}
@@ -220,7 +179,7 @@ const handleChangeUsersPermission = (val) => {
                     </Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Nom</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -235,7 +194,7 @@ const handleChangeUsersPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Prénom</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -250,7 +209,7 @@ const handleChangeUsersPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Email</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -265,7 +224,7 @@ const handleChangeUsersPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p style={{fontSize:18}}>Téléphone</p></Grid>
+                    <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
                     <Grid xs={6} item container>
                         <TextField 
                             id="outlined-basic" 
@@ -280,14 +239,14 @@ const handleChangeUsersPermission = (val) => {
                     <Grid xs={3}></Grid>
                 </Grid>
                 <Grid xs={12} item container direction="column" >
-                    <p style={{fontSize:18}}>Photo</p>
+                    <p className={classes.title}>Photo</p>
                     <Grid item container justify="flex-start">
                     <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
                     <label htmlFor="img_front">
                         {
                             avatarurl === '' ?
                              <div className={classes.img}>
-                                <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
+                                <AddCircleOutlineIcon className={classes.plus}/>
                              </div> :
                              <img className={classes.img} src={avatarurl} alt=""/>
                         }
@@ -296,14 +255,13 @@ const handleChangeUsersPermission = (val) => {
                 </Grid>
             </Grid>
             <br/>
-            <p style={{fontSize:18}}><b>Permissions</b></p>
+            <p className={classes.title}><b>Permissions</b></p>
             <br />
             <Grid container spacing={2}>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Cabinets</p>
+                    <p className={classes.title}>Cabinets</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeCompaniesPermission}
                         value={companiesPermission}
@@ -312,10 +270,9 @@ const handleChangeUsersPermission = (val) => {
                         <span className={classes.error}>{errorsCompaniesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Gestionnaires</p>
+                    <p className={classes.title}>Gestionnaires</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeManagersPermission}
                         value={managersPermission}
@@ -324,10 +281,9 @@ const handleChangeUsersPermission = (val) => {
                         <span className={classes.error}>{errorsManagersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Immeuables</p>
+                    <p className={classes.title}>Immeuables</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeBuildingsPermission}
                         value={buildingsPermission}
@@ -336,10 +292,9 @@ const handleChangeUsersPermission = (val) => {
                         <span className={classes.error}>{errorsBuildingsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Coproprietaires</p>
+                    <p className={classes.title}>Coproprietaires</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeOwnersPermission}
                         value={ownersPermission}
@@ -348,10 +303,9 @@ const handleChangeUsersPermission = (val) => {
                         <span className={classes.error}>{errorsOwnersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Commandes</p>
+                    <p className={classes.title}>Commandes</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeOrdersPermission}
                         value={ordersPermission}
@@ -360,10 +314,9 @@ const handleChangeUsersPermission = (val) => {
                         <span className={classes.error}>{errorsOrdersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Prodults</p>
+                    <p className={classes.title}>Prodults</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeProductsPermission}
                         value={productsPermission}
@@ -372,10 +325,9 @@ const handleChangeUsersPermission = (val) => {
                         <span className={classes.error}>{errorsProductsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Codes Promo</p>
+                    <p className={classes.title}>Codes Promo</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeDiscountCodesPermission}
                         value={discountCodesPermission}
@@ -384,10 +336,9 @@ const handleChangeUsersPermission = (val) => {
                         <span className={classes.error}>{errorsDiscountcodesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Utilisateurs</p>
+                    <p className={classes.title}>Utilisateurs</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeUsersPermission}
                         value={usersPermission}

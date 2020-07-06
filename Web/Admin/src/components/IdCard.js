@@ -5,41 +5,114 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Avatar } from '@material-ui/core';
 const useStyles = makeStyles((theme,props) => ({
   root: {
-    '& .MuiTextField-root': {
-        // width: '100%'
-    },
-    '& .MuiOutlinedInput-multiline':{
-        padding: '3px 26px 3px 12px',
-        fontSize: props=>props.font,
-    },
-    '& .MuiOutlinedInput-input':{
-        padding: '3px 26px 3px 12px',
-        fontSize: props=>props.font,
-    },
-    '& .MuiBadge-anchorOriginTopRightCircle':{
-      top: props=>props.badgePos,
-      right: props=>props.badgePos
-    }
+
   },
-  badge: {
+  badge1: {
     cursor: 'pointer',
-    width: props=>props.badgeSize,
-    height: props=>props.badgeSize,
+    [theme.breakpoints.up('xl')]: {
+      width: 54,
+      height: 54,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 38,
+      height: 38,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 27,
+      height: 27,
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 19,
+      height: 19,
+    },
     background: 'linear-gradient(0deg, #00C9FF 10%, #0CC77C 90%)',
     borderRadius: '50%',
     color: 'white',
   },
-  identify: {
+  badge2: {
+    cursor: 'pointer',
+    [theme.breakpoints.up('xl')]: {
+      width: 31,
+      height: 31,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 22,
+      height: 22,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 15,
+      height: 15,
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 11,
+      height: 11,
+    },
+    background: 'linear-gradient(0deg, #00C9FF 10%, #0CC77C 90%)',
+    borderRadius: '50%',
+    color: 'white',
+  },
+  identify1: {
      alignItems: 'center',
      justifyContent: 'center',
      display: 'flex',
      border: '1px dashed rgba(112,112,112,0.43)',
      borderRadius: 8,
-     width: props=>props.width,
-     height: props=>props.height,
-     marginTop: props=>props.badgePos,
-     marginRight: props=>props.badgePos,
+     [theme.breakpoints.up('xl')]: {
+      width: 362,
+      height: 278,
+      marginTop: 30,
+      marginRight: 30
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 253,
+      height: 177,
+      marginTop: 21,
+      marginRight: 21
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 177,
+      height: 124,
+      marginTop: 15,
+      marginRight: 15
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 124,
+      height: 87,
+      marginTop: 11,
+      marginRight: 11
+    },
    },
+   identify2: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+    border: '1px dashed rgba(112,112,112,0.43)',
+    borderRadius: 8,
+    [theme.breakpoints.up('xl')]: {
+      width: 116,
+      height: 92,
+      marginTop: 20,
+      marginRight: 20
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 81,
+      height: 64,
+      marginTop: 14,
+      marginRight: 14
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 57,
+      height: 45,
+      marginTop: 10,
+      marginRight: 10
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 40,
+      height: 32,
+      marginTop: 7,
+      marginRight: 7
+    },
+  },
 }));
 
 export default function IdCard(props) {
@@ -61,9 +134,10 @@ export default function IdCard(props) {
                 border: '2px solid gray',
                 padding: '1px 4px',
               }}
-              badgeContent={<CloseIcon onClick={() => handleClose(i)} className={classes.badge}/>}
+              badgeContent={<CloseIcon onClick={() => handleClose(i)} 
+                className={props.badge === 'first' ? classes.badge1 : classes.badge2}/>}
             >
-              <Avatar className={classes.identify} alt="" src={idcardurl} />
+              <Avatar className={props.type === 'first' ? classes.identify1 : classes.identify2} alt="" src={idcardurl} />
             </Badge>
         ))
       }  

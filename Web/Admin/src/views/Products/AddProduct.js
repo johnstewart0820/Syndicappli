@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../components/MyButton';
 import ScrollBar from 'react-perfect-scrollbar';
@@ -8,44 +7,7 @@ import MySelect from '../../components/MySelect';
 import {COUNTRIES} from '../../components/countries';
 import Multiselect from '../../components/Multiselect.js';
 import { Checkbox } from '@material-ui/core';
-const useStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: 5,
-        padding: theme.spacing(2, 4, 3),
-    },
-    footer: {
-        paddingTop: 89,
-    },
-    root: {
-        '& .MuiTextField-root': {
-            width: '80%',
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '8px 12px',
-            fontSize: 17
-        },
-        '& p':{
-            marginBottom: 0
-        },
-    },
-    input: {
-        display: 'none'
-    },
-    img: {
-        cursor: 'pointer',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        border: '1px dashed rgba(112,112,112,0.43)',
-        borderRadius: 8,
-        width: 116,
-        height: 92,
-    },
-    error:{
-        color: 'red'
-    }
-}));
+import {AddProductStyles as useStyles} from './useStyles';
 
 const AddProducts = (props) => {
   const classes = useStyles();
@@ -132,7 +94,7 @@ const handleChangeRenewal = (event) => {
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Catégorie</p></Grid>
+                    <Grid item><p className={classes.title}>Catégorie</p></Grid>
                     <Grid xs item container>
                         <Multiselect
                             selected={categorie}
@@ -146,7 +108,7 @@ const handleChangeRenewal = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Récurrence</p></Grid>
+                    <Grid item><p className={classes.title}>Récurrence</p></Grid>
                     <Grid xs item container>
                          <Multiselect
                             selected={billingCycle}
@@ -160,7 +122,7 @@ const handleChangeRenewal = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Renouvellement automatique</p></Grid>
+                    <Grid item><p className={classes.title}>Renouvellement automatique</p></Grid>
                     <Grid xs item container>
                         <Checkbox 
                             checked={renewal}
@@ -171,7 +133,7 @@ const handleChangeRenewal = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Nom</p></Grid>
+                    <Grid item><p className={classes.title}>Nom</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 
@@ -185,7 +147,7 @@ const handleChangeRenewal = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container direction="column" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Description</p></Grid>
+                    <Grid item><p className={classes.title}>Description</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 
@@ -201,7 +163,7 @@ const handleChangeRenewal = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item ><p style={{fontSize:18}}>Tarification</p></Grid>
+                    <Grid item ><p className={classes.title}>Tarification</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
@@ -215,7 +177,7 @@ const handleChangeRenewal = (event) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Prix (€ HT par lot)</p></Grid>
+                    <Grid item><p className={classes.title}>Prix (€ HT par lot)</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 

@@ -14,11 +14,11 @@ import Dialog from '@material-ui/core/Dialog';
 const ProductsOwner = (props) => {
   const {history} = props;
 
-  const token = authService.getToken();    
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
 
   const accessProducts = authService.getAccess('role_products');
   const [openDialog, setOpenDialog] = React.useState(false);

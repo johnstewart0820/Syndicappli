@@ -9,8 +9,26 @@ import { List, ListItem, Button} from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   root: {
-     marginLeft:'24px',
-     marginRight:'-10px',
+    [theme.breakpoints.up('xl')]: {
+      marginLeft:'24px',
+      marginRight:'-10px',
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      marginLeft:'16px',
+      marginRight:'-7px',
+    },
+    [theme.breakpoints.between('md','md')]: {
+      marginLeft:'11px',
+      marginRight:'-5px',
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      marginLeft:'8px',
+      marginRight:'-4px',
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginLeft:'6px',
+      marginRight:'-3px',
+    },
      paddingTop:'0'
   },
   item: {
@@ -19,15 +37,41 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 0,
   },
   button: {
-    fontSize: '20px',
-    height: '67px',
-    borderRadius: '15px',
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 20,
+      height: 67,
+      borderRadius: 15,
+      padding: '10px 8px 8px 24px',
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      fontSize: 14,
+      height: 47,
+      borderRadius: 11,
+      padding: '7px 6px 6px 17px',
+    },
+    [theme.breakpoints.between('md','md')]: {
+      fontSize: 10,
+      height: 33,
+      borderRadius: 8,
+      padding: '5px 4px 4px 12px',
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      fontSize: 7,
+      height: 23,
+      borderRadius: 6,
+      padding: '4px 3px 3px 8px',
+    },
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 5,
+      height: 16,
+      borderRadius: 4,
+      padding: '3px 2px 2px 6px',
+    },
     color: 'white',
     '&:hover': {
       backgroundColor: 'rgb(255,255,255,80%)',
       color:'#00bf82',
     },
-    padding: '10px 8px 8px 24px',
     justifyContent: 'flex-start',
     textTransform: 'none',
     letterSpacing: 0,
@@ -36,14 +80,36 @@ const useStyles = makeStyles(theme => ({
   },
   icon: {
     '&:hover,&:focus': {
-      backgroundColor: 'white',
+      // backgroundColor: 'white',
       color:'#00bf82',
     },
-    width: 24,
-    height: 24,
+    [theme.breakpoints.up('xl')]: {
+      width: 24,
+      height: 24,
+      marginRight: 16
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      width: 17,
+      height: 17,
+      marginRight: 11
+    },
+    [theme.breakpoints.between('md','md')]: {
+      width: 12,
+      height: 12,
+      marginRight: 7
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      width: 8,
+      height: 8,
+      marginRight: 5
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 6,
+      height: 6,
+      marginRight: 4
+    },
     display: 'flex',
     alignItems: 'center',
-    marginRight: theme.spacing(2)
   },
   active: {
     backgroundColor: 'white',

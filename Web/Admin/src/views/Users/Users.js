@@ -16,32 +16,7 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import authService from '../../services/authService.js';
 import MyDialog from '../../components/MyDialog';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  padding: {
-    padding: 32
-  },
-  close: {
-    color: 'gray'
-  }
-}));
+import useStyles from './useStyles';
 const Users = (props) => {
   const { history } = props;
 
@@ -69,9 +44,6 @@ const Users = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  // const handleOpenDelete = () => {
-  //   setOpenDelete(true);
-  // };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -146,7 +118,6 @@ const Users = (props) => {
     }
   });
   useEffect(() => {
-    // getDataList();
     if(accessUsers !== 'Denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
@@ -204,7 +175,7 @@ const Users = (props) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.titleText}>
                 <b>Mes Utilisateurs</b>
               </Typography>
             </Grid>
@@ -220,7 +191,7 @@ const Users = (props) => {
               >
                 <Grid item container className={classes.padding} >
                   <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid xs={12} item ><p id="transition-modal-title" style={{fontSize:28}}><b>Nouvel Utilisateur</b></p></Grid>
+                  <Grid xs={12} item ><p id="transition-modal-title" className={classes.modalTitle}><b>Nouvel Utilisateur</b></p></Grid>
                 </Grid>
                 <AddUser onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>

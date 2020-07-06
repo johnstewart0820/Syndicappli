@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
 import MyTable from '../../components/MyTable';
 import MyTableCard from '../../components/MyTableCard';
 import Grid from '@material-ui/core/Grid';
@@ -12,67 +11,68 @@ import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import authService from '../../services/authService.js';
+import {EditCompanyStyles as useStyles} from './useStyles';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& .MuiTextField-root': {
-        // width: '100%'
-    },
-    '& .MuiOutlinedInput-multiline':{
-        padding: '3px 26px 3px 12px',
-        fontSize: 16,
-    },
-    // '& .MuiOutlinedInput-input':{
-    //     padding: '3px 26px 3px 12px',
-    //     fontSize: 16,
-    // },
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  body:{
-    marginTop: theme.spacing(8),
-    borderRadius: '30px',
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    padding: theme.spacing(5)
-  },
-  item:{
-    marginTop: theme.spacing(5),
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  size: {
-    width: 214,
-    height: 214
-  },
-  input: {
-    display: 'none'
-  },
-}));
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     paddingLeft: theme.spacing(5),
+//     paddingRight: theme.spacing(4),
+//     '& .MuiTextField-root': {
+//         // width: '100%'
+//     },
+//     '& .MuiOutlinedInput-multiline':{
+//         padding: '3px 26px 3px 12px',
+//         fontSize: 16,
+//     },
+//     // '& .MuiOutlinedInput-input':{
+//     //     padding: '3px 26px 3px 12px',
+//     //     fontSize: 16,
+//     // },
+//   },
+//   tool: {
+//     minHeight: '67px'
+//   },
+//   title:{
+//     paddingTop: theme.spacing(2),
+//     paddingBottom: theme.spacing(2)
+//   },
+//   body:{
+//     marginTop: theme.spacing(8),
+//     borderRadius: '30px',
+//     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
+//     padding: theme.spacing(5)
+//   },
+//   item:{
+//     marginTop: theme.spacing(5),
+//   },
+//   modal: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   paper: {
+//     backgroundColor: theme.palette.background.paper,
+//     border: '2px solid #000',
+//     boxShadow: theme.shadows[5],
+//     padding: theme.spacing(2, 4, 3),
+//   },
+//   size: {
+//     width: 214,
+//     height: 214
+//   },
+//   input: {
+//     display: 'none'
+//   },
+// }));
 const CompaniesEdit = (props) => {
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const {history} = props;
-  const token = authService.getToken();    
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
@@ -167,7 +167,7 @@ const CompaniesEdit = (props) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.headerTitle}>
                 <b>Cabinet Loiselet & Daigremont</b>
               </Typography>
             </Grid>
@@ -177,16 +177,16 @@ const CompaniesEdit = (props) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Cabinets</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Cabinets</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
           <Grid container direction="column" spacing={5}>
             <Grid item container spacing={2} direction="row" justify="space-between">
               <Grid item container direction="column" justify="space-between" xs={5}>
-                <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
+                <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
                     <Grid xs item container alignItems="stretch">
                       <TextField 
                         id="outlined-basic" 
@@ -234,11 +234,11 @@ const CompaniesEdit = (props) => {
             </Grid>
             <Grid item container direction="column" spacing={2} justify="space-between">
               <Grid item container direction="row" justify="space-between">
-                <Grid item><p style={{fontSize:25}}>Coordonnees</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Coordonnees</p></Grid>
                 <Grid item>
                   { 
                     amountcompany === '' ? null:
-                     <p style={{fontSize:25}}>Nombre de gestionnaires : {amountcompany}</p>
+                     <p className={classes.itemTitle}>Nombre de gestionnaires : {amountcompany}</p>
                   }
                 </Grid>
               </Grid>
@@ -257,13 +257,13 @@ const CompaniesEdit = (props) => {
                 <Grid xs={5} item container direction="row-reverse">
                   {
                     amountbuilding === '' ? null :
-                      <p style={{fontSize:25}}>Nombre de lots : {amountbuilding}</p>
+                      <p className={classes.itemTitle}>Nombre de lots : {amountbuilding}</p>
                   }
                 </Grid>
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>Email</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Email</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField 
                   id="outlined-basic" 
@@ -276,7 +276,7 @@ const CompaniesEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>Telephone</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Telephone</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField 
                   id="outlined-basic" 
@@ -289,13 +289,13 @@ const CompaniesEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>Contact</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Contact</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <MySelect color="gray" width="160px" data={cellList} value={contact} onChangeSelect={handleChangeContact}/>
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>SIRET</p></Grid>
+              <Grid item><p className={classes.itemTitle}>SIRET</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField 
                   id="outlined-basic" 
@@ -308,7 +308,7 @@ const CompaniesEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2}>
-                <Grid item container><p style={{fontSize:25}}>TVA Intracommunautaire</p></Grid>
+                <Grid item container><p className={classes.itemTitle}>TVA Intracommunautaire</p></Grid>
                 <Grid xs item container alignItems="stretch">
                   <TextField 
                     id="outlined-basic" 
@@ -327,7 +327,7 @@ const CompaniesEdit = (props) => {
         <div>
           <Grid item container justify="flex-start" spacing={2} className={classes.item}>
             <Grid item>
-              <p  style={{fontSize:35}}><b>Gestionnaires</b></p>
+              <p  className={classes.headerTitle}><b>Gestionnaires</b></p>
             </Grid>
           </Grid>
           <MyTable products={dataList} pages={pages} cells={cellList} leftBtn="Ajouter un  gestionnaire" />
@@ -335,7 +335,7 @@ const CompaniesEdit = (props) => {
         <div>
           <Grid item container justify="flex-start" spacing={2} className={classes.item}>
             <Grid item>
-              <p style={{fontSize:35}}><b>Immeubles</b></p>
+              <p className={classes.headerTitle}><b>Immeubles</b></p>
             </Grid>
           </Grid>
           <MyTable products={dataList} pages={pages} cells={cellList} leftBtn="Ajouter un  immeuble" />
@@ -343,10 +343,10 @@ const CompaniesEdit = (props) => {
         <Grid item container>
           <Grid item container justify="flex-start" direction="column" spacing={2} className={classes.item}>
             <Grid item>
-              <p style={{fontSize:35}}><b>Moyens de paiement</b></p>
+              <p className={classes.headerTitle}><b>Moyens de paiement</b></p>
             </Grid>
             <Grid item>
-              <p style={{fontSize:28}}><b>carte bancaire</b></p>
+              <p className={classes.sepaTitle}><b>carte bancaire</b></p>
             </Grid>
           </Grid>
           <Grid  item sm={7}>
@@ -356,11 +356,11 @@ const CompaniesEdit = (props) => {
         <div>
           <Grid xs={6} sitem container justify="flex-start" direction="column" spacing={5} className={classes.item}>
             <Grid item>
-              <p style={{fontSize:28}}><b>Compte bancaire - Prelevement SEPA</b></p>
+              <p className={classes.sepaTitle}><b>Compte bancaire - Prelevement SEPA</b></p>
             </Grid>
             <Grid item container direction="column" spacing={2}>
               <Grid item container alignItems="center" spacing={2}>
-                  <Grid item><p style={{fontSize:18}}>Nom du titulaire du compte</p></Grid>
+                  <Grid item><p className={classes.permissionItemTitle}>Nom du titulaire du compte</p></Grid>
                   <Grid xs item container direction="row-reverse">
                     <Grid item container alignItems="stretch" direction="column">
                       <TextField 
@@ -374,7 +374,7 @@ const CompaniesEdit = (props) => {
                   </Grid>
               </Grid>
               <Grid item container alignItems="flex-start" spacing={2}>
-                  <Grid item><p style={{fontSize:18}}>Adresse</p></Grid>
+                  <Grid item><p className={classes.permissionItemTitle}>Adresse</p></Grid>
                   <Grid xs item container direction="row-reverse">
                     <Grid item container alignItems="stretch" direction="column">
                       <TextField 
@@ -390,7 +390,7 @@ const CompaniesEdit = (props) => {
                   </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={2}>
-                  <Grid item><p style={{fontSize:18}}>IBAN</p></Grid>
+                  <Grid item><p className={classes.permissionItemTitle}>IBAN</p></Grid>
                   <Grid xs item container direction="row-reverse">
                     <Grid item container alignItems="stretch" direction="column">
                       <TextField 

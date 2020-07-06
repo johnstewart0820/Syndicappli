@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, {  useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -7,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import { Avatar } from '@material-ui/core';
 import MySelect from '../../components/MySelect';
 import MyButton from 'components/MyButton';
-import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import authService from '../../services/authService.js';
@@ -15,90 +13,8 @@ import MyDialog from '../../components/MyDialog.js';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Checkbox} from '@material-ui/core';
 import IdCard from 'components/IdCard';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& .MuiTextField-root': {
-      width: '500',
-    },
-    '& .MuiOutlinedInput-root':{
-        // width: 150
-    },
-    '& .MuiOutlinedInput-input':{
-        padding: '8px 12px',
-        fontSize: 17
-    },
-    '& p':{
-        marginBottom: 0
-    },
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  body:{
-    marginTop: theme.spacing(8),
-    borderRadius: '30px',
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    padding: theme.spacing(5)
-  },
-  item:{
-    marginTop: theme.spacing(5),
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  size: {
-    width: 214,
-    height: 214,
-    cursor: 'pointer',
-  },
-  input: {
-    display: 'none',
-  }, 
-  img: {
-      cursor: 'pointer',
-      alignItems: 'center',
-      justifyContent: 'center',
-      display: 'flex',
-      border: '1px dashed rgba(112,112,112,0.43)',
-      borderRadius: 8,
-      width: 362,
-      height: 278,
-      marginTop: 30,
-      marginRight: 30
-  },
-  div_indicator: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    position: 'fixed',
-    paddingLeft: '50%',
-    alignItems: 'center',
-    marginTop: '-60px',
-    zIndex: 999,
-  },
-  indicator: {
-    color: 'gray'
-  },
-  error:{
-    color: 'red'
-  },
-}));
-let idcardUrlsTemp=[];
-let idcardsTemp=[];
+import {EditOwnerStyles as useStyles} from './useStyles';
+
 const OwnerEdit = (props) => {
   const {history} = props;
 
@@ -190,17 +106,17 @@ const handleLoadFront = (event) => {
   setAvatarUrl(URL.createObjectURL(event.target.files[0]));
 }
 const handleLoadIdcard = (event) => {
-  idcardUrlsTemp.push(URL.createObjectURL(event.target.files[0]));
-  idcardsTemp.push(event.target.files[0])
-  setIdcards(idcardsTemp);
-  setIdcardUrls(idcardUrlsTemp);
+  idcardurls.push(URL.createObjectURL(event.target.files[0]));
+  idcards.push(event.target.files[0])
+  setIdcards(idcards);
+  setIdcardUrls(idcardurls);
   setState(!state);
 }
 const handleClickCloseIdcard = (num)=>{
-  delete idcardUrlsTemp[num];
-  delete idcardsTemp[num];
-  setIdcards(idcardsTemp);
-  setIdcardUrls(idcardUrlsTemp);
+  delete idcardurls[num];
+  delete idcards[num];
+  setIdcards(idcards);
+  setIdcardUrls(idcardurls);
   setState(!state);
 }
 const handleChangeApartNumber = (event) => {
@@ -242,7 +158,7 @@ const handleChangeBuildings = (val) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.headerTitle}>
                 <b>Stéphane Dubois</b>
               </Typography>
             </Grid>
@@ -252,15 +168,19 @@ const handleChangeBuildings = (val) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Copropriétaires</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Copropriétaires</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
+        <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
+
           <Grid item container justify="space-between" direction="row-reverse" spacing={2}>
-            <Grid xs item container  direction="column" spacing={2}>
+            
+            <Grid  alignItems>
+              <Grid container direction="column" spacing={2}>
                 <Grid item container direction="row-reverse">
                   <input className={classes.input} type="file" id="img_avatar" onChange={handleLoadFront}/>
-                  <label htmlFor="img_front">
+                  <label htmlFor="img_avatar">
                   {
                   <Badge
                     overlap="circle"
@@ -272,14 +192,7 @@ const handleChangeBuildings = (val) => {
                       border: '2px solid gray',
                       padding: '1px 4px',
                     }}
-                    badgeContent={<EditOutlinedIcon style={{
-                      width: 54,
-                      height: 54,
-                      border: `2px solid ${theme.palette.background.paper}`,
-                      backgroundColor: 'white',
-                      borderRadius: '50%',
-                      color: 'gray'
-                    }}/>}
+                    badgeContent={<EditOutlinedIcon className={classes.editAvatar}/>}
                   >
                     <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
                   </Badge>
@@ -299,93 +212,96 @@ const handleChangeBuildings = (val) => {
                   <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
                 </Grid>
               </Grid>
-            <Grid xs item container direction="column" spacing={5}>
-              <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
-
-              <Grid item></Grid>
-              <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:25}}>Civilité</p></Grid>
-                    <Grid xs item container direction="column">
-                        <MySelect 
-                            color="gray" 
-                            data={titleList} 
-                            onChangeSelect={handleChangeOwnerTitle}
-                            value={ownerTitle}
-                            width="134px"
-                            disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
-                        />
-                        {errorsOwnerTitle.length > 0 && 
-                        <span className={classes.error}>{errorsOwnerTitle}</span>}
-                    </Grid>
-                </Grid>
-                <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined"
-                            value={lastname}
-                            onChange={handleChangeLastName} 
-                            disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
-                        />
-                        {errorsLastname.length > 0 && 
-                        <span className={classes.error}>{errorsLastname}</span>}
-                    </Grid>
-                </Grid>
-                <Grid item container  alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:25}}>Prénom</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined" 
-                            value={firstname}
-                            onChange={handleChangeFirstName} 
-                            disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
-                        />
-                        {errorsFirstname.length > 0 && 
-                        <span className={classes.error}>{errorsFirstname}</span>}
-                    </Grid>
-                </Grid>
-                <Grid item container alignItems="center" spacing={1}>
-                    <Grid item ><p style={{fontSize:25}}>Email</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined"
-                            value={email}
-                            onChange={handleChangeEmail} 
-                            disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
-                        />
-                        {errorsEmail.length > 0 && 
-                        <span className={classes.error}>{errorsEmail}</span>}
-                    </Grid>
-                </Grid>
-                <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:25}}>Téléphone</p></Grid>
-                    <Grid xs item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined" 
-                            value={phonenumber}
-                            onChange={handleChangePhoneNumber} 
-                            disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
-                        />
-                        {errorsPhonenumber.length > 0 && 
-                        <span className={classes.error}>{errorsPhonenumber}</span>}
-                    </Grid>
-                </Grid>
-              <Grid item></Grid>
+            </Grid>
+            <Grid  item>
+              <Grid container  direction="column" spacing={5}>
+                <Grid item></Grid>
+                <Grid item container alignItems="center" spacing={2}>
+                      <Grid item><p className={classes.itemTitle}>Civilité</p></Grid>
+                      <Grid xs item container direction="column">
+                          <MySelect 
+                              color="gray" 
+                              data={titleList} 
+                              onChangeSelect={handleChangeOwnerTitle}
+                              value={ownerTitle}
+                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                          />
+                          {errorsOwnerTitle.length > 0 && 
+                          <span className={classes.error}>{errorsOwnerTitle}</span>}
+                      </Grid>
+                  </Grid>
+                  <Grid item container alignItems="center" spacing={1}>
+                      <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
+                      <Grid xs item container direction="column">
+                          <TextField 
+                              id="outlined-basic" 
+                              className={classes.text} 
+                              variant="outlined"
+                              value={lastname}
+                              onChange={handleChangeLastName} 
+                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              fullWidth
+                          />
+                          {errorsLastname.length > 0 && 
+                          <span className={classes.error}>{errorsLastname}</span>}
+                      </Grid>
+                  </Grid>
+                  <Grid item container  alignItems="center" spacing={1}>
+                      <Grid item><p className={classes.itemTitle}>Prénom</p></Grid>
+                      <Grid xs item container direction="column">
+                          <TextField 
+                              id="outlined-basic" 
+                              className={classes.text} 
+                              variant="outlined" 
+                              value={firstname}
+                              onChange={handleChangeFirstName} 
+                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              fullWidth
+                          />
+                          {errorsFirstname.length > 0 && 
+                          <span className={classes.error}>{errorsFirstname}</span>}
+                      </Grid>
+                  </Grid>
+                  <Grid item container alignItems="center" spacing={1}>
+                      <Grid item ><p className={classes.itemTitle}>Email</p></Grid>
+                      <Grid xs item container direction="column">
+                          <TextField 
+                              id="outlined-basic" 
+                              className={classes.text} 
+                              variant="outlined"
+                              value={email}
+                              onChange={handleChangeEmail} 
+                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              fullWidth
+                          />
+                          {errorsEmail.length > 0 && 
+                          <span className={classes.error}>{errorsEmail}</span>}
+                      </Grid>
+                  </Grid>
+                  <Grid item container alignItems="center" spacing={1}>
+                      <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
+                      <Grid xs item container>
+                          <TextField 
+                              id="outlined-basic" 
+                              className={classes.text} 
+                              variant="outlined" 
+                              value={phonenumber}
+                              onChange={handleChangePhoneNumber} 
+                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                          />
+                          {errorsPhonenumber.length > 0 && 
+                          <span className={classes.error}>{errorsPhonenumber}</span>}
+                      </Grid>
+                  </Grid>
+                <Grid item></Grid>
+              </Grid>
             </Grid>
           </Grid>
           <Grid item container spacing={5}>
             <Grid item container ></Grid>
             <Grid item container spacing={1} direction="column">
-                <Grid item><p style={{fontSize:25}}>Adresse</p></Grid>
-                <Grid  item container>
+                <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
+                <Grid  item container direction="column">
                     <TextField 
                         id="outlined-basic" 
                         className={classes.text} 
@@ -393,38 +309,39 @@ const handleChangeBuildings = (val) => {
                         value={address}
                         onChange={handleChangeAddress} 
                         multiline
-                        rows={5}
+                        rows={3}
                         disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        fullWidth
                     />
                     {errorsAddress.length > 0 && 
                     <span className={classes.error}>{errorsAddress}</span>}
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p style={{fontSize:25}}>Carbinet</p></Grid>
-                <Grid xs item container>
+                <Grid item><p className={classes.itemTitle}>Carbinet</p></Grid>
+                <Grid  item container direction="column">
                     <MySelect 
                         color="gray" 
-                        width="316px" 
                         data={companiesList} 
                         onChangeSelect={handleChangeCompanies}
                         value={companies}
                         disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        width="50%"
                     />
                     {errorsCompanies.length > 0 && 
                     <span className={classes.error}>{errorsCompanies}</span>}
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p style={{fontSize:25}}>Immeuble</p></Grid>
-                <Grid xs item container>
+                <Grid item><p className={classes.itemTitle}>Immeuble</p></Grid>
+                <Grid  item container direction="column">
                     <MySelect 
                         color="gray" 
-                        width="316px" 
                         data={buildingsList} 
                         onChangeSelect={handleChangeBuildings}
                         value={buildings}
                         disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        width="50%"
                     />
                     {errorsBuildings.length > 0 && 
                     <span className={classes.error}>{errorsBuildings}</span>}
@@ -433,7 +350,7 @@ const handleChangeBuildings = (val) => {
             <Grid xs={6} item container justify="space-between" direction="row">
                 <Grid  item>
                     <Grid container   alignItems="center" spacing={1}>
-                        <Grid item ><p style={{fontSize:25}}>Locataire</p></Grid>
+                        <Grid item ><p className={classes.itemTitle}>Locataire</p></Grid>
                         <Grid xs item container>
                             <Checkbox 
                                 checked={isSubAccount}
@@ -445,7 +362,7 @@ const handleChangeBuildings = (val) => {
                 </Grid>
                 <Grid  item>
                     <Grid  container  alignItems="center" spacing={1}>
-                        <Grid item><p style={{fontSize:25}}>Membre du Conseil Syndical</p></Grid>
+                        <Grid item><p className={classes.itemTitle}>Membre du Conseil Syndical</p></Grid>
                         <Grid xs item container>
                             <Checkbox 
                                 checked={isMemberCouncil}
@@ -457,7 +374,7 @@ const handleChangeBuildings = (val) => {
                 </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={5}>
-                <Grid item><p style={{fontSize:25}}>Lot</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Lot</p></Grid>
                 <Grid xs item container>
                     <TextField 
                         id="outlined-basic" 
@@ -472,10 +389,10 @@ const handleChangeBuildings = (val) => {
                 </Grid>
             </Grid>
             <br/>
-            <Grid item><p style={{fontSize:25}}>Clefs de répartition du lot</p></Grid>
+            <Grid item><p className={classes.itemTitle}>Clefs de répartition du lot</p></Grid>
             <br/>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:25}}>Clef 1 :</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Clef 1 :</p></Grid>
                 <Grid  item >
                     <TextField 
                         id="outlined-basic" 
@@ -488,28 +405,26 @@ const handleChangeBuildings = (val) => {
                         disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                     />
                 </Grid>
-                <Grid  item><p style={{fontSize:25}}>tantièmes</p></Grid>
+                <Grid  item><p className={classes.itemTitle}>tantièmes</p></Grid>
             </Grid>
             <Grid item style={{marginTop: 10, marginBottom: 10}}><MyButton name = {"Ajouter un lot"} bgColor="grey"  disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/></Grid>
             <Grid xs={12} item container direction="column" style={{marginTop: 30}}>
-                <p style={{fontSize:25}}>Pièce d'identité</p>
+                <p className={classes.itemTitle}>Pièce d'identité</p>
                 <Grid item container justify="flex-start">
                     <IdCard 
                       onClose = {handleClickCloseIdcard}
                       idcardurls={idcardurls} 
                       disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
                       state={state}
-                      width={362}
-                      height={278}
-                      badgeSize={54}
-                      badgePos={30}
+                      type="first"
+                      badge="first"
                     />
                     
                     <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
                     <label htmlFor="img_idcard">
                         {
                             <div className={classes.img}>
-                                <AddCircleOutlineIcon style={{width:54 , height: 54, color: '#707070'}}/>
+                                <AddCircleOutlineIcon className={classes.plus}/>
                             </div> 
                         }
                     </label>

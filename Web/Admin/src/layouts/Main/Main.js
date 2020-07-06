@@ -8,15 +8,34 @@ import { Sidebar, Topbar} from './components';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    paddingTop: 56,
     height: '100%',
     backgroundColor:'white',
-    [theme.breakpoints.up('sm')]: {
-      paddingTop: 209
-    }
+    [theme.breakpoints.up('xl')]: {
+      paddingTop: 209,
+    },
+    [theme.breakpoints.down('lg')]: {
+      paddingTop: 146,
+    },
+    [theme.breakpoints.down('md')]: {
+      paddingTop: 102,
+    },
+    [theme.breakpoints.down('sm')]: {
+      paddingTop: 71,
+    },
   },
   shiftContent: {
-    paddingLeft: 333
+    [theme.breakpoints.up('xl')]: {
+      paddingLeft: 333,
+    },
+    [theme.breakpoints.down('lg')]: {
+      paddingLeft: 233,
+    },
+    [theme.breakpoints.down('md')]: {
+      paddingLeft: 163,
+    },
+    [theme.breakpoints.down('sm')]: {
+      paddingLeft: 114,
+    },
   },
   content: {
     backgroundColor:'white'

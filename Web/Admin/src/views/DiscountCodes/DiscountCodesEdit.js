@@ -1,69 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, {useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../components/MySelect';
 import MyButton from 'components/MyButton';
 import authService from '../../services/authService.js';
-import Multiselect from '../../components/Multiselect.js';
-import {COUNTRIES} from '../../components/countries';
 import {withRouter } from 'react-router-dom';
-import { Checkbox } from '@material-ui/core';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-    '& .MuiTextField-root': {
-         width: '80%'
-    },
-    '& .MuiOutlinedInput-multiline':{
-        padding: '3px 12px 3px 12px',
-        fontSize: 22,
-    },
-    '& p':{
-        marginBottom : 0
-    },
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  body:{
-    marginTop: theme.spacing(8),
-    borderRadius: '30px',
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    padding: theme.spacing(5)
-  },
-  item:{
-    marginTop: theme.spacing(5),
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  size: {
-    width: 214,
-    height: 214
-  },
-  input: {
-    display: 'none'
-  },
-  error:{
-    color: 'red'
-  }
-}));
+import {EditDiscountCodeStyles as useStyles} from './useStyles';
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     paddingLeft: theme.spacing(5),
+//     paddingRight: theme.spacing(4),
+//     paddingBottom: theme.spacing(4),
+//     '& .MuiTextField-root': {
+//          width: '80%'
+//     },
+//     '& .MuiOutlinedInput-multiline':{
+//         padding: '3px 12px 3px 12px',
+//         fontSize: 22,
+//     },
+//     '& p':{
+//         marginBottom : 0
+//     },
+//   },
+//   tool: {
+//     minHeight: '67px'
+//   },
+//   title:{
+//     paddingTop: theme.spacing(2),
+//     paddingBottom: theme.spacing(2)
+//   },
+//   body:{
+//     marginTop: theme.spacing(8),
+//     borderRadius: '30px',
+//     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
+//     padding: theme.spacing(5)
+//   },
+//   item:{
+//     marginTop: theme.spacing(5),
+//   },
+//   modal: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   paper: {
+//     backgroundColor: theme.palette.background.paper,
+//     border: '2px solid #000',
+//     boxShadow: theme.shadows[5],
+//     padding: theme.spacing(2, 4, 3),
+//   },
+//   size: {
+//     width: 214,
+//     height: 214
+//   },
+//   input: {
+//     display: 'none'
+//   },
+//   error:{
+//     color: 'red'
+//   }
+// }));
 const DiscountCodesEdit = (props) => {
   const {history}=props;
   //const token = authService.getToken();  
@@ -174,7 +171,7 @@ const handleClickSave = ()=>{
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.headerTitle}>
                 <b>Résidence les Pinsons</b>
               </Typography>
             </Grid>
@@ -184,21 +181,20 @@ const handleClickSave = ()=>{
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Produit</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Produit</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
-          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8}>
-            <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
+          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8} lg={6} xl={4}>
+            <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Catégorie</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Catégorie</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
                             data={customerTypeList} 
                             onChangeSelect={handleChangeCustomerType}
                             value={customerType}
-                            width="283px"
                             disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
                         />
                         {errorsCustomerType.length > 0 && 
@@ -206,7 +202,7 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nom</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -221,7 +217,7 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container  alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Date de début</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Date de début</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 
@@ -237,7 +233,7 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid xs={6} item container alignItems="center" spacing={1}>
-                    <Grid item ><p style={{fontSize:18}}>Date de fin</p></Grid>
+                    <Grid item ><p className={classes.itemTitle}>Date de fin</p></Grid>
                     <Grid xs item container>
                         <TextField 
                             id="outlined-basic" 
@@ -253,14 +249,13 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Type de réduction</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Type de réduction</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
                             data={discountTypeList} 
                             onChangeSelect={handleChangeDiscountType}
                             value={discountType}
-                            width="134px"
                             disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
                         />
                         {errorsDiscountType.length > 0 && 
@@ -268,7 +263,7 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Montant</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Montant</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -283,14 +278,13 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Appliqué sur</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Appliqué sur</p></Grid>
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
                             data={billingCyclesList} 
                             onChangeSelect={handleChangeBillingCycles}
                             value={billingCycles}
-                            width="134px"
                             disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
                         />
                         {errorsBillingCycles.length > 0 && 
@@ -298,7 +292,7 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nombre maximal d'activations</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Nombre maximal d'activations</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 
@@ -313,7 +307,7 @@ const handleClickSave = ()=>{
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item><p style={{fontSize:18}}>Nombre maximal d'activations par utilisateur</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Nombre maximal d'activations par utilisateur</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
                             id="outlined-basic" 

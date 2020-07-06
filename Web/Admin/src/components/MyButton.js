@@ -7,32 +7,44 @@ const useStyles = makeStyles((theme,props) => ({
     [theme.breakpoints.up('xl')]: {
       width: 160
     },
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.between('lg','lg')]: {
       width: 112
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.between('md','md')]: {
       width: 78
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.between('sm','sm')]: {
       width: 54
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: 38
     },
   },
   button1: {
     [theme.breakpoints.up('xl')]: {
       padding: '15px 30px',
       borderRadius: '52px',
+      fontSize: 20
     },
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.between('lg','lg')]: {
       padding: '10px 21px',
       borderRadius: '36px',
+      fontSize: 14
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.between('md','md')]: {
       padding: '7px 15px',
       borderRadius: '25px',
+      fontSize: 10
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.between('sm','sm')]: {
       padding: '5px 10px',
       borderRadius: '18px',
+      fontSize: 7
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: '4px 7px',
+      borderRadius: '13px',
+      fontSize: 5
     },
     background: 'linear-gradient(90deg, #00C9FF 10%, #0CC77C 90%)',
     color: 'white',
@@ -45,20 +57,25 @@ const useStyles = makeStyles((theme,props) => ({
       borderRadius: '52px',
       fontSize: 20
     },
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.between('lg','lg')]: {
       padding: '10px 21px',
       borderRadius: '36px',
       fontSize: 14
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.between('md','md')]: {
       padding: '7px 15px',
       borderRadius: '25px',
       fontSize: 10
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.between('sm','sm')]: {
       padding: '5px 10px',
       borderRadius: '18px',
       fontSize: 7
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: '4px 7px',
+      borderRadius: '13px',
+      fontSize: 5
     },
     border: '1px solid',
     borderColor: props=>props.bgColor,

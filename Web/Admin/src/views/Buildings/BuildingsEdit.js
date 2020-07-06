@@ -1,76 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, { useEffect } from 'react';
+import {ToastsContainer, ToastsContainerPosition, ToastsStore} from 'react-toasts';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MyButton from 'components/MyButton';
 import authService from '../../services/authService.js';
-import Multiselect from '../../components/Multiselect.js';
-import {COUNTRIES} from '../../components/countries';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import MySelect from '../../components/MySelect.js';
+import {  withRouter } from 'react-router-dom';
 import MyDialog from '../../components/MyDialog.js';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& .MuiTextField-root': {
-        // width: '100%'
-    },
-    '& .MuiOutlinedInput-multiline':{
-        padding: '3px 26px 3px 12px',
-        fontSize: 16,
-    },
-    '& p':{
-        marginBottom : 0
-    },
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  body:{
-    marginTop: theme.spacing(8),
-    borderRadius: '30px',
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    padding: theme.spacing(5)
-  },
-  item:{
-    marginTop: theme.spacing(5),
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  size: {
-    width: 214,
-    height: 214
-  },
-  input: {
-    display: 'none'
-  },
-  error:{
-    color: 'red'
-  }
-}));
+import {EditBuildingStyles as useStyles} from './useStyles';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import AdminService from '../../services/api.js';
+
 const BuildingsEdit = (props) => {
   const {history}=props;
-  const token = authService.getToken();    
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   const accessBuildings = authService.getAccess('role_buildings');  
   const classes = useStyles();
+  const [state, setState] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
 
   const [name, setName] = React.useState('');
@@ -78,54 +30,27 @@ const BuildingsEdit = (props) => {
   const [accountHolder, setAccountHolder] = React.useState('');
   const [accountAddress, setAccountAddress] = React.useState('');
   const [accountIban, setAccountIban] = React.useState('');
+  const [addClefs, setAddClefs] = React.useState('');
+  const [clefList, setClefList] = React.useState([]);
+  const [companyList, setCompanyList] = React.useState([]);
+  const [companyID, setCompanyID] = React.useState(-1);
+
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsAccountHolder, setErrorsAccountHolder] = React.useState('');
-  const [errorsAccountAddress, setErrorsAccountAddress] = React.useState('');
-  const [errorsAccountIban, setErrorsAccountIban] = React.useState('');
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
 
-  const user = {
-    name: 'Shen Zhi',
-    avatar: '/images/avatars/avatar_11.png',
-    bio: 'Brain Director'
-  };
-  const selected = [
-    { label: "Albania",value: "Albania"},
-    { label: "Argentina",value: "Argentina"},
-    { label: "Austria",value: "Austria"},
-    { label: "Cocos Islands",value: "Cocos Islands"},
-    { label: "Kuwait",value: "Kuwait"},
-    { label: "Sweden",value: "Sweden"},
-    { label: "Venezuela",value: "Venezuela"}
-  ];
-  const [companies, setCompanies] = React.useState(selected);
-  const allCompanies =  COUNTRIES.map((country,id) => {
-    return {
-      label: country, value: country
-    }
-  })
-  useEffect(() => {
-    if (!token) {
-        history.push("/login");
-        window.location.reload();
-    }
-  });
-
-  useEffect(() => {
-    if(accessBuildings === 'Denied'){
-      setOpenDialog(true);
-    }
-    if(accessBuildings !== 'Denied'){
-      //  
-    }
-  }, []);
+  const [companies, setCompanies] = React.useState('');
+  const [company, setCompany] = React.useState([]);
   const handleClick = ()=>{
     history.goBack();
   };
 
   const handleChangeCompanies = (val) =>{
     setCompanies(val);
+    if(val < companyList.length)
+      setCompanyID(companyList[val].companyID);
+    else
+      setCompanyID(-1);
   };
   const handleChangeName = (event) =>{
     setName(event.target.value);
@@ -145,31 +70,142 @@ const BuildingsEdit = (props) => {
   const handleCloseDialog = (val) => {
     setOpenDialog(val);
   };
+  const handleChangeAddClefs = (event) =>{
+    setAddClefs(event.target.value);
+  };
+  const handleClickAddClef = (event) =>{
+      if(addClefs !== ''){
+        clefList.push({"name":addClefs});
+        setAddClefs('');
+        setClefList(clefList);
+      }
+  };
+  const handleClickRemoveClef = (num) =>{
+    delete clefList[num];
+    clefList.splice(num,1);
+    setClefList(clefList);
+    setState(!state);
+  };
   const handleClickAdd = ()=>{
     let cnt = 0;
     if(name.length === 0) {setErrorsName('please enter your name'); cnt++;}
     else setErrorsName('');
     if(address.length === 0) {setErrorsAddress('please enter your first name'); cnt++;}
     else setErrorsAddress('');
-    if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
+    if(companyID === -1) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    // if(AccountAddress.length === 0) {setErrorsAccountAddress('please select buildings'); cnt++;}
-    // else setErrorsAccountAddress('');
-    // if(AccountHolder.length === 0) {setErrorsAccountHolder('please enter your email'); cnt++;}
-    // else setErrorsAccountHolder('');
-    // if(AccountIban.length === 0) {setErrorsAccountIban('please enter your phone number'); cnt++;}
-    // else setErrorsAccountIban('');
     if(cnt ===0){
-
+      updateBuilding();
     }
   };
+  const updateBuilding = ()=>{
+    const requestData = {
+      'companyID': companyID,
+      'name' : name,
+      'address' : address,
+      'vote' : clefList,
+      'account_holdername' : accountHolder,
+      'account_address' : accountAddress,
+      'account_IBAN' : accountIban
+    }
+    AdminService.updateBuilding(props.match.params.id,requestData)
+    .then(      
+      response => {        
+        console.log(response.data);
+        // setVisibleIndicator(false);  
+        if(response.data.code !== 200){
+          console.log('error');
+        } else {
+          console.log('success');
+          const data = response.data.data;
+          localStorage.setItem("token", JSON.stringify(data.token));
+          ToastsStore.success("Updated successfully!");
+        }
+      },
+      error => {
+        console.log('fail');        
+        // setVisibleIndicator(false);
+      }
+    );
+  };
+  const getCompanyList = (id)=>{
+
+    AdminService.getCompanyListByUser()
+      .then(      
+        response => {        
+          console.log(response.data);
+          // setVisibleIndicator(false);  
+          if(response.data.code !== 200){
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            data.companylist.map((item)=>(
+              company.push(item.name)
+            )
+            );
+            setCompanyList(data.companylist);
+            setCompany(company);
+            for(let i = 0 ;i<company.length;i++)
+              if(data.companylist[i].companyID === id)
+                setCompanies(i);
+          }
+        },
+        error => {
+          console.log('fail');        
+          // setVisibleIndicator(false);
+        }
+      );
+  }
+
+  useEffect(() => {
+    if(accessBuildings === 'Denied'){
+      setOpenDialog(true);
+    }
+    if(accessBuildings !== 'Denied'){
+      AdminService.getBuilding(props.match.params.id)
+      .then(      
+        response => {        
+          console.log(response.data);
+          // setVisibleIndicator(false);  
+          if(response.data.code !== 200){
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            const building = data.building[0];
+            const vote_list = data.vote_list;
+            vote_list.map((vote)=>
+              clefList.push(vote)
+            )
+            getCompanyList(building.companyID);
+            setName(building.name);
+            setAddress(building.address);
+            setAccountHolder(building.account_holdername);
+            setAccountAddress(building.account_address);
+            setAccountIban(building.account_IBAN);
+             setCompanyID(building.companyID);
+            setClefList(clefList);
+
+          }
+        },
+        error => {
+          console.log('fail');        
+          // setVisibleIndicator(false);
+        }
+      );    
+    }
+  }, [accessBuildings]);
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.headerTitle}>
                 <b>Résidence les Pinsons</b>
               </Typography>
             </Grid>
@@ -179,14 +215,14 @@ const BuildingsEdit = (props) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Immeubles</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Immeubles</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
           <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8}>
-            <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
+            <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField 
                   id="outlined-basic" 
@@ -203,22 +239,22 @@ const BuildingsEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p style={{fontSize:25}}>Carbinets</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <Multiselect
-                  selected={companies}
-                  no={'No companies found'}
-                  hint={'Add new Company'}
-                  all={allCompanies} 
-                  onSelected={handleChangeCompanies}
-                  disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
+              <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <MySelect 
+                    color="gray" 
+                    data={company} 
+                    onChangeSelect={handleChangeCompanies}
+                    value={companies}
+                    width="100%"
+                    disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
                 />
                 {errorsCompanies.length > 0 && 
                 <span className={classes.error}>{errorsCompanies}</span>}
               </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2}>
-              <Grid item><p style={{fontSize:25}}>Adresse</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <TextField 
                   id="outlined-basic" 
@@ -235,7 +271,44 @@ const BuildingsEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>Clefs de répartition</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Clefs de répartition</p></Grid>
+            </Grid>
+            <Grid item container  direction="column" state={state} >
+              {
+                clefList.map((clef,i)=>(
+                <Grid container spacing={5}>
+
+                    <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
+                        <Grid  item>
+                            <RemoveCircleOutlineIcon 
+                                className={classes.plus}
+                                onClick={()=>handleClickRemoveClef(i)}
+                            />
+                        </Grid>
+                        <Grid item xs={6} >
+                            <p className={classes.itemTitle} style={{display:'flex'}}>{clef.name}</p>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                ))
+            }
+            </Grid>
+            <Grid xs={6} item container alignItems="center" justify="space-between" direction="row-reverse" alignItems="center">
+                <Grid  item>
+                    <AddCircleOutlineIcon 
+                        className={classes.plus}
+                        onClick={handleClickAddClef}
+                    />
+                </Grid>
+                <Grid item >
+                    <TextField 
+                        id="outlined-basic" 
+                        variant="outlined" 
+                        value={addClefs}
+                        onChange={handleChangeAddClefs} 
+                        placeholder="Ajouter..."
+                    />
+                </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
               <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/>
@@ -245,11 +318,11 @@ const BuildingsEdit = (props) => {
         <div>
           <Grid xs={12} sm={6} item container justify="flex-start" direction="column" spacing={5} className={classes.item}>
             <Grid item>
-              <p style={{fontSize:28}}><b>Compte bancaire - Prelevement SEPA</b></p>
+              <p className={classes.sepaTitle}><b>Compte bancaire - Prelevement SEPA</b></p>
             </Grid>
             <Grid item container direction="column" spacing={2} >
               <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>Nom du titulaire du compte</p></Grid>
+                <Grid item><p className={classes.sepaItemTitle}>Nom du titulaire du compte</p></Grid>
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField 
@@ -264,7 +337,7 @@ const BuildingsEdit = (props) => {
                 </Grid>
               </Grid>
               <Grid item container alignItems="flex-start" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>Adresse</p></Grid>
+                <Grid item><p className={classes.sepaItemTitle}>Adresse</p></Grid>
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField 
@@ -281,7 +354,7 @@ const BuildingsEdit = (props) => {
                 </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p style={{fontSize:18}}>IBAN</p></Grid>
+                <Grid item><p className={classes.sepaItemTitle}>IBAN</p></Grid>
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField 
@@ -297,13 +370,14 @@ const BuildingsEdit = (props) => {
               </Grid>
             </Grid>
             <Grid  item container justify="space-between" spacing={1}>
-              <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog}/>
               <Grid item><MyButton name = {"Editer le mandat"} color={"1"} disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/></Grid>
               <Grid item><MyButton name = {"Supprimer"} bgColor="grey" disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/>  </Grid>
             </Grid>
+            <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog}/>
           </Grid>
         </div>
       </Grid>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
     </div>
   );
 };

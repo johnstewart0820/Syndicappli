@@ -16,32 +16,8 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import authService from '../../services/authService.js';
 import MyDialog from '../../components/MyDialog';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
+import useStyles from './useStyles';
 
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  padding: {
-    padding: 32
-  },
-  close: {
-    color: 'gray'
-  }
-}));
 const DiscountCodes = (props) => {
   const { history } = props;
 
@@ -207,7 +183,7 @@ const DiscountCodes = (props) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.titleText}>
                 <b>Mes Codes Promo</b>
               </Typography>
             </Grid>
@@ -223,7 +199,7 @@ const DiscountCodes = (props) => {
               >
                 <Grid item container className={classes.padding} >
                   <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid xs={12} item ><p id="transition-modal-title" style={{fontSize:28}}><b>Nouveau Code Promo</b></p></Grid>
+                  <Grid xs={12} item ><p id="transition-modal-title" className={classes.modalTitle}><b>Nouveau Code Promo</b></p></Grid>
                 </Grid>
                 <AddDiscountCode onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>

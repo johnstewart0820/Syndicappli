@@ -15,37 +15,8 @@ import Box from '@material-ui/core/Box';
 import ProductsManager from './components/ProductsManager';
 import ProductsBuilding from './components/ProductsBuilding';
 import ProductsOwner from './components/ProductsOwner';
+import useStyles from './useStyles';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& .MuiTab-root': {
-      textTransform: 'none'
-    },
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-
-  },
-  padding: {
-    padding: 32
-  },
-  close : {
-    color: 'gray'
-  },
-
-}));
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -80,11 +51,11 @@ function a11yProps(index) {
 const Products = (props) => {
   const {history} = props;
 
-  const token = authService.getToken();    
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // const token = authService.getToken();    
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -118,7 +89,7 @@ const Products = (props) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.titleText}>
                 <b>Mes Produits</b>
               </Typography>
             </Grid>
@@ -134,7 +105,7 @@ const Products = (props) => {
               >
                 <Grid item container className={classes.padding} justify="space-between">
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid item ><h2 id="transition-modal-title">Nouveau Produits</h2></Grid>
+                  <Grid item ><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Produits</h2></Grid>
                 </Grid>
                 <AddProduct  onCancel={handleClose} onAdd={handleAdd}/>
               </Dialog>
@@ -150,9 +121,9 @@ const Products = (props) => {
                 }
               }}
         >
-          <Tab xs={12} sm={4} label="Gestionnaires" {...a11yProps(0)} style={{fontSize:20}}/>
-          <Tab xs={12} sm={4} label="Copropriétaires" {...a11yProps(1)} style={{fontSize:20}}/>
-          <Tab xs={12} sm={4} label="Copropriété" {...a11yProps(2)} style={{fontSize:20}}/>
+          <Tab xs={12} sm={4} label="Gestionnaires" {...a11yProps(0)} className={classes.tabTitle}/>
+          <Tab xs={12} sm={4} label="Copropriétaires" {...a11yProps(1)} className={classes.tabTitle}/>
+          <Tab xs={12} sm={4} label="Copropriété" {...a11yProps(2)} className={classes.tabTitle}/>
         </Tabs>
       </div> 
       <div className={classes.body}>

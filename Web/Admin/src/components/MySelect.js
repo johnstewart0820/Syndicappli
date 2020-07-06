@@ -7,17 +7,49 @@ import InputBase from '@material-ui/core/InputBase';
 const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
-      marginTop: theme.spacing(3),
+      [theme.breakpoints.up('xl')]: {
+        marginTop: 24,
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        marginTop: 17,
+      },
+      [theme.breakpoints.between('md','md')]: {
+        marginTop: 12,
+      },
+      [theme.breakpoints.between('sm','sm')]: {
+        marginTop: 8,
+      },
+      [theme.breakpoints.down('sm')]: {
+        marginTop: 6,
+      },
     },
   },
   input: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 17,
+      height:47,
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      fontSize: 12,
+      height:33,
+    },
+    [theme.breakpoints.between('md','md')]: {
+      fontSize: 8,
+      height:23,
+    },
+    [theme.breakpoints.between('sm','sm')]: {
+      fontSize: 6,
+      height:16,
+    },
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 6,
+      height:12,
+    },
     borderRadius: 4,
     position: 'relative',
     backgroundColor: theme.palette.background.paper,
     border: '1px solid #ced4da',
-    fontSize: 17,
     padding: '2px 26px 2px 12px',
-    height:33,
     display: 'flex',
     alignItems: 'center',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
@@ -55,21 +87,22 @@ const useStyles = makeStyles((theme, props) => ({
 }));
 
 export default function CustomizedSelects(props) {
-  const {onChangeSelect, ...rest} = props;
   const classes = useStyles(props);
-  const [items, setItems] = React.useState(props.data);
+  const [items] = React.useState(props.data);
   const [value, setValue] = React.useState(0);
   const handleChange = (event) => {
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
   };
-
+  useEffect(()=>{
+    setValue(props.value);
+  },[props.value]);
   return (
       <FormControl className={classes.margin}>
         <NativeSelect
           labelId="demo-customized-select-label"
           id="demo-customized-select"
-          value={props.value}
+          value={value}
           onChange={handleChange}
           input={<BootstrapInput />}
           disabled={props.disabled === 'disabled'? true : null}

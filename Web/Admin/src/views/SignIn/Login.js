@@ -1,4 +1,5 @@
 import React from 'react';
+import {ToastsContainer, ToastsContainerPosition, ToastsStore} from 'react-toasts';
 import { withRouter } from 'react-router-dom';
 import useStyles from './useStyles';
 import Grid from '@material-ui/core/Grid';
@@ -6,11 +7,8 @@ import MyButton from 'components/MyButton';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import AdminService from './../../services/api.js';
-import Toast from '../../components/Toast.js';
 import CircularProgress  from '@material-ui/core/CircularProgress';
 
-var msg = '';
-var check = '';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const validateForm = (errors) => {
   let valid = true;
@@ -22,7 +20,6 @@ const validateForm = (errors) => {
 const Login = (props) => {
   const classes = useStyles();
   const {history} = props;
-  const [openToast, setOpenToast] = React.useState(false);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [email , setEmail] = React.useState(null);
   const [password , setPassword] = React.useState(null);
@@ -41,15 +38,13 @@ const Login = (props) => {
   const handleChangePassword = (event) => {
     event.preventDefault();
     let errorsPass = 
-          event.target.value.length < 5
-            ? 'Password must be 5 characters long!'
+          event.target.value.length < 4
+            ? 'Password must be 4 characters long!'
             : '';
             setPassword(event.target.value);
             setErrorsPassword(errorsPass);
   }
-  const handleToastClose = () => {
-    setOpenToast(false);
-  }
+ 
   const handleClickButton = () => {
 
     if(validateForm(errorsEmail) && validateForm(errorsPassword)) {
@@ -63,13 +58,9 @@ const Login = (props) => {
       response => {        
          setVisibleIndicator(false);  
         if(response.data.code !== 200){
-          msg=response.data.message;
-          check="error";
-          setOpenToast(true);
+          ToastsStore.error(response.data.message);
         } else {
-          msg="success";
-          check="success";
-          setOpenToast(true);
+          ToastsStore.success(response.data.message);
           let profile = response.data.data.profile;
           localStorage.setItem("token", JSON.stringify(response.data.data.token));
           localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
@@ -83,12 +74,9 @@ const Login = (props) => {
           history.push('/dashboard');
         }
       },
-      error => {
-        msg="fail";  
-        check="error";      
+      error => {    
          setVisibleIndicator(false);
-        setOpenToast(true);
-
+         ToastsStore.error(error);
       }
     );    
     }
@@ -123,7 +111,7 @@ const Login = (props) => {
               <Grid xs={1} item></Grid>
               <Grid  xs={10} item container direction="column" spacing={2}>
                 <Grid item><p className={classes.itemTitle}>Email</p></Grid>
-                <Grid item>
+                <Grid item direction="column">
                   <TextField 
                     name = "email"
                     type="email"
@@ -133,11 +121,11 @@ const Login = (props) => {
                     noValidate
                     variant="outlined" 
                   />
+                  {errorsEmail.length > 0 && 
+                  <span className={classes.error}>{errorsEmail}</span>}
                 </Grid>
-                {errorsEmail.length > 0 && 
-                <span className={classes.error}>{errorsEmail}</span>}
                 <Grid item><p className={classes.itemTitle}>Mot de passe</p></Grid>
-                <Grid item>
+                <Grid item direction="column">
                   <TextField 
                     name="password"
                     variant="outlined" 
@@ -148,13 +136,12 @@ const Login = (props) => {
                     noValidate
                   />
                   {errorsPassword.length > 0 && 
-                <span className={classes.error}>{errorsPassword}</span>}
+                  <span className={classes.error}>{errorsPassword}</span>}
                 </Grid>
               </Grid>
               <Grid xs={1} item></Grid>
             </Grid>
             <Grid item container justify="center">
-              <Toast openToast={openToast} msg={msg} state={check} onClose={handleToastClose}/>
               <MyButton name={"Se connecter"} color="1" onClick={handleClickButton}/>
             </Grid>
         </Grid>
@@ -172,6 +159,7 @@ const Login = (props) => {
           <Grid item container xs={1} sm={2} md={4}></Grid>
         </Grid>
     </Grid>
+    <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
     </div>
   );
 };

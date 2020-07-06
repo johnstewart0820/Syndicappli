@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, {  useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -14,73 +13,75 @@ import authService from '../../services/authService.js';
 import {COUNTRIES} from '../../components/countries';
 import Multiselect from '../../components/Multiselect.js';
 import MyDialog from '../../components/MyDialog.js';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& .MuiTextField-root': {
-        // width: '100%'
-    },
-    '& .MuiOutlinedInput-input':{
-        padding: '17px 25px',
-        fontSize: 22,
-    },
-    '& p':{
-      marginBottom: 0
-    }
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  body:{
-    marginTop: theme.spacing(8),
-    borderRadius: '30px',
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    padding: theme.spacing(5)
-  },
-  item:{
-    marginTop: theme.spacing(5),
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  size: {
-    width: 214,
-    height: 214,
-    cursor: 'pointer',
-  },
-  input: {
-    display: 'none',
-  }, 
-  div_indicator: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    position: 'fixed',
-    paddingLeft: '50%',
-    alignItems: 'center',
-    marginTop: '-60px',
-    zIndex: 999,
-  },
-  indicator: {
-    color: 'gray'
-  },
-  error:{
-    color: 'red'
-  },
-}));
+import {EditManagerStyles as useStyles} from './useStyles';
+
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     paddingLeft: theme.spacing(5),
+//     paddingRight: theme.spacing(4),
+//     '& .MuiTextField-root': {
+//         // width: '100%'
+//     },
+//     '& .MuiOutlinedInput-input':{
+//         padding: '17px 25px',
+//         fontSize: 22,
+//     },
+//     '& p':{
+//       marginBottom: 0
+//     }
+//   },
+//   tool: {
+//     minHeight: '67px'
+//   },
+//   title:{
+//     paddingTop: theme.spacing(2),
+//     paddingBottom: theme.spacing(2)
+//   },
+//   body:{
+//     marginTop: theme.spacing(8),
+//     borderRadius: '30px',
+//     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
+//     padding: theme.spacing(5)
+//   },
+//   item:{
+//     marginTop: theme.spacing(5),
+//   },
+//   modal: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   paper: {
+//     backgroundColor: theme.palette.background.paper,
+//     border: '2px solid #000',
+//     boxShadow: theme.shadows[5],
+//     padding: theme.spacing(2, 4, 3),
+//   },
+//   size: {
+//     width: 214,
+//     height: 214,
+//     cursor: 'pointer',
+//   },
+//   input: {
+//     display: 'none',
+//   }, 
+//   div_indicator: {
+//     width: '100%',
+//     height: '100%',
+//     display: 'flex',
+//     position: 'fixed',
+//     paddingLeft: '50%',
+//     alignItems: 'center',
+//     marginTop: '-60px',
+//     zIndex: 999,
+//   },
+//   indicator: {
+//     color: 'gray'
+//   },
+//   error:{
+//     color: 'red'
+//   },
+// }));
 const ManagerEdit = (props) => {
   const {history} = props;
 
@@ -281,7 +282,7 @@ const handleChangePaymentMethodsPermission = (val) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.headerTitle}>
                 <b>Michel Dupont</b>
               </Typography>
             </Grid>
@@ -291,11 +292,14 @@ const handleChangePaymentMethodsPermission = (val) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Gestionnaires</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Gestionnaires</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
+        <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
+
           <Grid item container justify="space-between" direction="row-reverse" spacing={2}>
+
             <Grid xs item container  direction="column" spacing={2}>
                 <Grid item container direction="row-reverse">
                   <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
@@ -311,14 +315,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                       border: '2px solid gray',
                       padding: '1px 4px',
                     }}
-                    badgeContent={<EditOutlinedIcon style={{
-                      width: 54,
-                      height: 54,
-                      border: `2px solid ${theme.palette.background.paper}`,
-                      backgroundColor: 'white',
-                      borderRadius: '50%',
-                      color: 'gray'
-                    }}/>}
+                    badgeContent={<EditOutlinedIcon className={classes.editAvatar}/>}
                   >
                     <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
                   </Badge>
@@ -326,13 +323,13 @@ const handleChangePaymentMethodsPermission = (val) => {
                   </label>
                 </Grid>
                 <Grid  item container direction="row-reverse">
-                  <p style={{fontSize:25}}>Connexions/mois : 90</p>
+                  <p className={classes.itemTitle}>Connexions/mois : 90</p>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <p style={{fontSize:25}}>Temps connexion/jour : 1h</p>
+                  <p className={classes.itemTitle}>Temps connexion/jour : 1h</p>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <p style={{fontSize:25}}>Lots : 120000</p>
+                  <p className={classes.itemTitle}>Lots : 120000</p>
                 </Grid>
                 <Grid item container direction="row-reverse">
                   <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessManagers ==='See'? 'disabled' : !'disabled')}/>
@@ -348,11 +345,10 @@ const handleChangePaymentMethodsPermission = (val) => {
                 </Grid>
               </Grid>
             <Grid xs item container direction="column" spacing={5}>
-              <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
 
               <Grid item></Grid>
               <Grid item container alignItems="center" spacing={2}>
-                  <Grid item><p style={{fontSize:25}}>Carbinets</p></Grid>
+                  <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
                   <Grid xs item container alignItems="stretch">
                     <Multiselect
                       selected={companies}
@@ -367,7 +363,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                   </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={2}>
-                  <Grid item><p style={{fontSize:25}}>Immeubles</p></Grid>
+                  <Grid item><p className={classes.itemTitle}>Immeubles</p></Grid>
                   <Grid xs item container alignItems="stretch">
                     <Multiselect
                       selected={buildings}
@@ -382,7 +378,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                   </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
@@ -400,7 +396,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                 </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p style={{fontSize:25}}>Prénom</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Prénom</p></Grid>
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
@@ -418,7 +414,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                 </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p style={{fontSize:25}}>Email</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Email</p></Grid>
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
@@ -436,7 +432,7 @@ const handleChangePaymentMethodsPermission = (val) => {
                 </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p style={{fontSize:25}}>Téléphone</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
@@ -457,15 +453,14 @@ const handleChangePaymentMethodsPermission = (val) => {
               <Grid item></Grid>
             </Grid>
           </Grid>
-          <Grid item ><p style={{fontSize:30}}><b>Permissions</b></p></Grid>
+          <Grid item ><p className={classes.itemTitle}><b>Permissions</b></p></Grid>
           <Grid item container spacing={2}>
             <Grid item container ></Grid>
             <Grid item container spacing={2}>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Immeubles</p>
+                    <p className={classes.permissionItemTitle}>Immeubles</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeBuildingsPermission}
                         value={buildingsPermission}
@@ -474,10 +469,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsBuildingsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Copropriétaires</p>
+                    <p className={classes.permissionItemTitle}>Copropriétaires</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeOwnersPermission}
                         value={ownersPermission}
@@ -486,10 +480,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsOwnersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Messagerie</p>
+                    <p className={classes.permissionItemTitle}>Messagerie</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeChatPermission}
                         value={chatPermission}
@@ -498,10 +491,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsChatPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Incidents</p>
+                    <p className={classes.permissionItemTitle}>Incidents</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeIncidentsPermission}
                         value={incidentsPermission}
@@ -510,10 +502,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsIncidentsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Assemblées</p>
+                    <p className={classes.permissionItemTitle}>Assemblées</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeAssembliesPermission}
                         value={assembliesPermission}
@@ -522,10 +513,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsAssembliesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Événements</p>
+                    <p className={classes.permissionItemTitle}>Événements</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeEventsPermission}
                         value={eventsPermission}
@@ -534,10 +524,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsEventsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Équipe</p>
+                    <p className={classes.permissionItemTitle}>Équipe</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeTeamPermission}
                         value={teamPermission}
@@ -546,10 +535,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsTeamPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Prestataires</p>
+                    <p className={classes.permissionItemTitle}>Prestataires</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeProvidersPermission}
                         value={providersPermission}
@@ -558,10 +546,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsProvidersPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Annonces</p>
+                    <p className={classes.permissionItemTitle}>Annonces</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeAnnouncementsPermission}
                         value={announcementsPermission}
@@ -570,10 +557,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsAnnouncementsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Cabinet</p>
+                    <p className={classes.permissionItemTitle}>Cabinet</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeCompanyPermission}
                         value={companyPermission}
@@ -582,10 +568,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsCompanyPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Modules</p>
+                    <p className={classes.permissionItemTitle}>Modules</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeAddonsPermission}
                         value={addonsPermission}
@@ -594,10 +579,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsAddonsPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Factures</p>
+                    <p className={classes.permissionItemTitle}>Factures</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangeInvoicesPermission}
                         value={invoicesPermission}
@@ -606,10 +590,9 @@ const handleChangePaymentMethodsPermission = (val) => {
                         <span className={classes.error}>{errorsInvoicesPermission}</span>}
                 </Grid>
                 <Grid xs={6} item container direction="column">
-                    <p style={{fontSize:18}}>Moyens de paiement</p>
+                    <p className={classes.permissionItemTitle}>Moyens de paiement</p>
                     <MySelect 
                         color="gray" 
-                        width="176px" 
                         data={permissionList} 
                         onChangeSelect={handleChangePaymentMethodsPermission}
                         value={paymentMethodsPermission}

@@ -6,56 +6,56 @@ import MyButton from '../../components/MyButton';
 import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-
-const useStyles = makeStyles(theme => ({
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: 5,
-        padding: theme.spacing(2, 4, 3),
-    },
-      footer: {
-          paddingTop: 30,
-      },
-    root: {
-        '& .MuiTextField-root': {
-            width: '100%'
-        },
-        '& .MuiOutlinedInput-multiline':{
-            padding: '3px 26px 3px 12px',
-            fontSize: 16,
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '3px 26px 3px 12px',
-            fontSize: 16,
-        },
-        justifyContent: 'center',
-        display: 'flex',
-    },
-    input: {
-        display: 'none'
-    },
-    img: {
-        cursor: 'pointer',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        border: '1px dashed rgba(112,112,112,0.43)',
-        borderRadius: 8,
-        width: 116,
-        height: 92,
-    },
-    div_indicator: {
-        height: '100%',
-        display: 'flex',
-        position: 'fixed',
-        alignItems: 'center',
-        marginTop: '-60px',
-        zIndex: 999,
-    },
-    indicator: {
-        color: 'gray'
-    }
-}));
+import {AddCompanyStyles as useStyles} from './useStyles';
+// const useStyles = makeStyles(theme => ({
+//     paper: {
+//         backgroundColor: theme.palette.background.paper,
+//         borderRadius: 5,
+//         padding: theme.spacing(2, 4, 3),
+//     },
+//       footer: {
+//           paddingTop: 30,
+//       },
+//     root: {
+//         '& .MuiTextField-root': {
+//             width: '100%'
+//         },
+//         '& .MuiOutlinedInput-multiline':{
+//             padding: '3px 26px 3px 12px',
+//             fontSize: 16,
+//         },
+//         '& .MuiOutlinedInput-input':{
+//             padding: '3px 26px 3px 12px',
+//             fontSize: 16,
+//         },
+//         justifyContent: 'center',
+//         display: 'flex',
+//     },
+//     input: {
+//         display: 'none'
+//     },
+//     img: {
+//         cursor: 'pointer',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         display: 'flex',
+//         border: '1px dashed rgba(112,112,112,0.43)',
+//         borderRadius: 8,
+//         width: 116,
+//         height: 92,
+//     },
+//     div_indicator: {
+//         height: '100%',
+//         display: 'flex',
+//         position: 'fixed',
+//         alignItems: 'center',
+//         marginTop: '-60px',
+//         zIndex: 999,
+//     },
+//     indicator: {
+//         color: 'gray'
+//     }
+// }));
 
 const AddCompany = (props) => {
   const classes = useStyles();
@@ -134,7 +134,7 @@ const AddCompany = (props) => {
         <div className={classes.paper} >
             <Grid container spacing={4} xs={12}>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Nom</p></Grid>
+                    <Grid item><p className={classes.title}>Nom</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -146,7 +146,7 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item container direction="column" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Coordonnees</p></Grid>
+                    <Grid item><p className={classes.title}>Coordonnees</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -160,7 +160,7 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Email</p></Grid>
+                    <Grid item><p className={classes.title}>Email</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -172,7 +172,7 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Telephone</p></Grid>
+                    <Grid item><p className={classes.title}>Telephone</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -184,7 +184,7 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>SIRET</p></Grid>
+                    <Grid item><p className={classes.title}>SIRET</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -196,7 +196,7 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>TVA Intracommunautaire</p></Grid>
+                    <Grid item><p className={classes.title}>TVA Intracommunautaire</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -208,10 +208,10 @@ const AddCompany = (props) => {
                         </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Compte Bancaire - Prelevement SEPA</p></Grid>
+                    <Grid item><p className={classes.title}>Compte Bancaire - Prelevement SEPA</p></Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Nom du titulaire du compte</p></Grid>
+                    <Grid item><p className={classes.title}>Nom du titulaire du compte</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -223,7 +223,7 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="flex-start" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Adresse</p></Grid>
+                    <Grid item><p className={classes.title}>Adresse</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -237,7 +237,7 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>IBAN</p></Grid>
+                    <Grid item><p className={classes.title}>IBAN</p></Grid>
                     <Grid xs item container alignItems="stretch">
                         <TextField 
                             id="outlined-basic" 
@@ -249,14 +249,14 @@ const AddCompany = (props) => {
                     </Grid>
                 </Grid>
                 <Grid xs={12} item container direction="column"  spacing={2}>
-                    <Grid item><p style={{fontSize:18}}>Logo</p></Grid>
+                    <Grid item><p className={classes.title}>Logo</p></Grid>
                     <Grid item container justify="flex-start">
                     <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
                     <label htmlFor="img_front">
                         {
                             avatarurl === '' ?
                              <div className={classes.img}>
-                                <AddCircleOutlineIcon style={{width:31 , height: 31, color: '#707070'}}/>
+                                <AddCircleOutlineIcon className={classes.plus}/>
                              </div> :
                              <img className={classes.img} src={avatarurl} alt=""/>
                         }

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, {useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -15,73 +14,7 @@ import authService from '../../services/authService.js';
 import {COUNTRIES} from '../../components/countries';
 import Multiselect from '../../components/Multiselect.js';
 import MyDialog from '../../components/MyDialog.js';
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(4),
-    '& .MuiTextField-root': {
-        // width: '100%'
-    },
-    '& .MuiOutlinedInput-input':{
-        padding: '17px 25px',
-        fontSize: 22,
-    },
-    '& p':{
-      marginBottom: 0
-    }
-  },
-  tool: {
-    minHeight: '67px'
-  },
-  title:{
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
-  },
-  body:{
-    marginTop: theme.spacing(8),
-    borderRadius: '30px',
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    padding: theme.spacing(5)
-  },
-  item:{
-    marginTop: theme.spacing(5),
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  size: {
-    width: 214,
-    height: 214,
-    cursor: 'pointer',
-  },
-  input: {
-    display: 'none',
-  }, 
-  div_indicator: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    position: 'fixed',
-    paddingLeft: '50%',
-    alignItems: 'center',
-    marginTop: '-60px',
-    zIndex: 999,
-  },
-  indicator: {
-    color: 'gray'
-  },
-  error:{
-    color: 'red'
-  },
-}));
+import {EditUserStyles as useStyles} from './useStyles';
 const UserEdit = (props) => {
   const {history} = props;
 
@@ -154,39 +87,39 @@ const UserEdit = (props) => {
       setOpenDialog(true);
     }
     if(accessUsers !== 'Denied'){
-      AdminService.getAllCompanyList()
-      .then(      
-        response => {        
-          console.log(response.data);
-          // setVisibleIndicator(false);  
-          if(response.data.code !== 200){
-            // if(response.data.status === 'Token is Expired') {
-            //   authService.logout();
-            //   history.push('/');
-            // }
-            console.log('error');
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            {
-              data.companylist.map((companylist,i)=>{
-                companiesList.push(companylist.company_name);
-              })
-            }
-          }
-        },
-        error => {
-          console.log('fail');        
-          // setVisibleIndicator(false);
-          // const resMessage =
-          //     (error.response &&
-          //       error.response.data &&
-          //       error.response.data.message) ||
-          //     error.message ||
-          //     error.toString();
-        }
-      );    
+      // AdminService.getAllCompanyList()
+      // .then(      
+      //   response => {        
+      //     console.log(response.data);
+      //     // setVisibleIndicator(false);  
+      //     if(response.data.code !== 200){
+      //       // if(response.data.status === 'Token is Expired') {
+      //       //   authService.logout();
+      //       //   history.push('/');
+      //       // }
+      //       console.log('error');
+      //     } else {
+      //       console.log('success');
+      //       const data = response.data.data;
+      //       localStorage.setItem("token", JSON.stringify(data.token));
+      //       {
+      //         data.companylist.map((companylist,i)=>{
+      //           companiesList.push(companylist.company_name);
+      //         })
+      //       }
+      //     }
+      //   },
+      //   error => {
+      //     console.log('fail');        
+      //     // setVisibleIndicator(false);
+      //     // const resMessage =
+      //     //     (error.response &&
+      //     //       error.response.data &&
+      //     //       error.response.data.message) ||
+      //     //     error.message ||
+      //     //     error.toString();
+      //   }
+      // );    
       AdminService.getUser(props.match.params.id)
       .then(      
         response => {        
@@ -334,7 +267,7 @@ const handleLoadFront = (event) => {
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
-              <Typography variant="h2" style={{fontSize:35}}>
+              <Typography variant="h2" className={classes.headerTitle}>
                 <b>Mon Cabinet Syndic</b>
               </Typography>
             </Grid>
@@ -344,11 +277,11 @@ const handleLoadFront = (event) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} style={{cursor:'pointer',fontSize:18}}>&lt; Retour à la liste des Utilisateurs</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Utilisateurs</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
-        <Grid item container><p  style={{fontSize:35}}><b>Informations</b></p></Grid>
+        <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
           <Grid container direction="column" spacing={5}>
             <Grid item container spacing={2} direction="row-reverse">
             <Grid item container xs={12} sm={4} direction="row-reverse">
@@ -378,13 +311,13 @@ const handleLoadFront = (event) => {
                 </Badge>
                 }
                 </label>
-                <Grid xs={12} item container direction="row-reverse"><p style={{fontSize:25}}>Nombre de gestionnaires : 80</p></Grid>
-                <Grid xs={12} item container direction="row-reverse"><p style={{fontSize:25}}>Nombre de lots : 120000</p></Grid>
+                <Grid xs={12} item container direction="row-reverse"><p className={classes.itemTitle}>Nombre de gestionnaires : 80</p></Grid>
+                <Grid xs={12} item container direction="row-reverse"><p className={classes.itemTitle}>Nombre de lots : 120000</p></Grid>
               </Grid>
               <Grid item container direction="column" justify="space-between" xs={12} sm={8}>
-                <Grid item container><p  style={{fontSize:35}}></p></Grid>
+                <Grid item container><p></p></Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p style={{fontSize:25}}>Carbinets</p></Grid>
+                    <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
                     <Grid xs item container alignItems="stretch">
                       <Multiselect
                         selected={companies}
@@ -405,7 +338,7 @@ const handleLoadFront = (event) => {
               <Grid item container direction="row" >
                 <Grid item container direction="column"  xs={12} sm={8}>
                     <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p style={{fontSize:25}}>Immeubles</p></Grid>
+                        <Grid item><p className={classes.itemTitle}>Immeubles</p></Grid>
                         <Grid xs item container alignItems="stretch">
                           <Multiselect
                             selected={buildings}
@@ -424,7 +357,7 @@ const handleLoadFront = (event) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>Nom</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField 
@@ -442,7 +375,7 @@ const handleLoadFront = (event) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>Prénom</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Prénom</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField 
@@ -460,7 +393,7 @@ const handleLoadFront = (event) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>Email</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Email</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField 
@@ -478,7 +411,7 @@ const handleLoadFront = (event) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p style={{fontSize:25}}>Téléphone</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField 
@@ -496,15 +429,14 @@ const handleLoadFront = (event) => {
               </Grid>
             </Grid>
 
-            <Grid item ><p style={{fontSize:30}}><b>Permissions</b></p></Grid>
+            <Grid item ><p className={classes.itemTitle}><b>Permissions</b></p></Grid>
             <Grid item container spacing={1}>
                 <Grid item container ></Grid>
                 <Grid item container spacing={2}>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Cabinets</p>
+                      <p className={classes.itemTitle}>Cabinets</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={companiesPermission}
                         onChangeSelect={handleChangeCompaniesPermission}
@@ -514,10 +446,9 @@ const handleLoadFront = (event) => {
                       <span className={classes.error}>{errorsCompaniesPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Gestionnaires</p>
+                      <p className={classes.itemTitle}>Gestionnaires</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={managersPermission}
                         onChangeSelect={handleChangeManagersPermission}
@@ -527,10 +458,9 @@ const handleLoadFront = (event) => {
                         <span className={classes.error}>{errorsManagersPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Immeuables</p>
+                      <p className={classes.itemTitle}>Immeuables</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={buildingsPermission}
                         onChangeSelect={handleChangeBuildingsPermission}
@@ -540,10 +470,9 @@ const handleLoadFront = (event) => {
                       <span className={classes.error}>{errorsBuildingsPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Coproprietaires</p>
+                      <p className={classes.itemTitle}>Coproprietaires</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={ownersPermission}
                         onChangeSelect={handleChangeOwnersPermission}
@@ -553,10 +482,9 @@ const handleLoadFront = (event) => {
                       <span className={classes.error}>{errorsOwnersPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Commandes</p>
+                      <p className={classes.itemTitle}>Commandes</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={ordersPermission}
                         onChangeSelect={handleChangeOrdersPermission}
@@ -566,10 +494,9 @@ const handleLoadFront = (event) => {
                       <span className={classes.error}>{errorsOrdersPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Prodults</p>
+                      <p className={classes.itemTitle}>Prodults</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={productsPermission}
                         onChangeSelect={handleChangeProductsPermission}
@@ -579,10 +506,9 @@ const handleLoadFront = (event) => {
                         <span className={classes.error}>{errorsProductsPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Codes Promo</p>
+                      <p className={classes.itemTitle}>Codes Promo</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={discountCodesPermission}
                         onChangeSelect={handleChangeDiscountCodesPermission}
@@ -592,10 +518,9 @@ const handleLoadFront = (event) => {
                       <span className={classes.error}>{errorsDiscountcodesPermission}</span>}
                     </Grid>
                     <Grid xs={12} sm={6} item container direction="column">
-                      <p style={{fontSize:24}}>Utilisateurs</p>
+                      <p className={classes.itemTitle}>Utilisateurs</p>
                       <MySelect 
                         color="#9f9f9f" 
-                        width="244px" 
                         data={permissionList}
                         value={usersPermission}
                         onChangeSelect={handleChangeUsersPermission}
