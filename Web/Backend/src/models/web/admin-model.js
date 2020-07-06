@@ -23,11 +23,16 @@ var adminModel = {
   updateUser: updateUser,
   deleteUser: deleteUser,
   getCompanyList: getCompanyList,
+  getCompanyListByUser: getCompanyListByUser,
+  getCompanyBuildingListByUser: getCompanyBuildingListByUser,
   createCompany: createCompany,
   getAllCompanyList: getAllCompanyList,
   getBuildingList: getBuildingList,
   getBuildingListByCompany: getBuildingListByCompany,
-  getBuildingListByUserAndCompany: getBuildingListByUserAndCompany,
+  getBuildingListByUser: getBuildingListByUser,
+  createBuilding: createBuilding,
+  getBuilding: getBuilding,
+  updateBuilding: updateBuilding,
 }
 
 /**
@@ -124,6 +129,27 @@ function updateProfile(uid, data, file_name) {
 }
 
 /**
+ * get building list by user and company data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingListByUser(uid) {
+  return new Promise((resolve, reject) => {
+    let query = 'Select * from ' + table.ADMIN_COMPANY + ' left join ' + table.BUILDINGS + ' using(companyID) where adminID = ?';
+    
+    db.query(query, [ uid ], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          resolve(rows);
+        }
+    })
+  })
+}
+
+/**
  * get user list with filter key
  *
  * @author  DongTuring <dong@turing.com>
@@ -193,7 +219,7 @@ function getCountUserList(data) {
  * create user data
  *
  * @author  DongTuring <dong@turing.com>
- * @param   object authData
+ * @param   object company
  * @return  object If success returns object else returns message
  */
 function createUser(data, file_name) {
@@ -205,6 +231,8 @@ function createUser(data, file_name) {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
+            console.log (data.companyID);
+            
             resolve("ok");
           }
       })
@@ -339,6 +367,48 @@ function getCompanyList(data) {
     })
   }
 
+  /**
+ * get company list with filter key
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCompanyListByUser(uid) {
+  return new Promise((resolve, reject) => {
+    let query = 'SELECT * FROM ' + table.ADMIN_COMPANY + ' Left Join ' + table.COMPANIES + ' using(companyID) WHERE adminID = ?'
+
+    db.query(query, [ uid ], (error, rows, fields) => {
+      if (error) {
+        reject({ message: message.INTERNAL_SERVER_ERROR })
+      } else {
+        resolve(rows);
+      }
+    })
+  })
+}
+
+/**
+ * get company list with filter key
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCompanyBuildingListByUser(uid) {
+  return new Promise((resolve, reject) => {
+    let query = 'SELECT * FROM ' + table.ADMIN_COMPANY + ' Left Join ' + table.COMPANIES + ' using(companyID) Left join ' + table.BUILDINGS + ' using(companyID) WHERE adminID = ?'
+
+    db.query(query, [ uid ], (error, rows, fields) => {
+      if (error) {
+        reject({ message: message.INTERNAL_SERVER_ERROR })
+      } else {
+        resolve(rows);
+      }
+    })
+  })
+}
+
 /**
  * create company data
  *
@@ -346,7 +416,7 @@ function getCompanyList(data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createCompany(data, file_name) {
+function createCompany(uid, data, file_name) {
   return new Promise((resolve, reject) => {
     let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     
@@ -354,7 +424,22 @@ function createCompany(data, file_name) {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
-          resolve("ok");
+          let getLastCompanyIdQuery = 'Select * from ' + table.COMPANIES + ' where email = ?' 
+          db.query(getLastCompanyIdQuery, [data.email], (error, rows, fields) => {
+            if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+              let companyID = rows[0].companyID;   
+              let query = 'Insert into ' + table.ADMIN_COMPANY + ' (adminID, companyID) VALUES (?, ?)'
+              db.query(query, [uid, companyID], (error, rows, fields) => {
+                if (error) {
+                  reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                  resolve("ok");
+                }
+              })
+            }
+          })
         }
     })
   })
@@ -411,42 +496,43 @@ function getCountCompanyList(data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getBuildingList(data) {
+function getBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM ' + table.BUILDING + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      let query;
+      if (data.companyID == -1) {
+        query = 'SELECT * FROM ' + table.BUILDINGS + ' WHERE (name like ?) and permission not like "deleted"'
+      } else {
+        query = 'SELECT * FROM ' + table.BUILDINGS + ' WHERE (name like ?) and companyID = ? and permission not like "deleted"'
+      }
+      
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
       search_key = '%' + data.search_key + '%'
       if (sort_column === -1)
-        query += ' order by companyID desc';
+        query += ' order by buildingID desc';
       else {
           if (sort_column === 0)
-            query += ' order by company_name ';
+            query += ' order by name ';
           else if (sort_column === 1)
-            query += ' order by company_address ';
+            query += ' order by address ';
+          
           else if (sort_column === 2)
-            query += ' order by company_email ';
-          else if (sort_column === 3)
-            query += ' order by company_phone ';
-          else if (sort_column === 4)
-            query += ' order by company_manager_count ';
-          else if (sort_column === 5)
-            query += ' order by company_member_count ';
-            
+            query += ' ';
           query += data.sort_method;
       }
       query += ' limit ' + page_num * row_count + ',' + row_count
-      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+      db.query(query, data.companyID == -1 ? [ search_key ]: [search_key, data.companyID], (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
             getCountBuildingList(data).then((data) => {
-              if (data) {
-                resolve({rows: rows, count: data}); 
-              } else {
+              getCompanyListByUser(uid).then((result) => {
+                resolve({rows: rows, count: data, company_list: result});
+              }).catch((err) => {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
-              }
+              })
+              
           })
            
         }
@@ -463,10 +549,15 @@ function getBuildingList(data) {
  */
 function getCountBuildingList(data) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT count(*) count FROM ' + table.BUILDING + ' WHERE (company_name like ? or company_address like ? or company_email like ? or company_phone like ?) and permission = "true"'
+      let query;
+      if (data.companyID == -1) {
+        query = 'SELECT count(*) count FROM ' + table.BUILDINGS + ' WHERE (name like ?) and permission not like "deleted"'
+      } else {
+        query = 'SELECT count(*) count FROM ' + table.BUILDINGS + ' WHERE (name like ?) and companyID = ? and permission not like "deleted"'
+      }
       search_key = '%' + data.search_key + '%'
       
-      db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+      db.query(query, data.companyID == -1 ? [ search_key ]: [search_key, data.companyID], (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
@@ -498,35 +589,147 @@ function getBuildingListByCompany(data) {
   }
 
 /**
- * get count for building list for search filter
+ * create building
  *
  * @author  DongTuring <dong@turing.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getBuildingListByUserAndCompany(data) {
-    return new Promise((resolve, reject) => {
-        let query = 'SELECT buildingID, building_name FROM ' + table.USER + ' Left Join ' + table.BUILDING_MANAGER + ' USING (userID) Left Join ' + table.BUILDING + ' USING (buildingID) '
-        + 'WHERE userID = ? and ' + table.BUILDING + '.permission = "true"'
-        db.query(query, [ data.userID ], (error, rows, fields) => {
-            if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
-            } else {
-                getBuildingListByCompany(data.companyID).then((buildings) => {
-                    for (let i = 0; i < buildings.length; i ++) {
-                        buildings[i].selected = false;
-                    }
-                    for (let i = 0; i < buildings.length; i ++) {
-                        for (let j = 0; j < rows.length; j ++) {
-                            if (buildings[i].buildingID === rows[j].buildingID)
-                                buildings[i].selected = true;
+function createBuilding(data) {
+  return new Promise((resolve, reject) => {
+      let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN) values (?, ?, ?, ?, ?, ?)'
+      let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1' 
+      db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN ],  async (error, rows, fields) => {
+          if (error) {
+            reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+            await db.query(select_building_query, [],  async (error, rows, fields) => {
+              if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR });
+              } else {
+                let buildingID = rows[0].buildingID;
+                for (let i in data.vote) {
+                  let query = 'Insert into ' + table.VOTEBRANCH + ' (name) values (?)'
+                  let select_query = 'Select * from ' + table.VOTEBRANCH + ' where name = ?'
+                  let insert_query = 'Insert into ' + table.BUILDING_VOTE_BRANCH + ' (buildingID, voteID) values (?, ?)'
+                  await db.query(query, [ data.vote[i].name ], async (error, rows, fields) => {
+                    if (error) {
+                      reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                      await db.query(select_query, [ data.vote[i].name ], (error, rows, fields) => {
+                        if (error) {
+                          reject({ message: message.INTERNAL_SERVER_ERROR})
+                        } else {
+                          db.query(insert_query, [ buildingID, rows[rows.length - 1].voteID ], (error, rows, fields) => {
+                            if (error) {
+                              reject({ message: message.INTERNAL_SERVER_ERROR })
+                            }
+                          })
                         }
+                      })
                     }
-                    resolve(buildings)
-                })
-            }
-        })
-    })
-  }
+                  })
+                }
+              }
+            })
+            resolve("ok");
+          }
+      })
+  })
+}
 
+/**
+ * get building
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuilding(uid) {
+  return new Promise((resolve, reject) => {
+      let get_building_query = 'Select * from ' + table.BUILDINGS + ' where buildingID = ?' 
+      let vote_query = 'Select * from ' + table.BUILDING_VOTE_BRANCH + ' left join ' + table.VOTEBRANCH + ' Using (voteID) where buildingID = ?'
+      db.query(get_building_query, [ uid ], (error, rows, fields) => {
+          if (error) {
+            reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+            getCompanyListByUser(uid).then((result) => {
+              db.query(vote_query, [uid], (error, rows1, fields) => {
+                if (error) {
+                  reject({ message: message.INTERNAL_SERVER_ERROR});
+                } else {
+                  resolve({building: rows, companyList: result, votelist: rows1})
+                }
+              })
+
+            })
+          }
+      })
+  })
+}
+
+/**
+ * update building
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateBuilding(id, data) {
+  return new Promise((resolve, reject) => {
+      let query = 'UPDATE ' + table.BUILDINGS + ' SET companyID = ?, name = ?, address = ?, account_holdername = ?, account_address = ?, account_IBAN = ? WHERE buildingID = ?'
+      let delete_building_vote_branch = 'Delete from ' + table.BUILDING_VOTE_BRANCH + ' where buildingID = ?'
+      db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN, id ],   (error, rows, fields) => {
+          if (error) {
+            reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+            let select_vote_query = 'Select * from ' + table.BUILDING_VOTE_BRANCH + ' where buildingID = ?' 
+            db.query(select_vote_query, [id], async (error, rows, fields) => {
+              if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR });
+              } else {
+                let delete_vote_query = 'Delete from ' + table.VOTEBRANCH + ' where voteID = ?'
+                for (let i in rows) {
+                  db.query(delete_vote_query, [ rows[i].voteID ], (error, rows, fields) => {
+                    if (error) {
+                      reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } 
+                  })
+                }
+                db.query(delete_building_vote_branch, [id], async (error, rows, fields) => {
+                  if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                  } else {
+                    for (let i in data.vote) {
+                      let query = 'Insert into ' + table.VOTEBRANCH + ' (name) values (?)'
+                      let select_query = 'Select * from ' + table.VOTEBRANCH + ' where name = ?'
+                      let insert_query = 'Insert into ' + table.BUILDING_VOTE_BRANCH + ' (buildingID, voteID) values (?, ?)'
+                      let delete_query = 'Delete from ' + table.BUILDING_VOTE_BRANCH + ' where buildingID = ?'
+                      await db.query(query, [ data.vote[i].name ], async (error, rows, fields) => {
+                        if (error) {
+                          reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                          await db.query(select_query, [ data.vote[i].name ], (error, rows, fields) => {
+                            if (error) {
+                              reject({ message: message.INTERNAL_SERVER_ERROR})
+                            } else {
+                              db.query(insert_query, [ id, rows[rows.length - 1].voteID ], (error, rows, fields) => {
+                                if (error) {
+                                  reject({ message: message.INTERNAL_SERVER_ERROR })
+                                }
+                              })
+                            }
+                          })
+                        }
+                      })
+                    }
+                  }
+                })
+              }
+            })
+            resolve("ok");
+          }
+      })
+  })
+}
 module.exports = adminModel

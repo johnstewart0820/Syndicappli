@@ -15,9 +15,12 @@
 const tables = {
   ADMIN : 'admin',
   ADMIN_ROLE: 'admin_role',
+  ADMIN_COMPANY: 'admin_company',
   COMPANIES: 'companies',
   BUILDING_MANAGER: 'building_manager',
-  BUILDING: 'building',
+  BUILDINGS: 'buildings',
+  BUILDING_VOTE_BRANCH: 'building_vote_branch',
+  VOTEBRANCH: 'vote_branch',
 }
 
 module.exports = tables

@@ -11,10 +11,12 @@
  */
 
 const express = require('express')
+const formidable = require('formidable');
 
 const router = express.Router()
 const authMiddleware = require('../../middleware/auth-middleware')
-const adminService = require('../../services/web/admin-service')
+const adminService = require('../../services/web/admin/admin-service')
+const buildingService = require('../../services/web/admin/building-service')
 
 
 /** 
@@ -32,10 +34,13 @@ router.get('/user/:id', authMiddleware.checkToken, getUser)
 router.put('/user/:id', authMiddleware.checkToken, updateUser)
 router.delete('/user/:id', authMiddleware.checkToken, deleteUser)
 
+router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingListByUser)
+
 /**
  * company api
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
+
 router.post('/company', authMiddleware.checkToken, createCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 
@@ -43,8 +48,10 @@ router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
  * building api
  */
 router.post('/buildingList', authMiddleware.checkToken, getBuildingList)
-router.post('/buildingListByCompany', authMiddleware.checkToken, getBuildingListByCompany)
-router.post('/buildingListByUserAndCompany', authMiddleware.checkToken, getBuildingListByUserAndCompany)
+router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser)
+router.post('/building', authMiddleware.checkToken, createBuilding)
+router.get('/building/:id', authMiddleware.checkToken, getBuilding)
+router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 
 
 /**
@@ -73,7 +80,7 @@ function getProfile(req, res) {
  * @param   object res
  * @return  json 
  */
-const formidable = require('formidable');
+
 
 function updateProfile(req, res) {
     var form = new formidable.IncomingForm();
@@ -201,6 +208,23 @@ function deleteUser(req, res) {
 }
 
 /**
+ * Function that get company and building list by user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getCompanyBuildingListByUser(req, res) {
+  let userId = req.decoded.uid
+  adminService.getCompanyBuildingListByUser(userId).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
+}
+
+/**
  * Function that get company list
  *
  * @author  DongTuring <dong@turing.com>
@@ -218,6 +242,8 @@ function getCompanyList(req, res) {
       res.json(err)
     })
 }
+
+
 
 /**
  * Function that create company
@@ -258,14 +284,35 @@ function createCompany(req, res) {
  */
 function getAllCompanyList(req, res) {
     
-    let userId = req.decoded.uid
-    let data = req.body
-    adminService.getAllCompanyList(userId, data).then((result) => {
-      res.json(result)
-    }).catch((err) => {
-      res.json(err)
-    })
+  let userId = req.decoded.uid
+  let data = req.body
+  adminService.getAllCompanyList(userId, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
 }
+
+
+/////////////////////////////////////////////////Building///////////////////////////////////////
+/**
+ * Function that get company list by user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getCompanyListByUser(req, res) {
+    
+  let userId = req.decoded.uid
+  buildingService.getCompanyListByUser(userId).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
+}
+
 
 /**
  * Function that get building list
@@ -279,47 +326,71 @@ function getBuildingList(req, res) {
     
     let userId = req.decoded.uid
     let data = req.body
-    adminService.getBuildingList(userId, data).then((result) => {
+    buildingService.getBuildingList(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)
     })
 }
 
+
+
 /**
- * Function that get building list by company
+ * Function that create building
  *
  * @author  DongTuring <dong@turing.com>
  * @param   object req
  * @param   object res
  * @return  json 
  */
-function getBuildingListByCompany(req, res) {
-    let userId = req.decoded.uid
-    let data = req.body
-    adminService.getBuildingListByCompany(userId, data).then((result) => {
-      res.json(result)
-    }).catch((err) => {
-      res.json(err)
-    })
+function createBuilding(req, res) {
+    
+  let userId = req.decoded.uid
+  let data = req.body
+  buildingService.createBuilding(userId, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
 }
 
 /**
- * Function that get building list by user
+ * Function that get building
  *
  * @author  DongTuring <dong@turing.com>
  * @param   object req
  * @param   object res
  * @return  json 
  */
-function getBuildingListByUserAndCompany(req, res) {
-    let userId = req.decoded.uid
-    let data = req.body
-    adminService.getBuildingListByUserAndCompany(userId, data).then((result) => {
-      res.json(result)
-    }).catch((err) => {
-      res.json(err)
-    })
+function getBuilding(req, res) {
+    
+  let userId = req.decoded.uid
+  let data = req.params.id
+  buildingService.getBuilding(userId, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
+}
+
+/**
+ * Function that update building
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function updateBuilding(req, res) {
+    
+  let userId = req.decoded.uid
+  let id = req.params.id;
+  let data = req.body
+  buildingService.updateBuilding(userId, id, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
 }
 
 module.exports = router
