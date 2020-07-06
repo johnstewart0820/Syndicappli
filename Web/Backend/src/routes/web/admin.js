@@ -60,6 +60,7 @@ router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
  */
 router.get('/building_company', authMiddleware.checkToken, getBuildingCompanyByUser)
 router.post('/managerList', authMiddleware.checkToken, getManagerList)
+router.post('/manager', authMiddleware.checkToken, createManager)
 
 
 /**
@@ -439,6 +440,35 @@ function getManagerList(req, res) {
   }).catch((err) => {
     res.json(err)
   })
+}
+
+/**
+ * Function that create user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function createManager(req, res) {
+  var form = new formidable.IncomingForm();
+  let file_name = "";
+  let userId = req.decoded.uid
+  form.parse(req, function (err, fields, files) {
+      managerService.createManager(userId, fields, file_name).then((result)=>{
+          res.json(result)
+      }).catch((err) => {
+          res.json(err)
+      });
+  });
+
+  form.on('fileBegin', function (name, file){
+      file_name = Date.now() + '.jpg';
+      file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
+  });
+
+  form.on('file', function (name, file){
+  });
 }
 
 module.exports = router

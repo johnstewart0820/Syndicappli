@@ -165,35 +165,38 @@ function getCountManagerList(uid, data) {
  */
 function createManager(uid, data, file_name) {
   return new Promise((resolve, reject) => {
-    let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ?';
-    let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    let password = bcrypt.hashSync("123456")
+    let confirm_query = 'Select * from ' + table.MANAGERS + ' where email = ?';
+    let query = 'Insert into ' + table.MANAGERS + ' (companyID, lastname, firstname, email, password, phone, photo_url, role_companies, role_buildings, role_chat, role_assemblies, role_owners, role_incidents, role_events, role_team, role_providers, role_announcements, role_addons, role_invoices, role_payment_methods) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     db.query(confirm_query, [data.email], (error, rows, fields) => {
       if (error) {
         reject({ message: message.INTERNAL_SERVER_ERROR })
       } else {
         if (rows.length > 0)
-          reject({ message: message.COMPANY_ALREADY_EXIST })
+          reject({ message: message.MANAGER_ALREADY_EXIST })
         else {
-          db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status], (error, rows, fields) => {
+          db.query(query, [ data.companyID, data.lastname, data.firstname, data.email, password, data.phone, file_name, data.role_companies, data.role_buildings, data.role_chat, data.role_assemblies, data.role_owners, data.role_incidents,data.role_events, data.role_team, data.role_providers, data.role_announcements, data.role_addons, data.role_invoices, data.role_payment_methods], (error, rows, fields) => {
             if (error) {
               reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-              let getLastCompanyIdQuery = 'Select * from ' + table.COMPANIES + ' where email = ?' 
-              db.query(getLastCompanyIdQuery, [data.email], (error, rows, fields) => {
+              let query = 'select * from ' + table.MANAGERS + ' where email = ?'
+              db.query(query, [data.email], (error, rows, fields) => {
                 if (error) {
-                  reject({ message: message.INTERNAL_SERVER_ERROR })
+                  reject({ message: message.INTERNAL_SERVER_ERROR})
                 } else {
-                  let companyID = rows[0].companyID;   
-                  let query = 'Insert into ' + table.ADMIN_COMPANY + ' (adminID, companyID) VALUES (?, ?)'
-                  db.query(query, [uid, companyID], (error, rows, fields) => {
-                    if (error) {
-                      reject({ message: message.INTERNAL_SERVER_ERROR })
-                    } else {
-                      resolve("ok");
-                    }
-                  })
+                  let managerID = rows[0].managerID;
+                  let query = 'insert into ' + table.MANAGER_BUILDING + ' (managerID, buildingID) values (?, ?)'
+                  let buildingIDs = data.buildingID.split(",");
+                  for (let i in buildingIDs) {
+                    db.query(query, [managerID, buildingIDs[i]], (error, rows, fields) => {
+                      if (error)
+                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                    })
+                  }
+                  resolve("ok");
                 }
               })
+
             }
           })
         }

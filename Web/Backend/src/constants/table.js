@@ -22,6 +22,7 @@ const tables = {
   BUILDING_VOTE_BRANCH: 'building_vote_branch',
   VOTEBRANCH: 'vote_branch',
   MANAGERS: 'managers',
+  MANAGER_BUILDING: 'manager_building',
 }
 
 module.exports = tables

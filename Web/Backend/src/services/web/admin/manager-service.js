@@ -99,7 +99,7 @@ function createManager(uid, data, file_name) {
     }).catch((err) => {
       if (err.message === message.INTERNAL_SERVER_ERROR)
         reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-      else if (err.message === message.COMPANY_ALREADY_EXIST) 
+      else if (err.message === message.MANAGER_ALREADY_EXIST) 
         reject({ code: code.ALREADY_EXIST, message: err.message, data: {} })
       else
         reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
