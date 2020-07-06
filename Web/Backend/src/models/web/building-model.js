@@ -55,9 +55,9 @@ function getBuildingList(data) {
     return new Promise((resolve, reject) => {
       let query;
       if (data.companyID == -1) {
-        query = 'SELECT * FROM ' + table.BUILDINGS + ' WHERE (name like ?) and permission not like "deleted"'
+        query = 'SELECT *, buildingID (ID) FROM ' + table.BUILDINGS + ' WHERE (name like ?) and permission not like "deleted"'
       } else {
-        query = 'SELECT * FROM ' + table.BUILDINGS + ' WHERE (name like ?) and companyID = ? and permission not like "deleted"'
+        query = 'SELECT *, buildingID (ID) FROM ' + table.BUILDINGS + ' WHERE (name like ?) and companyID = ? and permission not like "deleted"'
       }
       
       sort_column = Number(data.sort_column);

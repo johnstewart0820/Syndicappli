@@ -17,6 +17,7 @@ const router = express.Router()
 const authMiddleware = require('../../middleware/auth-middleware')
 const adminService = require('../../services/web/admin/admin-service')
 const buildingService = require('../../services/web/admin/building-service')
+const companyService = require('../../services/web/admin/company-service')
 
 
 /** 
@@ -40,7 +41,6 @@ router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingLis
  * company api
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
-
 router.post('/company', authMiddleware.checkToken, createCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 
@@ -236,7 +236,7 @@ function getCompanyList(req, res) {
     
     let userId = req.decoded.uid
     let data = req.body
-    adminService.getCompanyList(userId, data).then((result) => {
+    companyService.getCompanyList(userId, data).then((result) => {
       res.json(result)
     }).catch((err) => {
       res.json(err)
