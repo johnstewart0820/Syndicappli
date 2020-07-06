@@ -18,6 +18,7 @@ const authMiddleware = require('../../middleware/auth-middleware')
 const adminService = require('../../services/web/admin/admin-service')
 const buildingService = require('../../services/web/admin/building-service')
 const companyService = require('../../services/web/admin/company-service')
+const managerService = require('../../services/web/admin/manager-service')
 
 
 /** 
@@ -53,6 +54,12 @@ router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
+
+/**
+ * manager api
+ */
+router.get('/building_company', authMiddleware.checkToken, getBuildingCompanyByUser)
+router.post('/managerList', authMiddleware.checkToken, getManagerList)
 
 
 /**
@@ -388,6 +395,46 @@ function updateBuilding(req, res) {
   let id = req.params.id;
   let data = req.body
   buildingService.updateBuilding(userId, id, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
+}
+
+
+//////////////////////////////////////////Manager//////////////////////////////////
+/**
+ * Function that get building and company by user
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getBuildingCompanyByUser(req, res) {
+    
+  let userId = req.decoded.uid
+  managerService.getCompanyBuilding(userId).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
+}
+
+
+/**
+ * Function that get manager list
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getManagerList(req, res) {
+    
+  let userId = req.decoded.uid
+  let data = req.body
+  managerService.getManagerList(userId, data).then((result) => {
     res.json(result)
   }).catch((err) => {
     res.json(err)
