@@ -44,6 +44,7 @@ router.post('/companyList', authMiddleware.checkToken, getCompanyList)
 router.post('/company', authMiddleware.checkToken, createCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 
+
 /**
  * building api
  */
@@ -224,6 +225,8 @@ function getCompanyBuildingListByUser(req, res) {
   })
 }
 
+////////////////////////////////////Company///////////////////////////////////////
+
 /**
  * Function that get company list
  *
@@ -243,8 +246,6 @@ function getCompanyList(req, res) {
     })
 }
 
-
-
 /**
  * Function that create company
  *
@@ -258,11 +259,11 @@ function createCompany(req, res) {
   let file_name = "";
   let userId = req.decoded.uid
   form.parse(req, function (err, fields, files) {
-      adminService.createCompany(userId, fields, file_name).then((result)=>{
-          res.json(result)
-      }).catch((err) => {
-          res.json(err)
-      });
+    companyService.createCompany(userId, fields, file_name).then((result)=>{
+      res.json(result)
+    }).catch((err) => {
+      res.json(err)
+    });
   });
 
   form.on('fileBegin', function (name, file){

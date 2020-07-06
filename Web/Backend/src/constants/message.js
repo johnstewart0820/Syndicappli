@@ -25,7 +25,8 @@ const messages = {
   DATA_NOT_EXIST: 'The data does not exists.',
   UPLOAD_FAILED: 'Sorry, Uploading failed.',
   SEND_CHALLENGE_ERROR: 'Sorry, sending challenge email failed.',
-  API_KEY_REQUIRED: 'API key is required for this functionality'
+  API_KEY_REQUIRED: 'API key is required for this functionality',
+  COMPANY_ALREADY_EXIST: 'Company is already exist.'
 }
 
 module.exports = messages

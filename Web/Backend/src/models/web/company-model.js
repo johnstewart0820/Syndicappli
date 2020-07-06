@@ -17,6 +17,7 @@ var table  = require('../../constants/table')
 var companyModel = {
   getCompanyList: getCompanyList,
   getCountCompanyList: getCountCompanyList,
+  createCompany: createCompany,
 }
 
 
@@ -31,7 +32,7 @@ function getCompanyList(uid, data) {
     return new Promise((resolve, reject) => {
 
       let query = `SELECT
-      *, companyID (ID) 
+      *, companyID ID
       FROM
       companies
       LEFT JOIN admin_company USING ( companyID )
@@ -101,6 +102,50 @@ function getCountCompanyList(uid, data) {
     })
   }
 
-
+/**
+ * create company data
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createCompany(uid, data, file_name) {
+  return new Promise((resolve, reject) => {
+    let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ?';
+    let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    db.query(confirm_query, [data.email], (error, rows, fields) => {
+      if (error) {
+        reject({ message: message.INTERNAL_SERVER_ERROR })
+      } else {
+        if (rows.length > 0)
+          reject({ message: message.COMPANY_ALREADY_EXIST })
+        else {
+          db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status], (error, rows, fields) => {
+            if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+              let getLastCompanyIdQuery = 'Select * from ' + table.COMPANIES + ' where email = ?' 
+              db.query(getLastCompanyIdQuery, [data.email], (error, rows, fields) => {
+                if (error) {
+                  reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                  let companyID = rows[0].companyID;   
+                  let query = 'Insert into ' + table.ADMIN_COMPANY + ' (adminID, companyID) VALUES (?, ?)'
+                  db.query(query, [uid, companyID], (error, rows, fields) => {
+                    if (error) {
+                      reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                      resolve("ok");
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      }
+    })
+  })
+}
 
 module.exports = companyModel
