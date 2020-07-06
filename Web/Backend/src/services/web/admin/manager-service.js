@@ -20,6 +20,7 @@ var managerService = {
   getCompanyBuilding: getCompanyBuilding,
   getManagerList: getManagerList,
   createManager: createManager,
+  getManager: getManager,
 }
 
 
@@ -80,7 +81,7 @@ function getManagerList(uid, data) {
   }
 
 /**
- * Function that create company data
+ * Function that create manager
  *
  * @author  DongTuring <dong@turing.com>
  * @param   object authData
@@ -104,6 +105,29 @@ function createManager(uid, data, file_name) {
       else
         reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
     })
+  })
+}
+
+/**
+ * Function that get manager
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function getManager(uid, id) {
+  return new Promise((resolve, reject) => {
+    managerModel.getManager(id).then((manager) => {
+      let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+        expiresIn: timer.TOKEN_EXPIRATION
+      })
+      resolve({ code: code.OK, message: '', data: { 'token': token, 'manager':  manager.manager, 'buildinglist': manager.buildingList} })
+      }).catch((err) => {
+        if (err.message === message.INTERNAL_SERVER_ERROR)
+          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+        else
+          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+      })
   })
 }
 

@@ -20,6 +20,7 @@ var companyModel = {
   getManagerList: getManagerList,
   getCountManagerList: getCountManagerList,
   createManager: createManager,
+  getManager: getManager,
 }
 
 /**
@@ -202,6 +203,33 @@ function createManager(uid, data, file_name) {
         }
       }
     })
+  })
+}
+
+/**
+ * get manager
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getManager(uid) {
+  return new Promise((resolve, reject) => {
+      let get_manager_query = 'Select * from ' + table.MANAGERS + ' where managerID = ?' 
+      let building_query = 'Select * from ' + table.MANAGER_BUILDING + ' where managerID = ?'
+      db.query(get_manager_query, [ uid ], (error, rows, fields) => {
+          if (error) {
+            reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+              db.query(building_query, [uid], (error, rows1, fields) => {
+                if (error) {
+                  reject({ message: message.INTERNAL_SERVER_ERROR});
+                } else {
+                  resolve({manager: rows, buildingList: rows1})
+                }
+              })
+          }
+      })
   })
 }
 

@@ -61,6 +61,7 @@ router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 router.get('/building_company', authMiddleware.checkToken, getBuildingCompanyByUser)
 router.post('/managerList', authMiddleware.checkToken, getManagerList)
 router.post('/manager', authMiddleware.checkToken, createManager)
+router.get('/manager/:id', authMiddleware.checkToken, getManager)
 
 
 /**
@@ -469,6 +470,25 @@ function createManager(req, res) {
 
   form.on('file', function (name, file){
   });
+}
+
+/**
+ * Function that get manager
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function getManager(req, res) {
+    
+  let userId = req.decoded.uid
+  let data = req.params.id
+  managerService.getManager(userId, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
 }
 
 module.exports = router
