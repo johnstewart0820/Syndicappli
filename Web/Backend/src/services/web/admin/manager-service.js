@@ -21,6 +21,7 @@ var managerService = {
   getManagerList: getManagerList,
   createManager: createManager,
   getManager: getManager,
+  updateManager: updateManager,
 }
 
 
@@ -131,4 +132,29 @@ function getManager(uid, id) {
   })
 }
 
+/**
+ * Function that update manager
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object authData
+ * @return  json 
+ */
+function updateManager(uid, id, data) {
+  return new Promise((resolve, reject) => {
+    managerModel.updateManager(id, data).then((result) => {
+        if (result) {
+          let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+            expiresIn: timer.TOKEN_EXPIRATION
+          })
+          
+          resolve({ code: code.OK, message: '', data: { 'token': token } })
+        }
+      }).catch((err) => {
+        if (err.message === message.INTERNAL_SERVER_ERROR)
+          reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+        else
+          reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+      })
+  })
+}
 module.exports = managerService

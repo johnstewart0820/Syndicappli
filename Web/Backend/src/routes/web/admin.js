@@ -62,6 +62,7 @@ router.get('/building_company', authMiddleware.checkToken, getBuildingCompanyByU
 router.post('/managerList', authMiddleware.checkToken, getManagerList)
 router.post('/manager', authMiddleware.checkToken, createManager)
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
+router.put('/manager/:id', authMiddleware.checkToken, updateManager)
 
 
 /**
@@ -485,6 +486,26 @@ function getManager(req, res) {
   let userId = req.decoded.uid
   let data = req.params.id
   managerService.getManager(userId, data).then((result) => {
+    res.json(result)
+  }).catch((err) => {
+    res.json(err)
+  })
+}
+
+/**
+ * Function that update manager
+ *
+ * @author  DongTuring <dong@turing.com>
+ * @param   object req
+ * @param   object res
+ * @return  json 
+ */
+function updateManager(req, res) {
+    
+  let userId = req.decoded.uid
+  let id = req.params.id;
+  let data = req.body
+  managerService.updateManager(userId, id, data).then((result) => {
     res.json(result)
   }).catch((err) => {
     res.json(err)
