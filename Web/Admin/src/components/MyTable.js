@@ -36,28 +36,21 @@ const BootstrapInput = withStyles((theme) => ({
   input: {
     [theme.breakpoints.up('xl')]: {
       fontSize: 17,
-      height:47,
-    },
-    [theme.breakpoints.between('lg','lg')]: {
-      fontSize: 12,
       height:33,
     },
-    [theme.breakpoints.between('md','md')]: {
-      fontSize: 8,
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 12,
       height:23,
     },
-    [theme.breakpoints.between('sm','sm')]: {
-      fontSize: 6,
+    [theme.breakpoints.down('md')]: {
+      fontSize: 8,
       height:16,
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6,
-      height:15,
     },
     borderRadius: 4,
     position: 'relative',
-    backgroundColor: theme.palette.background.paper,
-    border: '1px solid #ced4da',
+    backgroundColor: 'white',
+    border: '1px solid #1499ff',
+    color: '#1499ff',
     padding: '2px 12px',
     display: 'flex',
     alignItems: 'center',
@@ -77,7 +70,7 @@ const BootstrapInput = withStyles((theme) => ({
     ].join(','),
     '&:focus': {
       borderRadius: 4,
-      borderColor: '#80bdff',
+      borderColor: '#1499ff',
       boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
     },
   },
@@ -87,19 +80,22 @@ const useStyles = makeStyles({
   margin: {
     width: props => props.width,
     '& .MuiSelect-select.MuiSelect-select': {
-      borderColor: props => props.color
+      borderColor: '#1499ff'
     },
-    '& .MuiSelect-icon': {
-      color: props => props.color
+    '& .MuiNativeSelect-icon': {
+      color: '#1499ff'
     },
   },
   root: {
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
+    boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
     '& tbody tr:last-child td':{
       borderBottom: 'none'
     },
     '& tfoot tr:last-child td':{
       borderBottom: 'none'
+    },
+    '& thead tr:first-child th':{
+      borderRadius:30,
     },
     [theme.breakpoints.up('xl')]: {
       marginBottom: 16,
@@ -178,30 +174,46 @@ const useStyles = makeStyles({
       borderRadius: '50%',
       [theme.breakpoints.up('xl')]: {
         fontSize: 22,
-        width: 47,
+        width: 47 ,
+        height: 47
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.down('lg')]: {
         fontSize: 15,
         width: 33,
+        height: 33,
       },
-      [theme.breakpoints.between('md','md')]: {
-        fontSize: 11,
-        width: 23,
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        fontSize: 8,
-        width: 16,
-      },
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 6,
-        width: 11,
-      },
+      // [theme.breakpoints.down('md')]: {
+      //   fontSize: 11,
+      //   width: '23 !important',
+      //   height: '23 !important'
+      // },
+      // [theme.breakpoints.down('sm')]: {
+      //   fontSize: 8,
+      //   width: 16,
+      //   height:16
+      // },
     }
   },
   editItem: {
-      color: '#006db3',
+      color: '#1499ff',
       '&:hover' :{
         cursor: 'pointer'
+      },
+      [theme.breakpoints.up('xl')]: {
+        width: 23,
+        height: 23
+      },
+      [theme.breakpoints.down('lg')]: {
+        width: 16,
+        height: 16
+      },
+      [theme.breakpoints.down('md')]: {
+        width: 11,
+        height: 11
+      },
+      [theme.breakpoints.down('sm')]: {
+        width: 8,
+        height: 8
       },
   },
   hide: {
@@ -348,10 +360,10 @@ export default function ProductTable  (props)  {
           </Table>
         </Grid>
         <Grid item container  className={classes.body} alignItems="center">
-          <Grid xs={6} item container className={props.leftBtn ? classes.show : classes.hide} >
+          <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
             <MyButton name={props.leftBtn} color={"1"} />
           </Grid>
-          <Grid xs={6} item container direction="row-reverse">
+          <Grid xs={12} sm={6} item container direction="row-reverse">
             <Pagination 
               count={props.totalpage} 
               color="primary" 

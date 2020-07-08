@@ -11,7 +11,7 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import HomeIcon from '@material-ui/icons/Home';
-
+import authService from '../../../../services/authService.js';
 import { Profile, SidebarNav, UpgradePlan } from './components';
 
 const useStyles = makeStyles(theme => ({
@@ -81,55 +81,179 @@ const Sidebar = props => {
   const { open, variant, onClose, className, ...rest } = props;
 
   const classes = useStyles();
+  const webApp = authService.getAccess('web_app');  
+  const accessUsers = authService.getAccess('role_users');  
+  const accessCompanies = authService.getAccess('role_companies'); 
+  const accessBuildings = authService.getAccess('role_buildings'); 
+  const accessDiscountCodes = authService.getAccess('role_discountcodes'); 
+  const accessOwners = authService.getAccess('role_owners'); 
+  const accessProducts = authService.getAccess('role_products'); 
+  const accessManagers = authService.getAccess('role_managers'); 
+  const accessOrders = authService.getAccess('role_orders'); 
 
-  const pages = [
+  const admin_pages = [
     {
       title: 'Dashboard',
-      href: '/dashboard',
-      icon: <HomeIcon className={classes.icon}/>
+      href: '/admin/dashboard',
+      icon: <HomeIcon className={classes.icon}/>,
+      status: 'visible'
     },
     {
       title: 'Companies',
-      href: '/companies',
-      icon: <TextFieldsIcon className={classes.icon}/>
+      href: '/admin/companies',
+      icon: <TextFieldsIcon className={classes.icon}/>,
+      status: accessCompanies
     },
     {
       title: 'Managers',
-      href: '/managers',
-      icon: <AccountBoxIcon className={classes.icon}/>
+      href: '/admin/managers',
+      icon: <AccountBoxIcon className={classes.icon}/>,
+      status: accessManagers
     },
     {
       title: 'Buildings',
-      href: '/buildings',
-      icon: <PeopleIcon className={classes.icon}/>
+      href: '/admin/buildings',
+      icon: <PeopleIcon className={classes.icon}/>,
+      status: accessBuildings
     },
     {
       title: 'Owners',
-      href: '/owners',
-      icon: <SettingsIcon className={classes.icon}/>
+      href: '/admin/owners',
+      icon: <SettingsIcon className={classes.icon}/>,
+      status: accessOwners
     },
     {
       title: 'Orders',
-      href: '/orders',
-      icon: <SettingsIcon className={classes.icon}/>
+      href: '/admin/orders',
+      icon: <SettingsIcon className={classes.icon}/>,
+      status: accessOrders
     },
     {
       title: 'Products',
-      href: '/products',
-      icon: <LockOpenIcon className={classes.icon}/>
+      href: '/admin/products',
+      icon: <LockOpenIcon className={classes.icon}/>,
+      status: accessProducts
     },
     {
       title: 'Discount Codes',
-      href: '/discountcodes',
-      icon: <ImageIcon className={classes.icon}/>
+      href: '/admin/discountcodes',
+      icon: <ImageIcon className={classes.icon}/>,
+      status: accessDiscountCodes
     },
     {
       title: 'Users',
-      href: '/users',
-      icon: <ShoppingBasketIcon className={classes.icon}/>
+      href: '/admin/users',
+      icon: <ShoppingBasketIcon className={classes.icon}/>,
+      status: accessUsers
     },
   ];
-
+  
+  const manager_pages = [
+    {
+      title: 'Accueil',
+      href: '/manager/dashboard',
+      icon: <HomeIcon className={classes.icon}/>,
+      status: 'visible'
+    },
+    {
+      title: 'Mes immeubles',
+      href: '/manager/buildings',
+      icon: <TextFieldsIcon className={classes.icon}/>,
+      status: accessBuildings
+    },
+    {
+      title: 'Mes Copropriétaires',
+      href: '/manager/owners',
+      icon: <AccountBoxIcon className={classes.icon}/>,
+      status: accessManagers
+    },
+    {
+      title: 'Messagerie',
+      href: '/manager/chat',
+      icon: <PeopleIcon className={classes.icon}/>,
+      status: accessBuildings
+    },
+    {
+      title: 'Incidents',
+      href: '/manager/incidents',
+      icon: <SettingsIcon className={classes.icon}/>,
+      status: accessOwners
+    },
+    {
+      title: 'Assemblées',
+      href: '/manager/assemblies',
+      icon: <LockOpenIcon className={classes.icon}/>,
+      status: accessProducts
+    },
+    {
+      title: 'Événements',
+      href: '/manager/events',
+      icon: <ImageIcon className={classes.icon}/>,
+      status: accessDiscountCodes
+    },
+    {
+      title: 'Mon équipe',
+      href: '/manager/team',
+      icon: <ShoppingBasketIcon className={classes.icon}/>,
+      status: accessDiscountCodes
+    },
+    {
+      title: 'Mes prestataires',
+      href: '/manager/providers',
+      icon: <LockOpenIcon className={classes.icon}/>,
+      status: accessProducts
+    },
+    {
+      title: 'Annonces',
+      href: '/manager/announcements',
+      icon: <ImageIcon className={classes.icon}/>,
+      status: accessDiscountCodes
+    },
+    {
+      title: 'Modules',
+      href: '/manager/addons',
+      icon: <ShoppingBasketIcon className={classes.icon}/>,
+      status: accessDiscountCodes
+    },
+  ];
+  const owner_pages = [
+    {
+      title: 'Accueil',
+      href: '/owner/dashboard',
+      icon: <HomeIcon className={classes.icon}/>,
+      status: 'visible'
+    },
+    {
+      title: 'Messagerie',
+      href: '/owner/chat',
+      icon: <TextFieldsIcon className={classes.icon}/>,
+      status: accessCompanies
+    },
+    {
+      title: 'Incidents',
+      href: '/owner/incidents',
+      icon: <AccountBoxIcon className={classes.icon}/>,
+      status: accessManagers
+    },
+    {
+      title: 'Assemblées',
+      href: '/owner/assemblies',
+      icon: <PeopleIcon className={classes.icon}/>,
+      status: accessBuildings
+    },
+    {
+      title: 'Événements',
+      href: '/owner/events',
+      icon: <SettingsIcon className={classes.icon}/>,
+      status: accessOwners
+    },
+    {
+      title: 'Modules',
+      href: '/owner/addons',
+      icon: <SettingsIcon className={classes.icon}/>,
+      status: accessOrders
+    },
+  ];
   return (
     <Drawer
       anchor="left"
@@ -148,7 +272,7 @@ const Sidebar = props => {
           <Profile />
           <SidebarNav
             className={classes.nav}
-            pages={pages}
+            pages={webApp === 'manager' ? manager_pages : webApp === 'owner' ? owner_pages : admin_pages}
           />
         </div>
         <UpgradePlan />

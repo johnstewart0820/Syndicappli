@@ -2,8 +2,8 @@ import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { Typography} from '@material-ui/core';
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
+import authService from '../../../../../../services/authService';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -124,7 +124,7 @@ const UpgradePlan = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
-
+  const webApp = authService.getAccess('web_app');  
   return (
     <div
       {...rest}
@@ -140,7 +140,7 @@ const UpgradePlan = props => {
         <a
           align="center"
           className={classes.fontsize}
-          href="/help"
+          href={webApp === 'manager' ? "/manager/help" : webApp === 'owner' ? "/owner/help" : "/admin/help"}
         >
           J'ai besoin d'aide
         </a>

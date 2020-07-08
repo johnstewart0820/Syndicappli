@@ -141,6 +141,7 @@ const SidebarNav = props => {
       className={clsx(classes.root, className)}
     >
       {pages.map(page => (
+        page.status !== 'Denied' ?
         <ListItem
           className={classes.item}
           disableGutters
@@ -156,6 +157,7 @@ const SidebarNav = props => {
             {page.title}
           </Button>
         </ListItem>
+        : null
       ))}
     </List>
   );

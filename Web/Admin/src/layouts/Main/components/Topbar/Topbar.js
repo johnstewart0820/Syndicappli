@@ -43,15 +43,26 @@ const useStyles = makeStyles(theme => ({
         fontSize: 5
       },
     },
-    '& .SearchBar':{
-      display: 'flex',
-      width: '80%',
-      margin: 'auto auto'
-    },
     '& .MuiIconButton-root':{
-      padding : 0
+      padding : 0,
+      // margin:0
+
     },
-    '& .SearchBar-icon':{
+    '& .SearchBar-searchIconButton-18':{
+      [theme.breakpoints.up('xl')]: {
+        marginRight: -18
+      },
+      [theme.breakpoints.down('lg')]: {
+        marginRight: -13
+      },
+      [theme.breakpoints.down('md')]: {
+        marginRight: -9
+      },
+      [theme.breakpoints.down('sm')]: {
+        marginRight: -6
+      },
+    },
+    '& .SearchBar-icon-19':{
       [theme.breakpoints.up('xl')]: {
         width: 34,
         height: 34,
@@ -73,26 +84,29 @@ const useStyles = makeStyles(theme => ({
         height: 8,
       },
     },
-    '& .SearchBar-searchIconButton-19':{
-      [theme.breakpoints.up('xl')]: {
-        marginRight: -33
-      },
-      [theme.breakpoints.between('lg','lg')]: {
-        marginRight: -23
-      },
-      [theme.breakpoints.between('md','md')]: {
-        marginRight: -16
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        marginRight: -11
-      },
-      [theme.breakpoints.down('sm')]: {
-        marginRight: -8
-      },
-    }
+    '& .SearchBar-searchContainer-21':{
+        display:'flex',
+        width: '100%',
+        [theme.breakpoints.up('xl')]: {
+          marginLeft: 18,
+          marginRight: 18
+        },
+        [theme.breakpoints.down('lg')]: {
+          marginLeft: 13,
+          marginRight: 13
+        },
+        [theme.breakpoints.down('md')]: {
+          marginLeft: 9,
+          marginRight: 9
+        },
+        [theme.breakpoints.down('sm')]: {
+          marginLeft: 6,
+          marginRight: 6
+        },
+    },
   },
   paper: {
-    backgroundColor: 'white',
+    backgroundColor: 'red',
     '& .MuiInputBase-root': {
       [theme.breakpoints.up('xl')]: {
         fontSize: 20
@@ -148,7 +162,7 @@ const useStyles = makeStyles(theme => ({
       width: 74,
     },
     marginRight: theme.spacing(2),
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
+    boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
   },
   avatar: {
     [theme.breakpoints.up('xl')]: {
@@ -231,10 +245,7 @@ const Topbar = props => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClickProfile = (event) => {
-    handleClose();
-  };
-  const handleClickLogin = (event) => {
+  const handleClickLogout = (event) => {
     authService.logout();
     handleClose();
   };
@@ -242,6 +253,7 @@ const Topbar = props => {
     setAnchorEl(null);
 
   };
+  const webApp = authService.getAccess('web_app');  
   return (
     <AppBar
       {...rest}
@@ -260,8 +272,8 @@ const Topbar = props => {
         <SearchBar
           className={classes.searchBar}
           onChange={handleChange}
-           onRequestSearch={value}
           value={value}
+          onRequestSearch={() => console.log('onRequestSearch')}
         />
         <IconButton color="inherit" >
           <Badge
@@ -300,17 +312,59 @@ const Topbar = props => {
                       fontSize: 9,
                       width: 133,
                       borderRadius: 8,
-                      boxShadow:'10px 10px 29px #b6acf8'
+                      boxShadow:'5px 5px 19px #b6acf8'
               }
               }}
             >
-              <RouterLink to={"/myaccount"}>
-                <MenuItem className={classes.menu_item} onClick={handleClickProfile} >Mon compte</MenuItem>
-              </RouterLink>
-              <Divider />
-              <RouterLink to={"/login"}>
-                <MenuItem className={classes.menu_item} onClick={handleClickLogin}>Déconnexion</MenuItem>
-              </RouterLink>
+              {
+                webApp === 'manager' ?
+
+                    <div>
+                      <RouterLink to="/manager/myaccount">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
+                      </RouterLink>
+                      <RouterLink to="/manager/mycompany">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon Cabinet</MenuItem>
+                      </RouterLink>
+                      <RouterLink to="/manager/invoices">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mes Factures</MenuItem>
+                      </RouterLink>
+                      <RouterLink to="/manager/payment-methods">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mes Moyens de paiement</MenuItem>
+                      </RouterLink>
+                      <RouterLink to="/manager/login">
+                        <MenuItem className={classes.menu_item} onClick={handleClickLogout}>Déconnexion</MenuItem>
+                      </RouterLink>
+                    </div>
+
+                : webApp === 'owner' ?
+
+                    <div>
+                      <RouterLink to="/owner/myaccount">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
+                      </RouterLink>
+                      <RouterLink to="/owner/invoices">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mes Factures</MenuItem>
+                      </RouterLink>
+                      <RouterLink to="/owner/subaccounts">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Sous comptes</MenuItem>
+                      </RouterLink>
+                      <RouterLink to="/owner/login">
+                        <MenuItem className={classes.menu_item} onClick={handleClickLogout}>Déconnexion</MenuItem>
+                      </RouterLink>
+                    </div>
+                :
+
+                    <div>
+                      <RouterLink to="/admin/myaccount">
+                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
+                      </RouterLink>
+                      <Divider />
+                      <RouterLink to="/admin/login">
+                        <MenuItem className={classes.menu_item} onClick={handleClickLogout}>Déconnexion</MenuItem>
+                      </RouterLink>
+                    </div>
+              }
             </Menu>
           </Paper>
 
