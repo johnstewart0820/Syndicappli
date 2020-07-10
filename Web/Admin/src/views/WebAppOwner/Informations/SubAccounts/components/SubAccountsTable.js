@@ -193,7 +193,9 @@ export default function SubAccountsTable  (props)  {
                     <TableCell>
                         <Grid container alignItems="center">
                             <Grid item>
-                                <Avatar alt={item.firstname[0] + item.lastname[0]} src="/static/images/avatar/1.jpg" />
+                                <Avatar alt={item.firstname + ' ' + item.lastname} src="/static/images/avatar/1.jpg" >
+                                {item.firstname[0] + item.lastname[0]}
+                                </Avatar> 
                             </Grid>
                             <Grid item  direction="column">
                                 <Grid item><p className={classes.cell}><b>{item.firstname + ' ' +item.lastname}</b></p></Grid>

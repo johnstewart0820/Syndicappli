@@ -27,13 +27,13 @@ import {
   Addons as OwnerAddons
 } from './views/WebAppOwner';
 //Admin import
-import AdminLogin from './views/WebAppAdmin/SignIn/Login';
+import Login from './views/WebAppAdmin/SignIn/Login';
 import CompaniesEdit from './views/WebAppAdmin/Companies/CompaniesEdit';
 import ManagerEdit from './views/WebAppAdmin/Managers/ManagerEdit';
 import UserEdit from './views/WebAppAdmin/Users/UserEdit';
 import AdminMyAccount from './views/WebAppAdmin/MyAccount';
-import AdminForgotPassword from 'views/WebAppAdmin/ForgotPassword';
-import AdminResetPassword from 'views/WebAppAdmin/ResetPassword';
+import ForgotPassword from 'views/WebAppAdmin/ForgotPassword';
+import ResetPassword from 'views/WebAppAdmin/ResetPassword';
 import BuildingsEdit from 'views/WebAppAdmin/Buildings/BuildingsEdit';
 import ProductsEdit from 'views/WebAppAdmin/Products/ProductsEdit';
 import OwnerEdit from 'views/WebAppAdmin/Owners/OwnerEdit';
@@ -45,9 +45,6 @@ import ManagerBuildingEdit from './views/WebAppManager/Buildings/BuildingsEdit';
 import ManagerOwnerEdit from './views/WebAppManager/Owners/OwnerEdit';
 import TeamMemberEdit from './views/WebAppManager/Team/TeamMemberEdit';
 import ManagerHelp from 'views/WebAppManager/Help';
-import ManagerForgotPassword from 'views/WebAppManager/ForgotPassword';
-import ManagerResetPassword from 'views/WebAppManager/ResetPassword';
-import ManagerLogin from './views/WebAppManager/SignIn/Login';
 import ManagerInvoices from './views/WebAppManager/Informations/Invoices';
 import ManagerMyAccount from './views/WebAppManager/Informations/MyAccount';
 import ManagerMyCompany from './views/WebAppManager/Informations/MyCompany';
@@ -58,9 +55,6 @@ import OwnerInvoices from './views/WebAppOwner/Informations/Invoices';
 import OwnerMyAccount from './views/WebAppOwner/Informations/MyAccount';
 import OwnerSubAccounts from './views/WebAppOwner/Informations/SubAccounts';
 import OwnerHelp from 'views/WebAppOwner/Help';
-import OwnerForgotPassword from 'views/WebAppOwner/ForgotPassword';
-import OwnerResetPassword from 'views/WebAppOwner/ResetPassword';
-import OwnerLogin from './views/WebAppOwner/SignIn/Login';
 import Addons from 'views/WebAppManager/Addons';
 const Routes = () => {
   return (
@@ -71,12 +65,25 @@ const Routes = () => {
       <Redirect
         exact
         from="/"
-        to={"/admin/login"}
+        to={"/login"}
       />
-      <Redirect
+      <RouteWithLayout
+        component={Login}
         exact
-        from="/admin"
-        to={"/admin/login"}
+        layout={NormalLayout}
+        path="/login"
+      />
+      <RouteWithLayout
+        component={ForgotPassword}
+        exact
+        layout={NormalLayout}
+        path="/forgotpassword"
+      />
+      <RouteWithLayout
+        component={ResetPassword}
+        exact
+        layout={NormalLayout}
+        path="/resetpassword"
       />
       <RouteWithLayout
         component={AdminMyAccount}
@@ -168,24 +175,7 @@ const Routes = () => {
         layout={MinimalLayout}
         path="/admin/register"
       />
-      <RouteWithLayout
-        component={AdminLogin}
-        exact
-        layout={NormalLayout}
-        path="/admin/login"
-      />
-      <RouteWithLayout
-        component={AdminForgotPassword}
-        exact
-        layout={NormalLayout}
-        path="/admin/forgotpassword"
-      />
-      <RouteWithLayout
-        component={AdminResetPassword}
-        exact
-        layout={NormalLayout}
-        path="/admin/resetpassword"
-      />
+
       <RouteWithLayout
         component={OrdersView}
         exact
@@ -213,34 +203,11 @@ const Routes = () => {
 {/**
  * OWNER PART
  */}
-      <Redirect
-        exact
-        from="/owner"
-        to={"/owner/login"}
-      />
       <RouteWithLayout
         component={DashboardView}
         exact
         layout={MainLayout}
         path="/owner/dashboard"
-      />
-      <RouteWithLayout
-        component={OwnerLogin}
-        exact
-        layout={NormalLayout}
-        path="/owner/login"
-      />
-      <RouteWithLayout
-        component={OwnerForgotPassword}
-        exact
-        layout={NormalLayout}
-        path="/owner/forgotpassword"
-      />
-      <RouteWithLayout
-        component={OwnerResetPassword}
-        exact
-        layout={NormalLayout}
-        path="/owner/resetpassword"
       />
       <RouteWithLayout
         component={DashboardView}
@@ -307,34 +274,11 @@ const Routes = () => {
 {/** 
  * MANAGER PART
 */}      
-      <Redirect
-        exact
-        from="/manager"
-        to={"/manager/login"}
-      />
       <RouteWithLayout
         component={DashboardView}
         exact
         layout={MainLayout}
         path="/manager/dashboard"
-      />
-      <RouteWithLayout
-        component={ManagerLogin}
-        exact
-        layout={NormalLayout}
-        path="/manager/login"
-      />
-      <RouteWithLayout
-        component={ManagerForgotPassword}
-        exact
-        layout={NormalLayout}
-        path="/manager/forgotpassword"
-      />
-      <RouteWithLayout
-        component={ManagerResetPassword}
-        exact
-        layout={NormalLayout}
-        path="/manager/resetpassword"
       />
       <RouteWithLayout
         component={TeamView}

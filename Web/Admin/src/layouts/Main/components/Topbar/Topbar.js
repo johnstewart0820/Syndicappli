@@ -180,11 +180,10 @@ const Topbar = props => {
   const classes = useStyles();
   const [value ,setValue] = useState('');
   const [notifications] = useState([]);
-  const user = {
-    name: 'Shen Zhi',
-    avatar: '/images/avatars/avatar_11.png',
-    bio: 'Brain Director'
-  };
+
+  const firstname = authService.getAccess('firstname');  
+  const lastname = authService.getAccess('lastname');  
+  const photo_url = authService.getAccess('photo_url');  
   const handleChange = (newValue) =>{
     setValue(newValue);
   }
@@ -238,12 +237,14 @@ const Topbar = props => {
           color="inherit"
         >
           <Avatar
-            alt="Person"
+            alt={firstname + ' ' + lastname}
             className={classes.avatar}
             component={RouterLink}
-            src={user.avatar}
+            src={photo_url}
             onClick={handleClick}
-          />
+          >
+            {firstname[0] + lastname[0]}
+          </Avatar>
           <Paper className={classes.paper}>
             <Menu
               id="simple-menu"
@@ -305,7 +306,7 @@ const Topbar = props => {
                           <ListItemText  className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
                         </MenuItem>
                       </RouterLink>
-                      <RouterLink to="/manager/login">
+                      <RouterLink to="/login">
                         <MenuItem onClick={handleClickLogout}>
                           <ListItemIcon></ListItemIcon>
                           <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
@@ -340,7 +341,7 @@ const Topbar = props => {
                           <ListItemText className={classes.menu_item}>Sous comptes</ListItemText>
                         </MenuItem>
                       </RouterLink>
-                      <RouterLink to="/owner/login">
+                      <RouterLink to="/login">
                         <MenuItem onClick={handleClickLogout}>
                           <ListItemIcon></ListItemIcon>
                           <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
@@ -359,7 +360,7 @@ const Topbar = props => {
                         </MenuItem>
                       </RouterLink>
                       <Divider />
-                      <RouterLink to="/admin/login">
+                      <RouterLink to="/login">
                         <MenuItem onClick={handleClickLogout}>
                           <ListItemIcon></ListItemIcon>
                           <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
@@ -372,7 +373,7 @@ const Topbar = props => {
 
         </IconButton>
         <Button onClick={handleClick}>
-            <p className={classes.menu_item}><b>{user.name}</b></p>
+            <p className={classes.menu_item}><b>{firstname + ' ' + lastname}</b></p>
             <ArrowDropDownIcon className={classes.avatar}/>
         </Button>
       </Toolbar>

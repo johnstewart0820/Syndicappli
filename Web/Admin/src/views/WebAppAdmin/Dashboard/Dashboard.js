@@ -18,7 +18,7 @@ const Dashboard = (props) => {
   const incomeColor = "#FC5555";//#2DCE9C
   const token = authService.getToken();    
   if (!token) {
-    history.push("/admin/login");
+    history.push("/login");
     window.location.reload();
   }
   return (

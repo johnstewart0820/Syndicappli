@@ -64,6 +64,9 @@ const Login = (props) => {
           let profile = response.data.data.profile;
           localStorage.setItem("token", JSON.stringify(response.data.data.token));
           localStorage.setItem("usertype", JSON.stringify(profile.usertype));
+          localStorage.setItem("firstname", JSON.stringify(profile.firstname));
+          localStorage.setItem("lastname", JSON.stringify(profile.lastname));
+          localStorage.setItem("photo_url", JSON.stringify(profile.photo_url));
           localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
           localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
           localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
@@ -72,7 +75,14 @@ const Login = (props) => {
           localStorage.setItem("role_products", JSON.stringify(profile.role_products));
           localStorage.setItem("role_discountcodes", JSON.stringify(profile.role_discountcodes));
           localStorage.setItem("role_users", JSON.stringify(profile.role_users));
-          history.push('/admin/dashboard');
+          if(profile.usertype === 'superadmin' || profile.usertype === 'admin')
+            history.push('/admin/dashboard');
+          else if(profile.usertype === 'owner')
+            history.push("/owner/dashboard");
+          else if(profile.usertype === 'manager')
+            history.push("/manager/dashboard");
+          else
+            history.push("/not-found"); 
         }
       },
       error => {    
@@ -152,7 +162,7 @@ const Login = (props) => {
           <Grid item container xs={1} sm={2} md={4}></Grid>
           <Grid item container xs={10} sm={7} md={4}>
             <Grid item container direction="row-reverse">
-              <Link href="/admin/forgotpassword" variant="body2">
+              <Link href="/forgotpassword" variant="body2">
                 <p className={classes.forgot}>J'ai oublié mon mot de passe</p>
               </Link>
             </Grid>
