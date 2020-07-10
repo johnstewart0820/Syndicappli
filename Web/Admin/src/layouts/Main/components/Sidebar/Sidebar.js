@@ -22,15 +22,15 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.between('lg','lg')]: {
       width: 233,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       width: 163,
     },
-    [theme.breakpoints.between('sm','sm')]: {
-      width: 114,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 80,
-    },
+    // [theme.breakpoints.between('sm','sm')]: {
+    //   width: 114,
+    // },
+    // [theme.breakpoints.down('sm')]: {
+    //   width: 80,
+    // },
   },
   icon: {
     '&:hover,&:focus': {
@@ -45,17 +45,9 @@ const useStyles = makeStyles(theme => ({
       width: 17,
       height: 17,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       width: 12,
       height: 12,
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      width: 8,
-      height: 8,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 6,
-      height: 6,
     },
     display: 'flex',
     alignItems: 'center',
@@ -81,7 +73,7 @@ const Sidebar = props => {
   const { open, variant, onClose, className, ...rest } = props;
 
   const classes = useStyles();
-  const webApp = authService.getAccess('web_app');  
+  const usertype = authService.getAccess('usertype');  
   const accessUsers = authService.getAccess('role_users');  
   const accessCompanies = authService.getAccess('role_companies'); 
   const accessBuildings = authService.getAccess('role_buildings'); 
@@ -272,7 +264,12 @@ const Sidebar = props => {
           <Profile />
           <SidebarNav
             className={classes.nav}
-            pages={webApp === 'manager' ? manager_pages : webApp === 'owner' ? owner_pages : admin_pages}
+            pages={usertype === 'manager' ? manager_pages : 
+                  usertype === 'owner' ? owner_pages : 
+                  usertype === 'admin' ? admin_pages :
+                  usertype === 'superadmin' ? admin_pages :
+                  null
+                }
           />
         </div>
         <UpgradePlan />

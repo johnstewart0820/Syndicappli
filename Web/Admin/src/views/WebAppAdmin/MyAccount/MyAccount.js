@@ -26,10 +26,6 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    [theme.breakpoints.down('sm')]: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
     '& .MuiTextField-root': {
         // width: '100%'
     },
@@ -46,10 +42,6 @@ const useStyles = makeStyles(theme => ({
           padding: '8px 13px',
           fontSize: 11,
         },
-        [theme.breakpoints.down('sm')]: {
-          padding: '6px 9px',
-          fontSize: 8,
-        },
     },
     '& p':{
       marginBottom: 0
@@ -64,9 +56,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       minHeight: 33
-    },
-    [theme.breakpoints.down('sm')]: {
-      minHeight: 23
     },
   },
   title:{
@@ -88,11 +77,6 @@ const useStyles = makeStyles(theme => ({
       marginTop: 32,
       padding: 20,
       borderRadius: 15,
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginTop: 22,
-      padding: 14,
-      borderRadius: 11,
     },
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
   },
@@ -118,10 +102,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: 105,
       height: 105,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 74,
-      height: 74,
     },
   },
   input: {
@@ -151,9 +131,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize: 9,
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6,
-    },
   },
   itemTitle:{
     [theme.breakpoints.up('xl')]: {
@@ -164,9 +141,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 13,
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 9,
     },
   },
   error:{
@@ -180,9 +154,6 @@ const useStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 6,
-      },
   },
   headerTitle:{
       [theme.breakpoints.up('xl')]: {
@@ -193,9 +164,6 @@ const useStyles = makeStyles(theme => ({
       },
       [theme.breakpoints.down('md')]: {
         fontSize :18
-      },
-      [theme.breakpoints.down('sm')]: {
-        fontSize :13
       },
   },
   editAvatar:{
@@ -210,10 +178,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: 27,
       height: 27,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 19,
-      height: 19,
     },
       backgroundColor: 'white',
       borderRadius: '50%',

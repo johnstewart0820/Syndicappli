@@ -8,7 +8,7 @@ import theme from 'theme';
 import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
 import MyButton from './MyButton';
-
+import { Checkbox} from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
@@ -93,6 +93,40 @@ const useStyles = makeStyles({
     },
     '& tfoot tr:last-child td':{
       borderBottom: 'none'
+    },
+    '& tbody tr:last-child td:first-child':{
+      [theme.breakpoints.up('xl')]: {
+        borderBottomLeftRadius: '30px',
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        borderBottomLeftRadius: '21px',
+      },
+      [theme.breakpoints.between('md','md')]: {
+        borderBottomLeftRadius: '15px',
+      },
+      [theme.breakpoints.between('sm','sm')]: {
+        borderBottomLeftRadius: '11px',
+      },
+      [theme.breakpoints.down('sm')]: {
+        borderBottomLeftRadius: '8px',
+      },
+    },
+    '& tbody tr:last-child td:last-child':{
+      [theme.breakpoints.up('xl')]: {
+        borderBottomRightRadius: '30px',
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        borderBottomRightRadius: '21px',
+      },
+      [theme.breakpoints.between('md','md')]: {
+        borderBottomRightRadius: '15px',
+      },
+      [theme.breakpoints.between('sm','sm')]: {
+        borderBottomRightRadius: '11px',
+      },
+      [theme.breakpoints.down('sm')]: {
+        borderBottomRightRadius: '8px',
+      },
     },
     '& thead tr:first-child th':{
       borderRadius:30,
@@ -229,12 +263,15 @@ export default function ProductTable  (props)  {
 
   const classes = useStyles();
   const [direction , setDirection] = useState(props.columns);
+  const allSelectState = props.allSelectState; 
   const tempDirection = props.columns;
   let tempDirect=[];
+  let allSelect=[];
   if(tempDirection){
     for(let i =0;i<tempDirection.length; i++)
       tempDirect[i] = '⯆';
   }
+  const [isSelect , setIsSelect] = useState([false]);
   const [cells,setCells] = useState(props.cells);
   const items = props.products;
   const footer = props.footerItems ? props.footerItems: [];
@@ -249,11 +286,15 @@ export default function ProductTable  (props)  {
 
   const dataList=[20, 50, 100, 200, "all"];
 
-  console.log(props.tblFooter);
   const [value, setValue] = React.useState(0);
   const handleChange = (event) => {
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
+  };
+  const handleChangeSelect = (event,id) => {
+    console.log(event.target.checked,id)
+    isSelect[id] = event.target.checked;
+    setIsSelect(isSelect);
   };
   const handleChangePage = (event, page) => {
     props.onChangePage(page);
@@ -275,7 +316,6 @@ export default function ProductTable  (props)  {
     props.onSelectSort(index, direction[index]);
   }
   return ( 
-    <div >
       <Grid container direction="column" spacing={2}>
         <Grid item container direction="row-reverse">
           <div>
@@ -300,6 +340,11 @@ export default function ProductTable  (props)  {
             <TableHead>
               <TableRow >
                 {
+                  allSelectState ?
+                    <TableCell align="center"></TableCell>
+                  : null
+                }
+                {
                   cells.map((cell,i)=>(
                     <TableCell key={i}>
                     <button
@@ -317,10 +362,20 @@ export default function ProductTable  (props)  {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((item) => (
+              {items.map((item,i) => (
                 <TableRow key={item.ID}>
                   {
-                  cells.map((cell,i)=>{
+                    allSelectState ?
+                      <TableCell key={item.ID}>
+                        <Checkbox 
+                          checked={isSelect[item.ID]}
+                          onChange={(event)=>handleChangeSelect(event,item.ID)} 
+                        />
+                      </TableCell>
+                    : null  
+                  }
+                  {
+                  cells.map((cell)=>{
                     const value = item[cell.key];
                     return(
                     <TableCell  key={cell.key} onClick={()=>props.onClickEdit(item.ID)}>
@@ -341,7 +396,7 @@ export default function ProductTable  (props)  {
               {
                 items.length === 0 ?
                   <TableRow>
-                    <TableCell colSpan="100%" style={{ textAlign: 'center'}}>{'No datas found'}</TableCell>
+                    <TableCell colSpan="100%" style={{ textAlign: 'center'}}>{'Aucune donnée trouvée'}</TableCell>
                   </TableRow>
                 :
                 <TableRow>
@@ -373,6 +428,5 @@ export default function ProductTable  (props)  {
           </Grid>
         </Grid>
       </Grid>
-    </div>
   );
 };

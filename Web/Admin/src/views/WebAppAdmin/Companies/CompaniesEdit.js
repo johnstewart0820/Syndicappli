@@ -36,12 +36,6 @@ const CompaniesEdit = (props) => {
   const [avatar, setAvatar] = useState(null);
   const [amountcompany, setamountCompany] = useState('')
   const [amountbuilding, setAmountBuilding] = useState('');
-
-  const user = {
-    name: 'Shen Zhi',
-    avatar: '/images/avatars/avatar_11.png',
-    bio: 'Brain Director'
-  };
   useEffect(() => {
     console.log('a');
   });

@@ -14,10 +14,6 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    [theme.breakpoints.down('sm')]: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
   },
   title:{
     paddingTop: theme.spacing(2),
@@ -33,9 +29,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize :18
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize :13
-    },
   },
 
   modalTitle: {
@@ -48,9 +41,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize :14
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize :10
-    },
   },
   tool: {
     [theme.breakpoints.up('xl')]: {
@@ -61,9 +51,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       minHeight: 33
-    },
-    [theme.breakpoints.down('sm')]: {
-      minHeight: 23
     },
   },
   paper: {
@@ -81,9 +68,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       padding: 15
-    },
-    [theme.breakpoints.down('sm')]: {
-      padding: 11
     },
   },
   close: {
@@ -109,9 +93,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       fontWeight: 343
     },
-    [theme.breakpoints.down('sm')]: {
-      fontWeight: 240
-    },
   },
   avatar: {
     backgroundColor: theme.palette.error.main,
@@ -127,10 +108,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
       height: 27,
       width: 27
     },
-    [theme.breakpoints.down('sm')]: {
-      height: 19,
-      width: 19
-    },
   },
   icon: {
     [theme.breakpoints.up('xl')]: {
@@ -144,10 +121,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       height: 15,
       width: 15
-    },
-    [theme.breakpoints.down('sm')]: {
-      height: 11,
-      width: 11
     },
   },
   difference: {
@@ -170,9 +143,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       fontSize: 8
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6
-    },
   },
   tail:{
     [theme.breakpoints.up('xl')]: {
@@ -183,9 +153,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 8
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6
     },
   },
   bodyTitle:{
@@ -198,9 +165,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       fontSize: 15
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 11
-    },
   },
   caption:{
     [theme.breakpoints.up('xl')]: {
@@ -211,9 +175,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 11
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 8
     },
   },
   show: {

@@ -19,9 +19,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       paddingTop: 102,
     },
-    [theme.breakpoints.down('sm')]: {
-      paddingTop: 71,
-    },
   },
   shiftContent: {
     [theme.breakpoints.up('xl')]: {
@@ -32,9 +29,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       paddingLeft: 163,
-    },
-    [theme.breakpoints.down('sm')]: {
-      paddingLeft: 114,
     },
   },
   content: {

@@ -12,7 +12,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import ProductsManager from './components/ProductsManager';
-import ProductsBuilding from './components/ProductsBuilding';
+import ProductsOwnerShip from './components/ProductsOwnerShip';
 import ProductsOwner from './components/ProductsOwner';
 import useStyles from './useStyles';
 
@@ -133,7 +133,7 @@ const Products = (props) => {
           <ProductsOwner />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <ProductsBuilding />
+          <ProductsOwnerShip />
         </TabPanel>
       </div>
     </div>

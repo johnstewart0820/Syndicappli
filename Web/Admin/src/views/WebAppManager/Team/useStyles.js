@@ -14,10 +14,6 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    [theme.breakpoints.down('sm')]: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
   },
   title:{
     paddingTop: theme.spacing(2),
@@ -33,9 +29,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize :18
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize :13
-    },
   },
   modalTitle: {
     [theme.breakpoints.up('xl')]: {
@@ -46,9 +39,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize :14
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize :10
     },
   },
   subTitle: {
@@ -61,9 +51,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize :9
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize :6
-    },
   },
   tool: {
     [theme.breakpoints.up('xl')]: {
@@ -74,9 +61,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       minHeight: 33
-    },
-    [theme.breakpoints.down('sm')]: {
-      minHeight: 23
     },
   },
   paper: {
@@ -94,9 +78,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       padding: 15
-    },
-    [theme.breakpoints.down('sm')]: {
-      padding: 11
     },
   },
   close: {
@@ -120,9 +101,6 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       paddingTop: 43,
     },
-    [theme.breakpoints.down('sm')]: {
-      paddingTop: 30,
-    },
   },
   root: {
       '& .MuiOutlinedInput-input':{
@@ -137,10 +115,6 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
           [theme.breakpoints.down('md')]: {
             padding: '4px 6px',
             fontSize: 8
-          },
-          [theme.breakpoints.down('sm')]: {
-            padding: '3px 4px',
-            fontSize: 6
           },
       },
       '& p':{
@@ -160,10 +134,6 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width:15 , 
       height: 15,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width:11 , 
-      height: 11,
     },
   },
   input: {
@@ -188,10 +158,6 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
         width: 57,
         height: 45,
       },
-      [theme.breakpoints.down('sm')]: {
-        width: 40,
-        height: 32,
-      },
   },
   title:{
     [theme.breakpoints.up('xl')]: {
@@ -202,9 +168,6 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 9,
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6,
     },
   },
   error:{
@@ -217,9 +180,6 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
       },
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
-      },
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 6,
       },
   }
 }));
@@ -237,10 +197,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    [theme.breakpoints.down('sm')]: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
     '& .MuiTextField-root': {
       // width: '100%'
   },
@@ -256,10 +212,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         padding: '8px 13px',
         fontSize: 11,
-      },
-      [theme.breakpoints.down('sm')]: {
-        padding: '6px 9px',
-        fontSize: 8,
       },
     },
     '& p':{
@@ -286,11 +238,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       padding: 20,
       borderRadius: 15,
     },
-    [theme.breakpoints.down('sm')]: {
-      marginTop: 22,
-      padding: 14,
-      borderRadius: 11,
-    },
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
   },
   item:{
@@ -316,10 +263,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       width:15 , 
       height: 15,
     },
-    [theme.breakpoints.down('sm')]: {
-      width:11 , 
-      height: 11,
-    },
   },
   size: {
     cursor: 'pointer',
@@ -334,10 +277,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: 105,
       height: 105,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 74,
-      height: 74,
     },
   },
   input: {
@@ -367,9 +306,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize: 9,
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6,
-    },
   },
   itemTitle:{
     [theme.breakpoints.up('xl')]: {
@@ -380,9 +316,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 13,
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 9,
     },
   },
   error:{
@@ -396,9 +329,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 6,
-      },
   },
   headerTitle:{
       [theme.breakpoints.up('xl')]: {
@@ -409,9 +339,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       },
       [theme.breakpoints.down('md')]: {
         fontSize :18
-      },
-      [theme.breakpoints.down('sm')]: {
-        fontSize :13
       },
   },
   sepaTitle:{
@@ -424,9 +351,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize :14
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize :10
-    },
   },
   permissionItemTitle:{
     [theme.breakpoints.up('xl')]: {
@@ -437,9 +361,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 9,
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6,
     },
   },
   img: {
@@ -467,12 +388,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       marginTop: 15,
       marginRight: 15
     },
-    [theme.breakpoints.down('sm')]: {
-      width: 124,
-      height: 87,
-      marginTop: 11,
-      marginRight: 11
-    },
   },
   editAvatar:{
     [theme.breakpoints.up('xl')]: {
@@ -486,10 +401,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: 27,
       height: 27,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 19,
-      height: 19,
     },
       backgroundColor: 'white',
       borderRadius: '50%',

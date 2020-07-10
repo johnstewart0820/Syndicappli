@@ -63,6 +63,7 @@ const Login = (props) => {
           ToastsStore.success(response.data.message);
           let profile = response.data.data.profile;
           localStorage.setItem("token", JSON.stringify(response.data.data.token));
+          localStorage.setItem("usertype", JSON.stringify(profile.usertype));
           localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
           localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
           localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
@@ -76,7 +77,7 @@ const Login = (props) => {
       },
       error => {    
          setVisibleIndicator(false);
-         ToastsStore.error(error);
+         ToastsStore.error("Can't connect to the Server!");
       }
     );    
     }

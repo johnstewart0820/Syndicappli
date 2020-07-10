@@ -3,7 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { AppBar, Toolbar, Badge, Hidden, IconButton, Avatar } from '@material-ui/core';
+import { AppBar, Toolbar, Badge, Hidden, IconButton, Button, Avatar, ListItemIcon, ListItemText } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import SearchBar from 'material-ui-search-bar'
@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import authService from 'services/authService';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,23 +25,20 @@ const useStyles = makeStyles(theme => ({
       width: 'calc(100% - 333px)',
       height: '146px'
     },
+    '& .MuiButton-root':{
+      textTransform : 'none'
+    },
     backgroundColor: 'white',
     '& .MuiInputBase-root': {
       
       [theme.breakpoints.up('xl')]: {
         fontSize: 20
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.down('lg')]: {
         fontSize: 14
       },
-      [theme.breakpoints.between('md','md')]: {
+      [theme.breakpoints.down('md')]: {
         fontSize: 10
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        fontSize: 7
-      },
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 5
       },
     },
     '& .MuiIconButton-root':{
@@ -58,30 +56,19 @@ const useStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         marginRight: -9
       },
-      [theme.breakpoints.down('sm')]: {
-        marginRight: -6
-      },
     },
     '& .SearchBar-icon-19':{
       [theme.breakpoints.up('xl')]: {
         width: 34,
         height: 34,
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.down('lg')]: {
         width: 24,
         height: 24,
       },
-      [theme.breakpoints.between('md','md')]: {
+      [theme.breakpoints.down('md')]: {
         width: 17,
         height: 17,
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        width: 12,
-        height: 12,
-      },
-      [theme.breakpoints.down('sm')]: {
-        width: 8,
-        height: 8,
       },
     },
     '& .SearchBar-searchContainer-21':{
@@ -99,10 +86,6 @@ const useStyles = makeStyles(theme => ({
           marginLeft: 9,
           marginRight: 9
         },
-        [theme.breakpoints.down('sm')]: {
-          marginLeft: 6,
-          marginRight: 6
-        },
     },
   },
   paper: {
@@ -111,17 +94,11 @@ const useStyles = makeStyles(theme => ({
       [theme.breakpoints.up('xl')]: {
         fontSize: 20
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.down('lg')]: {
         fontSize: 14
       },
-      [theme.breakpoints.between('md','md')]: {
+      [theme.breakpoints.down('md')]: {
         fontSize: 10
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        fontSize: 7
-      },
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 5
       },
     },
   },
@@ -129,8 +106,8 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
   },
   signOutButton: {
-    marginLeft: theme.spacing(1),
-    color: 'lightgrey',
+    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(2),
   },
   alertButton: {
     color: 'lightgrey',
@@ -141,49 +118,32 @@ const useStyles = makeStyles(theme => ({
       height: 50,
       width: 308,
     },
-    [theme.breakpoints.between('lg','lg')]: {
+    [theme.breakpoints.down('lg')]: {
       borderRadius: 35,
       height: 35,
       width: 215,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       borderRadius: 25,
       height: 25,
       width: 151,
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      borderRadius: 18,
-      height: 25,
-      width: 106,
-    },
-    [theme.breakpoints.down('sm')]: {
-      borderRadius: 13,
-      height: 18,
-      width: 74,
     },
     marginRight: theme.spacing(2),
     boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
   },
   avatar: {
+
     [theme.breakpoints.up('xl')]: {
       width: 50,
       height: 50
     },
-    [theme.breakpoints.between('lg','lg')]: {
+    [theme.breakpoints.down('lg')]: {
       width: 35,
       height: 35
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       width: 25,
       height: 25
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      width: 25,
-      height: 25,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 18,
-      height: 18,
     },
   },
   
@@ -196,32 +156,20 @@ const useStyles = makeStyles(theme => ({
   menu_item: {
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
-      padding: theme.spacing(3),
       minHeight: 0,
       lineHeight: 0
     },
-    [theme.breakpoints.between('lg','lg')]: {
+    [theme.breakpoints.down('lg')]: {
       fontSize: 13,
-      padding: theme.spacing(2),
       minHeight: 0,
       lineHeight: 0
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       fontSize: 9,
-      padding: theme.spacing(1),
       minHeight: 0,
       lineHeight: 0
     },
-    [theme.breakpoints.between('sm','sm')]: {
-      fontSize: 6,
-      minHeight: 0,
-      lineHeight: 0
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 4,
-      minHeight: 0,
-      lineHeight: 0
-    },
+
     justifyContent: 'center',
   }
 }));
@@ -303,14 +251,19 @@ const Topbar = props => {
               keepMounted
               open={Boolean(anchorEl)}
               onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
               PaperProps={{
                 style:{
                     textAlign: 'center',
                     borderColor: '#707070',
                     paddingBottom: 0,
-
-                      fontSize: 9,
-                      width: 133,
                       borderRadius: 8,
                       boxShadow:'5px 5px 19px #b6acf8'
               }
@@ -321,19 +274,42 @@ const Topbar = props => {
 
                     <div>
                       <RouterLink to="/manager/myaccount">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
+                        <MenuItem onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/my_account.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <RouterLink to="/manager/mycompany">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon Cabinet</MenuItem>
+                        <MenuItem onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/my_company.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Mon Cabinet</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <RouterLink to="/manager/invoices">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mes Factures</MenuItem>
+                        <MenuItem  onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/invoice.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <RouterLink to="/manager/payment-methods">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mes Moyens de paiement</MenuItem>
+                        <MenuItem onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/payment.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText  className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <RouterLink to="/manager/login">
-                        <MenuItem className={classes.menu_item} onClick={handleClickLogout}>Déconnexion</MenuItem>
+                        <MenuItem onClick={handleClickLogout}>
+                          <ListItemIcon></ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                     </div>
 
@@ -341,27 +317,53 @@ const Topbar = props => {
 
                     <div>
                       <RouterLink to="/owner/myaccount">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
+                        <MenuItem onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/my_account.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <RouterLink to="/owner/invoices">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mes Factures</MenuItem>
+                        <MenuItem onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/invoice.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <RouterLink to="/owner/subaccounts">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Sous comptes</MenuItem>
+                        <MenuItem onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/sub_accounts.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Sous comptes</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <RouterLink to="/owner/login">
-                        <MenuItem className={classes.menu_item} onClick={handleClickLogout}>Déconnexion</MenuItem>
+                        <MenuItem onClick={handleClickLogout}>
+                          <ListItemIcon></ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                     </div>
                 :
 
                     <div>
                       <RouterLink to="/admin/myaccount">
-                        <MenuItem className={classes.menu_item} onClick={handleClose} >Mon compte</MenuItem>
+                        <MenuItem onClick={handleClose} >
+                          <ListItemIcon>
+                            <img src="/images/my_account.png" alt="image"/>
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                       <Divider />
                       <RouterLink to="/admin/login">
-                        <MenuItem className={classes.menu_item} onClick={handleClickLogout}>Déconnexion</MenuItem>
+                        <MenuItem onClick={handleClickLogout}>
+                          <ListItemIcon></ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                        </MenuItem>
                       </RouterLink>
                     </div>
               }
@@ -369,6 +371,10 @@ const Topbar = props => {
           </Paper>
 
         </IconButton>
+        <Button onClick={handleClick}>
+            <p className={classes.menu_item}><b>{user.name}</b></p>
+            <ArrowDropDownIcon className={classes.avatar}/>
+        </Button>
       </Toolbar>
     </AppBar>
   );

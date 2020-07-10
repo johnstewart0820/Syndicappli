@@ -10,14 +10,8 @@ const useStyles = makeStyles((theme,props) => ({
     [theme.breakpoints.between('lg','lg')]: {
       width: 112
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       width: 78
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      width: 54
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 38
     },
   },
   button1: {
@@ -31,20 +25,10 @@ const useStyles = makeStyles((theme,props) => ({
       borderRadius: '36px',
       fontSize: 14
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       padding: '7px 15px',
       borderRadius: '25px',
       fontSize: 10
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      padding: '5px 10px',
-      borderRadius: '18px',
-      fontSize: 7
-    },
-    [theme.breakpoints.down('sm')]: {
-      padding: '4px 7px',
-      borderRadius: '13px',
-      fontSize: 5
     },
     background: 'linear-gradient(90deg, #00C9FF 10%, #0CC77C 90%)',
     color: 'white',
@@ -62,20 +46,10 @@ const useStyles = makeStyles((theme,props) => ({
       borderRadius: '36px',
       fontSize: 14
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       padding: '7px 15px',
       borderRadius: '25px',
       fontSize: 10
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      padding: '5px 10px',
-      borderRadius: '18px',
-      fontSize: 7
-    },
-    [theme.breakpoints.down('sm')]: {
-      padding: '4px 7px',
-      borderRadius: '13px',
-      fontSize: 5
     },
     border: '1px solid',
     borderColor: props=>props.bgColor,

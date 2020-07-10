@@ -13,14 +13,8 @@ const BootstrapInput = withStyles((theme) => ({
       [theme.breakpoints.between('lg','lg')]: {
         marginTop: 17,
       },
-      [theme.breakpoints.between('md','md')]: {
+      [theme.breakpoints.down('md')]: {
         marginTop: 12,
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        marginTop: 8,
-      },
-      [theme.breakpoints.down('sm')]: {
-        marginTop: 6,
       },
     },
   },

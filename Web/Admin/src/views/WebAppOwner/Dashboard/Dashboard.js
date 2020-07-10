@@ -2,13 +2,13 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
-import MySelect from '../../components/MySelect';
+import MySelect from 'components/MySelect';
 import {
   Budget,
   LatestSales,
 } from './components';
 import CurveChart from './components/CurveChart';
-import authService from '../../services/authService.js';
+import authService from 'services/authService.js';
 import useStyles from './useStyles';
 const Dashboard = (props) => {
   const{history} = props;

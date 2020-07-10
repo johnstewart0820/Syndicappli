@@ -52,47 +52,111 @@ const BootstrapInput = withStyles((theme) => ({
 }))(InputBase);
 
 const useStyles = makeStyles({
-  margin: {
-    width: props => props.width,
-    '& .MuiSelect-select.MuiSelect-select': {
-      borderColor: props => props.color
-    },
-    '& .MuiSelect-icon': {
-      color: props => props.color
-    },
-  },
+
   root: {
-    borderRadius: '30px',
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(1),
+    '& tbody tr:last-child td':{
+      borderBottom: 'none'
+    },
+    '& tbody tr:last-child td:first-child':{
+      [theme.breakpoints.up('xl')]: {
+        borderBottomLeftRadius: '30px',
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        borderBottomLeftRadius: '21px',
+      },
+      [theme.breakpoints.down('md')]: {
+        borderBottomLeftRadius: '15px',
+      },
+    },
+    '& tbody tr:last-child td:last-child':{
+      [theme.breakpoints.up('xl')]: {
+        borderBottomRightRadius: '30px',
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        borderBottomRightRadius: '21px',
+      },
+      [theme.breakpoints.down('md')]: {
+        borderBottomRightRadius: '15px',
+      },
+    },
+    '& tbody tr:first-child td:first-child':{
+      [theme.breakpoints.up('xl')]: {
+        borderTopLeftRadius: '30px',
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        borderTopLeftRadius: '21px',
+      },
+      [theme.breakpoints.down('md')]: {
+        borderTopLeftRadius: '15px',
+      },
+    },
+    '& tbody tr:first-child td:last-child':{
+      [theme.breakpoints.up('xl')]: {
+        borderTopRightRadius: '30px',
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        borderTopRightRadius: '21px',
+      },
+      [theme.breakpoints.down('md')]: {
+        borderTopRightRadius: '15px',
+      },
+    },
+    [theme.breakpoints.up('xl')]: {
+      marginBottom: 16,
+      marginTop: 8,
+      borderRadius: '30px',
+    },
+    [theme.breakpoints.between('lg','lg')]: {
+      marginBottom: 11,
+      marginTop: 6,
+      borderRadius: '21px',
+    },
+    [theme.breakpoints.down('md')]: {
+      marginBottom: 8,
+      marginTop: 4,
+      borderRadius: '15px',
+    },
     '& thead button': {
       background: 'transparent',
       outline: 'transparent',
       color: '#363636'
     },
     '& .MuiTableCell-root': {
-      fontSize: 18
-    }
-  },
-  body:{
-    marginBottom: 16,
-    '& .MuiPaginationItem-textPrimary.Mui-selected': {
-      background: 'linear-gradient(90deg, #00b8d4 10%, #00bf82 90%)',
-    },
-    '& .MuiPaginationItem-root': {
-      fontSize: 22,
-      width: 47,
-      height: 47,
-      borderRadius: 24
-    }
-  },
-  editItem: {
-      color: '#006db3',
-      '&:hover' :{
-        cursor: 'pointer'
+      //  textAlign: 'center',
+      [theme.breakpoints.up('xl')]: {
+        fontSize :18,
+        padding: 16
       },
+      [theme.breakpoints.between('lg','lg')]: {
+        fontSize :14,
+        padding: 11
+      },
+      [theme.breakpoints.down('md')]: {
+        fontSize :10,
+        padding: 8
+      },
+    }
   },
+
+  editItem: {
+    color: '#1499ff',
+    '&:hover' :{
+      cursor: 'pointer'
+    },
+    [theme.breakpoints.up('xl')]: {
+      width: 23,
+      height: 23
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 16,
+      height: 16
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 11,
+      height: 11
+    },
+},
   hide: {
     visibility: 'hidden'
   },
@@ -105,78 +169,19 @@ export default function ProductTable  (props)  {
   const {onClickEdit, ...rest} = props;
 
   const classes = useStyles();
-  const [direction , setDirection] = useState(props.columns);
-  const tempDirection = props.columns;
-  let tempDirect=[];
-  if(tempDirection){
-    for(let i =0;i<tempDirection.length; i++)
-      tempDirect[i] = '⯆';
-  }
   const [cells,setCells] = useState(props.cells);
   const items = props.products;
-  const [open, setOpen] = React.useState(false);
-  const [direct, setDirect] = React.useState(tempDirect);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  console.log(items);
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const dataList=[20, 50, 100, 200, "all"];
 
-
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event) => {
-    props.onChangeSelect(event.target.value);
-    setValue(event.target.value);
-  };
-  const handleChangePage = (event, page) => {
-    props.onChangePage(page);
-    console.log(page);
-  };
-  const Sort = (index=0 )=>{
-    if(direction[index] === 'asc'){
-      tempDirection[index] = 'desc';
-      tempDirect[index] = '⯅';
-      setDirect(tempDirect);
-      setDirection(tempDirection);
-    }else{
-      tempDirection[index] = 'asc';
-      tempDirect[index] = '⯆';
-      setDirect(tempDirect);
-      setDirection(tempDirection);
-    }
-
-    props.onSelectSort(index, direction[index]);
-  }
   return ( 
     <div >
-      <Grid container direction="column" spacing={2}>
-        <Grid item container direction="row-reverse">
-          <div>
-            <FormControl className={classes.margin}>
-              <NativeSelect
-                labelId="demo-customized-select-label"
-                id="demo-customized-select"
-                value={value}
-                onChange={handleChange}
-                input={<BootstrapInput />}
-              >
-                {
-                  dataList.map((select, i) =>
-                    <option  value={i} key={select}>Voir {select}</option>
-                )}
-              </NativeSelect>
-            </FormControl>
-          </div>
-        </Grid>
-        <Grid item container >
+      <Grid container direction="column" spacing={6}>
+        <Grid item></Grid>
+        <Grid item>
           <Table className={classes.root}>
             <TableHead />
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.userID}>
+                <TableRow key={item.ID}>
                     <TableCell>
                         <img src="/images/card.png"></img>
                     </TableCell>
@@ -191,34 +196,18 @@ export default function ProductTable  (props)  {
                   })
                   }
                   <TableCell align="right">
-                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.userID)}/>
+                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.ID)}/>
                       &nbsp;&nbsp;
-                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.userID)}></DeleteIcon>
+                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.ID)}></DeleteIcon>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter className={props.tblFooter ? classes.show : classes.hide}>
-              <TableRow >
-
-              </TableRow>
-            </TableFooter>
           </Table>
-        </Grid>
-        <Grid item container justify="space-between" className={classes.body} alignItems="center">
-          <Grid xs={6} item container className={props.leftBtn ? classes.show : classes.hide} >
+        </Grid>  
+          <Grid xs={12} item container className={props.leftBtn ? classes.show : classes.hide} >
             <MyButton name={props.leftBtn} color={"1"} />
           </Grid>
-          <Grid xs={6} item container direction="row-reverse">
-            <Pagination 
-              count={props.totalpage} 
-              color="primary" 
-              page={props.page} 
-              onChange={handleChangePage} 
-              style={{fontSize:22}}
-            />
-          </Grid>
-        </Grid>
       </Grid>
     </div>
   );

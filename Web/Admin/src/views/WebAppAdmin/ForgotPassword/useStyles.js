@@ -16,18 +16,11 @@ const useStyles = makeStyles(theme => ({
         fontSize: 16,
       },
     },
-    [theme.breakpoints.between('md', 'md')]: {
+    [theme.breakpoints.down('md')]: {
       paddingTop: theme.spacing(9),
       '& .MuiOutlinedInput-input': {
         padding: '7px 12px',
         fontSize: 11,
-      },
-    },
-    [theme.breakpoints.down('sm')]: {
-      paddingTop: theme.spacing(6),
-      '& .MuiOutlinedInput-input': {
-        padding: '5px 8px',
-        fontSize: 8,
       },
     },
     paddingTop: theme.spacing(15),
@@ -55,12 +48,6 @@ const useStyles = makeStyles(theme => ({
       fontSize: 10,
       textIndent: -5,
     },
-    [theme.breakpoints.down('sm')]: {
-      width: 328,
-      padding: 20,
-      fontSize: 7,
-      textIndent: -4,
-    },
     color: 'white',
     textAlign: 'center'
   },
@@ -73,9 +60,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       padding: theme.spacing(3)
-    },
-    [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(2)
     },
   },
   logo: {
@@ -90,10 +74,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: 214,
       height: 44
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 149,
-      height: 30
     },
   },
   forgot: {
@@ -112,10 +92,6 @@ const useStyles = makeStyles(theme => ({
       paddingTop: theme.spacing(3),
       paddingBottom: theme.spacing(1),
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6,
-      paddingTop: theme.spacing(2),
-    },
     color: 'white',
     textDecoration: 'underline',
     paddingRight: 4
@@ -131,9 +107,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize: 17
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 12
-    },
     padding: 0
   },
   itemTitle: {
@@ -145,9 +118,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 10
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 7
     },
   },
   body: {
@@ -162,10 +132,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       paddingTop: theme.spacing(4),
       paddingBottom: theme.spacing(4)
-    },
-    [theme.breakpoints.down('sm')]: {
-      paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(3)
     },
     backgroundColor: 'white',
     borderRadius: 15,

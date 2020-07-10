@@ -1,5 +1,3 @@
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable react/display-name */
 import React, { forwardRef } from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
@@ -14,20 +12,12 @@ const useStyles = makeStyles(theme => ({
       marginRight:'-10px',
     },
     [theme.breakpoints.between('lg','lg')]: {
-      marginLeft:'16px',
+      marginLeft:'17px',
       marginRight:'-7px',
     },
-    [theme.breakpoints.between('md','md')]: {
-      marginLeft:'11px',
+    [theme.breakpoints.down('md')]: {
+      marginLeft:'12px',
       marginRight:'-5px',
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      marginLeft:'8px',
-      marginRight:'-4px',
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginLeft:'6px',
-      marginRight:'-3px',
     },
      paddingTop:'0'
   },
@@ -49,23 +39,11 @@ const useStyles = makeStyles(theme => ({
       borderRadius: 11,
       padding: '7px 6px 6px 17px',
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       fontSize: 10,
       height: 33,
       borderRadius: 8,
       padding: '5px 4px 4px 12px',
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      fontSize: 7,
-      height: 23,
-      borderRadius: 6,
-      padding: '4px 3px 3px 8px',
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 5,
-      height: 16,
-      borderRadius: 4,
-      padding: '3px 2px 2px 6px',
     },
     color: 'white',
     '&:hover': {
@@ -93,20 +71,10 @@ const useStyles = makeStyles(theme => ({
       height: 17,
       marginRight: 11
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       width: 12,
       height: 12,
       marginRight: 7
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      width: 8,
-      height: 8,
-      marginRight: 5
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 6,
-      height: 6,
-      marginRight: 4
     },
     display: 'flex',
     alignItems: 'center',

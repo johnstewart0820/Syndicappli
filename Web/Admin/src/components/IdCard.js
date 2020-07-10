@@ -21,10 +21,6 @@ const useStyles = makeStyles((theme,props) => ({
       width: 27,
       height: 27,
     },
-    [theme.breakpoints.down('sm')]: {
-      width: 19,
-      height: 19,
-    },
     background: 'linear-gradient(0deg, #00C9FF 10%, #0CC77C 90%)',
     borderRadius: '50%',
     color: 'white',
@@ -42,10 +38,6 @@ const useStyles = makeStyles((theme,props) => ({
     [theme.breakpoints.down('md')]: {
       width: 15,
       height: 15,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 11,
-      height: 11,
     },
     background: 'linear-gradient(0deg, #00C9FF 10%, #0CC77C 90%)',
     borderRadius: '50%',
@@ -75,12 +67,6 @@ const useStyles = makeStyles((theme,props) => ({
       marginTop: 15,
       marginRight: 15
     },
-    [theme.breakpoints.down('sm')]: {
-      width: 124,
-      height: 87,
-      marginTop: 11,
-      marginRight: 11
-    },
    },
    identify2: {
     alignItems: 'center',
@@ -105,12 +91,6 @@ const useStyles = makeStyles((theme,props) => ({
       height: 45,
       marginTop: 10,
       marginRight: 10
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 40,
-      height: 32,
-      marginTop: 7,
-      marginRight: 7
     },
   },
 }));

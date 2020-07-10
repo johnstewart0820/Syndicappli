@@ -19,9 +19,13 @@ import {
 import {
 
   Team as TeamView,
-
+  Buildings as ManagerBuildings,
+  Owners as ManagerOwners,
+  Addons as ManagerAddons
 } from './views/WebAppManager';
-
+import {
+  Addons as OwnerAddons
+} from './views/WebAppOwner';
 //Admin import
 import AdminLogin from './views/WebAppAdmin/SignIn/Login';
 import CompaniesEdit from './views/WebAppAdmin/Companies/CompaniesEdit';
@@ -37,11 +41,17 @@ import AdminHelp from 'views/WebAppAdmin/Help';
 import DiscountCodesEdit from 'views/WebAppAdmin/DiscountCodes/DiscountCodesEdit';
 
 //Manager import
+import ManagerBuildingEdit from './views/WebAppManager/Buildings/BuildingsEdit';
+import ManagerOwnerEdit from './views/WebAppManager/Owners/OwnerEdit';
 import TeamMemberEdit from './views/WebAppManager/Team/TeamMemberEdit';
 import ManagerHelp from 'views/WebAppManager/Help';
 import ManagerForgotPassword from 'views/WebAppManager/ForgotPassword';
 import ManagerResetPassword from 'views/WebAppManager/ResetPassword';
 import ManagerLogin from './views/WebAppManager/SignIn/Login';
+import ManagerInvoices from './views/WebAppManager/Informations/Invoices';
+import ManagerMyAccount from './views/WebAppManager/Informations/MyAccount';
+import ManagerMyCompany from './views/WebAppManager/Informations/MyCompany';
+import ManagerPaymentMethods from './views/WebAppManager/Informations/PaymentMethods';
 
 //Owner import
 import OwnerInvoices from './views/WebAppOwner/Informations/Invoices';
@@ -51,6 +61,7 @@ import OwnerHelp from 'views/WebAppOwner/Help';
 import OwnerForgotPassword from 'views/WebAppOwner/ForgotPassword';
 import OwnerResetPassword from 'views/WebAppOwner/ResetPassword';
 import OwnerLogin from './views/WebAppOwner/SignIn/Login';
+import Addons from 'views/WebAppManager/Addons';
 const Routes = () => {
   return (
     <Switch>
@@ -244,7 +255,7 @@ const Routes = () => {
         path="/owner/chat"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={OwnerAddons}
         exact
         layout={MainLayout}
         path="/owner/addons"
@@ -338,13 +349,37 @@ const Routes = () => {
         path="/manager/team/edit/:id"
       />
       <RouteWithLayout
+        component={ManagerBuildings}
+        exact
+        layout={MainLayout}
+        path="/manager/buildings"
+      />
+      <RouteWithLayout
+        component={ManagerBuildingEdit}
+        exact
+        layout={MainLayout}
+        path="/manager/buildings/edit/:id"
+      />
+      <RouteWithLayout
+        component={ManagerOwners}
+        exact
+        layout={MainLayout}
+        path="/manager/owners"
+      />
+      <RouteWithLayout
+        component={ManagerOwnerEdit}
+        exact
+        layout={MainLayout}
+        path="/manager/owners/edit/:id"
+      />
+      <RouteWithLayout
         component={DashboardView}
         exact
         layout={MainLayout}
         path="/manager/chat"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={ManagerAddons}
         exact
         layout={MainLayout}
         path="/manager/addons"
@@ -362,19 +397,25 @@ const Routes = () => {
         path="/manager/events"
       />
       <RouteWithLayout
-        component={OwnerMyAccount}
+        component={ManagerMyAccount}
         exact
         layout={MainLayout}
         path="/manager/myaccount"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={ManagerMyCompany}
         exact
         layout={MainLayout}
-        path="/manager/subaccounts"
+        path="/manager/mycompany"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={ManagerInvoices}
+        exact
+        layout={MainLayout}
+        path="/manager/invoices"
+      />
+      <RouteWithLayout
+        component={ManagerPaymentMethods}
         exact
         layout={MainLayout}
         path="/manager/payment-methods"

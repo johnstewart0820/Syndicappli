@@ -13,17 +13,9 @@ const useStyles = makeStyles(theme => ({
       minHeight: 146,
       padding: 11,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       minHeight: 102,
       padding: 8,
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      minHeight: 71,
-      padding: 6,
-    },
-    [theme.breakpoints.down('sm')]: {
-      minHeight: 50,
-      padding: 4,
     },
     display: 'flex',
     flexDirection: 'column',
@@ -39,17 +31,9 @@ const useStyles = makeStyles(theme => ({
       width:140,
       height: 28,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       width:98,
       height: 20,
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      width:69,
-      height: 14,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width:48,
-      height: 10,
     },
     display: 'flex',
   },
@@ -61,7 +45,7 @@ const Profile = props => {
   const classes = useStyles();
 
   const user = {
-    avatar: '/images/Logo.png',
+    avatar: '/images/Login.png',
   };
 
   return (

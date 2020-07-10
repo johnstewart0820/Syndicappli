@@ -20,17 +20,9 @@ const useStyles = makeStyles(theme => ({
       marginBottom: 20,
       marginLeft: 32,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       marginBottom: 14,
       marginLeft: 22,
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      marginBottom: 10,
-      marginLeft: 15,
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginBottom: 7,
-      marginLeft: 11,
     },
     '& MuiSvgIcon-root' : {
       [theme.breakpoints.up('xl')]: {
@@ -41,17 +33,9 @@ const useStyles = makeStyles(theme => ({
         height: 21,
         width: 21,
       },
-      [theme.breakpoints.between('md','md')]: {
+      [theme.breakpoints.down('md')]: {
         height: 15,
         width: 15,
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        height: 11,
-        width: 11,
-      },
-      [theme.breakpoints.down('sm')]: {
-        height: 8,
-        width: 8,
       },
     }
   },
@@ -69,17 +53,9 @@ const useStyles = makeStyles(theme => ({
       height: 21,
       width: 21,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       height: 15,
       width: 15,
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      height: 11,
-      width: 11,
-    },
-    [theme.breakpoints.down('sm')]: {
-      height: 8,
-      width: 8,
     },
     textAlign: 'flex-start',
     '& > img': {
@@ -103,17 +79,9 @@ const useStyles = makeStyles(theme => ({
       fontSize:11, 
       paddingLeft:10,
     },
-    [theme.breakpoints.between('md','md')]: {
+    [theme.breakpoints.down('md')]: {
       fontSize:8, 
       paddingLeft:7,
-    },
-    [theme.breakpoints.between('sm','sm')]: {
-      fontSize:6, 
-      paddingLeft:5,
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize:4, 
-      paddingLeft:4,
     },
     textDecoration:'underline',
     color:'white',

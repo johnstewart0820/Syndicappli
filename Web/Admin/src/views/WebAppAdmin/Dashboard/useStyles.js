@@ -109,9 +109,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       fontWeight: 343
     },
-    [theme.breakpoints.down('sm')]: {
-      fontWeight: 240
-    },
   },
   avatar: {
     backgroundColor: theme.palette.error.main,
@@ -127,10 +124,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
       height: 27,
       width: 27
     },
-    [theme.breakpoints.down('sm')]: {
-      height: 19,
-      width: 19
-    },
   },
   icon: {
     [theme.breakpoints.up('xl')]: {
@@ -144,10 +137,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       height: 15,
       width: 15
-    },
-    [theme.breakpoints.down('sm')]: {
-      height: 11,
-      width: 11
     },
   },
   difference: {
@@ -170,9 +159,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       fontSize: 8
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6
-    },
   },
   tail:{
     [theme.breakpoints.up('xl')]: {
@@ -183,9 +169,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 8
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 6
     },
   },
   bodyTitle:{
@@ -198,9 +181,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     [theme.breakpoints.down('md')]: {
       fontSize: 15
     },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 11
-    },
   },
   caption:{
     [theme.breakpoints.up('xl')]: {
@@ -211,9 +191,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 11
-    },
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 8
     },
   },
   show: {
