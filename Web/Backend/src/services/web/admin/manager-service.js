@@ -2,8 +2,8 @@
  * Auth service file
  * 
  * @package   backend/src/services
- * @author    DongTuring <dong@turing.com>
- * @copyright 2018 Turing Company
+ * @author    Taras Hryts <streaming9663@gmail.com>
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly/api/auth/
@@ -28,7 +28,7 @@ var managerService = {
 /**
  * Function that get company and buildling list
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  json 
  */
@@ -56,7 +56,7 @@ function getCompanyBuilding(uid) {
 /**
  * Function that get building list
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  json 
  */
@@ -84,7 +84,7 @@ function getManagerList(uid, data) {
 /**
  * Function that create manager
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  json 
  */
@@ -112,7 +112,7 @@ function createManager(uid, data, file_name) {
 /**
  * Function that get manager
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  json 
  */
@@ -135,7 +135,7 @@ function getManager(uid, id) {
 /**
  * Function that update manager
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  json 
  */

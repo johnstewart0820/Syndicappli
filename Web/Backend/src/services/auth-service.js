@@ -2,8 +2,8 @@
  * Auth service file
  * 
  * @package   backend/src/services
- * @author    DongTuring <dong@turing.com>
- * @copyright 2018 Turing Company
+ * @author    Taras Hryts <streaming9663@gmail.com>
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly/api/auth/
@@ -25,7 +25,7 @@ var authService = {
 /**
  * Function that check user login status with email and password
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  json 
  */
@@ -33,12 +33,12 @@ function login(authData) {
   return new Promise((resolve, reject) => {
     authModel.login(authData).then((data) => {
       if (data) {
-        let userId = data
-        let token = jwt.sign({ uid: userId }, key.JWT_SECRET_KEY, {
+        let userdata = data
+        let token = jwt.sign({ uid: userdata.userID, userdata: userdata }, key.JWT_SECRET_KEY, {
           expiresIn: timer.TOKEN_EXPIRATION
         })
 
-        adminModel.getProfile(data).then((result) => {
+        adminModel.getProfile(userdata.userID).then((result) => {
           resolve({ code: code.OK, message: '', data: { 'token': token, 'profile': result} })
         }).catch((err) => {
           reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
@@ -56,7 +56,7 @@ function login(authData) {
 /**
  * Function to logout
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @return  string 
  */
 function logout() {

@@ -2,8 +2,8 @@
  * Auth middleware file
  *
  * @package   backend/src/middleware
- * @author    DongTuring <dong@turing.com>
- * @copyright 2018 Turing Company
+ * @author    Taras Hryts <streaming9663@gmail.com>
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly/
@@ -17,7 +17,7 @@ var key  = require('../config/key-config')
 /**
  * Function that check auth token
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
  * @param   object next

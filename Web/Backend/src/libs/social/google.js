@@ -2,8 +2,8 @@
  * Google Api lib file
  * 
  * @package   backend/src/services
- * @author    DongTuring <dong@turingai.net>
- * @copyright 2018 Turing Company
+ * @author    Taras Hryts <dong@turingai.net>
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly/api/auth/

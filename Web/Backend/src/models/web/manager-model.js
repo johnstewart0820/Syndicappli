@@ -2,8 +2,8 @@
  * Auth model file
  *
  * @package   backend/src/models
- * @author    DongTuring <dong@turing.com>
- * @copyright 2018 Turing Company
+ * @author    Taras Hryts <streaming9663@gmail.com>
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly/
@@ -27,7 +27,7 @@ var companyModel = {
 /**
  * get count for building list for search filter
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
@@ -49,7 +49,7 @@ function getCompanyListByUser(uid) {
 /**
  * get count for building list for search filter
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
@@ -71,7 +71,7 @@ function getBuildingListByUser(uid) {
 /**
  * get company list with filter key
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
@@ -128,7 +128,7 @@ function getManagerList(uid, data) {
 /**
  * get count for building list for search filter
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
@@ -161,7 +161,7 @@ function getCountManagerList(uid, data) {
 /**
  * create manager data
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
@@ -210,7 +210,7 @@ function createManager(uid, data, file_name) {
 /**
  * get manager
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
@@ -237,7 +237,7 @@ function getManager(uid) {
 /**
  * update manager
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */

@@ -2,9 +2,9 @@
  * Index router file
  *
  * @package   backend/src/routes
- * @author    DongTuring <dong@turing.com>
+ * @author    Taras Hryts <streaming9663@gmail.com>
  * @author    WangTuring <wangwang@turing.com>
- * @copyright 2018 Turing Company
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly

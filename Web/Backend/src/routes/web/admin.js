@@ -2,9 +2,9 @@
  * Index router file
  *
  * @package   backend/src/routes
- * @author    DongTuring <dong@turing.com>
+ * @author    Taras Hryts <streaming9663@gmail.com>
  * @author    WangTuring <wangwang@turing.com>
- * @copyright 2018 Turing Company
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly
@@ -20,8 +20,7 @@ const buildingService = require('../../services/web/admin/building-service')
 const companyService = require('../../services/web/admin/company-service')
 const managerService = require('../../services/web/admin/manager-service')
 
-
-/** 
+/**
  * profile api
  */
 router.get('/profile', authMiddleware.checkToken, getProfile)
@@ -68,28 +67,28 @@ router.put('/manager/:id', authMiddleware.checkToken, updateManager)
 /**
  * Function that get profile data
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getProfile(req, res) {
     let userId = req.decoded.uid
-  
+
     adminService.getProfile(userId).then((result) => {
-      res.json(result)
+        res.json(result)
     }).catch((err) => {
-      res.json(err)
+        res.json(err)
     })
 }
 
 /**
  * Function that update profile data
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 
 
@@ -97,8 +96,52 @@ function updateProfile(req, res) {
     var form = new formidable.IncomingForm();
     let file_name = "";
     let userId = req.decoded.uid
+    form.on('fileBegin', function (name, file){
+        file_name = Date.now() + '.jpg';
+        file.path = '/tmp/' + file_name;
+    });
+
     form.parse(req, function (err, fields, files) {
-        adminService.updateProfile(userId, fields, file_name).then((result)=>{
+        adminService.updateProfile(userId, fields, files).then((result)=>{
+            res.json(result)
+        }).catch((err) => {
+            res.json(err)
+        });
+    });
+}
+
+/**
+ * Function that get user list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getUserList(req, res) {
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.getUserList(userId, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get user
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createUser(req, res) {
+    var form = new formidable.IncomingForm();
+    let file_name = "";
+    let userId = req.decoded.uid
+    form.parse(req, function (err, fields, files) {
+        adminService.createUser(userId, fields, file_name).then((result)=>{
             res.json(result)
         }).catch((err) => {
             res.json(err)
@@ -115,124 +158,77 @@ function updateProfile(req, res) {
 }
 
 /**
- * Function that get user list
- *
- * @author  DongTuring <dong@turing.com>
- * @param   object req
- * @param   object res
- * @return  json 
- */
-function getUserList(req, res) {
-    let userId = req.decoded.uid
-    let data = req.body
-    adminService.getUserList(userId, data).then((result) => {
-      res.json(result)
-    }).catch((err) => {
-      res.json(err)
-    })
-}
-
-/**
  * Function that get user
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
- */
-function createUser(req, res) {
-  var form = new formidable.IncomingForm();
-  let file_name = "";
-  let userId = req.decoded.uid
-  form.parse(req, function (err, fields, files) {
-      adminService.createUser(userId, fields, file_name).then((result)=>{
-          res.json(result)
-      }).catch((err) => {
-          res.json(err)
-      });
-  });
-
-  form.on('fileBegin', function (name, file){
-      file_name = Date.now() + '.jpg';
-      file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
-  });
-
-  form.on('file', function (name, file){
-  });
-}
-
-/**
- * Function that get user
- *
- * @author  DongTuring <dong@turing.com>
- * @param   object req
- * @param   object res
- * @return  json 
+ * @return  json
  */
 function getUser(req, res) {
-    
+
     let userId = req.decoded.uid
     let data = req.params.id
     adminService.getUser(userId, data).then((result) => {
-      res.json(result)
+        res.json(result)
     }).catch((err) => {
-      res.json(err)
+        res.json(err)
     })
 }
 
 /**
  * Function that update user
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function updateUser(req, res) {
-    
+
     let userId = req.decoded.uid
     let id = req.params.id
     let data = req.body
     adminService.updateUser(userId, id, data).then((result) => {
-      res.json(result)
+        res.json(result)
     }).catch((err) => {
-      res.json(err)
+        res.json(err)
     })
 }
 
 /**
  * Function that get user list
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function deleteUser(req, res) {
     let userId = req.decoded.uid
     let id = req.params.id
     adminService.deleteUser(userId, id).then((result) => {
-      res.json(result)
+        res.json(result)
     }).catch((err) => {
-      res.json(err)
+        res.json(err)
     })
 }
 
 /**
  * Function that get company and building list by user
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getCompanyBuildingListByUser(req, res) {
-  let userId = req.decoded.uid
-  adminService.getCompanyBuildingListByUser(userId).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+    let userId = req.decoded.uid
+    adminService.getCompanyBuildingListByUser(userId).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 ////////////////////////////////////Company///////////////////////////////////////
@@ -240,68 +236,68 @@ function getCompanyBuildingListByUser(req, res) {
 /**
  * Function that get company list
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getCompanyList(req, res) {
-    
+
     let userId = req.decoded.uid
     let data = req.body
     companyService.getCompanyList(userId, data).then((result) => {
-      res.json(result)
+        res.json(result)
     }).catch((err) => {
-      res.json(err)
+        res.json(err)
     })
 }
 
 /**
  * Function that create company
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function createCompany(req, res) {
-  var form = new formidable.IncomingForm();
-  let file_name = "";
-  let userId = req.decoded.uid
-  form.parse(req, function (err, fields, files) {
-    companyService.createCompany(userId, fields, file_name).then((result)=>{
-      res.json(result)
-    }).catch((err) => {
-      res.json(err)
+    var form = new formidable.IncomingForm();
+    let file_name = "";
+    let userId = req.decoded.uid
+    form.parse(req, function (err, fields, files) {
+        companyService.createCompany(userId, fields, file_name).then((result)=>{
+            res.json(result)
+        }).catch((err) => {
+            res.json(err)
+        });
     });
-  });
 
-  form.on('fileBegin', function (name, file){
-      file_name = Date.now() + '.jpg';
-      file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
-  });
+    form.on('fileBegin', function (name, file){
+        file_name = Date.now() + '.jpg';
+        file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
+    });
 
-  form.on('file', function (name, file){
-  });
+    form.on('file', function (name, file){
+    });
 }
 
 /**
  * Function that get all company list
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getAllCompanyList(req, res) {
-    
-  let userId = req.decoded.uid
-  let data = req.body
-  adminService.getAllCompanyList(userId, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    let data = req.body
+    adminService.getAllCompanyList(userId, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 
@@ -309,38 +305,38 @@ function getAllCompanyList(req, res) {
 /**
  * Function that get company list by user
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getCompanyListByUser(req, res) {
-    
-  let userId = req.decoded.uid
-  buildingService.getCompanyListByUser(userId).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    buildingService.getCompanyListByUser(userId).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 
 /**
  * Function that get building list
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getBuildingList(req, res) {
-    
+
     let userId = req.decoded.uid
     let data = req.body
     buildingService.getBuildingList(userId, data).then((result) => {
-      res.json(result)
+        res.json(result)
     }).catch((err) => {
-      res.json(err)
+        res.json(err)
     })
 }
 
@@ -349,59 +345,59 @@ function getBuildingList(req, res) {
 /**
  * Function that create building
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function createBuilding(req, res) {
-    
-  let userId = req.decoded.uid
-  let data = req.body
-  buildingService.createBuilding(userId, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    let data = req.body
+    buildingService.createBuilding(userId, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 /**
  * Function that get building
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getBuilding(req, res) {
-    
-  let userId = req.decoded.uid
-  let data = req.params.id
-  buildingService.getBuilding(userId, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    let data = req.params.id
+    buildingService.getBuilding(userId, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 /**
  * Function that update building
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function updateBuilding(req, res) {
-    
-  let userId = req.decoded.uid
-  let id = req.params.id;
-  let data = req.body
-  buildingService.updateBuilding(userId, id, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    let id = req.params.id;
+    let data = req.body
+    buildingService.updateBuilding(userId, id, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 
@@ -409,107 +405,107 @@ function updateBuilding(req, res) {
 /**
  * Function that get building and company by user
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getBuildingCompanyByUser(req, res) {
-    
-  let userId = req.decoded.uid
-  managerService.getCompanyBuilding(userId).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    managerService.getCompanyBuilding(userId).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 
 /**
  * Function that get manager list
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getManagerList(req, res) {
-    
-  let userId = req.decoded.uid
-  let data = req.body
-  managerService.getManagerList(userId, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    let data = req.body
+    managerService.getManagerList(userId, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 /**
  * Function that create user
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function createManager(req, res) {
-  var form = new formidable.IncomingForm();
-  let file_name = "";
-  let userId = req.decoded.uid
-  form.parse(req, function (err, fields, files) {
-      managerService.createManager(userId, fields, file_name).then((result)=>{
-          res.json(result)
-      }).catch((err) => {
-          res.json(err)
-      });
-  });
+    var form = new formidable.IncomingForm();
+    let file_name = "";
+    let userId = req.decoded.uid
+    form.parse(req, function (err, fields, files) {
+        managerService.createManager(userId, fields, file_name).then((result)=>{
+            res.json(result)
+        }).catch((err) => {
+            res.json(err)
+        });
+    });
 
-  form.on('fileBegin', function (name, file){
-      file_name = Date.now() + '.jpg';
-      file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
-  });
+    form.on('fileBegin', function (name, file){
+        file_name = Date.now() + '.jpg';
+        file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
+    });
 
-  form.on('file', function (name, file){
-  });
+    form.on('file', function (name, file){
+    });
 }
 
 /**
  * Function that get manager
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function getManager(req, res) {
-    
-  let userId = req.decoded.uid
-  let data = req.params.id
-  managerService.getManager(userId, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    let data = req.params.id
+    managerService.getManager(userId, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 /**
  * Function that update manager
  *
- * @author  DongTuring <dong@turing.com>
+ * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
- * @return  json 
+ * @return  json
  */
 function updateManager(req, res) {
-    
-  let userId = req.decoded.uid
-  let id = req.params.id;
-  let data = req.body
-  managerService.updateManager(userId, id, data).then((result) => {
-    res.json(result)
-  }).catch((err) => {
-    res.json(err)
-  })
+
+    let userId = req.decoded.uid
+    let id = req.params.id;
+    let data = req.body
+    managerService.updateManager(userId, id, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
 }
 
 module.exports = router

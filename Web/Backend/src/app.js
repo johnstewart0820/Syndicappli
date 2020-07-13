@@ -2,8 +2,8 @@
  * Init file
  *
  * @package    src
- * @author     DongTuring <dong@turing.com>
- * @copyright  2018 Turing Company
+ * @author     Taras Hryts <streaming9663@gmail.com>
+ * @copyright  2020 Say Digital Company
  * @license    Turing License
  * @version    2.0
  * @link       https://turing.ly
@@ -18,6 +18,7 @@ var bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 var apiRouter = require('./routes/index')
 var authMiddleware = require('./middleware/auth-middleware')
+const { ValidationError } = require('express-validation')
 
 dotenv.config()
 const app = express()
@@ -29,8 +30,19 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(cors())
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended:true, limit:'50mb'}));
-app.use(bodyParser.json({limit:'50mb'})); 
+app.use(bodyParser.json({limit:'50mb'}));
 
 app.use('/api', apiRouter)
+
+app.use(function (err, req, res, next) {
+    if (err instanceof ValidationError) {
+        return res.status(200).json({
+            'status': 200,
+            'message': "Please type the both of the email and password!"
+        })
+    }
+
+    return res.status(500).json(err)
+})
 
 module.exports = app

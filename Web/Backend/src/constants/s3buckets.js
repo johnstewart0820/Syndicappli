@@ -1,5 +1,5 @@
 /**
- * Library constant
+ * S3 Buckets constant file
  *
  * @package   backend/src/constants
  * @author    WangTuring <wangwang@turing.com>
@@ -10,10 +10,10 @@
  */
 
 /**
- * Message constants
+ * Database table constants
  */
-const lib = {
-  IP2LOCATION_PATH: 'src/libs/ip2location/IPV6-COUNTRY-REGION-CITY.BIN'
+const buckets = {
+    AVATAR : 'syndicappli-avatars'
 }
 
-module.exports = lib
+module.exports = buckets
