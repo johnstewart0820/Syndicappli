@@ -14,6 +14,7 @@ var message  = require('../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../constants/table')
 const s3Helper = require('../../helper/s3helper')
+const s3buckets = require('../../constants/s3buckets')
 
 var adminModel = {
     getProfile: getProfile,
@@ -78,7 +79,7 @@ function updateProfile(uid, data, files) {
     return new Promise(async function(resolve, reject) {
         var file_name = ""
         if(files.avatar){
-            uploadS3 = await s3Helper.uploadS3(files)
+            uploadS3 = await s3Helper.uploadS3(files, s3buckets.AVATAR)
             file_name = uploadS3.Location
         }
 

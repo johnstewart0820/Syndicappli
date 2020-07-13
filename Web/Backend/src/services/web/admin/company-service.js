@@ -56,15 +56,15 @@ function getCompanyList(uid, data) {
  * @param   object authData
  * @return  json
  */
-function createCompany(uid, data, file_name) {
+function createCompany(uid, userdata, data, file) {
     return new Promise((resolve, reject) => {
-        companyModel.createCompany(uid, data, file_name).then((data) => {
+        companyModel.createCompany(uid, data, file).then((data) => {
             if (data) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
-                resolve({ code: code.OK, message: '', data: { 'token': token} })
+                resolve({ code: code.OK, message: message.COMPANY_ADD_SUCCESSFULLY, data: { 'token': token} })
             }
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)

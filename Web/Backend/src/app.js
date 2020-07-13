@@ -38,7 +38,7 @@ app.use(function (err, req, res, next) {
     if (err instanceof ValidationError) {
         return res.status(200).json({
             'status': 200,
-            'message': "Please type the both of the email and password!"
+            'message': 'Please be sure to fill all fields'
         })
     }
 

@@ -13,6 +13,9 @@ var db = require('../../database/database')
 var message  = require('../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../constants/table')
+const s3Helper = require('../../helper/s3helper')
+const s3buckets = require('../../constants/s3buckets')
+const timeHelper = require('../../helper/timeHelper')
 
 var companyModel = {
     getCompanyList: getCompanyList,
@@ -106,18 +109,23 @@ function getCountCompanyList(uid, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createCompany(uid, data, file_name) {
+function createCompany(uid, data, file) {
     return new Promise((resolve, reject) => {
         let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ?';
-        let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-        db.query(confirm_query, [data.email], (error, rows, fields) => {
+        let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        db.query(confirm_query, [data.email], async function (error, rows, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 if (rows.length > 0)
                     reject({ message: message.COMPANY_ALREADY_EXIST })
                 else {
-                    db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status], (error, rows, fields) => {
+                    var file_name = ""
+                    if(file){
+                        uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.COMPANY_LOGO)
+                        file_name = uploadS3.Location
+                    }
+                    db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
@@ -127,12 +135,22 @@ function createCompany(uid, data, file_name) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                 } else {
                                     let companyID = rows[0].companyID;
-                                    let query = 'Insert into ' + table.ADMIN_COMPANY + ' (adminID, companyID) VALUES (?, ?)'
-                                    db.query(query, [uid, companyID], (error, rows, fields) => {
+                                    let updateQuery = 'UPDATE ' + table.USERS + ' SET companyID = ? WHERE userID = ?'
+                                    query = 'select * from '+ table.USERS +' where userID = ?'
+                                    db.query(query, [uid], (error, rows, fields) => {
+                                        console.log("error3:", error)
                                         if (error) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR })
                                         } else {
-                                            resolve("ok");
+                                            let companyIDs = rows[0].companyID + "," + companyID
+                                            db.query(updateQuery, [companyIDs, uid], (error, rows, fields) => {
+                                                console.log("error4:", error)
+                                                if(error){
+                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                                } else {
+                                                    resolve("ok");
+                                                }
+                                            })
                                         }
                                     })
                                 }

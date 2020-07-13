@@ -11,10 +11,11 @@ s3 = new AWS.S3({
 });
 
 s3_functions = {
-    uploadS3:uploadS3
+    uploadS3:uploadS3,
+    uploadLogoS3:uploadLogoS3
 }
 
-function uploadS3(files){
+function uploadS3(files, bucket){
     return new Promise(function (resolve, reject) {
         filename_splits = files.avatar.name.split('.');
         fs.readFile(files.avatar.path, (err, data) => {
@@ -22,10 +23,37 @@ function uploadS3(files){
                 reject(err)
             } else {
                 let params = {
-                    Bucket: s3buckets.AVATAR,
+                    Bucket: bucket,
                     Key: md5(Date.now()) + "." + filename_splits[filename_splits.length - 1],
                     Body: data,
                     ContentType: files.avatar.mimetype,
+                    ACL: 'public-read'
+                };
+
+                s3.upload(params, function (error, response) {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        resolve(response)
+                    }
+                });
+            }
+        })
+    })
+}
+
+function uploadLogoS3(file, bucket){
+    return new Promise(function (resolve, reject) {
+        filename_splits = file.originalname.split('.');
+        fs.readFile(file.path, (err, data) => {
+            if (err) {
+                reject(err)
+            } else {
+                let params = {
+                    Bucket: bucket,
+                    Key: md5(Date.now()) + "." + filename_splits[filename_splits.length - 1],
+                    Body: data,
+                    ContentType: file.mimetype,
                     ACL: 'public-read'
                 };
 

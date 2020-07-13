@@ -19,6 +19,11 @@ const adminService = require('../../services/web/admin/admin-service')
 const buildingService = require('../../services/web/admin/building-service')
 const companyService = require('../../services/web/admin/company-service')
 const managerService = require('../../services/web/admin/manager-service')
+const ownerService = require('../../services/web/admin/owner-service')
+const {validate} = require('express-validation')
+var adminValidation = require('../../validator/admin-validation')
+var multer  = require('multer')
+var upload = multer({ dest: '/tmp/' })
 
 /**
  * profile api
@@ -41,7 +46,8 @@ router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingLis
  * company api
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
-router.post('/company', authMiddleware.checkToken, createCompany)
+// router.post('/company', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), createCompany)
+router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 
 
@@ -62,6 +68,12 @@ router.post('/managerList', authMiddleware.checkToken, getManagerList)
 router.post('/manager', authMiddleware.checkToken, createManager)
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
 router.put('/manager/:id', authMiddleware.checkToken, updateManager)
+
+
+/**
+ * owner api
+ */
+router.get('/ownerList', authMiddleware.checkToken, getOwnerList)
 
 
 /**
@@ -261,24 +273,22 @@ function getCompanyList(req, res) {
  * @return  json
  */
 function createCompany(req, res) {
-    var form = new formidable.IncomingForm();
-    let file_name = "";
     let userId = req.decoded.uid
-    form.parse(req, function (err, fields, files) {
-        companyService.createCompany(userId, fields, file_name).then((result)=>{
-            res.json(result)
-        }).catch((err) => {
-            res.json(err)
-        });
+    let userdata = req.decoded.userdata
+    let file = req.file
+    companyService.createCompany(userId, userdata, req.body, file).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
     });
-
-    form.on('fileBegin', function (name, file){
-        file_name = Date.now() + '.jpg';
-        file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
-    });
-
-    form.on('file', function (name, file){
-    });
+    // form.parse(req, function (err, fields, files) {
+    //
+    // });
+    //
+    // form.on('fileBegin', function (name, file){
+    //     file_name = Date.now() + '.jpg';
+    //     file.path = '/tmp/' + file_name;
+    // });
 }
 
 /**
@@ -502,6 +512,26 @@ function updateManager(req, res) {
     let id = req.params.id;
     let data = req.body
     managerService.updateManager(userId, id, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get the owner list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getOwnerList(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    ownerService.getOwnerList(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

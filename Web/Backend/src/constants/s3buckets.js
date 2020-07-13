@@ -13,7 +13,8 @@
  * Database table constants
  */
 const buckets = {
-    AVATAR : 'syndicappli-avatars'
+    AVATAR : 'syndicappli-avatars',
+    COMPANY_LOGO : 'syndicappli-company-logos',
 }
 
 module.exports = buckets

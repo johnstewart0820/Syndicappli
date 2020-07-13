@@ -1,44 +1,48 @@
-const dotenv = require('dotenv')
-dotenv.config()
-const s3buckets = require('../constants/s3buckets')
-var md5 = require('md5');
-var fs = require('fs')
+/**
+ * Timer Helper file
+ *
+ * @package   backend/src/helper
+ * @author    Taras Hryts <streaming9663@gmail.com>
+ * @copyright 2020 Say Digital Company
+ * @license   Turing License
+ * @version   2.0
+ * @link      https://turing.ly/api/auth
+ */
 
-var AWS = require('aws-sdk');
-s3 = new AWS.S3({
-    accessKeyId: process.env.ACCESS_KEY_ID,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY
-});
-
-s3_functions = {
-    uploadS3:uploadS3
+var timer_functions = {
+    getCurrentTime:getCurrentTime
 }
 
-function uploadS3(files, bucket){
-    return new Promise(function (resolve, reject) {
-        filename_splits = files.avatar.name.split('.');
-        fs.readFile(files.avatar.path, (err, data) => {
-            if (err) {
-                reject(err)
-            } else {
-                let params = {
-                    Bucket: bucket,
-                    Key: md5(Date.now()) + "." + filename_splits[filename_splits.length - 1],
-                    Body: data,
-                    ContentType: files.avatar.mimetype,
-                    ACL: 'public-read'
-                };
+function getCurrentTime(){
+    var current = new Date();
+    var currentYear = current.getFullYear();
+    var currentMonth = current.getMonth();
+    var currentDate = current.getDate();
+    var currentHour = current.getHours();
+    var currentMinute = current.getMinutes();
+    var currentSecond = current.getSeconds();
 
-                s3.upload(params, function (error, response) {
-                    if (error) {
-                        reject(error)
-                    } else {
-                        resolve(response)
-                    }
-                });
-            }
-        })
-    })
+    if(currentMonth < 10){
+        currentMonth = "0" + currentMonth
+    }
+
+    if(currentDate < 10){
+        currentDate = "0" + currentDate
+    }
+
+    if(currentHour < 10){
+        currentHour = "0" + currentHour
+    }
+
+    if(currentMinute < 10){
+        currentMinute = "0" + currentMinute
+    }
+
+    if(currentSecond < 10){
+        currentSecond = "0" + currentSecond
+    }
+
+    return String(currentYear + "-" + currentMonth + "-" + currentDate + " " + currentHour + ":" + currentMinute + ":" + currentSecond)
 }
 
-module.exports = s3_functions
+module.exports = timer_functions
