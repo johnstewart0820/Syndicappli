@@ -15,8 +15,9 @@ dotenv.config()
  * Code constants
  */
 const timer = {
-  VISIT_SESSION_MINS: process.env.VISIT_SESSION_TIME,
-  TOKEN_EXPIRATION: process.env.TOKEN_EXPIRATION
+    VISIT_SESSION_MINS: process.env.VISIT_SESSION_TIME,
+    TOKEN_EXPIRATION: process.env.TOKEN_EXPIRATION,
+    SMS_TOKEN_EXPIRATION: process.env.SMS_TOKEN_EXPIRATION,
 }
 
 module.exports = timer

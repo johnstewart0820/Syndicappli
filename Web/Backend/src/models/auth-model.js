@@ -13,9 +13,17 @@ var db = require('../database/database')
 var message  = require('../constants/message')
 var bcrypt = require('bcrypt-nodejs')
 var table  = require('../constants/table')
+var jwt = require('jsonwebtoken')
+var key = require('../config/key-config')
 
 var authModel = {
     login: login,
+    saveSMS: saveSMS,
+    verifySMS: verifySMS,
+    verifyUser: verifyUser,
+    saveToken: saveToken,
+    verifyToken: verifyToken,
+    resetPassword: resetPassword,
     logout: logout,
 }
 
@@ -48,6 +56,194 @@ function login(authData) {
                         }
                     })
                 } else {
+                    reject({ message: message.ACCOUNT_NOT_EXIST })
+                }
+            }
+        })
+    })
+}
+
+/**
+ * Save user SMS verification code
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function saveSMS(email, smsCode) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.USERS + ' SET sms_code = ? WHERE email = ?'
+
+        db.query(query, [ smsCode, email ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("Ok")
+            }
+        })
+    })
+}
+
+/**
+ * Save user SMS verification code
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function verifySMS(email, code) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE email = ?'
+
+        db.query(query, [ email], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    jwt.verify(rows[0].sms_code, key.JWT_SECRET_KEY, function (err, decoded) {
+                        if (err) {
+                            if(err.name == "TokenExpiredError"){
+                                reject({ message: message.EXPIRED_SMS_CODE })
+                            } else {
+                                reject({ message: err.name })
+                            }
+                        } else {
+                            if(decoded.smsCode == code){
+                                resolve(rows[0])
+                            } else {
+                                reject({ message: message.INVALID_SMS_CODE })
+                            }
+                        }
+                    })
+                }else{
+                    reject({ message: message.ACCOUNT_NOT_EXIST })
+                }
+            }
+        })
+    })
+}
+
+/**
+ * Save user SMS verification code
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function verifyUser(email) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * from ' + table.USERS + ' where email = ?'
+
+        db.query(query, [ email ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    resolve("Ok")
+                } else {
+                    reject({ message: message.ACCOUNT_NOT_EXIST })
+                }
+            }
+        })
+    })
+}
+
+/**
+ * Save user SMS verification code
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function saveToken(email, token) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.USERS + ' SET token = ? WHERE email = ?'
+
+        db.query(query, [ token, email ], (error, rows, fields) => {
+            console.log("error: ", error)
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("Ok")
+            }
+        })
+    })
+}
+
+/**
+ * Verify Token
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function verifyToken(email, token) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE email = ?'
+        db.query(query, [ email ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    jwt.verify(rows[0].token, key.JWT_SECRET_KEY, function (err, decoded) {
+                        if (err) {
+                            if(err.name == "TokenExpiredError"){
+                                reject({ message: message.EXPIRED_SMS_CODE })
+                            } else {
+                                reject({ message: err.name })
+                            }
+                        } else {
+                            if(decoded.tmpToken == token){
+                                resolve("OK")
+                            } else {
+                                reject({ message: message.INVALID_TOKEN })
+                            }
+                        }
+                    })
+                }else{
+                    reject({ message: message.ACCOUNT_NOT_EXIST })
+                }
+            }
+        })
+    })
+}
+
+/**
+ * Reset Password
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   string email, string new_password
+ * @return  object If success returns object else returns message
+ */
+function resetPassword(email, new_password) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE email = ?'
+
+        db.query(query, [ email ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    bcrypt.compare(new_password, rows[0].password, function (error, result) {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            if (result) {
+                                reject({ message: message.INVALID_NEW_PASSWORD })
+                            } else {
+                                let query = 'UPDATE ' + table.USERS + ' SET password = ? WHERE email = ?'
+                                let new_pass = bcrypt.hashSync(new_password)
+                                db.query(query, [ new_pass, email ], (error, rows, fields) => {
+                                    if(error){
+                                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                                    }else{
+                                        resolve("OK")
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }else{
                     reject({ message: message.ACCOUNT_NOT_EXIST })
                 }
             }

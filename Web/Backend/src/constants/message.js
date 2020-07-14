@@ -18,7 +18,12 @@ const messages = {
     AUTH_ERROR: 'Sorry, your request could not be authenticated',
     INTERNAL_SERVER_ERROR: 'The request was not completed.',
     INVALID_PASSWORD: 'Invalid password.',
+    INVALID_NEW_PASSWORD: 'New password is the same with your old one. Please try to change your password again.',
+    INVALID_SMS_CODE: 'Invalid SMS Code, Please check your SMS code again.',
+    EXPIRED_SMS_CODE: 'Your SMS Code is Expired, Please try again.',
     USER_EMAIL_DUPLICATED: 'Sorry, this user already exists.',
+    EMIL_IS_NOT_EXIST: 'Your email Address is not exist or not authorized recipients.',
+    INVALID_TOKEN: 'Invalid TOKEN to reset your password, Please try again.',
     ACCOUNT_NOT_EXIST: 'The account does not exist.',
     INVALID_OLD_PASSWORD: 'Old password does not match!',
     CHANGEPWD_ERROR: 'Sorry, you can not change the password.',
@@ -29,6 +34,10 @@ const messages = {
     COMPANY_ALREADY_EXIST: 'Company is already exist.',
     MANAGER_ALREADY_EXIST: 'Manager is already exist.',
 
+    SMS_CODE_SENT_SUCCESSFULLY: 'Sent the SMS Code to Your Phone.',
+    EMAIL_RESET_LINK_SENT_SUCCESSFULLY: 'Sent the link to reset your password. Please check your email.',
+    VERIFIED_TOKEN_SUCCESSFULLY: 'Verified the token to reset your password. Please type your new and confirm password.',
+    RESET_PASSWORD_SUCCESSFULLY: 'Reseted your password successfully.',
     COMPANY_ADD_SUCCESSFULLY: 'Created Company Successfully.',
 }
 
