@@ -159,6 +159,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const Help = (props) => {
   const {history} = props;
 
@@ -196,7 +197,13 @@ const Help = (props) => {
     setFirstName(event.target.value);
   }
   const handleChangeEmail = (event)=>{
-    setEmail(event.target.value);
+    event.preventDefault();
+    let errorsMail = 
+          validEmailRegex.test(event.target.value)
+            ? ''
+            : 'Email is not valid!';
+          setEmail(event.target.value);
+          setErrorsEmail(errorsMail);
   }
   const handleChangePhone = (event)=>{
     setPhone(event.target.value);

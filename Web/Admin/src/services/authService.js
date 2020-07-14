@@ -8,5 +8,8 @@ class AuthService {
     getAccess(item) {
         return JSON.parse(localStorage.getItem(item));
     }
+    getFirstLoginState(){
+        return JSON.parse(localStorage.getItem('firstlogin'));
+    }
 }
 export default new AuthService();

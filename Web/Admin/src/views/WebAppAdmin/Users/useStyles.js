@@ -71,7 +71,20 @@ const useStyles = makeStyles(theme => ({
   },
   close: {
     color: 'gray'
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 
 export const AddUserStyles = makeStyles(theme => ({
@@ -108,7 +121,7 @@ export const AddUserStyles = makeStyles(theme => ({
             padding: '8px 12px',
             fontSize: 17
           },
-          [theme.breakpoints.down('lg')]: {
+          [theme.breakpoints.between('lg','lg')]: {
             padding: '6px 8px',
             fontSize: 12
           },
@@ -181,7 +194,20 @@ export const AddUserStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 export const EditUserStyles = makeStyles(theme => ({
   root: {

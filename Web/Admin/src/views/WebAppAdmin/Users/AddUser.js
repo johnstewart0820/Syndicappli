@@ -8,7 +8,7 @@ import MySelect from '../../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import {COUNTRIES} from '../../../components/countries';
 import Multiselect from '../../../components/Multiselect.js';
-
+const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddUser = (props) => {
   const classes = useStyles();
   
@@ -111,7 +111,13 @@ const handleChangeFirstName = (event) => {
     setFirstName(event.target.value);
 }
 const handleChangeEmail = (event) => {
-    setEmail(event.target.value);
+    event.preventDefault();
+    let errorsMail = 
+          validEmailRegex.test(event.target.value)
+            ? ''
+            : 'Email is not valid!';
+          setEmail(event.target.value);
+          setErrorsEmail(errorsMail);
 }
 const handleChangePhoneNumber = (event) => {
     setPhoneNumber(event.target.value);

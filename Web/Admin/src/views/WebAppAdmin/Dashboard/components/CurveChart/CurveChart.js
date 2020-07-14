@@ -51,7 +51,7 @@ const CurveChart = props => {
       <Divider />
       <CardContent>
         <div className={classes.chartContainer}>
-          <Line data={mainChart} options={mainChartOpts} height={150} />
+          <Line data={mainChart} options={mainChartOpts} />
         </div>
       </CardContent>
       <Divider />

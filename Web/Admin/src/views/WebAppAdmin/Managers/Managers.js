@@ -17,247 +17,207 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useStyles from './useStyles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 const Managers = (props) => {
-  const {history}=props;
+  const { history } = props;
   //const token = authService.getToken();    
   // if (!token) {
   //   history.push("/admin/login");
   //   window.location.reload();
   // }
   const accessManagers = authService.getAccess('role_managers');
-
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [footerItems, setFooterItems] = useState([]);
-  const [deleteId,setDeleteId] = useState(-1);
+  const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
   let company = [];
   const [companies, setCompanies] = useState('');
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  let building = [];
-  const [buildings, setBuildings] = useState('');
-  const [buildingList, setBuildingList] = useState([]);
-  const [buildingID, setBuildingID] = useState(-1);
-
   const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
-  const [totalpage , setTotalPage] = useState(1);
+  const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
-  const [page_num , setPageNum] = useState(1);
+  const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
-  const [sort_method , setSortMethod] = useState('asc');
-  const selectList=[20, 50, 100, 200, -1];
+  const [sort_method, setSortMethod] = useState('asc');
+  const selectList = [20, 50, 100, 200, -1];
 
   const handleClose = () => {
     setOpen(false);
   };
-  const handleChangeCompanies = (val) =>{
+  const handleChangeCompanies = (val) => {
     setCompanies(val);
-    if(val < companyList.length)
+    if (val < companyList.length)
       setCompanyID(companyList[val].companyID);
     else
       setCompanyID(-1);
   };
-  const handleChangeBuildings = (val) =>{
-    setBuildings(val);
-    if(val < buildingList.length)
-      setBuildingID(buildingList[val].buildingID);
-    else
-      setBuildingID(-1);
-  };
+
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
   const handleCloseDialog = (val) => {
     setOpenDialog(val);
   };
-  const handleAdd = ()=>{
+  const handleAdd = () => {
 
   };
-  const handleClickAdd = ()=>{
-    if(accessManagers === 'Edit'){
+  const handleClickAdd = () => {
+    if (accessManagers === 'edit') {
       setOpen(true);
     }
-    if(accessManagers === 'See'){
+    if (accessManagers === 'see') {
       setOpenDialog(true);
     }
   };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
-  const handleChangePagination = (value)=>{
+  const handleChangePagination = (value) => {
     setPageNum(value);
   }
-  const handleSort = (index , direct)=>{
+  const handleSort = (index, direct) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  useEffect(()=>{
-    if(accessManagers === 'Denied'){
+  useEffect(() => {
+    if (accessManagers === 'denied') {
       setOpenDialog(true);
-    }else{
+    } else {
       getCompanies();
     }
-  },[accessManagers]);
+  }, [accessManagers]);
   useEffect(() => {
-    if(accessManagers === 'Denied'){
+    if (accessManagers === 'denied') {
       setOpenDialog(true);
     }
-    if(accessManagers !== 'Denied')
-        getManagers();
-  }, [page_num, row_count,sort_column, sort_method]);
-  const cellList = [ 
-    {key : 'lastname' , field : 'Nom'},
-    {key : 'firstname' , field : 'Prénom'} ,
-    {key : 'email' , field : 'Email'},
-    {key : 'connection' , field : 'Connexions/mois'}, 
-    {key : 'dailytime' , field : 'Temps connexion/jour'},
-    {key : 'apartment' , field : 'Lots'}
+    if (accessManagers !== 'denied')
+      getManagers();
+  }, [page_num, row_count, sort_column, sort_method]);
+  const cellList = [
+    { key: 'lastname', field: 'Nom' },
+    { key: 'firstname', field: 'Prénom' },
+    { key: 'email', field: 'Email' },
+    { key: 'connection', field: 'Connexions/mois' },
+    { key: 'dailytime', field: 'Temps connexion/jour' },
+    { key: 'apartment', field: 'Lots' }
   ];
   const columns = [];
-  for(let i = 0; i < 5; i++)
+  for (let i = 0; i < 5; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
-    history.push('/admin/managers/edit/'+id);
+    history.push('/admin/managers/edit/' + id);
   };
-  const handleClickDelete = (id)=>{
-    if(accessManagers === 'Edit'){
+  const handleClickDelete = (id) => {
+    if (accessManagers === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
-    }else{
+    } else {
       setOpenDialog(true);
     }
   };
-  const handleDelete = ()=>{
+  const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
+    setVisibleIndicator(true);
     AdminService.deleteUser(deleteId)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          alert('Deleted successful');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          // getDatas();
+      .then(
+        response => {
+          console.log(response.data);
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            // if(response.data.status === 'Token is Expired') {
+            //   authService.logout();
+            //   history.push('/');
+            // }
+            console.log('error');
+          } else {
+            console.log('success');
+            alert('Deleted successful');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            // getDatas();
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-      }
-    );
+      );
   }
-  const getBuildings = ()=>{
+  const getManagers = () => {
     const requestData = {
       'search_key': '',
-      'page_num' : page_num-1,
-      'row_count' : row_count,
-      'sort_column' : sort_column,
-      'sort_method' : sort_method,
-      'companyID' : companyID
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method,
+      'companyID': companyID,
     }
-    AdminService.getBuildingList(requestData)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          data.buildinglist.map((item)=>(
-            building.push(item.name)
-          )
-          );
-          setBuildingList(data.buildinglist);
-          setBuildingID(data.buildinglist[0].buildingID);
-          building.push('all');
-        }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-      }
-    );
-  }
-  const getManagers = ()=>{
-    const requestData = {
-      'search_key': '',
-      'page_num' : page_num-1,
-      'row_count' : row_count,
-      'sort_column' : sort_column,
-      'sort_method' : sort_method,
-      'companyID' : companyID,
-      'buildingID' : buildingID
-    }
+    setVisibleIndicator(true);
     AdminService.getManagerList(requestData)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
+      .then(
+        response => {
+          console.log(response.data);
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
 
-          setTotalPage(data.totalpage);
-          setDataList(data.managerlist);
-              let amount_connection = 0;
-          const items = ['Total','',data.totalcount,amount_connection, amount_connection, amount_connection];
-          setFooterItems(items);
+            setTotalPage(data.totalpage);
+            setDataList(data.managerlist);
+            let amount_connection = 0;
+            const items = ['Total', '', data.totalcount, amount_connection, amount_connection, amount_connection];
+            setFooterItems(items);
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-      }
-    );
+      );
   }
-  const getCompanies = ()=>{
+  const getCompanies = () => {
+    setVisibleIndicator(true);
     AdminService.getCompanyListByUser()
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          data.companylist.map((item)=>(
-            company.push(item.name)
-          )
-          );
-          setCompanyList(data.companylist);
-          setCompanyID(data.companylist[0].companyID);
-          company.push('all');
-          getBuildings();
+      .then(
+        response => {
+          console.log(response.data);
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            data.companylist.map((item) => (
+              company.push(item.name)
+            )
+            );
+            setCompanyList(data.companylist);
+            setCompanyID(data.companylist[0].companyID);
+            company.push('all');
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-      }
-    );
+      );
   }
   return (
     <div className={classes.root}>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -269,7 +229,7 @@ const Managers = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <MyButton name = {"Nouveau Gestionnaires"} color={"1"} onClick={handleClickAdd}/>
+              <MyButton name={"Nouveau Gestionnaires"} color={"1"} onClick={handleClickAdd} />
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -277,60 +237,47 @@ const Managers = (props) => {
                 aria-describedby="alert-dialog-description"
               >
                 <Grid item container className={classes.padding} justify="space-between">
-                  <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Gestionnaires</h2></Grid>
+                  <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
+                  <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Gestionnaire</h2></Grid>
                 </Grid>
-                <AddManager  onCancel={handleClose} onAdd={handleAdd}/>
+                <AddManager onCancel={handleClose} onAdd={handleAdd} />
               </Dialog>
             </Grid>
           </Grid>
         </Grid>
       </div>
       <div className={classes.tool}>
-      <Grid container spacing={2} direction="column">
-        <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+        <Grid container spacing={2} direction="column">
+          <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
             <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
-                <MySelect 
-                    color="gray" 
-                    data={company} 
-                    onChangeSelect={handleChangeCompanies}
-                    value={companies}
+                <MySelect
+                  color="gray"
+                  data={company}
+                  onChangeSelect={handleChangeCompanies}
+                  value={companies}
                 />
               </Grid>
             </Grid>
+          </Grid>
         </Grid>
-        <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
-            <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
-            <Grid xs item container direction="row-reverse">
-              <Grid item container direction="column" alignItems="stretch">
-                <MySelect 
-                    color="gray" 
-                    data={building} 
-                    onChangeSelect={handleChangeBuildings}
-                    value={buildings}
-                />
-              </Grid>
-            </Grid>
-        </Grid>
-      </Grid>
-      </div> 
+      </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessManagers} onClose={handleCloseDialog}/>
-        <MyTable 
-          onChangeSelect={handleChangeSelect} 
-          onChangePage={handleChangePagination} 
-          onSelectSort={handleSort} 
-          page={page_num} 
-          columns={columns} 
-          products={dataList} 
-          totalpage={totalpage} 
-          cells={cellList} 
+        <MyDialog open={openDialog} role={accessManagers} onClose={handleCloseDialog} />
+        <MyTable
+          onChangeSelect={handleChangeSelect}
+          onChangePage={handleChangePagination}
+          onSelectSort={handleSort}
+          page={page_num}
+          columns={columns}
+          products={dataList}
+          totalpage={totalpage}
+          cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
-          tblFooter = "true"
-          footerItems = {footerItems}
+          tblFooter="true"
+          footerItems={footerItems}
         />
       </div>
       <Dialog
@@ -338,7 +285,7 @@ const Managers = (props) => {
         onClose={handleCloseDelete}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        >
+      >
         <DialogTitle id="alert-dialog-title">
           Delete
         </DialogTitle>

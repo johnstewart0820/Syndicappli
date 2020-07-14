@@ -15,6 +15,7 @@ import {
   Products as ProductsView,
   Users as UsersView,
   SignUp as SignUpView,
+  NotFound,
 } from './views/WebAppAdmin';
 import {
 
@@ -34,6 +35,7 @@ import UserEdit from './views/WebAppAdmin/Users/UserEdit';
 import AdminMyAccount from './views/WebAppAdmin/MyAccount';
 import ForgotPassword from 'views/WebAppAdmin/ForgotPassword';
 import ResetPassword from 'views/WebAppAdmin/ResetPassword';
+import SMSAuth from 'views/WebAppAdmin/SMSAuth';
 import BuildingsEdit from 'views/WebAppAdmin/Buildings/BuildingsEdit';
 import ProductsEdit from 'views/WebAppAdmin/Products/ProductsEdit';
 import OwnerEdit from 'views/WebAppAdmin/Owners/OwnerEdit';
@@ -49,13 +51,14 @@ import ManagerInvoices from './views/WebAppManager/Informations/Invoices';
 import ManagerMyAccount from './views/WebAppManager/Informations/MyAccount';
 import ManagerMyCompany from './views/WebAppManager/Informations/MyCompany';
 import ManagerPaymentMethods from './views/WebAppManager/Informations/PaymentMethods';
+import ManagerAddonsPayment from './views/WebAppManager/Addons/ModulePayment';
 
 //Owner import
 import OwnerInvoices from './views/WebAppOwner/Informations/Invoices';
 import OwnerMyAccount from './views/WebAppOwner/Informations/MyAccount';
 import OwnerSubAccounts from './views/WebAppOwner/Informations/SubAccounts';
 import OwnerHelp from 'views/WebAppOwner/Help';
-import Addons from 'views/WebAppManager/Addons';
+import OwnerAddonsPayment from './views/WebAppOwner/Addons/ModulePayment';
 const Routes = () => {
   return (
     <Switch>
@@ -72,6 +75,12 @@ const Routes = () => {
         exact
         layout={NormalLayout}
         path="/login"
+      />
+      <RouteWithLayout
+        component={SMSAuth}
+        exact
+        layout={NormalLayout}
+        path="/smsauth/:email"
       />
       <RouteWithLayout
         component={ForgotPassword}
@@ -228,6 +237,12 @@ const Routes = () => {
         path="/owner/addons"
       />
       <RouteWithLayout
+        component={OwnerAddonsPayment}
+        exact
+        layout={MainLayout}
+        path="/owner/addons/payment"
+      />
+      <RouteWithLayout
         component={DashboardView}
         exact
         layout={MainLayout}
@@ -329,6 +344,12 @@ const Routes = () => {
         path="/manager/addons"
       />
       <RouteWithLayout
+        component={ManagerAddonsPayment}
+        exact
+        layout={MainLayout}
+        path="/manager/addons/payment"
+      />
+      <RouteWithLayout
         component={DashboardView}
         exact
         layout={MainLayout}
@@ -369,6 +390,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/manager/help"
+      />
+      <RouteWithLayout
+        component={NotFound}
+        exact
+        layout={NormalLayout}
+        path="/not-found"
       />
       <Redirect to="/not-found" />
     </Switch>

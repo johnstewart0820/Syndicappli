@@ -85,55 +85,55 @@ const Sidebar = props => {
 
   const admin_pages = [
     {
-      title: 'Dashboard',
+      title: 'Accueil',
       href: '/admin/dashboard',
       icon: <HomeIcon className={classes.icon}/>,
       status: 'visible'
     },
     {
-      title: 'Companies',
+      title: 'Mes Cabinets',
       href: '/admin/companies',
       icon: <TextFieldsIcon className={classes.icon}/>,
       status: accessCompanies
     },
     {
-      title: 'Managers',
+      title: 'Mes Gestionnaires',
       href: '/admin/managers',
       icon: <AccountBoxIcon className={classes.icon}/>,
       status: accessManagers
     },
     {
-      title: 'Buildings',
+      title: 'Mes immeubles',
       href: '/admin/buildings',
       icon: <PeopleIcon className={classes.icon}/>,
       status: accessBuildings
     },
     {
-      title: 'Owners',
+      title: 'Mes Copropriétaires',
       href: '/admin/owners',
       icon: <SettingsIcon className={classes.icon}/>,
       status: accessOwners
     },
     {
-      title: 'Orders',
+      title: 'Mes Commandes',
       href: '/admin/orders',
       icon: <SettingsIcon className={classes.icon}/>,
       status: accessOrders
     },
     {
-      title: 'Products',
+      title: 'Mes produits',
       href: '/admin/products',
       icon: <LockOpenIcon className={classes.icon}/>,
       status: accessProducts
     },
     {
-      title: 'Discount Codes',
+      title: 'Mes Codes Promo',
       href: '/admin/discountcodes',
       icon: <ImageIcon className={classes.icon}/>,
       status: accessDiscountCodes
     },
     {
-      title: 'Users',
+      title: 'Mes Utilisateurs',
       href: '/admin/users',
       icon: <ShoppingBasketIcon className={classes.icon}/>,
       status: accessUsers

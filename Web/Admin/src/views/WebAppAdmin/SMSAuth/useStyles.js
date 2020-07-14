@@ -150,16 +150,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray'
   },
   error: {
-    color: 'red',
-    [theme.breakpoints.up('xl')]: {
-      fontSize: 20
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize: 14
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: 10
-    },
+    color: 'red'
   }
 }));
 export default useStyles;

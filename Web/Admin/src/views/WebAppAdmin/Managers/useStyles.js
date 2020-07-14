@@ -82,7 +82,20 @@ const useStyles = makeStyles(theme => ({
   },
   close: {
     color: 'gray'
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 
 export const AddManagerStyles = makeStyles(theme => ({
@@ -181,7 +194,20 @@ export const AddManagerStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 export const EditManagerStyles = makeStyles(theme => ({
   root: {

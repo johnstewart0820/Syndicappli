@@ -99,105 +99,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const AddTeamMemberStyles = makeStyles(theme => ({
-  paper: {
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: 5,
-      padding: theme.spacing(2, 4, 3),
-  },
-  footer: {
-    [theme.breakpoints.up('xl')]: {
-      paddingTop: 89,
-    },
-    [theme.breakpoints.down('lg')]: {
-      paddingTop: 62,
-    },
-    [theme.breakpoints.down('md')]: {
-      paddingTop: 43,
-    },
-  },
-  root: {
-      '& .MuiOutlinedInput-input':{
-          [theme.breakpoints.up('xl')]: {
-            padding: '8px 12px',
-            fontSize: 17
-          },
-          [theme.breakpoints.down('lg')]: {
-            padding: '6px 8px',
-            fontSize: 12
-          },
-          [theme.breakpoints.down('md')]: {
-            padding: '4px 6px',
-            fontSize: 8
-          },
-      },
-      '& p':{
-          marginBottom: 0
-      },
-  },
-  plus:{
-    color: '#707070',
-    [theme.breakpoints.up('xl')]: {
-      width:31 , 
-      height: 31,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width:22 , 
-      height: 22,
-    },
-    [theme.breakpoints.down('md')]: {
-      width:15 , 
-      height: 15,
-    },
-  },
-  input: {
-      display: 'none'
-  },
-  img: {
-      cursor: 'pointer',
-      alignItems: 'center',
-      justifyContent: 'center',
-      display: 'flex',
-      border: '1px dashed rgba(112,112,112,0.43)',
-      borderRadius: 8,
-      [theme.breakpoints.up('xl')]: {
-        width: 116,
-        height: 92,
-      },
-      [theme.breakpoints.down('lg')]: {
-        width: 81,
-        height: 64,
-      },
-      [theme.breakpoints.down('md')]: {
-        width: 57,
-        height: 45,
-      },
-  },
-  title:{
-    [theme.breakpoints.up('xl')]: {
-      fontSize: 18,
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize: 13,
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: 9,
-    },
-  },
-  error:{
-      color: 'red',
-      [theme.breakpoints.up('xl')]: {
-        fontSize: 18,
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize: 13,
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize: 9,
-      },
-  }
-}));
-export const EditTeamMemberStyles = makeStyles(theme => ({
+export const ModulePaymentStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
       paddingLeft: theme.spacing(5),
@@ -228,6 +130,9 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
         fontSize: 11,
       },
     },
+    '& .MuiOutlinedInput-multiline':{
+      padding: 0
+    },
     '& p':{
       marginBottom: 0
     }
@@ -235,6 +140,17 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
   title:{
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
+  },
+  tool:{
+    [theme.breakpoints.up('xl')]: {
+      minHeight: 170
+    },
+    [theme.breakpoints.down('lg')]: {
+      minHeight: 120
+    },
+    [theme.breakpoints.down('md')]: {
+      minHeight: 84
+    },
   },
   body:{
     [theme.breakpoints.up('xl')]: {
@@ -252,6 +168,7 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       padding: 20,
       borderRadius: 15,
     },
+    marginBottom: 30,
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
   },
   item:{
@@ -262,36 +179,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-  },
-  plus:{
-    color: '#707070',
-    [theme.breakpoints.up('xl')]: {
-      width:31 , 
-      height: 31,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width:22 , 
-      height: 22,
-    },
-    [theme.breakpoints.down('md')]: {
-      width:15 , 
-      height: 15,
-    },
-  },
-  size: {
-    cursor: 'pointer',
-    [theme.breakpoints.up('xl')]: {
-      width: 214,
-      height: 214,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width: 150,
-      height: 150,
-    },
-    [theme.breakpoints.down('md')]: {
-      width: 105,
-      height: 105,
-    },
   },
   input: {
     display: 'none',
@@ -309,16 +196,15 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
   indicator: {
     color: 'gray'
   },
-  backTitle:{
-    cursor: 'pointer',
+  billingAddress:{
     [theme.breakpoints.up('xl')]: {
-      fontSize: 18,
+      fontSize: 20,
     },
     [theme.breakpoints.down('lg')]: {
-      fontSize: 13,
+      fontSize: 14,
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: 9,
+      fontSize: 10,
     },
   },
   itemTitle:{
@@ -355,7 +241,7 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
         fontSize :18
       },
   },
-  sepaTitle:{
+  price:{
     [theme.breakpoints.up('xl')]: {
       fontSize :28
     },
@@ -366,7 +252,7 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       fontSize :14
     },
   },
-  permissionItemTitle:{
+  sepaItemTitle:{
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
     },
@@ -377,48 +263,81 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
       fontSize: 9,
     },
   },
-  img: {
-    cursor: 'pointer',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-    border: '1px dashed rgba(112,112,112,0.43)',
-    borderRadius: 8,
+  modifier:{
     [theme.breakpoints.up('xl')]: {
-      width: 362,
-      height: 278,
-      marginTop: 30,
-      marginRight: 30
+      fontSize: 15,
     },
     [theme.breakpoints.down('lg')]: {
-      width: 253,
-      height: 177,
-      marginTop: 21,
-      marginRight: 21
+      fontSize: 11,
     },
     [theme.breakpoints.down('md')]: {
-      width: 177,
-      height: 124,
-      marginTop: 15,
-      marginRight: 15
+      fontSize: 8,
     },
   },
-  editAvatar:{
+  cardLeftPart:{
     [theme.breakpoints.up('xl')]: {
-      width: 54,
-      height: 54,
+      width: 76,
+      height: 231,
+      borderTopRightRadius: 15,
+      borderBottomRightRadius: 15
     },
     [theme.breakpoints.down('lg')]: {
-      width: 38,
-      height: 38,
+      width: 53,
+      height: 162,
+      borderTopRightRadius: 11,
+      borderBottomRightRadius: 11
     },
     [theme.breakpoints.down('md')]: {
-      width: 27,
-      height: 27,
+      width: 37,
+      height: 114,
+      borderTopRightRadius: 8,
+      borderBottomRightRadius: 8
     },
-      backgroundColor: 'white',
-      borderRadius: '50%',
-      color: 'gray'
-  }
+    boxShadow: '2px 2px 10px 5px rgba(0,0,0,0.16)',
+    backgroundColor: '#72FEE6',
+    opacity: 0.5
+  },
+  cardMainPart:{
+    [theme.breakpoints.up('xl')]: {
+      width: 391,
+      height: 231,
+      borderRadius: 15
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 273,
+      height: 162,
+      borderRadius: 11
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 191,
+      height: 114,
+      borderRadius: 8
+    },
+    boxShadow: '0px 2px 8px 3px rgba(0,0,0,0.16)',
+    background: 'linear-gradient(90deg, #48C9FF 10%, #72FEE6 100%)',
+  },
+  cardRightPart:{
+    [theme.breakpoints.up('xl')]: {
+      width: 76,
+      height: 231,
+      borderTopLeftRadius: 15,
+      borderBottomLeftRadius: 15
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 53,
+      height: 162,
+      borderTopLeftRadius: 11,
+      borderBottomLeftRadius: 11
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 37,
+      height: 114,
+      borderTopLeftRadius: 8,
+      borderBottomLeftRadius: 8
+    },
+    boxShadow: '-2px 2px 10px 5px rgba(0,0,0,0.16)',
+    backgroundColor: '#48C9FF',
+    opacity: 0.5
+  },
 }));
   export default useStyles;

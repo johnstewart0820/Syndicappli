@@ -10,3 +10,4 @@ export { default as Users } from './Users';
 export { default as Login } from './SignIn';
 export { default as SignUp } from './SignUp';
 export { default as Help } from './Help';
+export { default as NotFound } from './NotFound';

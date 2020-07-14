@@ -53,24 +53,6 @@ import {makeStyles} from '@material-ui/styles';
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
   },
-  body:{
-    [theme.breakpoints.up('xl')]: {
-      marginTop: 64,
-      padding: 40,
-      borderRadius: 30,
-    },
-    [theme.breakpoints.down('lg')]: {
-      marginTop: 45,
-      padding: 28,
-      borderRadius: 21,
-    },
-    [theme.breakpoints.down('md')]: {
-      marginTop: 32,
-      padding: 20,
-      borderRadius: 15,
-    },
-    boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-  },
   item:{
     marginTop: theme.spacing(5),
   },
@@ -79,36 +61,6 @@ import {makeStyles} from '@material-ui/styles';
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-  },
-  plus:{
-    color: '#707070',
-    [theme.breakpoints.up('xl')]: {
-      width:31 , 
-      height: 31,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width:22 , 
-      height: 22,
-    },
-    [theme.breakpoints.down('md')]: {
-      width:15 , 
-      height: 15,
-    },
-  },
-  size: {
-    cursor: 'pointer',
-    [theme.breakpoints.up('xl')]: {
-      width: 214,
-      height: 214,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width: 150,
-      height: 150,
-    },
-    [theme.breakpoints.down('md')]: {
-      width: 105,
-      height: 105,
-    },
   },
   input: {
     display: 'none',
@@ -125,29 +77,6 @@ import {makeStyles} from '@material-ui/styles';
   },
   indicator: {
     color: 'gray'
-  },
-  backTitle:{
-    cursor: 'pointer',
-    [theme.breakpoints.up('xl')]: {
-      fontSize: 18,
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize: 13,
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: 9,
-    },
-  },
-  itemTitle:{
-    [theme.breakpoints.up('xl')]: {
-      fontSize: 25,
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize: 18,
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: 13,
-    },
   },
   error:{
       color: 'red',
@@ -172,32 +101,6 @@ import {makeStyles} from '@material-ui/styles';
         fontSize :18
       },
   },
-  img: {
-    cursor: 'pointer',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-    border: '1px dashed rgba(112,112,112,0.43)',
-    borderRadius: 8,
-    [theme.breakpoints.up('xl')]: {
-      width: 362,
-      height: 278,
-      marginTop: 30,
-      marginRight: 30
-    },
-    [theme.breakpoints.down('lg')]: {
-      width: 253,
-      height: 177,
-      marginTop: 21,
-      marginRight: 21
-    },
-    [theme.breakpoints.down('md')]: {
-      width: 177,
-      height: 124,
-      marginTop: 15,
-      marginRight: 15
-    },
-  },
   sepaTitle:{
     [theme.breakpoints.up('xl')]: {
       fontSize :28
@@ -207,17 +110,6 @@ import {makeStyles} from '@material-ui/styles';
     },
     [theme.breakpoints.down('md')]: {
       fontSize :14
-    },
-  },
-  permissionItemTitle:{
-    [theme.breakpoints.up('xl')]: {
-      fontSize: 18,
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize: 13,
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: 9,
     },
   },
 }));

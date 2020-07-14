@@ -14,7 +14,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Checkbox} from '@material-ui/core';
 import IdCard from 'components/IdCard';
 import {EditOwnerStyles as useStyles} from './useStyles';
-
+const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const OwnerEdit = (props) => {
   const {history} = props;
 
@@ -146,7 +146,13 @@ const handleChangeFirstName = (event) => {
   setFirstName(event.target.value);
 }
 const handleChangeEmail = (event) => {
-  setEmail(event.target.value);
+  event.preventDefault();
+  let errorsMail = 
+        validEmailRegex.test(event.target.value)
+          ? ''
+          : 'Email is not valid!';
+        setEmail(event.target.value);
+        setErrorsEmail(errorsMail);
 }
 const handleChangePhoneNumber = (event) => {
   setPhoneNumber(event.target.value);

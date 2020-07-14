@@ -8,7 +8,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Checkbox} from '@material-ui/core';
 import IdCard from 'components/IdCard';
 import {AddOwnerStyles as useStyles} from './useStyles';
-
+const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddOwner = (props) => {
   const classes = useStyles();
   const [state,setState] = React.useState(false);
@@ -80,19 +80,19 @@ const handleLoadIdcard = (event) => {
     setIdcards(idcards);
     setIdcardUrls(idcardurls);
     setState(!state);
-  }
-  const handleClickCloseIdcard = (num)=>{
+}
+const handleClickCloseIdcard = (num)=>{
     delete idcardurls[num];
     delete idcards[num];
     setIdcards(idcards);
     setIdcardUrls(idcardurls);
     setState(!state);
-  }
+}
 const handleChangeApartNumber = (event) => {
     setApartNumber(event.target.value);
 }
 const handleChangeIsSubAccount = (event) => {
-setIsSubAccount(event.target.checked);
+    setIsSubAccount(event.target.checked);
     if(isSubAccount)
         setIsMemberCouncil(!isSubAccount);
     else
@@ -115,7 +115,13 @@ const handleChangeFirstName = (event) => {
     setFirstName(event.target.value);
 }
 const handleChangeEmail = (event) => {
-    setEmail(event.target.value);
+    event.preventDefault();
+    let errorsMail = 
+          validEmailRegex.test(event.target.value)
+            ? ''
+            : 'Email is not valid!';
+          setEmail(event.target.value);
+          setErrorsEmail(errorsMail);
 }
 const handleChangePhoneNumber = (event) => {
     setPhoneNumber(event.target.value);

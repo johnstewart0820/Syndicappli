@@ -315,6 +315,9 @@ export default function ProductTable  (props)  {
 
     props.onSelectSort(index, direction[index]);
   }
+  const handleClick = ()=>{
+    props.onClick();
+  }
   return ( 
       <Grid container direction="column" spacing={2}>
         <Grid item container direction="row-reverse">
@@ -380,7 +383,8 @@ export default function ProductTable  (props)  {
                     return(
                     <TableCell  key={cell.key} onClick={()=>props.onClickEdit(item.ID)}>
 
-                      {value}
+                      {
+                      value === 'active' ? 'actif' : value === 'inactive' ? 'inactif' : value}
                   </TableCell>);
                   })
                   }
@@ -416,7 +420,7 @@ export default function ProductTable  (props)  {
         </Grid>
         <Grid item container  className={classes.body} alignItems="center">
           <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
-            <MyButton name={props.leftBtn} color={"1"} />
+            <MyButton name={props.leftBtn} color={"1"} onClick={handleClick}/>
           </Grid>
           <Grid xs={12} sm={6} item container direction="row-reverse">
             <Pagination 

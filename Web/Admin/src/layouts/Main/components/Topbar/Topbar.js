@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -13,6 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import authService from 'services/authService';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import useGlobal from 'Global/global';
+import AdminService from 'services/api.js';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -175,15 +177,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Topbar = props => {
-  const { className, onSidebarOpen, ...rest } = props;
+  const { className, onSidebarOpen,  ...rest  } = props;
 
   const classes = useStyles();
   const [value ,setValue] = useState('');
+  const [globalState, globalActions] = useGlobal();
   const [notifications] = useState([]);
 
-  const firstname = authService.getAccess('firstname');  
-  const lastname = authService.getAccess('lastname');  
-  const photo_url = authService.getAccess('photo_url');  
   const handleChange = (newValue) =>{
     setValue(newValue);
   }
@@ -200,7 +200,26 @@ const Topbar = props => {
     setAnchorEl(null);
 
   };
-  const webApp = authService.getAccess('web_app');  
+  useEffect(() => {
+    AdminService.getProfile()
+    .then(      
+      response => {        
+        if(response.data.code !== 200){
+
+        } else {
+          localStorage.setItem("token", JSON.stringify(response.data.data.token));
+          const profile = response.data.data.profile;
+          globalActions.setFirstName(profile.firstname);
+          globalActions.setLastName(profile.lastname);
+          globalActions.setAvatarUrl(profile.photo_url);
+        }
+      },
+      error => {
+        console.log('fail');        
+      }
+    );   
+  }, []);
+  const webApp = authService.getAccess('usertype');  
   return (
     <AppBar
       {...rest}
@@ -234,32 +253,24 @@ const Topbar = props => {
         </IconButton>
         <IconButton
           className={classes.signOutButton}
-          color="inherit"
+            onClick={handleClick}
+            color="inherit"
         >
           <Avatar
-            alt={firstname + ' ' + lastname}
+            alt={globalState.firstname + ' ' + globalState.lastname}
             className={classes.avatar}
-            component={RouterLink}
-            src={photo_url}
-            onClick={handleClick}
+            src={globalState.avatarurl}
           >
-            {firstname[0] + lastname[0]}
+            {globalState.firstname[0] + globalState.lastname[0]}
           </Avatar>
-          <Paper className={classes.paper}>
+        </IconButton>
+        <Paper className={classes.paper}>
             <Menu
               id="simple-menu"
               anchorEl={anchorEl}
               keepMounted
               open={Boolean(anchorEl)}
               onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
               PaperProps={{
                 style:{
                     textAlign: 'center',
@@ -267,7 +278,7 @@ const Topbar = props => {
                     paddingBottom: 0,
                       borderRadius: 8,
                       boxShadow:'5px 5px 19px #b6acf8'
-              }
+                }
               }}
             >
               {
@@ -370,10 +381,8 @@ const Topbar = props => {
               }
             </Menu>
           </Paper>
-
-        </IconButton>
         <Button onClick={handleClick}>
-            <p className={classes.menu_item}><b>{firstname + ' ' + lastname}</b></p>
+            <p className={classes.menu_item}><b>{globalState.firstname + ' ' + globalState.lastname}</b></p>
             <ArrowDropDownIcon className={classes.avatar}/>
         </Button>
       </Toolbar>

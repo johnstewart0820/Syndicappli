@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
 import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -17,29 +16,31 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import authService from '../../../services/authService.js';
 import MyDialog from '../../../components/MyDialog';
 import useStyles from './useStyles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 const Users = (props) => {
   const { history } = props;
 
   //const token = authService.getToken();    
   // if (!token) {
-  //   history.push("/admin/login");
+  //   history.push("/login");
   //   window.location.reload();
   // }
   const accessUsers = authService.getAccess('role_users');
-
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
 
-  const [deleteId,setDeleteId] = useState(-1);
+  const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
-  const [totalpage , setTotalPage] = useState(1);
+  const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
-  const [page_num , setPageNum] = useState(1);
+  const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
-  const [sort_method , setSortMethod] = useState('asc');
-  const selectList=[20, 50, 100, 200, -1];
+  const [sort_method, setSortMethod] = useState('asc');
+  const selectList = [20, 50, 100, 200, -1];
 
   const handleClose = () => {
     setOpen(false);
@@ -51,126 +52,117 @@ const Users = (props) => {
   const handleCloseDialog = (val) => {
     setOpenDialog(val);
   };
-  const handleAdd = ()=>{
+  const handleAdd = () => {
 
   };
-  const handleClickAdd = ()=>{
-    if(accessUsers === 'Edit'){
+  const handleClickAdd = () => {
+    if (accessUsers === 'edit') {
       setOpen(true);
     }
-    if(accessUsers === 'See'){
+    if (accessUsers === 'see') {
       setOpenDialog(true);
     }
   };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
-  const handleChangePagination = (value)=>{
+  const handleChangePagination = (value) => {
     setPageNum(value);
   }
-  const handleSort = (index , direct)=>{
+  const handleSort = (index, direct) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  const getDatas = ()=>{
+  const getDatas = () => {
     const requestData = {
       'search_key': '',
-      'page_num' : page_num-1,
-      'row_count' : row_count,
-      'sort_column' : sort_column,
-      'sort_method' : sort_method
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method
     }
+    setVisibleIndicator(true);
     AdminService.getUserList(requestData)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
+      .then(
+        response => {
+          console.log(response.data);
+          setVisibleIndicator(false);  
+          if (response.data.code !== 200) {
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
 
-          setTotalPage(data.totalpage);
-          setDataList(data.userlist);
+            setTotalPage(data.totalpage);
+            setDataList(data.userlist);
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
-      }
-    );
+      );
   }
-  useEffect(()=>{
-    if(accessUsers === 'Denied'){
+  useEffect(() => {
+    if (accessUsers === 'Denied') {
       setOpenDialog(true);
     }
   });
   useEffect(() => {
-    if(accessUsers !== 'Denied')
-        getDatas();
-  }, [page_num, row_count,sort_column, sort_method]);
-  const cellList = [ 
-    {key : 'lastname' , field : 'Nom'}, 
-    {key : 'firstname' , field : 'Prénom'},
-    {key : 'email' , field : 'Email'}, 
-    {key : 'phone' , field : 'Téléphone'}
+    if (accessUsers !== 'Denied')
+      getDatas();
+  }, [page_num, row_count, sort_column, sort_method]);
+  const cellList = [
+    { key: 'lastname', field: 'Nom' },
+    { key: 'firstname', field: 'Prénom' },
+    { key: 'email', field: 'Email' },
+    { key: 'phone', field: 'Téléphone' }
   ];
   const columns = [];
-  for(let i = 0; i < 4; i++)
+  for (let i = 0; i < 4; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
-    history.push('/admin/users/edit/'+id);
+    history.push('/admin/users/edit/' + id);
   };
-  const handleClickDelete = (id)=>{
-    if(accessUsers === 'Edit'){
+  const handleClickDelete = (id) => {
+    if (accessUsers === 'Edit') {
       setOpenDelete(true);
       setDeleteId(id);
-    }else{
+    } else {
       setOpenDialog(true);
     }
   };
-  const handleDelete = ()=>{
+  const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
+    setVisibleIndicator(true);
     AdminService.deleteUser(deleteId)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          alert('Deleted successful');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          getDatas();
+      .then(
+        response => {
+          console.log(response.data);
+          setVisibleIndicator(false);  
+          if (response.data.code !== 200) {
+            console.log('error');
+          } else {
+            console.log('success');
+            alert('Deleted successful');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            getDatas();
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-      }
-    );
+      );
   }
   return (
     <div className={classes.root}>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -182,7 +174,7 @@ const Users = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <MyButton name = {"Nouvel Utilisateur"} color={"1"} onClick={handleClickAdd}/>
+              <MyButton name={"Nouvel Utilisateur"} color={"1"} onClick={handleClickAdd} />
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -190,28 +182,28 @@ const Users = (props) => {
                 aria-describedby="alert-dialog-description"
               >
                 <Grid item container className={classes.padding} >
-                  <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
+                  <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
                   <Grid xs={12} item ><p id="transition-modal-title" className={classes.modalTitle}><b>Nouvel Utilisateur</b></p></Grid>
                 </Grid>
-                <AddUser onCancel={handleClose} onAdd={handleAdd}/>
+                <AddUser onCancel={handleClose} onAdd={handleAdd} />
               </Dialog>
             </Grid>
           </Grid>
         </Grid>
       </div>
       <div className={classes.tool}>
-      </div> 
+      </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog}/>
-        <MyTable 
-          onChangeSelect={handleChangeSelect} 
-          onChangePage={handleChangePagination} 
-          onSelectSort={handleSort} 
-          page={page_num} 
-          columns={columns} 
-          products={dataList} 
-          totalpage={totalpage} 
-          cells={cellList} 
+        <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog} />
+        <MyTable
+          onChangeSelect={handleChangeSelect}
+          onChangePage={handleChangePagination}
+          onSelectSort={handleSort}
+          page={page_num}
+          columns={columns}
+          products={dataList}
+          totalpage={totalpage}
+          cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
         />
@@ -221,7 +213,7 @@ const Users = (props) => {
         onClose={handleCloseDelete}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        >
+      >
         <DialogTitle id="alert-dialog-title">
           Delete
         </DialogTitle>

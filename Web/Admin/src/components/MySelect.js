@@ -86,7 +86,6 @@ export default function CustomizedSelects(props) {
   return (
       <FormControl className={classes.margin}>
         <NativeSelect
-          labelId="demo-customized-select-label"
           id="demo-customized-select"
           value={value}
           onChange={handleChange}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -14,42 +15,46 @@ import CloseIcon from '@material-ui/icons/Close';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
+import AdminService from '../../../services/api.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Companies = (props) => {
-  const {history}=props;
+  const { history } = props;
   // const token = authService.getToken();    
   // if (!token) {
-  //   history.push("/admin/login");
+  //   history.push("/login");
   //   window.location.reload();
   // }
   const accessCompanies = authService.getAccess('role_companies');
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [deleteId,setDeleteId] = React.useState(-1);
+  const [deleteId, setDeleteId] = React.useState(-1);
   const [dataList, setDataList] = useState([]);
-  const [totalpage , setTotalPage] = useState(1);
+  const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
-  const [page_num , setPageNum] = useState(1);
+  const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
-  const [sort_method , setSortMethod] = useState('asc');
-  const selectList=[20, 50, 100, 200, -1];
-  const cellList = [ 
-    {key : 'name' , field : 'Nom'}, 
-    {key : 'contact' , field : 'Contact'},
-    {key : 'email' , field : 'Email'}, 
-    {key : 'phone' , field : 'Téléphone'},
-    {key : 'managers' , field : 'Gestionnaires'},
-    {key : 'lots' , field : 'Lots'},
+  const [sort_method, setSortMethod] = useState('asc');
+  const selectList = [20, 50, 100, 200, -1];
+  const cellList = [
+    { key: 'name', field: 'Nom' },
+    { key: 'contact_name', field: 'Contact' },
+    { key: 'email', field: 'Email' },
+    { key: 'phone', field: 'Téléphone' },
+    { key: 'manager_count', field: 'Gestionnaires' },
+    { key: 'apartment_count', field: 'Lots' },
+    { key: 'status', field: 'Statut' },
   ];
 
   const columns = [];
-  for(let i = 0; i < cellList.length; i++)
+  for (let i = 0; i < cellList.length; i++)
     columns[i] = 'asc';
-  
+
   const handleClickEdit = (id) => {
     console.log(id);
-    history.push('/admin/companies/edit/'+id);
+    history.push('/admin/companies/edit/' + id);
   }
   const handleOpen = () => {
     setOpen(true);
@@ -58,30 +63,28 @@ const Companies = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleAdd = ()=>{
-
+  const handleAdd = () => {
+    ToastsStore.success('Add new company successfully!');
+    getCompanies();
   };
 
   useEffect(() => {
-    console.log('a');
-  });
-  useEffect(() => {
-    console.log('b');
-    getDataList();
-  }, []);
+    if (accessCompanies !== 'denied')
+      getCompanies();
+  }, [page_num, row_count, sort_column, sort_method]);
 
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
-  const handleChangePagination = (value)=>{
+  const handleChangePagination = (value) => {
     setPageNum(value);
   }
-  const handleSort = (index , direct)=>{
+  const handleSort = (index, direct) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
 
-  const handleClickDelete = (id)=>{
+  const handleClickDelete = (id) => {
     setOpenDelete(true);
     setDeleteId(id);
   };
@@ -89,27 +92,49 @@ const Companies = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
-  const handleDelete = ()=>{
+  const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
   }
-  const getDataList = () => {
-    setDataList([
-      { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 2, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
-      { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
-      { id: 5, name: 'Butter', price: 0.9, stock: 99 },
-      { id: 6, name: 'Sour Cream ', price: 2.9, stock: 86 },
-      { id: 7, name: 'Fancy French Cheese 🇫🇷', price: 99, stock: 12 },
-      { id: 8, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 9, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 10, name: 'Yoghurt', price: 2.4, stock: 12 },
-    ])
-  };
+  const getCompanies = () => {
+    const requestData = {
+      'search_key': '',
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method,
+    }
+    setVisibleIndicator(true);
+    AdminService.getCompanyList(requestData)
+      .then(
+        response => {
+          console.log(response.data);
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            console.log('error');
+          } else {
+            console.log('success');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            if (!data.totalpage)
+              setTotalPage(1);
+            else
+              setTotalPage(data.totalpage);
+            setDataList(data.companylist);
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
+        }
+      );
+  }
 
   return (
     <div className={classes.root}>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -121,7 +146,7 @@ const Companies = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              <MyButton   name={"Nouveau Cabinet"} color={"1"} onClick={handleOpen}/>
+              <MyButton name={"Nouveau Cabinet"} color={"1"} onClick={handleOpen} />
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -129,27 +154,27 @@ const Companies = (props) => {
                 aria-describedby="alert-dialog-description"
               >
                 <Grid item container className={classes.padding} justify="space-between">
-                  <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
+                  <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
                   <Grid item><p id="transition-modal-title" className={classes.modalTitle}><b>Nouveau Cabinet</b></p></Grid>
                 </Grid>
-                <AddCompany  onCancel={handleClose} onAdd={handleAdd}/>
+                <AddCompany onCancel={handleClose} onAdd={handleAdd} />
               </Dialog>
             </Grid>
           </Grid>
         </Grid>
       </div>
       <div className={classes.tool}>
-      </div> 
+      </div>
       <div className={classes.body}>
-        <MyTable 
-          onChangeSelect={handleChangeSelect} 
-          onChangePage={handleChangePagination} 
-          onSelectSort={handleSort} 
-          page={page_num} 
-          columns={columns} 
-          products={dataList} 
-          totalpage={totalpage} 
-          cells={cellList} 
+        <MyTable
+          onChangeSelect={handleChangeSelect}
+          onChangePage={handleChangePagination}
+          onSelectSort={handleSort}
+          page={page_num}
+          columns={columns}
+          products={dataList}
+          totalpage={totalpage}
+          cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
         />
@@ -159,7 +184,7 @@ const Companies = (props) => {
         onClose={handleCloseDelete}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        >
+      >
         <DialogTitle id="alert-dialog-title">
           Delete
         </DialogTitle>
@@ -178,6 +203,7 @@ const Companies = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

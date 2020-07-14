@@ -14,7 +14,7 @@ import Multiselect from '../../../components/Multiselect.js';
 import MyDialog from '../../../components/MyDialog.js';
 import {EditManagerStyles as useStyles} from './useStyles';
 import AdminService from '../../../services/api.js';
-
+const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const ManagerEdit = (props) => {
   const {history} = props;
 
@@ -157,7 +157,13 @@ const handleChangeFirstName = (event) => {
   setFirstName(event.target.value);
 }
 const handleChangeEmail = (event) => {
-  setEmail(event.target.value);
+  event.preventDefault();
+  let errorsMail = 
+        validEmailRegex.test(event.target.value)
+          ? ''
+          : 'Email is not valid!';
+        setEmail(event.target.value);
+        setErrorsEmail(errorsMail);
 }
 const handleChangePhoneNumber = (event) => {
   setPhoneNumber(event.target.value);

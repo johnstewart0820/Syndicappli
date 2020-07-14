@@ -131,7 +131,7 @@ const AddBuilding = (props) => {
           const data = response.data.data;
           localStorage.setItem("token", JSON.stringify(data.token));
           props.onAdd();
-           handleClose();
+          handleClose();
         }
       },
       error => {

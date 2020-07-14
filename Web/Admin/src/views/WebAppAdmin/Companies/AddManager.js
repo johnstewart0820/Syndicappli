@@ -12,7 +12,6 @@ const AddManager = (props) => {
     const classes = useStyles();
 
     const permissionList = ['', 'Editer', 'Voir', 'Refusé'];
-
     const [avatarurl, setAvatarUrl] = React.useState("");
     const [avatar, setAvatar] = React.useState(null);
     const [lastname, setLastName] = React.useState('');
@@ -135,7 +134,6 @@ const AddManager = (props) => {
         else
             setCompanyID(-1);
     };
-
     const handleChangeBuildingsPermission = (val) => {
         setBuildingsPermission(val);
     }
