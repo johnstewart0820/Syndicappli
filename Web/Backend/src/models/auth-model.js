@@ -22,6 +22,7 @@ var authModel = {
     verifySMS: verifySMS,
     verifyUser: verifyUser,
     saveToken: saveToken,
+    saveRefreshToken: saveRefreshToken,
     verifyToken: verifyToken,
     resetPassword: resetPassword,
     logout: logout,
@@ -149,7 +150,7 @@ function verifyUser(email) {
 }
 
 /**
- * Save user SMS verification code
+ * Save user Token
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
@@ -160,11 +161,41 @@ function saveToken(email, token) {
         let query = 'UPDATE ' + table.USERS + ' SET token = ? WHERE email = ?'
 
         db.query(query, [ token, email ], (error, rows, fields) => {
-            console.log("error: ", error)
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 resolve("Ok")
+            }
+        })
+    })
+}
+
+/**
+ * Save user Refresh token
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function saveRefreshToken(token, refresh_reset_token) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE token = ?'
+        db.query(query, [ token ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    let update_query = 'UPDATE ' + table.USERS + ' SET token = ? WHERE userID = ?'
+                    db.query(update_query, [ refresh_reset_token, rows[0].userID ], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            resolve("Ok")
+                        }
+                    })
+                } else {
+                    reject({ message: message.INVALID_TOKEN })
+                }
             }
         })
     })
@@ -177,32 +208,28 @@ function saveToken(email, token) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function verifyToken(email, token) {
+function verifyToken(token) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT * FROM ' + table.USERS + ' WHERE email = ?'
-        db.query(query, [ email ], (error, rows, fields) => {
-            if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
-            } else {
-                if(rows.length > 0){
-                    jwt.verify(rows[0].token, key.JWT_SECRET_KEY, function (err, decoded) {
-                        if (err) {
-                            if(err.name == "TokenExpiredError"){
-                                reject({ message: message.EXPIRED_SMS_CODE })
-                            } else {
-                                reject({ message: err.name })
-                            }
-                        } else {
-                            if(decoded.tmpToken == token){
-                                resolve("OK")
-                            } else {
-                                reject({ message: message.INVALID_TOKEN })
-                            }
-                        }
-                    })
-                }else{
-                    reject({ message: message.ACCOUNT_NOT_EXIST })
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE token = ?'
+        jwt.verify(token, key.JWT_SECRET_KEY, function (err, decoded) {
+            if (err) {
+                if(err.name == "TokenExpiredError"){
+                    reject({ message: message.EXPIRED_TOKEN_CODE })
+                } else {
+                    reject({ message: err.name })
                 }
+            } else {
+                db.query(query, [ token ], (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                        if(rows.length > 0){
+                            resolve("OK!")
+                        }else{
+                            reject({ message: message.INVALID_TOKEN })
+                        }
+                    }
+                })
             }
         })
     })
@@ -215,39 +242,50 @@ function verifyToken(email, token) {
  * @param   string email, string new_password
  * @return  object If success returns object else returns message
  */
-function resetPassword(email, new_password) {
+function resetPassword(token, new_password) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT * FROM ' + table.USERS + ' WHERE email = ?'
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE token = ?'
 
-        db.query(query, [ email ], (error, rows, fields) => {
-            if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
-            } else {
-                if(rows.length > 0){
-                    bcrypt.compare(new_password, rows[0].password, function (error, result) {
-                        if (error) {
-                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                        } else {
-                            if (result) {
-                                reject({ message: message.INVALID_NEW_PASSWORD })
-                            } else {
-                                let query = 'UPDATE ' + table.USERS + ' SET password = ? WHERE email = ?'
-                                let new_pass = bcrypt.hashSync(new_password)
-                                db.query(query, [ new_pass, email ], (error, rows, fields) => {
-                                    if(error){
-                                        reject({ message: message.INTERNAL_SERVER_ERROR })
-                                    }else{
-                                        resolve("OK")
-                                    }
-                                })
-                            }
-                        }
-                    })
-                }else{
-                    reject({ message: message.ACCOUNT_NOT_EXIST })
+        jwt.verify(token, key.JWT_SECRET_KEY, function (err, decoded) {
+            if (err) {
+                if (err.name == "TokenExpiredError") {
+                    reject({message: message.EXPIRED_TOKEN_CODE})
+                } else {
+                    reject({message: err.name})
                 }
+            } else {
+                db.query(query, [ token ], (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                        if(rows.length > 0){
+                            bcrypt.compare(new_password, rows[0].password, function (error, result) {
+                                if (error) {
+                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                } else {
+                                    if (result) {
+                                        reject({ message: message.INVALID_NEW_PASSWORD })
+                                    } else {
+                                        let query = 'UPDATE ' + table.USERS + ' SET password = ? WHERE token = ?'
+                                        let new_pass = bcrypt.hashSync(new_password)
+                                        db.query(query, [ new_pass, token ], (error, rows, fields) => {
+                                            if(error){
+                                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                                            }else{
+                                                resolve("OK")
+                                            }
+                                        })
+                                    }
+                                }
+                            })
+                        }else{
+                            reject({ message: message.INVALID_TOKEN })
+                        }
+                    }
+                })
             }
         })
+
     })
 }
 

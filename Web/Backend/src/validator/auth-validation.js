@@ -12,5 +12,21 @@ module.exports = {
             email: Joi.string().required(),
             code: Joi.string().required()
         })
+    },
+    forgotPassword:{
+        body: Joi.object({
+            email: Joi.string().required()
+        })
+    },
+    verifyToken:{
+        body: Joi.object({
+            token: Joi.string().required()
+        })
+    },
+    resetPassword:{
+        body: Joi.object({
+            token: Joi.string().required(),
+            password: Joi.string().required()
+        })
     }
 }

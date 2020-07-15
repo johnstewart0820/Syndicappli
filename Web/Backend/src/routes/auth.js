@@ -25,9 +25,9 @@ router.post('/login', validate(authValidation.login, {}, {}), login)
 /**
  * Forgot Password
  */
-router.post('/forgotPassword', forgotPassword)
-router.post('/verifyToken', verifyToken)
-router.post('/resetPassword', resetPassword)
+router.post('/forgotPassword', validate(authValidation.forgotPassword, {}, {}), forgotPassword)
+router.post('/verifyToken', validate(authValidation.verifyToken, {}, {}), verifyToken)
+router.post('/resetPassword', validate(authValidation.resetPassword, {}, {}), resetPassword)
 
 /**
  * Verification API
@@ -115,9 +115,8 @@ function forgotPassword(req, res) {
  */
 function verifyToken(req, res) {
     let token = req.body.token
-    let email = req.body.email
 
-    authService.verifyToken(email, token).then((result) => {
+    authService.verifyToken(token).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -134,9 +133,9 @@ function verifyToken(req, res) {
  */
 function resetPassword(req, res) {
     let new_password = req.body.password
-    let email = req.body.email
+    let token = req.body.token
 
-    authService.resetPassword(email, new_password).then((result) => {
+    authService.resetPassword(token, new_password).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

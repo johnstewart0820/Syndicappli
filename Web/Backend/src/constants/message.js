@@ -21,6 +21,7 @@ const messages = {
     INVALID_NEW_PASSWORD: 'New password is the same with your old one. Please try to change your password again.',
     INVALID_SMS_CODE: 'Invalid SMS Code, Please check your SMS code again.',
     EXPIRED_SMS_CODE: 'Your SMS Code is Expired, Please try again.',
+    EXPIRED_TOKEN_CODE: 'Your Token is Expired, Please try again.',
     USER_EMAIL_DUPLICATED: 'Sorry, this user already exists.',
     EMIL_IS_NOT_EXIST: 'Your email Address is not exist or not authorized recipients.',
     INVALID_TOKEN: 'Invalid TOKEN to reset your password, Please try again.',

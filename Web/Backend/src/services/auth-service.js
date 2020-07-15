@@ -76,7 +76,6 @@ function firstLogin(authData) {
                 var sms_code = Math.floor(100000 + Math.random() * 900000);
                 var body = "Verification Code: " + sms_code;
                 var to = data.phone;
-                console.log("SMS Code: ", sms_code)
                 let sms_token = jwt.sign({ smsCode: sms_code}, key.JWT_SECRET_KEY, {
                     expiresIn: timer.SMS_TOKEN_EXPIRATION
                 })
@@ -113,7 +112,6 @@ function forgotPassword(email){
         let reset_token = jwt.sign({ tmpToken: tmpToken}, key.JWT_SECRET_KEY, {
             expiresIn: timer.SMS_TOKEN_EXPIRATION
         })
-        console.log("tmp token: ", tmpToken)
         authModel.verifyUser(email).then((data) => {
             sendMail(mail.TITLE_FORGOT_PASSWORD, email, mail.TYPE_FORGOT_PASSWORD, reset_token)
                 .then((response) => {
@@ -145,15 +143,15 @@ function forgotPassword(email){
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @return  string
  */
-function verifyToken(email, token){
+function verifyToken(token){
     return new Promise((resolve, reject) => {
-        authModel.verifyToken(email, token).then((data) => {
+        authModel.verifyToken(token).then((data) => {
             var tmpToken = randtoken.generate(15);
             let refresh_reset_token = jwt.sign({ tmpToken: tmpToken}, key.JWT_SECRET_KEY, {
                 expiresIn: timer.SMS_TOKEN_EXPIRATION
             })
-            authModel.saveToken(email, refresh_reset_token).then((resp) => {
-                resolve({ code: code.OK, message: message.VERIFIED_TOKEN_SUCCESSFULLY, data: {} })
+            authModel.saveRefreshToken(token, refresh_reset_token).then((resp) => {
+                resolve({ code: code.OK, message: message.VERIFIED_TOKEN_SUCCESSFULLY, data: {tmpToken: refresh_reset_token} })
             }).catch((err) => {
                 reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
             })
@@ -172,10 +170,18 @@ function verifyToken(email, token){
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @return  string
  */
-function resetPassword(email, new_password){
+function resetPassword(token, new_password){
     return new Promise((resolve, reject) => {
-        authModel.resetPassword(email, new_password).then((data) => {
-            resolve({ code: code.OK, message: message.RESET_PASSWORD_SUCCESSFULLY, data: {} })
+        authModel.resetPassword(token, new_password).then((data) => {
+            var tmpToken = randtoken.generate(15);
+            let refresh_reset_token = jwt.sign({ tmpToken: tmpToken}, key.JWT_SECRET_KEY, {
+                expiresIn: timer.SMS_TOKEN_EXPIRATION
+            })
+            authModel.saveRefreshToken(token, refresh_reset_token).then((resp) => {
+                resolve({ code: code.OK, message: message.RESET_PASSWORD_SUCCESSFULLY, data: {} })
+            }).catch((err) => {
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)
                 reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
