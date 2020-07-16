@@ -155,6 +155,7 @@ function verifySMS(req, res){
     let code = req.body.code
 
     authService.verifySMS(email, code).then((result) => {
+        console.log(result)
         res.json(result)
     }).catch((err) => {
         res.json(err)

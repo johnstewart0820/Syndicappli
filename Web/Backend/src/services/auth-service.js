@@ -197,9 +197,9 @@ function resetPassword(token, new_password){
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @return  string
  */
-function verifySMS(email, code){
+function verifySMS(email, sms_code){
     return new Promise((resolve, reject) => {
-        authModel.verifySMS(email, code).then((data) => {
+        authModel.verifySMS(email, sms_code).then((data) => {
             if (data) {
                 var sms_code = Math.floor(100000 + Math.random() * 900000);
                 let refresh_sms_token = jwt.sign({ smsCode: sms_code}, key.JWT_SECRET_KEY, {
