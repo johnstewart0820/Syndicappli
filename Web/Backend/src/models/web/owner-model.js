@@ -13,6 +13,9 @@ var db = require('../../database/database')
 var message  = require('../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../constants/table')
+const s3Helper = require('../../helper/s3helper')
+const s3buckets = require('../../constants/s3buckets')
+const timeHelper = require('../../helper/timeHelper')
 
 var ownerModel = {
     getOwnerList: getOwnerList,
@@ -107,55 +110,99 @@ function getCountOwnerList(uid, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createOwner(uid, data) {
+function createOwner(uid, data, files) {
     return new Promise((resolve, reject) => {
         let confirm_query = `Select * from ` + table.USERS + ` where email = ?`;
-        let query = `Insert into ` + table.USERS + ` ()
-                  (select count(*) from ` + table.APARTMENTS + ` a left join ` + table.VOTE_AMOUNT_OF_PARTS + ` va on va.apartmentID = a.apartmentID where a.userID = o.userID) as apartment_count
-                  from ` + table.USERS + ` o
-                  where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and o.status = "active"`
-        db.query(confirm_query, [ data.email ],  async function (error, rows, fields) {
+    
+        db.query(confirm_query, [ data.email ],  async function (error, result, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                if (rows.length == 0) {
+                if (result.length == 0) {
+                    let photo_url = ""
+                    let id_front = ""
+                    let id_back = ""
+                    uploadS3 = await s3Helper.uploadLogoS3(files[0], s3buckets.IDENTITY_IMAGE)
+                    photo_url = uploadS3.Location
+                    uploadS3 = await s3Helper.uploadLogoS3(files[1], s3buckets.IDENTITY_IMAGE)
+                    id_front = uploadS3.Location
+                    uploadS3 = await s3Helper.uploadLogoS3(files[2], s3buckets.IDENTITY_IMAGE)
+                    id_back = uploadS3.Location    
+                
                     let password = bcrypt.hashSync("123456")
-                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    db.query(query, ["owner", data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, password, data.address, data.phone, data.photo_url, data.identity_card_front, data.identity_card_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields => {
+                    let query = `Insert into ` + table.USERS + ` (usertype, type, buildingID, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                    await db.query(query, ["owner", data.type, data.buildingID, data.owner_role, data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
-                        }
-                    }))
+                        } 
+                    })
+                } else {
+                    if ( !result[0].buildingID.split(',').includes(data.buildingID)) {
+                        let buildingID = result[0].buildingID + ',' + data.buildingID;
+                        let query = `Update ` + table.USERS + ` SET buildingID = ? where userID = ?`
+                        await db.query(query, [buildingID, result[0].userID], (error, rows, fields) => {
+                            if (error) {
+                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                            }
+                        })
+                    }
                 }
-                db.query(query, [],  async (error, rows, fields) => {
+                
+                let query = `Select * from ` + table.USERS + ` where email = ?`;
+                db.query(query, [ data.email ], (error, rows, fields) => {
                     if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
                     } else {
-                        let buildingID = rows[0].buildingID;
-                        for (let i in data.vote) {
-                            let query = 'Insert into ' + table.VOTEBRANCH + ' (name) values (?)'
-                            let select_query = 'Select * from ' + table.VOTEBRANCH + ' where name = ?'
-                            let insert_query = 'Insert into ' + table.BUILDING_VOTE_BRANCH + ' (buildingID, voteID) values (?, ?)'
-                            await db.query(query, [ data.vote[i].name ], async (error, rows, fields) => {
+                        let id = rows[0].userID;
+                        for (let i in data.vote_value_list) {
+                            let vote_value = data.vote_value_list[i];
+                            let query = `Select * from ` + table.APARTMENTS + ` where userID = ?  and apartment_number = ? and buildingID = ?`
+                            db.query(query, [id, vote_value.apartment_number, data.buildingID], (error, rows, fields) => {
                                 if (error) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                 } else {
-                                    await db.query(select_query, [ data.vote[i].name ], (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR})
-                                        } else {
-                                            db.query(insert_query, [ buildingID, rows[rows.length - 1].voteID ], (error, rows, fields) => {
-                                                if (error) {
-                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                }
-                                            })
-                                        }
-                                    })
+                                    if (rows.length == 0) {
+                                        let query = `Insert into ` + table.APARTMENTS + ` (userID, apartment_number, buildingID, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)`
+                                        db.query(query, [id, vote_value.apartment_number, data.buildingID, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+                                            if (error) {
+                                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                                            } else {
+                                                let query = `Select * from ` + table.APARTMENTS + ` where userID = ? and apartment_number = ?`
+                                                db.query(query, [id, vote_value.apartment_number], (error, rows, fields) => {
+                                                    if (error) {
+                                                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                                                    } else {
+                                                        let apartment_id = rows[0].apartmentID;
+                                                        for (let i in vote_value.vote) {
+                                                            let vote = vote_value.vote[i];
+                                                            let query = `Select * from ` + table.VOTE_AMOUNT_OF_PARTS + ` where apartmentID = ? and voteID = ?`
+                                                            db.query(query, [apartment_id, vote.voteID], (error, rows, fields) => {
+                                                                if (error) {
+                                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                                                } else {
+                                                                    if (rows.length == 0) {
+                                                                        let query = `Insert into ` + table.VOTE_AMOUNT_OF_PARTS + ` (apartmentID, voteID, amount, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)`
+                                                                        db.query(query, [apartment_id, vote.voteID, vote.vote_amount, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+                                                                            if (error) {
+                                                                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                                                                            }
+                                                                        })
+                                                                    }
+                                                                }
+                                                            })
+                                                        }
+                                                    }
+                                                })
+    
+                                            }
+                                        })
+                                    }
                                 }
-                            })
+                            }) 
                         }
                     }
-                })
+                }) 
+            
                 resolve("ok");
             }
         })
