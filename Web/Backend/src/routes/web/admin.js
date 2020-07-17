@@ -410,9 +410,10 @@ function getBuilding(req, res) {
 function updateBuilding(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let id = req.params.id;
     let data = req.body
-    buildingService.updateBuilding(userId, id, data).then((result) => {
+    buildingService.updateBuilding(userId, id, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
