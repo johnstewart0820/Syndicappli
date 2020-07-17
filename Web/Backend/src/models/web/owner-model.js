@@ -39,7 +39,7 @@ function getOwnerList(uid, data) {
                   from ` + table.USERS + ` o
                   where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and o.status = "active"`
         if (data.buildingID !== "-1") {
-            query += ` and o.builingID in (` + data.buildingID + `)`
+            query += ` and o.buildingID in (` + data.buildingID + `)`
         }
 
         sort_column = Number(data.sort_column);
@@ -60,7 +60,7 @@ function getOwnerList(uid, data) {
                 query += ' order by o.phone ';
             }
             else if (sort_column === 4) {
-                query += ' order by o.onwer_role ';
+                query += ' order by o.owner_role ';
             }
             query += data.sort_method;
         }
@@ -88,7 +88,7 @@ function getCountOwnerList(uid, data) {
                   from ` + table.USERS + ` o
                   where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and o.status = "active"`
         if (data.buildingID !== "-1") {
-            query += ` and o.builingID in (` + data.buildingID + `)`
+            query += ` and o.buildingID in (` + data.buildingID + `)`
         }
         search_key = '%' + data.search_key + '%'
 
