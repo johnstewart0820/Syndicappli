@@ -36,7 +36,7 @@ var buildingService = {
  */
 function getCompanyListByUser(uid, userdata) {
     return new Promise((resolve, reject) => {
-        buildingModel.getCompanyListByUser(uid).then((result) => {
+        buildingModel.getManagerCompanyListByUser(uid).then((result) => {
             if (result) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
@@ -63,10 +63,10 @@ function getCompanyListByUser(uid, userdata) {
 function getBuildingList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasBuildingPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
-            buildingModel.getBuildingList(uid, data).then((buildingList) => {
+            buildingModel.getManagerBuildingList(uid, data).then((buildingList) => {
                 if (buildingList) {
-                    buildingModel.getCountBuildingList(uid, data).then((building_count) => {
-                        buildingModel.getCompanyListByUser(uid).then((companyList) => {
+                    buildingModel.getManagerCountBuildingList(uid, data).then((building_count) => {
+                        buildingModel.getManagerCompanyListByUser(uid).then((companyList) => {
                             if (companyList) {
                                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                                     expiresIn: timer.TOKEN_EXPIRATION
@@ -99,7 +99,7 @@ function getBuildingList(uid, data, userdata) {
 function createBuilding(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            buildingModel.createBuilding(uid, data).then((result) => {
+            buildingModel.managerCreateBuilding(uid, data).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
@@ -128,7 +128,7 @@ function createBuilding(uid, data, userdata) {
  */
 function getBuilding(uid, data, userdata) {
     return new Promise((resolve, reject) => {
-        buildingModel.getBuilding(data).then((result) => {
+        buildingModel.getManagerBuilding(data).then((result) => {
             if (result) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
@@ -154,7 +154,7 @@ function getBuilding(uid, data, userdata) {
  */
 function updateBuilding(uid, id, data, userdata) {
     return new Promise((resolve, reject) => {
-        buildingModel.updateBuilding(uid, id, data).then((result) => {
+        buildingModel.managerUpdateBuilding(uid, id, data).then((result) => {
             if (result) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION

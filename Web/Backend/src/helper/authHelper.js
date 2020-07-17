@@ -46,7 +46,6 @@ function hasBuildingPermission(userdata, permission){
     return new Promise((resolve, reject) => {
         let status = false
         for (i in permission) {
-            console.log("permission: ", i)
             if (userdata.role_buildings == permission[i]){
                 status = true
                 break

@@ -393,7 +393,8 @@ function getBuilding(req, res) {
 
     let userId = req.decoded.uid
     let data = req.params.id
-    buildingService.getBuilding(userId, data).then((result) => {
+    let userdata = req.decoded.userdata
+    buildingService.getBuilding(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
