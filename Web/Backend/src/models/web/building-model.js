@@ -58,18 +58,16 @@ function getBuildingList(data) {
     return new Promise((resolve, reject) => {
         let query;
         if (data.companyID == -1) {
-            query = `select b.*, i.total
+            query = `select b.*, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = 1 and permission = "active")
-                left join ` + table.INVOICES + ` i on i.invoiceID = b.invoiceID
+                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
                 where (b.name like ?) and b.permission = "active"`
         } else {
-            query = `select b.*, i.total
+            query = `select b.*, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = 1 and permission = "active")
-                left join ` + table.INVOICES + ` i on i.invoiceID = b.invoiceID
+                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
                 where (b.name like ?) and b.permission = "active" and b.companyID = ?`
         }
 
@@ -114,15 +112,13 @@ function getCountBuildingList(data) {
             query = `select count(b.buildingID) count
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = 1 and permission = "active")
-                left join ` + table.INVOICES + ` i on i.invoiceID = b.invoiceID
+                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
                 where (b.name like ?) and b.permission = "active"`
         } else {
             query = `select count(b.buildingID) count
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = 1 and permission = "active")
-                left join ` + table.INVOICES + ` i on i.invoiceID = b.invoiceID
+                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
                 where (b.name like ?) and b.permission = "active" and b.companyID = ?`
         }
         search_key = '%' + data.search_key + '%'
@@ -145,7 +141,7 @@ function getCountBuildingList(data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createBuilding(data) {
+function createBuilding(uid, data) {
     return new Promise((resolve, reject) => {
         let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN) values (?, ?, ?, ?, ?, ?)'
         let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'

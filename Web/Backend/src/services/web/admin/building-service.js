@@ -62,7 +62,7 @@ function getCompanyListByUser(uid) {
  */
 function getBuildingList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
-        authHelper.hasBuildingPermission(userdata, code.SEE_PERMISSION).then((response) => {
+        authHelper.hasBuildingPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
             buildingModel.getBuildingList(data).then((buildingList) => {
                 if (buildingList) {
                     buildingModel.getCountBuildingList(data).then((building_count) => {
