@@ -122,7 +122,7 @@ function createOwner(uid, data, files) {
                     let photo_url = ""
                     let id_front = ""
                     let id_back = ""
-                    uploadS3 = await s3Helper.uploadLogoS3(files[0], s3buckets.IDENTITY_IMAGE)
+                    uploadS3 = await s3Helper.uploadLogoS3(files[0], s3buckets.OWNER_LOGO)
                     photo_url = uploadS3.Location
                     uploadS3 = await s3Helper.uploadLogoS3(files[1], s3buckets.IDENTITY_IMAGE)
                     id_front = uploadS3.Location
