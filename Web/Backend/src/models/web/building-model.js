@@ -13,6 +13,7 @@ var db = require('../../database/database')
 var message  = require('../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../constants/table')
+var timeHelper = require('../../helper/timeHelper')
 
 var adminModel = {
     getCompanyListByUser: getCompanyListByUser,
@@ -143,42 +144,37 @@ function getCountBuildingList(data) {
  */
 function createBuilding(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN) values (?, ?, ?, ?, ?, ?)'
+        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)'
         let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-        db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN ],  async (error, rows, fields) => {
+        db.query(query, [ data.companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime() ],  (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                await db.query(select_building_query, [],  async (error, rows, fields) => {
+                db.query(select_building_query, [],  (error, rows, fields) => {
                     if (error) {
                         reject({ message: message.INTERNAL_SERVER_ERROR });
                     } else {
-                        let buildingID = rows[0].buildingID;
-                        for (let i in data.vote) {
-                            let query = 'Insert into ' + table.VOTEBRANCH + ' (name) values (?)'
-                            let select_query = 'Select * from ' + table.VOTEBRANCH + ' where name = ?'
-                            let insert_query = 'Insert into ' + table.BUILDING_VOTE_BRANCH + ' (buildingID, voteID) values (?, ?)'
-                            await db.query(query, [ data.vote[i].name ], async (error, rows, fields) => {
+                        if(rows.length > 0){
+                            let buildingID = rows[0] .buildingID
+                            query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
+                            let vote_branches = []
+                            let item
+                            for ( var i = 0 ; i < data.vote_branches.length ; i++){
+                                item = data.vote_branches[i]
+                                vote_branches.push([buildingID, item.name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
+                            }
+                            db.query(query, [vote_branches],  (error, rows, fields) => {
                                 if (error) {
-                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                    reject({ message: message.INTERNAL_SERVER_ERROR });
                                 } else {
-                                    await db.query(select_query, [ data.vote[i].name ], (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR})
-                                        } else {
-                                            db.query(insert_query, [ buildingID, rows[rows.length - 1].voteID ], (error, rows, fields) => {
-                                                if (error) {
-                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                }
-                                            })
-                                        }
-                                    })
+                                    resolve("OK")
                                 }
                             })
+                        } else {
+                            reject({ message: message.BUILDING_NOT_EXSIT });
                         }
                     }
                 })
-                resolve("ok");
             }
         })
     })

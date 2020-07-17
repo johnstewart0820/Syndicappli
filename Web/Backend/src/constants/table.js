@@ -21,7 +21,7 @@ const tables = {
     COMPANIES: 'companies',
     BUILDING_MANAGER: 'building_manager',
     BUILDINGS: 'buildings',
-    BUILDING_VOTE_BRANCH: 'building_vote_branch',
+    VOTE_BUILDING_BRANCH: 'vote_building_branches',
     VOTEBRANCH: 'vote_branch',
     MANAGERS: 'managers',
     MANAGER_BUILDING: 'manager_building',

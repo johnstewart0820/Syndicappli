@@ -45,6 +45,7 @@
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
     "sendgrid": "^5.2.3",
+    "stripe": "^8.75.0",
     "superagent": "^4.0.0-beta.5",
     "textract": "^2.5.0",
     "twilio": "^3.48.0",

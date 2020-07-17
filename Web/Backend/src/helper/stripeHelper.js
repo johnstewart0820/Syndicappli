@@ -1,72 +1,85 @@
+/**
+ * Stripe helper file
+ *
+ * @package   backend/src/helper
+ * @author    Taras <streaming9663@gmail.com>
+ * @copyright 2020 Say Digital Company
+ * @license   Turing License
+ * @version   2.0
+ * @link      https://turing.ly/
+ */
+
 const dotenv = require('dotenv')
 dotenv.config()
-const s3buckets = require('../constants/s3buckets')
-var md5 = require('md5');
-var fs = require('fs')
 
-var AWS = require('aws-sdk');
-s3 = new AWS.S3({
-    accessKeyId: process.env.ACCESS_KEY_ID,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY
-});
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-s3_functions = {
-    uploadS3:uploadS3,
-    uploadLogoS3:uploadLogoS3
+const stripeHelper = {
+    createCustomer: createCustomer,
+    createCustomerSource: createCustomerSource,
+    createCharge: createCharge,
+    sendStripeEmail: sendStripeEmail
 }
 
-function uploadS3(files, bucket){
-    return new Promise(function (resolve, reject) {
-        filename_splits = files.avatar.name.split('.');
-        fs.readFile(files.avatar.path, (err, data) => {
-            if (err) {
-                reject(err)
-            } else {
-                let params = {
-                    Bucket: bucket,
-                    Key: md5(Date.now()) + "." + filename_splits[filename_splits.length - 1],
-                    Body: data,
-                    ContentType: files.avatar.mimetype,
-                    ACL: 'public-read'
-                };
-
-                s3.upload(params, function (error, response) {
-                    if (error) {
-                        reject(error)
-                    } else {
-                        resolve(response)
-                    }
-                });
-            }
-        })
-    })
+function createCustomer(email) {
+    return new Promise((resolve, reject) => {
+        stripe.customers.create({
+            email: email
+        }).then((customer) => {
+            resolve(customer)
+        }).catch((err) => {
+            console.log('createCustomer error == ', err)
+            reject(err)
+        });
+    });
 }
 
-function uploadLogoS3(file, bucket){
-    return new Promise(function (resolve, reject) {
-        filename_splits = file.originalname.split('.');
-        fs.readFile(file.path, (err, data) => {
-            if (err) {
-                reject(err)
-            } else {
-                let params = {
-                    Bucket: bucket,
-                    Key: md5(Date.now()) + "." + filename_splits[filename_splits.length - 1],
-                    Body: data,
-                    ContentType: file.mimetype,
-                    ACL: 'public-read'
-                };
-
-                s3.upload(params, function (error, response) {
-                    if (error) {
-                        reject(error)
-                    } else {
-                        resolve(response)
-                    }
-                });
-            }
-        })
-    })
+function createCustomerSource(stripeCustomerId, cardToken){
+    return new Promise(async (resolve, reject) => {
+        try {
+            const source = await stripe.customers.createSource(stripeCustomerId,
+                {
+                    source: cardToken
+                }
+            );
+            resolve(source);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
-module.exports = s3_functions
+function createCharge(amount, stripeCustomerId, description, currency = 'usd') {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const chargeResponse = await stripe.charges.create({
+                amount,
+                currency,
+                customer: stripeCustomerId,
+                description
+            });
+            resolve(chargeResponse);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+function sendStripeEmail(amount, receipt_email, currency = 'usd') {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log(' in send stripe email')
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: currency,
+                payment_method_types: ['card'],
+                receipt_email: receipt_email
+            });
+
+            resolve(paymentIntent);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}

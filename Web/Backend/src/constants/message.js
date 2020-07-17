@@ -35,6 +35,7 @@ const messages = {
     COMPANY_ALREADY_EXIST: 'Company is already exist.',
     MANAGER_ALREADY_EXIST: 'Manager is already exist.',
     HAS_NO_PERMISSION: "You don't have a permission to see or edit this section.",
+    BUILDING_NOT_EXSIT: "Building Information does not exist.",
 
     SMS_CODE_SENT_SUCCESSFULLY: 'Sent the SMS Code to Your Phone.',
     EMAIL_RESET_LINK_SENT_SUCCESSFULLY: 'Sent the link to reset your password. Please check your email.',

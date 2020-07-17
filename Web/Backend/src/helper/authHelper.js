@@ -43,10 +43,22 @@ function hasManagerPermission(userdata, permission){
 }
 
 function hasBuildingPermission(userdata, permission){
+    console.log("userdata: ", userdata)
     return new Promise((resolve, reject) => {
-        if(userdata.role_buildings == permission){
+        console.log(permission)
+        let status = false
+        for (i in permission) {
+            console.log("permission: ", i)
+            if (userdata.role_buildings == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
             resolve("true")
-        } else {
+        }else{
             reject({ messsage: message.HAS_NO_PERMISSION })
         }
     })

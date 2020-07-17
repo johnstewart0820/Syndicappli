@@ -22,8 +22,8 @@ function getCurrentTime(){
     var currentMinute = current.getMinutes();
     var currentSecond = current.getSeconds();
 
-    if(currentMonth < 10){
-        currentMonth = "0" + currentMonth
+    if((currentMonth + 1) < 10){
+        currentMonth = "0" + (currentMonth + 1)
     }
 
     if(currentDate < 10){
