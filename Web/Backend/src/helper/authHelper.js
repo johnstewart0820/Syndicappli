@@ -54,11 +54,12 @@ function hasBuildingPermission(userdata, permission){
 
 function hasOwnerPermission(userdata, permission){
     return new Promise((resolve, reject) => {
-        if(userdata.role_owners == permission){
-            resolve("true")
-        } else {
-            reject({ messsage: message.HAS_NO_PERMISSION })
+        for (i in permission) {
+            if (userdata.role_owners == permission[i]){
+                resolve("true")
+            }
         }
+        reject({ messsage: message.HAS_NO_PERMISSION })
     })
 }
 
