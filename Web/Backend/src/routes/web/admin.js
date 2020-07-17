@@ -329,7 +329,8 @@ function getAllCompanyList(req, res) {
 function getCompanyListByUser(req, res) {
 
     let userId = req.decoded.uid
-    buildingService.getCompanyListByUser(userId).then((result) => {
+    let userdata = req.decoded.userdata
+    buildingService.getCompanyListByUser(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -410,9 +411,10 @@ function getBuilding(req, res) {
 function updateBuilding(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let id = req.params.id;
     let data = req.body
-    buildingService.updateBuilding(userId, id, data).then((result) => {
+    buildingService.updateBuilding(userId, id, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

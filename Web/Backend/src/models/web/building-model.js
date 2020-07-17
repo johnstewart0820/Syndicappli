@@ -59,13 +59,13 @@ function getBuildingList(data) {
     return new Promise((resolve, reject) => {
         let query;
         if (data.companyID == -1) {
-            query = `select b.*, 0 as total
+            query = `select b.*, b.buildingID as ID, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
                 where (b.name like ?) and b.permission = "active"`
         } else {
-            query = `select b.*, 0 as total
+            query = `select b.*, b.buildingID as ID, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
@@ -217,59 +217,34 @@ function getBuilding(uid) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function updateBuilding(id, data) {
+function updateBuilding(uid, id, data) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.BUILDINGS + ' SET companyID = ?, name = ?, address = ?, account_holdername = ?, account_address = ?, account_IBAN = ? WHERE buildingID = ?'
-        let delete_building_vote_branch = 'Delete from ' + table.BUILDING_VOTE_BRANCH + ' where buildingID = ?'
-        db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN, id ],   (error, rows, fields) => {
+        let query = 'UPDATE ' + table.BUILDINGS + ' SET companyID = ?, name = ?, address = ?, updated_by = ?, updated_at = ? WHERE buildingID = ?'
+        db.query(query, [ data.companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), id ],   (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                let select_vote_query = 'Select * from ' + table.BUILDING_VOTE_BRANCH + ' where buildingID = ?'
-                db.query(select_vote_query, [id], async (error, rows, fields) => {
+                let delete_vote_query = 'Delete from ' + table.VOTE_BUILDING_BRANCH + ' where buildingID = ?'
+                query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
+                db.query(delete_vote_query, [id],  (error, rows, fields) => {
                     if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
                     } else {
-                        let delete_vote_query = 'Delete from ' + table.VOTEBRANCH + ' where voteID = ?'
-                        for (let i in rows) {
-                            db.query(delete_vote_query, [ rows[i].voteID ], (error, rows, fields) => {
-                                if (error) {
-                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                }
-                            })
+                        let vote_branches = []
+                        let item
+                        for ( var i = 0 ; i < data.vote_branches.length ; i++){
+                            item = data.vote_branches[i]
+                            vote_branches.push([id, item.name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
                         }
-                        db.query(delete_building_vote_branch, [id], async (error, rows, fields) => {
+                        db.query(query, [vote_branches],  (error, rows, fields) => {
                             if (error) {
-                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                                reject({ message: message.INTERNAL_SERVER_ERROR });
                             } else {
-                                for (let i in data.vote) {
-                                    let query = 'Insert into ' + table.VOTEBRANCH + ' (name) values (?)'
-                                    let select_query = 'Select * from ' + table.VOTEBRANCH + ' where name = ?'
-                                    let insert_query = 'Insert into ' + table.BUILDING_VOTE_BRANCH + ' (buildingID, voteID) values (?, ?)'
-                                    let delete_query = 'Delete from ' + table.BUILDING_VOTE_BRANCH + ' where buildingID = ?'
-                                    await db.query(query, [ data.vote[i].name ], async (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                                        } else {
-                                            await db.query(select_query, [ data.vote[i].name ], (error, rows, fields) => {
-                                                if (error) {
-                                                    reject({ message: message.INTERNAL_SERVER_ERROR})
-                                                } else {
-                                                    db.query(insert_query, [ id, rows[rows.length - 1].voteID ], (error, rows, fields) => {
-                                                        if (error) {
-                                                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                        }
-                                                    })
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
+                                resolve("OK")
                             }
                         })
                     }
                 })
-                resolve("ok");
             }
         })
     })

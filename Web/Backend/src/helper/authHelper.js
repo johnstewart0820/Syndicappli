@@ -43,9 +43,7 @@ function hasManagerPermission(userdata, permission){
 }
 
 function hasBuildingPermission(userdata, permission){
-    console.log("userdata: ", userdata)
     return new Promise((resolve, reject) => {
-        console.log(permission)
         let status = false
         for (i in permission) {
             console.log("permission: ", i)

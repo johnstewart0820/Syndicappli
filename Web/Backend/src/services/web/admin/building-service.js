@@ -34,11 +34,11 @@ var buildingService = {
  * @param   object authData
  * @return  json
  */
-function getCompanyListByUser(uid) {
+function getCompanyListByUser(uid, userdata) {
     return new Promise((resolve, reject) => {
         buildingModel.getCompanyListByUser(uid).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -152,11 +152,11 @@ function getBuilding(uid, data) {
  * @param   object authData
  * @return  json
  */
-function updateBuilding(uid, id, data) {
+function updateBuilding(uid, id, data, userdata) {
     return new Promise((resolve, reject) => {
-        buildingModel.updateBuilding(id, data).then((result) => {
+        buildingModel.updateBuilding(uid, id, data).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
