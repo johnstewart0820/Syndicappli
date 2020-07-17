@@ -77,6 +77,9 @@ router.put('/manager/:id', authMiddleware.checkToken, updateManager)
  * owner api
  */
 router.get('/ownerList', authMiddleware.checkToken, getOwnerList)
+router.post('/owner', authMiddleware.checkToken, createOwner)
+router.get('/owner/:id', authMiddleware.checkToken, getOwner)
+router.put('/owner/:id', authMiddleware.checkToken, updateOwner)
 
 
 /**
@@ -544,4 +547,64 @@ function getOwnerList(req, res){
     })
 }
 
+
+/**
+ * Function that create owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    ownerService.createOwner(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    ownerService.getOwner(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    ownerService.updateOwner(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 module.exports = router
