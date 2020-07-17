@@ -12,12 +12,89 @@
 var message = require('../constants/message')
 
 const authHelper = {
-    hasBuildingPermission: hasBuildingPermission
+    hasCompanyPermission: hasCompanyPermission,
+    hasManagerPermission: hasManagerPermission,
+    hasProductPermission: hasProductPermission,
+    hasBuildingPermission: hasBuildingPermission,
+    hasOwnerPermission: hasOwnerPermission,
+    hasOrderPermission: hasOrderPermission,
+    hasDiscountcodePermission: hasDiscountcodePermission,
+    hasUserPermission: hasUserPermission
+}
+
+function hasCompanyPermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        if(userdata.role_companies == permission){
+            resolve("true")
+        } else {
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasManagerPermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        if(userdata.role_managers == permission){
+            resolve("true")
+        } else {
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
 }
 
 function hasBuildingPermission(userdata, permission){
     return new Promise((resolve, reject) => {
         if(userdata.role_buildings == permission){
+            resolve("true")
+        } else {
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasOwnerPermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        if(userdata.role_owners == permission){
+            resolve("true")
+        } else {
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasOrderPermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        if(userdata.role_orders == permission){
+            resolve("true")
+        } else {
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasProductPermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        if(userdata.role_products == permission){
+            resolve("true")
+        } else {
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasDiscountcodePermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        if(userdata.role_discountcodes == permission){
+            resolve("true")
+        } else {
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasUserPermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        if(userdata.role_users == permission){
             resolve("true")
         } else {
             reject({ messsage: message.HAS_NO_PERMISSION })
