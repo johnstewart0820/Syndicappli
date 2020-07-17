@@ -10,6 +10,9 @@
  * @link      https://turing.ly
  */
 
+const dotenv = require('dotenv')
+dotenv.config()
+
 const express = require('express')
 const formidable = require('formidable');
 
@@ -23,7 +26,7 @@ const ownerService = require('../../services/web/admin/owner-service')
 const {validate} = require('express-validation')
 var adminValidation = require('../../validator/admin-validation')
 var multer  = require('multer')
-var upload = multer({ dest: '/tmp/' })
+var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
 
 /**
  * profile api
@@ -344,6 +347,7 @@ function getBuildingList(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let data = req.body
+
     buildingService.getBuildingList(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
@@ -365,7 +369,8 @@ function createBuilding(req, res) {
 
     let userId = req.decoded.uid
     let data = req.body
-    buildingService.createBuilding(userId, data).then((result) => {
+    let userdata = req.decoded.userdata
+    buildingService.createBuilding(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
