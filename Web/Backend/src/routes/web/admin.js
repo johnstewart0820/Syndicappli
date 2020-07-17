@@ -342,8 +342,9 @@ function getCompanyListByUser(req, res) {
 function getBuildingList(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let data = req.body
-    buildingService.getBuildingList(userId, data).then((result) => {
+    buildingService.getBuildingList(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

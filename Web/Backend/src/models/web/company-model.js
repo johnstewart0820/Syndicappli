@@ -34,7 +34,7 @@ var companyModel = {
 function getCompanyList(uid, data) {
     return new Promise((resolve, reject) => {
 
-        let query = `select c.*, c.companyID as ID,
+        let query = `select c.*, c.companyID ID,
                     (select count(*) from users where companyID = c.companyID and usertype = "manager") as manager_count,
                     (select firstname from users where companyID = c.companyID and usertype = "manager" ORDER BY userID asc LIMIT 1) as manager_firstname,
                     (select lastname from users where companyID = c.companyID and usertype = "manager" ORDER BY userID asc LIMIT 1) as manager_lastname,
