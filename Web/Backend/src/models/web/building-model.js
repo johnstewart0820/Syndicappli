@@ -59,13 +59,13 @@ function getBuildingList(data) {
     return new Promise((resolve, reject) => {
         let query;
         if (data.companyID == -1) {
-            query = `select b.*, 0 as total
+            query = `select b.*, b.buildingID as ID, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
                 where (b.name like ?) and b.permission = "active"`
         } else {
-            query = `select b.*, 0 as total
+            query = `select b.*, b.buildingID as ID, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
