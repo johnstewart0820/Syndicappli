@@ -78,8 +78,8 @@ router.put('/manager/:id', authMiddleware.checkToken, updateManager)
 /**
  * owner api
  */
-router.get('/ownerList', authMiddleware.checkToken, getOwnerList)
-router.post('/owner', authMiddleware.checkToken, createOwner)
+router.post('/ownerList', authMiddleware.checkToken, getOwnerList)
+router.post('/owner', authMiddleware.checkToken, upload.array('photo', 3), createOwner)
 router.get('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, updateOwner)
 
@@ -597,7 +597,8 @@ function createOwner(req, res){
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let data = req.body
-    ownerService.createOwner(userId, userdata, data).then((result) => {
+    let files = req.files
+    ownerService.createOwner(userId, userdata, data, files).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
