@@ -11,8 +11,9 @@ import MyDialog from '../../../components/MyDialog.js';
 import {EditBuildingStyles as useStyles} from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import AdminService from '../../../services/api.js';
+import {ManagerService as Service} from '../../../services/api.js';
 
+const ManagerService = new Service();
 const BuildingsEdit = (props) => {
   const {history}=props;
   // const token = authService.getToken();    
@@ -75,7 +76,7 @@ const BuildingsEdit = (props) => {
   };
   const handleClickAddClef = (event) =>{
       if(addClefs !== ''){
-        clefList.push({"name":addClefs});
+        clefList.push({"vote_branch_name":addClefs});
         setAddClefs('');
         setClefList(clefList);
       }
@@ -100,15 +101,14 @@ const BuildingsEdit = (props) => {
   };
   const updateBuilding = ()=>{
     const requestData = {
-      'companyID': companyID,
       'name' : name,
       'address' : address,
-      'vote' : clefList,
-      'account_holdername' : accountHolder,
-      'account_address' : accountAddress,
-      'account_IBAN' : accountIban
+      'vote_branches' : clefList,
+      'sepa_name' : accountHolder,
+      'sepa_address' : accountAddress,
+      'iban' : accountIban
     }
-    AdminService.updateBuilding(props.match.params.id,requestData)
+    ManagerService.updateBuilding(props.match.params.id,requestData)
     .then(      
       response => {        
         console.log(response.data);
@@ -128,43 +128,13 @@ const BuildingsEdit = (props) => {
       }
     );
   };
-  const getCompanyList = (id)=>{
-
-    AdminService.getCompanyListByUser()
-      .then(      
-        response => {        
-          console.log(response.data);
-          // setVisibleIndicator(false);  
-          if(response.data.code !== 200){
-            console.log('error');
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            data.companylist.map((item)=>(
-              company.push(item.name)
-            )
-            );
-            setCompanyList(data.companylist);
-            setCompany(company);
-            for(let i = 0 ;i<company.length;i++)
-              if(data.companylist[i].companyID === id)
-                setCompanies(i);
-          }
-        },
-        error => {
-          console.log('fail');        
-          // setVisibleIndicator(false);
-        }
-      );
-  }
 
   useEffect(() => {
     if(accessBuildings === 'Denied'){
       setOpenDialog(true);
     }
     if(accessBuildings !== 'Denied'){
-      AdminService.getBuilding(props.match.params.id)
+      ManagerService.getBuilding(props.match.params.id)
       .then(      
         response => {        
           console.log(response.data);
@@ -180,7 +150,6 @@ const BuildingsEdit = (props) => {
             vote_list.map((vote)=>
               clefList.push(vote)
             )
-            getCompanyList(building.companyID);
             setName(building.name);
             setAddress(building.address);
             setAccountHolder(building.account_holdername);
@@ -238,21 +207,6 @@ const BuildingsEdit = (props) => {
                 <span className={classes.error}>{errorsName}</span>}
               </Grid>
             </Grid>
-            <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <MySelect 
-                    color="gray" 
-                    data={company} 
-                    onChangeSelect={handleChangeCompanies}
-                    value={companies}
-                    width="100%"
-                    disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
-                />
-                {errorsCompanies.length > 0 && 
-                <span className={classes.error}>{errorsCompanies}</span>}
-              </Grid>
-            </Grid>
             <Grid item container direction="column" spacing={2}>
               <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
@@ -286,7 +240,7 @@ const BuildingsEdit = (props) => {
                             />
                         </Grid>
                         <Grid item xs={6} >
-                            <p className={classes.itemTitle} style={{display:'flex'}}>{clef.name}</p>
+                            <p className={classes.itemTitle} style={{display:'flex'}}>{clef.vote_branch_name}</p>
                         </Grid>
                     </Grid>
                 </Grid>

@@ -258,7 +258,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ProductTable(props) {
+export default function SelectTable(props) {
   const { onClickEdit, ...rest } = props;
 
   const classes = useStyles();
@@ -269,17 +269,30 @@ export default function ProductTable(props) {
     for (let i = 0; i < tempDirection.length; i++)
       tempDirect[i] = '⯆';
   }
+  const allData = 4;
   const [cells, setCells] = useState(props.cells);
   const items = props.products;
+  // const [items, setItems] = useState(props.products);
   const footer = props.footerItems ? props.footerItems : [];
   const [direct, setDirect] = React.useState(tempDirect);
-
   const dataList = [20, 50, 100, 200, "all"];
 
   const [value, setValue] = React.useState(0);
+  let selectList = [];
   const handleChange = (event) => {
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
+  };
+  const handleChangeSelect = (event, id) => {
+      if(event.target.checked === true){
+        selectList.push(items[id].ID);
+        items[id].isChecked = false;
+      }
+      else{
+        selectList.splice(selectList.indexOf(items[id].ID),1);
+        items[id].isChecked = true;
+      }
+      // setItems(items);
   };
   const handleChangePage = (event, page) => {
     props.onChangePage(page);
@@ -303,8 +316,41 @@ export default function ProductTable(props) {
   const handleClick = () => {
     props.onClick();
   }
+  const handleClickAllSelect = ()=>{
+    if(selectList.length === 1 && selectList[0] === -1){
+        selectList.splice(0,selectList.length);
+        for(let i = 0; i < items.length; i++){
+          items[i].isChecked = false;
+        }
+    }
+    else if(selectList.length !== allData){
+        selectList.splice(0,selectList.length);
+        selectList.push(-1);
+        
+        for(let i = 0; i < items.length; i++){
+          items[i].isChecked = true;
+        }
+    }
+  }
+  const handleClickImport = ()=>{
+      props.onImport();
+  }
+  const handleClickExport = ()=>{
+      props.onExport(selectList);
+  }
   return (
     <Grid container direction="column" spacing={2}>
+                <Grid item container spacing={2} direction="row">
+          <Grid item>
+            <MyButton   name={"Tout sélectionner/déselectionner"} bgColor={"#00C9FF"} onClick={handleClickAllSelect}/>
+          </Grid>
+          <Grid item>
+            <MyButton   name={"Importer"} bgColor={"#00C9FF"} onClick={handleClickImport}/>
+          </Grid>
+          <Grid item>
+            <MyButton   name={"Exporter"} bgColor={"#00C9FF"} onClick={handleClickExport}/>
+          </Grid>
+        </Grid>
       <Grid item container direction="row-reverse">
         <div>
           <FormControl className={classes.margin}>
@@ -326,6 +372,9 @@ export default function ProductTable(props) {
           <TableHead>
             <TableRow >
               {
+                  <TableCell align="center"></TableCell>
+              }
+              {
                 cells.map((cell, i) => (
                   <TableCell key={i}>
                     <button
@@ -344,7 +393,15 @@ export default function ProductTable(props) {
           </TableHead>
           <TableBody>
             {items.map((item, i) => (
-              <TableRow key={item.ID}>
+              <TableRow key={i}>
+                {
+                    <TableCell key={i}>
+                      <Checkbox
+                        checked={item.isChecked}
+                        onChange={(event) => handleChangeSelect(event,i)}
+                      />
+                    </TableCell>
+                }
                 {
                   cells.map((cell) => {
                     const value = item[cell.key];
@@ -359,7 +416,7 @@ export default function ProductTable(props) {
                 <TableCell align="right">
                   <EditIcon className={classes.editItem} onClick={() => props.onClickEdit(item.ID)} />
                       &nbsp;&nbsp;
-                  <DeleteIcon className={classes.editItem} onClick={() => props.onClickDelete(item.ID)}></DeleteIcon>
+                      <DeleteIcon className={classes.editItem} onClick={() => props.onClickDelete(item.ID)}></DeleteIcon>
                 </TableCell>
               </TableRow>
             ))}
@@ -387,10 +444,7 @@ export default function ProductTable(props) {
         </Table>
       </Grid>
       <Grid item container className={classes.body} alignItems="center">
-        <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
-          <MyButton name={props.leftBtn} color={"1"} onClick={handleClick} />
-        </Grid>
-        <Grid xs={12} sm={6} item container direction="row-reverse">
+        <Grid xs={12} item container direction="row-reverse">
           <Pagination
             count={props.totalpage}
             color="primary"

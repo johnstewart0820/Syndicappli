@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
 // const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
-const API_URL = "http://192.168.105.41:3001/api/";
+const API_URL = "http://192.168.105.38:3001/api/";
 class AdminService {
   //Login
   login(data) {
@@ -18,6 +18,14 @@ class AdminService {
   //forgotPassword
   forgotPassword(data) {
     return axios.post(API_URL + 'auth/forgotPassword', data, {});
+  }
+  //resetPassword
+  resetPassword(data) {
+    return axios.post(API_URL + 'auth/resetPassword', data, {});
+  }
+  //verifyToken
+  verifyToken(data) {
+    return axios.post(API_URL + 'auth/verifyToken', data, {});
   }
   //My Account
   updateProfile(data) {
@@ -51,6 +59,13 @@ class AdminService {
       data,
       { headers: authHeader() });
   }
+  updateCompany(id, data) {
+    return axios.put(API_URL + 'web/admin/company/' + id, data,
+      { headers: authHeader() });
+  }
+  getCompany(id) {
+    return axios.get(API_URL + 'web/admin/company/' + id, { headers: authHeader() });
+  }
   //Building Part
   getCompanyListByUser() {
     return axios.get(API_URL + 'web/admin/companyListByUser', { headers: authHeader() });
@@ -78,6 +93,11 @@ class AdminService {
       data,
       { headers: authHeader() });
   }
+  createOwner(data) {
+    return axios.post(API_URL + 'web/admin/owner',
+      data,
+      { headers: authHeader() });
+  }
   //Manager Part
   getManagerList(data) {
     return axios.post(API_URL + 'web/admin/managerList',
@@ -95,7 +115,27 @@ export class OwnerService {
 }
 
 export class ManagerService {
-
+  //Building Part
+  getCompanyListByUser() {
+    return axios.get(API_URL + 'web/manager/companyListByUser', { headers: authHeader() });
+  }
+  getBuildingList(data) {
+    return axios.post(API_URL + 'web/manager/buildingList',
+      data,
+      { headers: authHeader() });
+  }
+  createBuilding(data) {
+    return axios.post(API_URL + 'web/manager/building',
+      data,
+      { headers: authHeader() });
+  }
+  updateBuilding(id, data) {
+    return axios.put(API_URL + 'web/manager/building/' + id, data,
+      { headers: authHeader() });
+  }
+  getBuilding(id) {
+    return axios.get(API_URL + 'web/manager/building/' + id, { headers: authHeader() });
+  }
 }
 
 export default new AdminService();

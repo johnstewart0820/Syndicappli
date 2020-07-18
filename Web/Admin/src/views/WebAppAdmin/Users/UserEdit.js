@@ -29,7 +29,6 @@ const UserEdit = (props) => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
   const companiesList=[];
-  const buildingsList=[];
   const permissionList = ['Editer', 'Voir', 'Refusé'];
   const itemPermission ={'edit' : 0 , 'see' : 1, 'denied' : 2};
 
@@ -77,13 +76,11 @@ const UserEdit = (props) => {
     { label: "Venezuela",value: "Venezuela"}
   ];
   const [companies, setCompanies] = React.useState(selected);
-  const [buildings, setBuildings] = React.useState(selected);
   const allCompanies =  COUNTRIES.map((country,id) => {
     return {
       label: country, value: country
     }
   })
-  const allBuildings = allCompanies;
   useEffect(() => {
     if(accessUsers === 'Denied'){
       setOpenDialog(true);
@@ -122,55 +119,55 @@ const UserEdit = (props) => {
       //     //     error.toString();
       //   }
       // );    
-      AdminService.getUser(props.match.params.id)
-      .then(      
-        response => {        
-          console.log(response.data);
-          // setVisibleIndicator(false);  
-          if(response.data.code !== 200){
-            // if(response.data.status === 'Token is Expired') {
-            //   authService.logout();
-            //   history.push('/');
-            // }
-            console.log('error');
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            const profile = data.user.profile;
-            {
-              data.user.building.map((building,i)=>{
-                buildingsList.push(building.building_name);
-              })
-            }
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhoneNumber(profile.phone);
-            // setCompanies(itemCompanies[profile.company_name]);
-            // setBuildings(itemBuildings[profile.company_name]);
-            setCompaniesPermission(itemPermission[profile.company_permission]);
-            setManagersPermission(itemPermission[profile.manager_permission]);
-            setBuildingsPermission(itemPermission[profile.building_permission]);
-            setOwnersPermission(itemPermission[profile.owner_permission]);
-            setOrdersPermission(itemPermission[profile.orders_permission]);
-            setProductsPermission(itemPermission[profile.products_permission]);
-            setDiscountodesPermission(itemPermission[profile.discount_code_permission]);
-            setUsersPermission(itemPermission[profile.users_permission]);
+    //   AdminService.getUser(props.match.params.id)
+    //   .then(      
+    //     response => {        
+    //       console.log(response.data);
+    //       // setVisibleIndicator(false);  
+    //       if(response.data.code !== 200){
+    //         // if(response.data.status === 'Token is Expired') {
+    //         //   authService.logout();
+    //         //   history.push('/');
+    //         // }
+    //         console.log('error');
+    //       } else {
+    //         console.log('success');
+    //         const data = response.data.data;
+    //         localStorage.setItem("token", JSON.stringify(data.token));
+    //         const profile = data.user.profile;
+    //         {
+    //           data.user.building.map((building,i)=>{
+    //             buildingsList.push(building.building_name);
+    //           })
+    //         }
+    //         setLastName(profile.lastname);
+    //         setFirstName(profile.firstname);
+    //         setEmail(profile.email);
+    //         setPhoneNumber(profile.phone);
+    //         // setCompanies(itemCompanies[profile.company_name]);
+    //         // setBuildings(itemBuildings[profile.company_name]);
+    //         setCompaniesPermission(itemPermission[profile.company_permission]);
+    //         setManagersPermission(itemPermission[profile.manager_permission]);
+    //         setBuildingsPermission(itemPermission[profile.building_permission]);
+    //         setOwnersPermission(itemPermission[profile.owner_permission]);
+    //         setOrdersPermission(itemPermission[profile.orders_permission]);
+    //         setProductsPermission(itemPermission[profile.products_permission]);
+    //         setDiscountodesPermission(itemPermission[profile.discount_code_permission]);
+    //         setUsersPermission(itemPermission[profile.users_permission]);
 
-          }
-        },
-        error => {
-          console.log('fail');        
-          // setVisibleIndicator(false);
-          // const resMessage =
-          //     (error.response &&
-          //       error.response.data &&
-          //       error.response.data.message) ||
-          //     error.message ||
-          //     error.toString();
-        }
-      );    
+    //       }
+    //     },
+    //     error => {
+    //       console.log('fail');        
+    //       // setVisibleIndicator(false);
+    //       // const resMessage =
+    //       //     (error.response &&
+    //       //       error.response.data &&
+    //       //       error.response.data.message) ||
+    //       //     error.message ||
+    //       //     error.toString();
+    //     }
+    //   );    
     }
   }, []);
 
@@ -185,8 +182,6 @@ const UserEdit = (props) => {
     else setErrorsFirstname('');
     if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    if(buildings.length === 0) {setErrorsBuildings('please select buildings'); cnt++;}
-    else setErrorsBuildings('');
     if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
     else setErrorsEmail('');
     if(phonenumber.length === 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
@@ -236,10 +231,6 @@ const handleChangePhoneNumber = (event) => {
 const handleChangeCompanies = (val) => {
   setCompanies(val);
   console.log(companies);
-}
-
-const handleChangeBuildings = (val) => {
-  setBuildings(val);
 }
 const handleChangeCompaniesPermission = (val) => {
   setCompaniesPermission(val);
@@ -340,28 +331,6 @@ const handleLoadFront = (event) => {
                     </Grid>
 
                 </Grid>
-              </Grid>
-            </Grid>
-            <Grid item container direction="column" spacing={2}>
-              <Grid item container direction="row" >
-                <Grid item container direction="column"  xs={12} sm={8}>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.itemTitle}>Immeubles</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                          <Multiselect
-                            selected={buildings}
-                            no={'No buildings found'}
-                            hint={'Add new Buildings'}
-                            all={allBuildings} 
-                            onSelected={handleChangeBuildings}
-                            disabled={(accessUsers ==='See'? 'disabled' : !'disabled')}
-                            />
-                          {errorsBuildings.length > 0 && 
-                          <span className={classes.error}>{errorsBuildings}</span>}
-                        </Grid>
-                    </Grid>
-                </Grid>
-                
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

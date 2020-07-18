@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import MyTable from '../../../components/MyTable';
+import SelectTable from '../../../components/SelectTable';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../components/MyButton';
@@ -245,22 +245,11 @@ const Owners = (props) => {
               </Grid>
           </Grid>
         </Grid>
-          <Grid item container spacing={2} direction="row">
-          <Grid item>
-            <MyButton   name={"Tout sélectionner/déselectionner"} bgColor={"#00C9FF"} onClick={handleClickAllSelect} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
-          </Grid>
-          <Grid item>
-            <MyButton   name={"Importer"} bgColor={"#00C9FF"} onClick={handleClickImport} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
-          </Grid>
-          <Grid item>
-            <MyButton   name={"Exporter"} bgColor={"#00C9FF"} onClick={handleClickExport} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
-          </Grid>
-        </Grid>
         </Grid>
       </div> 
       <div className={classes.body}>
         <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog}/>
-        <MyTable 
+        <SelectTable 
           onChangeSelect={handleChangeSelect} 
           onChangePage={handleChangePagination} 
           onSelectSort={handleSort} 
@@ -271,7 +260,6 @@ const Owners = (props) => {
           cells={cellList} 
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
-          allSelectState="true"
         />
       </div>
       <Dialog

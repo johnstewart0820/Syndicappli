@@ -52,17 +52,6 @@ const useStyles = makeStyles(theme => ({
       fontSize :9
     },
   },
-  tool: {
-    [theme.breakpoints.up('xl')]: {
-      minHeight: 67
-    },
-    [theme.breakpoints.down('lg')]: {
-      minHeight: 47
-    },
-    [theme.breakpoints.down('md')]: {
-      minHeight: 33
-    },
-  },
   paper: {
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',

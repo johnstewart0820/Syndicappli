@@ -1,4 +1,4 @@
-import React , {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import useStyles from './useStyles';
 import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
@@ -48,6 +48,58 @@ const ResetPassword = (props) => {
     setConfirmPassword(event.target.value);
     setErrorsConfirmPassword(errorsPass);
   }
+  const handleClickReset = () => {
+    if (validateForm(errorsNewPassword) && validateForm(errorsConfirmPassword)) {
+      let cnt = 0;
+      if (newPassword.length === 0) { setErrorsNewPassword('please enter your new password'); cnt++; }
+      if (confirmPassword.length === 0) { setErrorsConfirmPassword('please enter your confirm password'); cnt++; }
+      if (newPassword !== confirmPassword) { setErrorsConfirmPassword("Doesn't match password. please enter your confirm password"); cnt++; }
+      if (cnt === 0) {
+        let params = new URLSearchParams(window.location.search);
+        var data = {};
+        data['token'] = params.get('token');
+        data['password'] = newPassword;
+        setVisibleIndicator(true);
+        AdminService.resetPassword(data)
+          .then(
+            response => {
+              setVisibleIndicator(false);
+              if (response.data.code !== 200) {
+                ToastsStore.error(response.data.message);
+              } else {
+                ToastsStore.success(response.data.message);
+              }
+            },
+            error => {
+              setVisibleIndicator(false);
+              ToastsStore.error("Can't connect to the Server!");
+            }
+          );
+      }
+    }
+  }
+  useEffect(() => {
+    let params = new URLSearchParams(window.location.search);
+    var data = {};
+    data['token'] = params.get('token');
+    setVisibleIndicator(true);
+    AdminService.verifyToken(data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            ToastsStore.success(response.data.message);
+            history.push('/resetpassword?token='+response.data.data.tmpToken);
+          }
+        },
+        error => {
+          setVisibleIndicator(false);
+          ToastsStore.error("Can't connect to the Server!");
+        }
+      );
+  }, []);
   return (
     <div>
       {
@@ -73,23 +125,25 @@ const ResetPassword = (props) => {
               <Grid xs={1} item></Grid>
               <Grid xs={10} item container direction="column" spacing={2}>
                 <Grid item><p className={classes.itemTitle}>Nouveau mot de passe</p></Grid>
-                <Grid item direction="column">
-                  <TextField 
-                    variant="outlined" 
-                    fullWidth 
+                <Grid item container direction="column">
+                  <TextField
+                    variant="outlined"
+                    fullWidth
                     value={newPassword}
                     onChange={handleChangeNewPassword}
+                    type="password"
                   />
                   {errorsNewPassword.length > 0 &&
                     <span className={classes.error}>{errorsNewPassword}</span>}
                 </Grid>
                 <Grid item><p className={classes.itemTitle}>Confirmez le mot de passe</p></Grid>
-                <Grid item direction="column">
-                  <TextField 
-                    variant="outlined" 
-                    fullWidth 
+                <Grid item container direction="column">
+                  <TextField
+                    variant="outlined"
+                    fullWidth
                     value={confirmPassword}
                     onChange={handleChangeConfirmPassword}
+                    type="password"
                   />
                   {errorsConfirmPassword.length > 0 &&
                     <span className={classes.error}>{errorsConfirmPassword}</span>}
@@ -98,7 +152,7 @@ const ResetPassword = (props) => {
               <Grid xs={1} item></Grid>
             </Grid>
             <Grid item container justify="center">
-              <MyButton name={"Réinitialiser"} color="1" />
+              <MyButton name={"Réinitialiser"} color="1" onClick={handleClickReset} />
             </Grid>
           </Grid>
           <Grid item container xs={1} sm={2} md={4}></Grid>
@@ -108,7 +162,7 @@ const ResetPassword = (props) => {
           <Grid item container xs={10} sm={7} md={4}>
             <Grid item container direction="row-reverse">
               <Link href="/login" variant="body2">
-                <p className={classes.forgot}>aller à la connexion</p>
+                <p className={classes.forgot}>Accéder à la connexion</p>
               </Link>
             </Grid>
           </Grid>

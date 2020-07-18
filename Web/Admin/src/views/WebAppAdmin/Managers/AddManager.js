@@ -24,6 +24,10 @@ const AddManager = (props) => {
     const [companies, setCompanies] = React.useState('');
     const [companyList, setCompanyList] = React.useState([]);
     const [companyID, setCompanyID] = React.useState(-1);
+    let building = [];
+    const [buildings, setBuildings] = React.useState('');
+    const [buildingList, setBuildingList] = React.useState([]);
+    const [buildingID, setBuildingID] = React.useState(-1);
 
     const [buildingsPermission, setBuildingsPermission] = React.useState('');
     const [chatPermission, setChatPermission] = React.useState('');
@@ -40,6 +44,7 @@ const AddManager = (props) => {
     const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState('');
 
     const [errorsCompanies, setErrorsCompanies] = React.useState('');
+    const [errorsBuildings, setErrorsBuildings] = React.useState('');
     const [errorsLastname, setErrorsLastname] = React.useState('');
     const [errorsFirstname, setErrorsFirstname] = React.useState('');
     const [errorsEmail, setErrorsEmail] = React.useState('');
@@ -69,6 +74,8 @@ const AddManager = (props) => {
         else setErrorsFirstname('');
         if (companies.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
         else setErrorsCompanies('');
+        if (buildings.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+        else setErrorsBuildings('');
         if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
         else setErrorsEmail('');
         if (phonenumber.length === 0) { setErrorsPhonenumber('please enter your phone number'); cnt++; }
@@ -135,7 +142,13 @@ const AddManager = (props) => {
         else
             setCompanyID(-1);
     };
-
+    const handleChangeBuildings = (val) => {
+        setBuildings(val);
+        if (val < buildingList.length)
+            setBuildingID(buildingList[val].buildingID);
+        else
+            setBuildingID(-1);
+    };
     const handleChangeBuildingsPermission = (val) => {
         setBuildingsPermission(val);
     }
@@ -222,6 +235,20 @@ const AddManager = (props) => {
                             />
                             {errorsCompanies.length > 0 &&
                                 <span className={classes.error}>{errorsCompanies}</span>}
+                        </Grid>
+                    </Grid>
+                    <Grid item container justify="center" alignItems="center">
+                        <Grid xs={3} item container><p className={classes.title}>Immeuble</p></Grid>
+                        <Grid xs={9} item container>
+                            <MySelect
+                                color="gray"
+                                data={building}
+                                onChangeSelect={handleChangeBuildings}
+                                value={buildings}
+                                width="80%"
+                            />
+                            {errorsBuildings.length > 0 &&
+                                <span className={classes.error}>{errorsBuildings}</span>}
                         </Grid>
                     </Grid>
                     <Grid item container justify="space-between" alignItems="center">

@@ -17,7 +17,9 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import { mainChart, mainChartOpts } from './chart';
 
 const useStyles = makeStyles(() => ({
-  root: {},
+  root: {
+    width: '100%'
+  },
   chartContainer: {
     height: 'auto',
     position: 'relative'

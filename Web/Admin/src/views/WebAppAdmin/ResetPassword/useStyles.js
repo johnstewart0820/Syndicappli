@@ -79,17 +79,17 @@ const useStyles = makeStyles(theme => ({
   forgot: {
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
-      paddingTop: theme.spacing(5),
+      paddingTop: theme.spacing(4),
       paddingBottom: theme.spacing(2),
     },
     [theme.breakpoints.down('lg')]: {
       fontSize: 12,
-      paddingTop: theme.spacing(4),
+      paddingTop: theme.spacing(3),
       paddingBottom: theme.spacing(1),
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 8,
-      paddingTop: theme.spacing(3),
+      paddingTop: theme.spacing(2),
       paddingBottom: theme.spacing(1),
     },
     color: 'white',
@@ -122,16 +122,16 @@ const useStyles = makeStyles(theme => ({
   },
   body: {
     [theme.breakpoints.up('xl')]: {
-      paddingTop: theme.spacing(7),
-      paddingBottom: theme.spacing(7)
+      paddingTop: theme.spacing(6),
+      paddingBottom: theme.spacing(6)
     },
     [theme.breakpoints.down('lg')]: {
-      paddingTop: theme.spacing(5),
-      paddingBottom: theme.spacing(5)
-    },
-    [theme.breakpoints.down('md')]: {
       paddingTop: theme.spacing(4),
       paddingBottom: theme.spacing(4)
+    },
+    [theme.breakpoints.down('md')]: {
+      paddingTop: theme.spacing(3),
+      paddingBottom: theme.spacing(3)
     },
     backgroundColor: 'white',
     borderRadius: 15,

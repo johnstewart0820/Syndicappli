@@ -17,25 +17,15 @@ const ModulePayment = (props) => {
   // }
   const accessBuildings = authService.getAccess('role_buildings');
   const classes = useStyles();
-  const [accountname, setAccountName] = useState('');
-  const [accountaddress, setAccountAddress] = useState('');
-  const [IBAN, setIBAN] = useState('');
+  const [expiryDate, setExpiryDate] = useState('09/20');
   const handleClickApply = () => {
 
   }
   const handleClickPay = () => {
 
   }
-  const handleChangeAccountName = (event) => {
-    setAccountName(event.target.value);
-  }
-
-  const handleChangeAccountAddress = (event) => {
-    setAccountAddress(event.target.value);
-  }
-
-  const handleChangeIBAN = (event) => {
-    setIBAN(event.target.value);
+  const handleChangeExpiryDate = (event) => {
+    setExpiryDate(event.target.value);
   }
   return (
     <div className={classes.root}>
@@ -104,7 +94,28 @@ const ModulePayment = (props) => {
                 <div className={classes.cardLeftPart}></div>
               </Grid>
               <Grid item>
-                <div className={classes.cardMainPart}></div>
+                <div className={classes.cardMainPart}>
+                  <Grid container direction="column" alignItems="stretch" justify="space-between" className={classes.cardBody}>
+                    <Grid item className={classes.cardTypePan}>
+                      <Grid container justify="flex-end">
+                        <p className={classes.cardType}><b>VISA</b></p>
+                      </Grid>
+                    </Grid>
+                    <Grid item className={classes.cardNumberPan}>
+                      <p className={classes.cardNumber}><b>8019  5500  0000  1234</b></p>
+                    </Grid>
+                    <Grid item className={classes.cardHolderPan}>
+                    <Grid item container justify="space-between">
+                      <Grid item>
+                        <p className={classes.cardHolder}>RICHARD STALLMAN</p>
+                      </Grid>
+                      <Grid item>
+                        <p className={classes.cardHolder} onChange={handleChangeExpiryDate}>{"09/20"}</p>
+                      </Grid>
+                    </Grid>
+                    </Grid>
+                  </Grid>
+                </div>
               </Grid>
               <Grid item>
                 <div className={classes.cardRightPart}></div>

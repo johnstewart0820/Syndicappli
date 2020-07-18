@@ -80,7 +80,7 @@ const Routes = () => {
         component={SMSAuth}
         exact
         layout={NormalLayout}
-        path="/smsauth/:email"
+        path="/smsauth"
       />
       <RouteWithLayout
         component={ForgotPassword}

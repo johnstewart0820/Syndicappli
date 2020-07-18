@@ -23,13 +23,11 @@ const AddUser = (props) => {
     { label: "Venezuela",value: "Venezuela"}
   ];
   const [companies, setCompanies] = React.useState(selected);
-  const [buildings, setBuildings] = React.useState(selected);
   const companiesList = COUNTRIES.map((country,id) => {
     return {
       label: country
     }
   })
-  const buildingsList = companiesList;
   const [avatarurl, setAvatarUrl] = React.useState("");
   const [avatar, setAvatar] = React.useState(null);
   const [lastname, setLastName] = React.useState('');
@@ -46,7 +44,6 @@ const AddUser = (props) => {
   const [usersPermission, setUsersPermission] = React.useState('');
 
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
-  const [errorsBuildings, setErrorsBuildings] = React.useState('');
   const [errorsLastname, setErrorsLastname] = React.useState('');
   const [errorsFirstname, setErrorsFirstname] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
@@ -71,8 +68,6 @@ const AddUser = (props) => {
     else setErrorsFirstname('');
     if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
     else setErrorsCompanies('');
-    if(buildings.length === 0) {setErrorsBuildings('please select buildings'); cnt++;}
-    else setErrorsBuildings('');
     if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
     else setErrorsEmail('');
     if(phonenumber.length === 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
@@ -125,9 +120,6 @@ const handleChangePhoneNumber = (event) => {
 const handleChangeCompanies = (val) => {
     setCompanies(val);
 }
-const handleChangeBuildings = (val) => {
-    setBuildings(val);
-}
 const handleChangeCompaniesPermission = (val) => {
     setCompaniesPermission(val);
 }
@@ -168,20 +160,6 @@ const handleChangeUsersPermission = (val) => {
                         />
                         {errorsCompanies.length > 0 && 
                         <span className={classes.error}>{errorsCompanies}</span>}
-                    </Grid>
-                </Grid>
-                <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p className={classes.title}>Immeubles</p></Grid>
-                    <Grid xs={9} item container>
-                         <Multiselect
-                            selected={buildings}
-                            no={'No buildings found'}
-                            hint={'Add new Buildings'}
-                            all={buildingsList} 
-                            onSelected={handleChangeBuildings}
-                        />
-                        {errorsBuildings.length > 0 && 
-                        <span className={classes.error}>{errorsBuildings}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container justify="space-between" alignItems="center">

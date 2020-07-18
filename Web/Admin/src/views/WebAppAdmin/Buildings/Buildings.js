@@ -49,7 +49,7 @@ const Buildings = (props) => {
   const cellList = [
     { key: 'name', field: 'Nom' },
     { key: 'address', field: 'Adresse' },
-    { key: 'account_IBAN', field: 'CA HT' },
+    { key: 'total', field: 'CA HT' },
   ];
 
   const columns = [];
@@ -98,12 +98,10 @@ const Buildings = (props) => {
     AdminService.getCompanyListByUser()
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);  
           if (response.data.code !== 200) {
-            ToastsStore.success('Error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             data.companylist.map((item) => (
@@ -116,7 +114,7 @@ const Buildings = (props) => {
           }
         },
         error => {
-          ToastsStore.success('Cant load companies');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -134,12 +132,10 @@ const Buildings = (props) => {
     AdminService.getBuildingList(requestData)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);  
           if (response.data.code !== 200) {
-            console.log('error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             if (!data.totalpage)
@@ -154,7 +150,7 @@ const Buildings = (props) => {
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -177,6 +173,7 @@ const Buildings = (props) => {
   useEffect(() => {
     if (accessBuildings !== 'Denied')
       getBuildings();
+      console.log(companyID)
   }, [page_num, row_count, sort_column, sort_method, companyID]);
 
 

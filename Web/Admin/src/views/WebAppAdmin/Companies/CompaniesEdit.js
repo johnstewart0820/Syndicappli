@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MyTable from '../../../components/MyTable';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTableCard from '../../../components/MyTableCard';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -10,12 +11,16 @@ import MyButton from 'components/MyButton';
 import { Checkbox } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import authService from '../../../services/authService.js';
+import { withRouter } from 'react-router-dom';
 import { EditCompanyStyles as useStyles } from './useStyles';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
 import AddManager from './AddManager';
 import AddBuilding from './AddBuilding';
+import AdminService from '../../../services/api.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import authService from '../../../services/authService.js';
+
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const CompaniesEdit = (props) => {
   const classes = useStyles();
@@ -26,6 +31,9 @@ const CompaniesEdit = (props) => {
   //   history.push("/admin/login");
   //   window.location.reload();
   // }
+  const accessCompanies = authService.getAccess('role_companies');
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+
   const [openAddManager, setOpenAddManager] = React.useState(false);
   const [openAddBuilding, setOpenAddBuilding] = React.useState(false);
 
@@ -96,19 +104,7 @@ const CompaniesEdit = (props) => {
 
   const [cardDataList, setCardDataList] = useState([]);
   const contactList = [20, 50, 100, 200, -1];
-  useEffect(() => {
-    console.log('b');
-    getDataList();
-  }, []);
-  const getDataList = () => {
-    setDataList([
-      { id: 1, name: 'Cheese', price: 4.9, stock: 20 },
-      { id: 2, name: 'Milk', price: 1.9, stock: 32 },
-      { id: 3, name: 'Yoghurt', price: 2.4, stock: 12 },
-      { id: 4, name: 'Heavy Cream', price: 3.9, stock: 9 },
-      { id: 5, name: 'Butter', price: 0.9, stock: 99 },
-    ])
-  };
+
   const handleClick = () => {
     history.goBack();
   };
@@ -277,8 +273,56 @@ const CompaniesEdit = (props) => {
     ])
   };
   const cardCellList = [{ key: 'card_digits', field: '' }, { key: 'card_name', field: '' }, { key: 'expiry_date', field: '' }]
+  useEffect(() => {
+    if (accessCompanies === 'Denied') {
+      // setOpenDialog(true);
+    }
+    if (accessCompanies !== 'Denied') {
+      setVisibleIndicator(true);
+      AdminService.getCompany(props.match.params.id)
+        .then(
+          response => {
+            setVisibleIndicator(false);
+            if (response.data.code !== 200) {
+              ToastsStore.error(response.data.message);
+            } else {
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              setName(data.name);
+              setAddress(data.address);
+              setEmail(data.email);
+              setPhone(data.phone);
+              setSiret(data.SIRET);
+              setVat(data.VAT);
+              setAccountName(data.account_holdername);
+              setAccountAddress(data.account_address);
+              setIBAN(data.account_IBAN);
+              setAvatarUrl(data.logo_url);
+              setAssemblies360(data.access_360cam);
+              setAssembliesWebcam(data.access_webcam);
+              setAssembliesAudio(data.access_audio);
+              if(data.status === 'active'){
+                setStatusActive(true);
+                setStatusInActive(false);
+              }
+              else if(data.status === 'inactive'){
+                setStatusActive(false);
+                setStatusInActive(true);
+              }
+            }
+          },
+          error => {
+            ToastsStore.error("Can't connect to the server!");
+            setVisibleIndicator(false);
+          }
+        );
+    }
+  }, [accessCompanies]);
   return (
     <div className={classes.root}>
+            {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -424,7 +468,7 @@ const CompaniesEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2}>
-              <Grid item container><p className={classes.itemTitle}>TVA Intracommunautaire</p></Grid>
+              <Grid item container><p className={classes.itemTitle}>VAT Intracommunautaire</p></Grid>
               <Grid item xs={5} item container alignItems="stretch">
                 <TextField
                   className={classes.text}
@@ -646,8 +690,9 @@ const CompaniesEdit = (props) => {
         </Grid>
         <AddBuilding onCancel={handleCloseAddBuilding} onAdd={handleAddBuilding} />
       </Dialog>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };
 
-export default CompaniesEdit;
+export default withRouter(CompaniesEdit);

@@ -143,7 +143,7 @@ const AddBuilding = (props) => {
   return (
     <div className={classes.root}>
         <div className={classes.paper} >
-            <Grid container spacing={4} xs={12}>
+            <Grid container spacing={4}>
                 <Grid item container alignItems="center" spacing={2}>
                     <Grid item><p className={classes.title}>Cabinet</p></Grid>
                     <Grid xs item container alignItems="stretch" direction="column">

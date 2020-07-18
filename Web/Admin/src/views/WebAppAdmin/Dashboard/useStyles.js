@@ -62,8 +62,16 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       minHeight: 33
     },
-    [theme.breakpoints.down('sm')]: {
-      minHeight: 23
+  },
+  body:{
+    [theme.breakpoints.up('xl')]: {
+      marginTop: 42
+    },
+    [theme.breakpoints.down('lg')]: {
+      marginTop: 29
+    },
+    [theme.breakpoints.down('md')]: {
+      marginTop: 20
     },
   },
   paper: {

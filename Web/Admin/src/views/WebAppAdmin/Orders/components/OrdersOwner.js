@@ -19,7 +19,7 @@ import {
 } from '../components';
 import CurveChart from '../components/CurveChart';
 
-const OrdersOwner = (props) => {
+const OrdersManager = (props) => {
   const { history } = props;
 
   // const token = authService.getToken();    
@@ -203,7 +203,7 @@ const OrdersOwner = (props) => {
       );
   }
   return (
-    <Grid container spacing={4} direction="column">
+    <Grid container spacing={3} direction="column">
       <Grid item></Grid>
       <Grid item container spacing={2} direction="row-reverse" >
         <Grid item>
@@ -245,10 +245,9 @@ const OrdersOwner = (props) => {
       </Grid>
       <Grid item
         container
-        direction="row"
-        spacing={6}
+        justify="space-between"
       >
-        <Grid item lg={3} container direction="column" justify="space-between">
+        <Grid item sm={3} container direction="column" justify="space-between">
           <Grid item>
             <Budget title="COMMANDES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"} />
           </Grid>
@@ -256,34 +255,29 @@ const OrdersOwner = (props) => {
             <Budget title="REVENUS" body="53 456€ HT" pro="1.17%" tail="en 1 mois" income={1} color={"#FC5555"} />
           </Grid>
         </Grid>
-        <Grid item container lg={9} direction="row" justify="space-evenly" spacing={2}>
-          <Grid item lg={6} sm={6} xl={6} >
-            <LatestSales />
-          </Grid>
-          <Grid item lg={6} sm={6} xl={6}>
-            <CurveChart />
-          </Grid>
+        <Grid item sm={4} container alignItems="stretch" >
+          <LatestSales />
+        </Grid>
+        <Grid item sm={4} container alignItems="stretch">
+          <CurveChart />
         </Grid>
       </Grid>
-      <Grid item container direction="column" spacing={6}>
-        <Grid item></Grid>
-        <Grid item><MyButton name={"Exporter les factures"} color={"1"} onClick={handleClickExport} /></Grid>
+      <Grid item style={{ marginTop: 48 }}>
+        <MyButton name={"Exporter les factures"} color={"1"} onClick={handleClickExport} />
       </Grid>
       <MyDialog open={openDialog} role={accessOrders} onClose={handleCloseDialog} />
-      <Grid item>
-        <MyTable
-          onChangeSelect={handleChangeSelect}
-          onChangePage={handleChangePagination}
-          onSelectSort={handleSort}
-          page={page_num}
-          columns={columns}
-          products={dataList}
-          totalpage={totalpage}
-          cells={cellList}
-          onClickEdit={handleClickEdit}
-          onClickDelete={handleClickDelete}
-        />
-      </Grid>
+      <MyTable
+        onChangeSelect={handleChangeSelect}
+        onChangePage={handleChangePagination}
+        onSelectSort={handleSort}
+        page={page_num}
+        columns={columns}
+        products={dataList}
+        totalpage={totalpage}
+        cells={cellList}
+        onClickEdit={handleClickEdit}
+        onClickDelete={handleClickDelete}
+      />
       <Dialog
         open={openDelete}
         onClose={handleCloseDelete}
@@ -312,4 +306,4 @@ const OrdersOwner = (props) => {
   );
 };
 
-export default withRouter(OrdersOwner);
+export default withRouter(OrdersManager);

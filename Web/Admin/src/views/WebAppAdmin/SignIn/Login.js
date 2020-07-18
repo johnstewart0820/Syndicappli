@@ -85,26 +85,55 @@ const Login = (props) => {
             globalActions.setFirstName(profile.firstname);
             globalActions.setLastName(profile.lastname);
             globalActions.setAvatarUrl(profile.photo_url);
-            localStorage.setItem("usertype", JSON.stringify(profile.usertype));
-            localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
-            localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
-            localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
-            localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
-            localStorage.setItem("role_orders", JSON.stringify(profile.role_orders));
-            localStorage.setItem("role_products", JSON.stringify(profile.role_products));
-            localStorage.setItem("role_discountcodes", JSON.stringify(profile.role_discountcodes));
-            localStorage.setItem("role_users", JSON.stringify(profile.role_users));
             if (authService.getFirstLoginState() === "true") {
               history.push('/smsauth/' + email);
             }
             else {
-              localStorage.setItem("token", JSON.stringify(response.data.data.token));
-              if (profile.usertype === 'superadmin' || profile.usertype === 'admin')
+              if (profile.usertype === 'superadmin' || profile.usertype === 'admin'){
+                localStorage.clear();
+                localStorage.setItem("token", JSON.stringify(response.data.data.token));
+                localStorage.setItem("firstlogin", JSON.stringify("false"));
+                localStorage.setItem("usertype", JSON.stringify(profile.usertype));
+                localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
+                localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
+                localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
+                localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
+                localStorage.setItem("role_orders", JSON.stringify(profile.role_orders));
+                localStorage.setItem("role_products", JSON.stringify(profile.role_products));
+                localStorage.setItem("role_discountcodes", JSON.stringify(profile.role_discountcodes));
+                localStorage.setItem("role_users", JSON.stringify(profile.role_users));
                 history.push('/admin/dashboard');
-              else if (profile.usertype === 'owner')
+              }
+              else if (profile.usertype === 'owner'){
+                localStorage.clear();
+                localStorage.setItem("token", JSON.stringify(response.data.data.token));
+                localStorage.setItem("firstlogin", JSON.stringify("false"));
+                localStorage.setItem("usertype", JSON.stringify(profile.usertype));
+                localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
+                localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
+                localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
+                localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
+                localStorage.setItem("role_orders", JSON.stringify(profile.role_orders));
+                localStorage.setItem("role_products", JSON.stringify(profile.role_products));
+                localStorage.setItem("role_discountcodes", JSON.stringify(profile.role_discountcodes));
+                localStorage.setItem("role_users", JSON.stringify(profile.role_users));
                 history.push("/owner/dashboard");
-              else if (profile.usertype === 'manager')
+              }
+              else if (profile.usertype === 'manager'){
+                localStorage.clear();
+                localStorage.setItem("token", JSON.stringify(response.data.data.token));
+                localStorage.setItem("firstlogin", JSON.stringify("false"));
+                localStorage.setItem("usertype", JSON.stringify(profile.usertype));
+                localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
+                localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
+                localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
+                localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
+                localStorage.setItem("role_orders", JSON.stringify(profile.role_orders));
+                localStorage.setItem("role_products", JSON.stringify(profile.role_products));
+                localStorage.setItem("role_discountcodes", JSON.stringify(profile.role_discountcodes));
+                // localStorage.setItem("role_users", JSON.stringify(profile.role_users));
                 history.push("/manager/dashboard");
+              }
               else
                 history.push("/not-found");
             }
@@ -126,11 +155,11 @@ const Login = (props) => {
         response => {
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
-            ToastsStore.error("server error");
+            ToastsStore.error(response.data.message);
           } else {
             ToastsStore.success(response.data.message);
             globalActions.setSmsAuth(response.data.message);
-            history.push('/smsauth/' + email);
+            history.push('/smsauth?email=' + email);
           }
         },
         error => {

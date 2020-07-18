@@ -12,14 +12,17 @@ const useStyles = makeStyles((theme,props) => ({
     [theme.breakpoints.up('xl')]: {
       width: 54,
       height: 54,
+      marginRight: -30
     },
     [theme.breakpoints.down('lg')]: {
       width: 38,
       height: 38,
+      marginRight: -21
     },
     [theme.breakpoints.down('md')]: {
       width: 27,
       height: 27,
+      marginRight: -15
     },
     background: 'linear-gradient(0deg, #00C9FF 10%, #0CC77C 90%)',
     borderRadius: '50%',
@@ -107,6 +110,7 @@ export default function IdCard(props) {
       {
         idcard.map((idcardurl,i)=>(
             <Badge  
+            key={i}
               overlap="circle"
               anchorOrigin={{
                 vertical: 'top',

@@ -86,7 +86,6 @@ export default function CustomizedSelects(props) {
   return (
       <FormControl className={classes.margin}>
         <NativeSelect
-          id="demo-customized-select"
           value={value}
           onChange={handleChange}
           input={<BootstrapInput />}
@@ -94,7 +93,7 @@ export default function CustomizedSelects(props) {
         >
           {
             items.map((item, i) =>
-              <option  value={i} key={item} > {item}</option>
+              <option  value={i} key={i} > {item}</option>
           )}
         </NativeSelect>
       </FormControl>

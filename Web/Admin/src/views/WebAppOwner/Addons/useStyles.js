@@ -339,5 +339,75 @@ export const ModulePaymentStyles = makeStyles(theme => ({
     backgroundColor: '#48C9FF',
     opacity: 0.5
   },
+  cardBody: {
+    [theme.breakpoints.up('xl')]: {
+      padding: 20,
+    },
+    [theme.breakpoints.down('lg')]: {
+      padding: 14,
+    },
+    [theme.breakpoints.down('md')]: {
+      padding: 10,
+    },
+  },
+  cardType: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 24,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 17,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 12,
+    },
+    color: 'white',
+    fontStyle: 'italic'
+  },
+  cardNumberPan: {
+    [theme.breakpoints.up('xl')]: {
+      marginTop: 50,
+    },
+    [theme.breakpoints.down('lg')]: {
+      marginTop: 35,
+    },
+    [theme.breakpoints.down('md')]: {
+      marginTop: 25,
+    },
+  },
+  cardNumber: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 14,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 10,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 7,
+    },
+    color: 'white',
+  },
+  cardHolderPan: {
+    [theme.breakpoints.up('xl')]: {
+      marginTop: 50,
+    },
+    [theme.breakpoints.down('lg')]: {
+      marginTop: 35,
+    },
+    [theme.breakpoints.down('md')]: {
+      marginTop: 25,
+    },
+  },
+  cardHolder: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 12,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 8,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 6,
+    },
+    color: 'white',
+  }
 }));
   export default useStyles;

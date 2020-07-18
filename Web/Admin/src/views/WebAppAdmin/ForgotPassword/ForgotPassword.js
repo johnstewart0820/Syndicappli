@@ -50,10 +50,9 @@ const ForgotPassword = (props) => {
             response => {
               setVisibleIndicator(false);
               if (response.data.code !== 200) {
-                ToastsStore.error("server error");
+                ToastsStore.error(response.data.message);
               } else {
                 ToastsStore.success(response.data.message);
-                // history.push('/smsauth/' + email);
               }
             },
             error => {
@@ -75,7 +74,7 @@ const ForgotPassword = (props) => {
           <img src={logo.url} className={classes.logo} alt="" />
         </Grid>
         <Grid item container justify="center">
-          <p className={classes.title}>Mot de passe perdu? Veuillez saisir votre identifiant ou adresse mail. Vous recevrez un lien pour créer un nouveau mot de passe par e-mail. </p>
+          <p className={classes.title}>Mot de passe perdu? Veuillez saisir votre adresse e-mail. Vous recevrez un lien pour créer un nouveau mot de passe par e-mail. </p>
         </Grid>
         <Grid item container justify="center">
           <Grid item container xs={1} sm={2} md={4}></Grid>
@@ -87,7 +86,7 @@ const ForgotPassword = (props) => {
             <Grid item container className={classes.input}>
               <Grid xs={1} item></Grid>
               <Grid xs={10} item container direction="column" spacing={2}>
-                <Grid item><p className={classes.itemTitle}>Nom d'utilisateur ou email</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Email</p></Grid>
                 <Grid item direction='column'>
                   <TextField
                     variant="outlined"
@@ -112,7 +111,7 @@ const ForgotPassword = (props) => {
           <Grid item container xs={10} sm={7} md={4}>
             <Grid item container direction="row-reverse">
               <Link href="/login" variant="body2">
-                <p className={classes.forgot}>aller à la connexion</p>
+                <p className={classes.forgot}>Accéder à la connexion</p>
               </Link>
             </Grid>
           </Grid>

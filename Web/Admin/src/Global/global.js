@@ -1,8 +1,8 @@
 import globalHook from 'use-global-hook';
 import React from 'react';
 const initialState = {
-  firstname : '',
-  lastname : '',
+  firstname : ' ',
+  lastname : ' ',
   avatarurl: '',
   smsAuth : '',
 };

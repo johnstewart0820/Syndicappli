@@ -18,6 +18,8 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import UserEdit from '../Users/UserEdit';
 
 const Managers = (props) => {
   const { history } = props;
@@ -37,6 +39,10 @@ const Managers = (props) => {
   const [companies, setCompanies] = useState('');
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
+  let building = [];
+  const [buildings, setBuildings] = useState('');
+  const [buildingList, setBuildingList] = useState([]);
+  const [buildingID, setBuildingID] = useState(-1);
 
   const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
@@ -57,7 +63,13 @@ const Managers = (props) => {
     else
       setCompanyID(-1);
   };
-
+  const handleChangeBuildings = (val) => {
+    setBuildings(val);
+    if (val < buildingList.length)
+      setBuildingID(buildingList[val].buildingID);
+    else
+      setBuildingID(-1);
+  };
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
@@ -92,13 +104,16 @@ const Managers = (props) => {
       getCompanies();
     }
   }, [accessManagers]);
+  useEffect(()=>{
+    getBuildings();
+  },[companyID]);
   useEffect(() => {
     if (accessManagers === 'denied') {
       setOpenDialog(true);
     }
     if (accessManagers !== 'denied')
       getManagers();
-  }, [page_num, row_count, sort_column, sort_method]);
+  }, [page_num, row_count, sort_column, sort_method, buildingID]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -157,18 +172,16 @@ const Managers = (props) => {
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
-      'companyID': companyID,
+      'buildingID': buildingID,
     }
     setVisibleIndicator(true);
     AdminService.getManagerList(requestData)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
-            console.log('error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
 
@@ -180,7 +193,7 @@ const Managers = (props) => {
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -190,12 +203,10 @@ const Managers = (props) => {
     AdminService.getCompanyListByUser()
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
-            console.log('error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             data.companylist.map((item) => (
@@ -208,7 +219,37 @@ const Managers = (props) => {
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getBuildings = () => {
+    const requestData = {
+      'search_key': '',
+      'page_num': 0,
+      'row_count': -1,
+      'sort_column': '',
+      'sort_method': '',
+      'companyID': companyID
+    }
+    setVisibleIndicator(true);
+    AdminService.getBuildingList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);  
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            setBuildingList(data.buildinglist);
+            setBuildingID(data.buildinglist[0].buildingID);
+            building.push('all');
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -261,6 +302,19 @@ const Managers = (props) => {
               </Grid>
             </Grid>
           </Grid>
+          <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
+            <Grid xs item container direction="row-reverse">
+              <Grid item container direction="column" alignItems="stretch">
+                <MySelect
+                  color="gray"
+                  data={building}
+                  onChangeSelect={handleChangeBuildings}
+                  value={buildings}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
       </div>
       <div className={classes.body}>
@@ -304,6 +358,7 @@ const Managers = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

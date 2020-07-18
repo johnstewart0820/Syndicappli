@@ -16,21 +16,21 @@ const Dashboard = (props) => {
   const cellList = [20, 50, 100, 200];
   const incomeDirection = 2;
   const incomeColor = "#FC5555";//#2DCE9C
-  const token = authService.getToken();
-  if (!token) {
-    history.push("/login");
-    window.location.reload();
-  }
+  // const token = authService.getToken();
+  // if (!token) {
+  //   history.push("/login");
+  //   window.location.reload();
+  // }
   return (
     <div className={classes.root}>
       <div className={classes.title}>
-          <Grid item xs={12} sm={6} container>
-            <Grid item>
-              <Typography variant="h2" className={classes.titleText}>
-                <b>Accueil</b>
-              </Typography>
-            </Grid>
+        <Grid item xs={12} sm={6} container>
+          <Grid item>
+            <Typography variant="h2" className={classes.titleText}>
+              <b>Accueil</b>
+            </Typography>
           </Grid>
+        </Grid>
       </div>
       <div className={classes.tool}>
         <Grid container spacing={6} direction="row-reverse" >
@@ -65,7 +65,7 @@ const Dashboard = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-        <Grid  container direction="column" spacing={3}>
+        <Grid container direction="column" spacing={3}>
           <Grid item
             container
             justify="space-between"
@@ -78,12 +78,12 @@ const Dashboard = (props) => {
                 <Budget title="REVENUS" body="53 456€ HT" pro="1.17%" tail="en 1 mois" income={1} color={"#FC5555"} />
               </Grid>
             </Grid>
-              <Grid item sm={4} container alignItems="stretch">
-                <LatestSales />
-              </Grid>
-              <Grid item sm={4} container alignItems="stretch">
-                <CurveChart />
-              </Grid>
+            <Grid item sm={4} container alignItems="stretch" >
+              <LatestSales />
+            </Grid>
+            <Grid item sm={4} container alignItems="stretch">
+              <CurveChart />
+            </Grid>
           </Grid>
           <Grid item container justify="space-evenly" spacing={2}>
             <Grid item lg={3} sm={6} xl={3} xs={12}>

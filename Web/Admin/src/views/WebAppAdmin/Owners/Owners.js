@@ -170,12 +170,10 @@ const Owners = (props) => {
     AdminService.getCompanyListByUser()
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);  
           if (response.data.code !== 200) {
-            ToastsStore.success('Error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             data.companylist.map((item) => (
@@ -188,7 +186,7 @@ const Owners = (props) => {
           }
         },
         error => {
-          ToastsStore.success('Cant load companies');
+          ToastsStore.error('Cant connect to the server!');
           setVisibleIndicator(false);
         }
       );
@@ -206,12 +204,10 @@ const Owners = (props) => {
     AdminService.getBuildingList(requestData)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);  
           if (response.data.code !== 200) {
-            console.log('error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             data.buildinglist.map((item) => (
@@ -224,7 +220,7 @@ const Owners = (props) => {
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -242,21 +238,18 @@ const Owners = (props) => {
     AdminService.getOwnerList(requestData)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);  
           if (response.data.code !== 200) {
-            console.log('error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
-
             setTotalPage(data.totalpage);
             setDataList(data.ownerlist);
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
