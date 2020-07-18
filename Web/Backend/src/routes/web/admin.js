@@ -76,7 +76,7 @@ router.put('/manager/:id', authMiddleware.checkToken, updateManager)
 /**
  * owner api
  */
-router.get('/ownerList', authMiddleware.checkToken, getOwnerList)
+router.post('/ownerList', authMiddleware.checkToken, getOwnerList)
 router.post('/owner', authMiddleware.checkToken, upload.array('photo', 3), createOwner)
 router.get('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, updateOwner)

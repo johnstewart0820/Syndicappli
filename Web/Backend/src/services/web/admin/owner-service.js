@@ -96,16 +96,12 @@ function createOwner(uid, userdata ,data, files) {
 function getOwner(uid, userdata ,data) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
-            ownerModel.getOwner(uid, data).then((ownerList) => {
-                if (ownerList) {
-                    console.log('owner list: ', ownerList)
-                    ownerModel.getCountOwnerList(uid, data).then((ownerCount) => {
-                        console.log('ownerCount: ', ownerCount)
+            ownerModel.getOwner(uid, data).then((owner) => {
+                if (owner) {
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
                         })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(ownerCount / Number(data.row_count)), 'ownerlist': ownerList, 'totalcount': ownerCount} })
-                    })
+                        resolve({ code: code.OK, message: '', data: { 'token': token, 'owner': owner} })
                 }
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
