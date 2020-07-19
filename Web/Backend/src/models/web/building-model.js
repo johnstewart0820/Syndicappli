@@ -172,6 +172,7 @@ function createBuilding(uid, data) {
                         if (rows.length > 0) {
                             let buildingID = rows[0].buildingID
                             query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
+                            let user_relation_query = 'Insert into ' + table.USER_RELATIONSHIP + ' (userID, type, relationID) values (?, ?, ?)'
                             let vote_branches = []
                             let item
                             for (var i = 0; i < data.vote_branches.length; i++) {
@@ -182,7 +183,13 @@ function createBuilding(uid, data) {
                                 if (error) {
                                     reject({message: message.INTERNAL_SERVER_ERROR});
                                 } else {
-                                    resolve("OK")
+                                    db.query(user_relation_query, [uid, "building", buildingID], (error, rows, fields) => {
+                                        if (error) {
+                                            reject({message: message.INTERNAL_SERVER_ERROR});
+                                        } else {
+                                            resolve("OK")
+                                        }
+                                    })
                                 }
                             })
                         } else {
