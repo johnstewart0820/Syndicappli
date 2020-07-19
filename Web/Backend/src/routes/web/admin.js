@@ -49,8 +49,10 @@ router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingLis
  * company api
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
-router.post('/company', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), createCompany)
-router.put('/company/:id', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), updateCompany)
+router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
+// router.post('/company', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), createCompany)
+router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), updateCompany)
+// router.put('/company/:id', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), updateCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
 
