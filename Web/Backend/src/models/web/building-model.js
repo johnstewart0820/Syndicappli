@@ -42,8 +42,9 @@ function getCompanyListByUser(uid) {
     return new Promise((resolve, reject) => {
         let query = `select c.*
                     from ` + table.COMPANIES + ` c
-                    left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                    where c.permission = "active" and u.userID = ?`
+                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.type = 'company' and ur.relationID = c.companyID
+                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                    where c.permission = 'active' and u.userID = ?`
 
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
