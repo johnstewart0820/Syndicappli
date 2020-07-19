@@ -43,9 +43,18 @@ function hasCompanyPermission(userdata, permission){
 
 function hasManagerPermission(userdata, permission){
     return new Promise((resolve, reject) => {
-        if(userdata.role_managers == permission){
+        let status = false
+        for (i in permission) {
+            if (userdata.role_managers == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
             resolve("true")
-        } else {
+        }else{
             reject({ messsage: message.HAS_NO_PERMISSION })
         }
     })
@@ -53,31 +62,56 @@ function hasManagerPermission(userdata, permission){
 
 function hasBuildingPermission(userdata, permission){
     return new Promise((resolve, reject) => {
+        let status = false
         for (i in permission) {
             if (userdata.role_buildings == permission[i]){
-                resolve("true")
+                status = true
+                break
+            } else {
+                continue
             }
         }
-        reject({ messsage: message.HAS_NO_PERMISSION })
+        if(status == true){
+            resolve("true")
+        }else{
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
     })
 }
 
 function hasOwnerPermission(userdata, permission){
     return new Promise((resolve, reject) => {
+        let status = false
         for (i in permission) {
             if (userdata.role_owners == permission[i]){
-                resolve("true")
+                status = true
+                break
+            } else {
+                continue
             }
         }
-        reject({ messsage: message.HAS_NO_PERMISSION })
+        if(status == true){
+            resolve("true")
+        }else{
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
     })
 }
 
 function hasOrderPermission(userdata, permission){
     return new Promise((resolve, reject) => {
-        if(userdata.role_orders == permission){
+        let status = false
+        for (i in permission) {
+            if (userdata.role_orders == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
             resolve("true")
-        } else {
+        }else{
             reject({ messsage: message.HAS_NO_PERMISSION })
         }
     })
@@ -85,9 +119,18 @@ function hasOrderPermission(userdata, permission){
 
 function hasProductPermission(userdata, permission){
     return new Promise((resolve, reject) => {
-        if(userdata.role_products == permission){
+        let status = false
+        for (i in permission) {
+            if (userdata.role_products == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
             resolve("true")
-        } else {
+        }else{
             reject({ messsage: message.HAS_NO_PERMISSION })
         }
     })
@@ -95,9 +138,18 @@ function hasProductPermission(userdata, permission){
 
 function hasDiscountcodePermission(userdata, permission){
     return new Promise((resolve, reject) => {
-        if(userdata.role_discountcodes == permission){
+        let status = false
+        for (i in permission) {
+            if (userdata.role_discountcodes == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
             resolve("true")
-        } else {
+        }else{
             reject({ messsage: message.HAS_NO_PERMISSION })
         }
     })
@@ -105,9 +157,18 @@ function hasDiscountcodePermission(userdata, permission){
 
 function hasUserPermission(userdata, permission){
     return new Promise((resolve, reject) => {
-        if(userdata.role_users == permission){
+        let status = false
+        for (i in permission) {
+            if (userdata.role_users == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
             resolve("true")
-        } else {
+        }else{
             reject({ messsage: message.HAS_NO_PERMISSION })
         }
     })
