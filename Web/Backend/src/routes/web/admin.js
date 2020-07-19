@@ -80,8 +80,8 @@ router.put('/manager/:id', authMiddleware.checkToken, updateManager)
  */
 router.post('/ownerList', authMiddleware.checkToken, getOwnerList)
 router.post('/owner', authMiddleware.checkToken, upload.array('photo', 3), createOwner)
-router.post('/owner/edit', authMiddleware.checkToken, getOwner)
-router.put('/owner/:id', authMiddleware.checkToken, updateOwner)
+router.post('/owner/:id', authMiddleware.checkToken, getOwner)
+router.put('/owner/:id', authMiddleware.checkToken, upload.array('photo', 3), updateOwner)
 
 
 /**
@@ -631,8 +631,9 @@ function getOwner(req, res){
 
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
+    let id = req.params.id
     let data = req.body
-    ownerService.getOwner(userId, userdata, data).then((result) => {
+    ownerService.getOwner(userId, userdata, data, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -652,7 +653,9 @@ function updateOwner(req, res){
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let data = req.body
-    ownerService.updateOwner(userId, userdata, data).then((result) => {
+    let id = req.params.id;
+    let files = req.files
+    ownerService.updateOwner(userId, userdata, data, files, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

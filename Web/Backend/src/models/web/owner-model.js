@@ -25,8 +25,8 @@ var ownerModel = {
     createOwner: createOwner,
     getOwner: getOwner,
     updateOwner_info: updateOwner_info,
+    updateOwner: updateOwner,
     delete_apartments: delete_apartments,
-    updateOwner: updateOwner
 }
 
 /**
@@ -272,13 +272,13 @@ function createOwner(uid, data, ownerID) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getOwner(uid, data) {
+function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
         let query = 'Select * from ' + table.USERS + ' where userID = ?'
         let ownerInfo;
         let vote_amount_info;
         let apartment_info;
-        db.query(query, [ data.ID ],   (error, rows, fields) => {
+        db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -287,13 +287,13 @@ function getOwner(uid, data) {
                 } else {
                     ownerInfo = rows[0];
                     let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) where b.buildingID = ? and a.userID = ?'
-                    db.query(query, [data.buildingID, data.ID], (error, rows, fields) => {
+                    db.query(query, [data.buildingID, id], (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
                             apartment_info = rows;
                             let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) left join ' + table.VOTE_AMOUNT_OF_PARTS + ' va using (apartmentID) left join ' + table.VOTE_BUILDING_BRANCH + ' vb using(voteID) where b.buildingID = ? and a.userID = ? and vb.buildingID = ?'
-                            db.query(query, [data.buildingID, data.ID, data.buildingID],  (error, rows, fields) => {
+                            db.query(query, [data.buildingID, id, data.buildingID],  (error, rows, fields) => {
                                 if (error) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                 } else {
@@ -317,7 +317,7 @@ function getOwner(uid, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function updateOwner_info(uid, data, files) {
+function updateOwner_info(id, data, files) {
     return new Promise(async (resolve, reject) => {
         let photo_url = ""
         let id_front = ""
@@ -336,7 +336,7 @@ function updateOwner_info(uid, data, files) {
         }
 
         let query = `Update ` + table.USERS + ` set type = ?, owner_role = ?, firstname = ?, lastname = ?, owner_company_name = ?, email = ?, address = ?, phone = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ?, updated_at = ? where userID = ? `
-        db.query(query, [data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, data.email, data.address, data.phone, photo_url, id_front, id_back, timeHelper.getCurrentTime(), data.ID], async function (error, result, fields) {
+        db.query(query, [data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, data.email, data.address, data.phone, photo_url, id_front, id_back, timeHelper.getCurrentTime(), id], async function (error, result, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {
@@ -354,11 +354,11 @@ function updateOwner_info(uid, data, files) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function delete_apartments(data) {
+function delete_apartments(data, id) {
     return new Promise(async (resolve, reject) => {
         
         let query = `Delete ` + table.USERS + ` where userID = ? and buildingID = ?`
-        db.query(query, [data.ID, data.buildingID], async function (error, result, fields) {
+        db.query(query, [id, data.buildingID], async function (error, result, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {

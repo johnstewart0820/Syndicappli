@@ -96,10 +96,10 @@ function createOwner(uid, userdata ,data, files) {
  * @param   object authData
  * @return  json
  */
-function getOwner(uid, userdata ,data) {
+function getOwner(uid, userdata ,data, id) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
-            ownerModel.getOwner(uid, data).then((owner) => {
+            ownerModel.getOwner(uid, data, id).then((owner) => {
                 if (owner) {
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
@@ -125,12 +125,12 @@ function getOwner(uid, userdata ,data) {
  * @param   object authData
  * @return  json
  */
-function updateOwner(uid, userdata ,data) {
+function updateOwner(uid, userdata ,data, files, id) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            ownerModel.updateOwner_info(uid, data, files).then((response) => {
-                ownerModel.delete_apartments(data).then((response) => {
-                    ownerModel.createOwner(uid, data, data.ID).then((response) => {
+            ownerModel.updateOwner_info(id, data, files).then((response) => {
+                ownerModel.delete_apartments(data, id).then((response) => {
+                    ownerModel.createOwner(uid, data, id).then((response) => {
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
                         })
