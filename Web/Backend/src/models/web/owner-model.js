@@ -39,10 +39,11 @@ var ownerModel = {
 function getOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, users.userID ID
+                    *, users.userID ID, users.phone phone, users.email email
                     FROM users
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
+                    Left join companies using (companyID)
                     Left Join (select count(*) count, buildingID from apartments left join buildings using (buildingID) group by apartments.buildingID) s on buildings.buildingID = s.buildingID
                     WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
 
@@ -55,10 +56,13 @@ function getOwnerList(uid, data) {
             query += 'and users.owner_role = ? ';
             params.push(data.role)
         }
-
-        if (data.buildingID !== -1) {
-            query += ' and buildings.buildingID = ?'
+        if (data.buildingID != -1) {
+            query += ` and buildings.buildingID = ?`
             params.push(data.buildingID)
+        }
+        else if (data.companyID != -1) {
+            query += ` and companies.companyID = ?`
+            params.push(data.companyID)
         }
 
         if (sort_column === -1)
@@ -104,6 +108,7 @@ function getCountOwnerList(uid, data) {
                     FROM users
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
+                    Left join companies using (companyID)
                     Left Join (select count(*) count, buildingID from apartments left join buildings using (buildingID) group by apartments.buildingID) s on buildings.buildingID = s.buildingID
                     WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
         let params = [search_key];
@@ -112,9 +117,13 @@ function getCountOwnerList(uid, data) {
             params.push(data.role)
         }
 
-        if (data.buildingID !== -1) {
-            query += ' and buildings.buildingID = ?'
+        if (data.buildingID != -1) {
+            query += ` and buildings.buildingID = ?`
             params.push(data.buildingID)
+        }
+        else if (data.companyID != -1) {
+            query += ` and companies.companyID = ?`
+            params.push(data.companyID)
         }
         search_key = '%' + data.search_key + '%'
 
@@ -232,8 +241,8 @@ function createOwner(uid, data, ownerID) {
                             if (error) {
                                 reject({ message: message.INTERNAL_SERVER_ERROR })
                             } else {
-                                let query = `Select * from ` + table.APARTMENTS + ` where userID = ? and apartment_number = ?`
-                                db.query(query, [id, vote_value.apartment_number], (error, rows, fields) => {
+                                let query = `Select * from ` + table.APARTMENTS + ` where userID = ? and apartment_number = ? and buildingID = ?`
+                                db.query(query, [id, vote_value.apartment_number, data.buildingID], (error, rows, fields) => {
                                     if (error) {
                                         reject({ message: message.INTERNAL_SERVER_ERROR })
                                     } else {
@@ -277,11 +286,11 @@ function createOwner(uid, data, ownerID) {
  */
 function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from ' + table.USERS + ' where userID = ?'
+        let query = 'Select *, users.type usertype from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
         let ownerInfo;
         let vote_amount_info;
         let apartment_info;
-        db.query(query, [ id ],   (error, rows, fields) => {
+        db.query(query, [ id, data.buildingID],   (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {

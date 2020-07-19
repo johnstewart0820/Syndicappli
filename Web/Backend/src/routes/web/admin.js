@@ -69,12 +69,11 @@ router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 /**
  * manager api
  */
-router.get('/building_company', authMiddleware.checkToken, getBuildingCompanyByUser)
 router.post('/managerList', authMiddleware.checkToken, getManagerList)
 router.post('/manager', authMiddleware.checkToken, upload.single('logo'), createManager)
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
 router.post('/managerListByCompanyID/:id', authMiddleware.checkToken, getManagerListByCompanyID)
-router.put('/manager/:id', authMiddleware.checkToken, updateManager)
+router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
 
 
 /**
@@ -561,7 +560,8 @@ function updateManager(req, res) {
     let userdata = req.decoded.userdata
     let id = req.params.id;
     let data = req.body
-    managerService.updateManager(userId, id, data, userdata).then((result) => {
+    let file = req.file
+    managerService.updateManager(userId, id, data, userdata, file).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

@@ -19,7 +19,6 @@ var authHelper = require('../../../helper/authHelper')
 
 
 var managerService = {
-    getCompanyBuilding: getCompanyBuilding,
     getManagerList: getManagerList,
     createManager: createManager,
     getManager: getManager,
@@ -27,34 +26,6 @@ var managerService = {
     getManagerListByCompanyID: getManagerListByCompanyID,
 }
 
-
-/**
- * Function that get company and buildling list
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object authData
- * @return  json
- */
-function getCompanyBuilding(uid, userdata) {
-    return new Promise((resolve, reject) => {
-        managerModel.getCompanyListByUser(uid).then((companyList) => {
-            if (companyList) {
-                managerModel.getBuildingListByUser(uid).then((buildingList) => {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
-                    resolve({ code: code.OK, message: '', data: { 'token': token, 'companylist': companyList, 'buildinglist': buildingList } })
-                })
-
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-        })
-    })
-}
 
 /**
  * Function that get building list
@@ -65,21 +36,25 @@ function getCompanyBuilding(uid, userdata) {
  */
 function getManagerList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
-        managerModel.getManagerList(uid, data).then((managerList) => {
-            if (managerList) {
-                managerModel.getCountManagerList(uid, data).then((managerCount) => {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
+        authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
+            managerModel.getManagerList(uid,data).then((managerList) => {
+                if (managerList) {
+                    managerModel.getCountManagerList(uid, data).then((managerCount) => {
+                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                            expiresIn: timer.TOKEN_EXPIRATION
+                        })
+                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(managerCount / Number(data.row_count)), 'managerlist': managerList, 'totalcount': managerCount} })
                     })
-                    resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(managerCount / Number(data.row_count)), 'managerlist': managerList, 'totalcount': managerCount} })
-                })
-
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+            
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
     })
 }
@@ -128,16 +103,20 @@ function createManager(uid, data, file, userdata) {
  */
 function getManager(uid, id, userdata) {
     return new Promise((resolve, reject) => {
-        managerModel.getManager(id).then((manager) => {
-            let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                expiresIn: timer.TOKEN_EXPIRATION
+        authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION. code.SEE_PERMISSION]).then((response) => {
+            managerModel.getManager(id).then((manager) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'manager':  manager.manager, 'buildinglist': manager.buildingList} })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
             })
-            resolve({ code: code.OK, message: '', data: { 'token': token, 'manager':  manager.manager, 'buildinglist': manager.buildingList} })
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
     })
 }
@@ -149,9 +128,9 @@ function getManager(uid, id, userdata) {
  * @param   object authData
  * @return  json
  */
-function updateManager(uid, id, data, userdata) {
+function updateManager(uid, id, data, userdata, file) {
     return new Promise((resolve, reject) => {
-        managerModel.updateManager(id, data).then((result) => {
+        managerModel.updateManager(id, data, file).then((result) => {
             if (result) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION

@@ -24,8 +24,6 @@ const tables = {
     BUILDINGS: 'buildings',
     VOTE_BUILDING_BRANCH: 'vote_building_branches',
     VOTEBRANCH: 'vote_branch',
-    MANAGERS: 'managers',
-    MANAGER_BUILDING: 'manager_building',
     INVOICES: 'invoices'
 }
 
