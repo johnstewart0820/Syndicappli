@@ -116,13 +116,14 @@ function updateProfile(req, res) {
     var form = new formidable.IncomingForm();
     let file_name = "";
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     form.on('fileBegin', function (name, file){
         file_name = Date.now() + '.jpg';
         file.path = '/tmp/' + file_name;
     });
 
     form.parse(req, function (err, fields, files) {
-        adminService.updateProfile(userId, fields, files).then((result)=>{
+        adminService.updateProfile(userId, fields, files, userdata).then((result)=>{
             res.json(result)
         }).catch((err) => {
             res.json(err)
@@ -140,8 +141,9 @@ function updateProfile(req, res) {
  */
 function getUserList(req, res) {
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let data = req.body
-    adminService.getUserList(userId, data).then((result) => {
+    adminService.getUserList(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -160,8 +162,9 @@ function createUser(req, res) {
     var form = new formidable.IncomingForm();
     let file_name = "";
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     form.parse(req, function (err, fields, files) {
-        adminService.createUser(userId, fields, file_name).then((result)=>{
+        adminService.createUser(userId, fields, file_name, userdata).then((result)=>{
             res.json(result)
         }).catch((err) => {
             res.json(err)
@@ -188,8 +191,9 @@ function createUser(req, res) {
 function getUser(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let data = req.params.id
-    adminService.getUser(userId, data).then((result) => {
+    adminService.getUser(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -207,9 +211,10 @@ function getUser(req, res) {
 function updateUser(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let id = req.params.id
     let data = req.body
-    adminService.updateUser(userId, id, data).then((result) => {
+    adminService.updateUser(userId, id, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -226,8 +231,9 @@ function updateUser(req, res) {
  */
 function deleteUser(req, res) {
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let id = req.params.id
-    adminService.deleteUser(userId, id).then((result) => {
+    adminService.deleteUser(userId, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -244,7 +250,8 @@ function deleteUser(req, res) {
  */
 function getCompanyBuildingListByUser(req, res) {
     let userId = req.decoded.uid
-    adminService.getCompanyBuildingListByUser(userId).then((result) => {
+    let userdata = req.decoded.userdata
+    adminService.getCompanyBuildingListByUser(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -264,8 +271,9 @@ function getCompanyBuildingListByUser(req, res) {
 function getCompanyList(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let data = req.body
-    companyService.getCompanyList(userId, data).then((result) => {
+    companyService.getCompanyList(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -321,8 +329,9 @@ function getCompany(req, res) {
 function getAllCompanyList(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let data = req.body
-    adminService.getAllCompanyList(userId, data).then((result) => {
+    adminService.getAllCompanyList(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -448,7 +457,8 @@ function updateBuilding(req, res) {
 function getBuildingCompanyByUser(req, res) {
 
     let userId = req.decoded.uid
-    managerService.getCompanyBuilding(userId).then((result) => {
+    let userdata = req.decoded.userdata
+    managerService.getCompanyBuilding(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -467,8 +477,9 @@ function getBuildingCompanyByUser(req, res) {
 function getManagerList(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let data = req.body
-    managerService.getManagerList(userId, data).then((result) => {
+    managerService.getManagerList(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -487,8 +498,9 @@ function createManager(req, res) {
     var form = new formidable.IncomingForm();
     let file_name = "";
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     form.parse(req, function (err, fields, files) {
-        managerService.createManager(userId, fields, file_name).then((result)=>{
+        managerService.createManager(userId, fields, file_name, userdata).then((result)=>{
             res.json(result)
         }).catch((err) => {
             res.json(err)
@@ -515,8 +527,9 @@ function createManager(req, res) {
 function getManager(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let data = req.params.id
-    managerService.getManager(userId, data).then((result) => {
+    managerService.getManager(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -534,9 +547,10 @@ function getManager(req, res) {
 function updateManager(req, res) {
 
     let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
     let id = req.params.id;
     let data = req.body
-    managerService.updateManager(userId, id, data).then((result) => {
+    managerService.updateManager(userId, id, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

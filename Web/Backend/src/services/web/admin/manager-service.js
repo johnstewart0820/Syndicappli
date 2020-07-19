@@ -33,12 +33,12 @@ var managerService = {
  * @param   object authData
  * @return  json
  */
-function getCompanyBuilding(uid) {
+function getCompanyBuilding(uid, userdata) {
     return new Promise((resolve, reject) => {
         managerModel.getCompanyListByUser(uid).then((companyList) => {
             if (companyList) {
                 managerModel.getBuildingListByUser(uid).then((buildingList) => {
-                    let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token, 'companylist': companyList, 'buildinglist': buildingList } })
@@ -61,12 +61,12 @@ function getCompanyBuilding(uid) {
  * @param   object authData
  * @return  json
  */
-function getManagerList(uid, data) {
+function getManagerList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         managerModel.getManagerList(uid, data).then((managerList) => {
             if (managerList) {
                 managerModel.getCountManagerList(uid, data).then((managerCount) => {
-                    let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(managerCount / Number(data.row_count)), 'managerlist': managerList, 'totalcount': managerCount} })
@@ -89,11 +89,11 @@ function getManagerList(uid, data) {
  * @param   object authData
  * @return  json
  */
-function createManager(uid, data, file_name) {
+function createManager(uid, data, file_name, userdata) {
     return new Promise((resolve, reject) => {
         managerModel.createManager(uid, data, file_name).then((data) => {
             if (data) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -117,10 +117,10 @@ function createManager(uid, data, file_name) {
  * @param   object authData
  * @return  json
  */
-function getManager(uid, id) {
+function getManager(uid, id, userdata) {
     return new Promise((resolve, reject) => {
         managerModel.getManager(id).then((manager) => {
-            let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+            let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                 expiresIn: timer.TOKEN_EXPIRATION
             })
             resolve({ code: code.OK, message: '', data: { 'token': token, 'manager':  manager.manager, 'buildinglist': manager.buildingList} })
@@ -140,11 +140,11 @@ function getManager(uid, id) {
  * @param   object authData
  * @return  json
  */
-function updateManager(uid, id, data) {
+function updateManager(uid, id, data, userdata) {
     return new Promise((resolve, reject) => {
         managerModel.updateManager(id, data).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 

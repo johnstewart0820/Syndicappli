@@ -30,12 +30,12 @@ var companyService = {
  * @param   object authData
  * @return  json
  */
-function getCompanyList(uid, data) {
+function getCompanyList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         companyModel.getCompanyList(uid, data).then((companyList) => {
             if (companyList) {
                 companyModel.getCountCompanyList(uid, data).then((companyCount) => {
-                    let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(companyCount / Number(data.row_count)), 'companylist': companyList } })

@@ -72,11 +72,11 @@ function getProfile(uid) {
  * @param   object authData
  * @return  json
  */
-function updateProfile(uid, data, files) {
+function updateProfile(uid, data, files, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.updateProfile(uid, data, files).then((data) => {
             if (data) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata:userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -98,11 +98,11 @@ function updateProfile(uid, data, files) {
  * @param   object authData
  * @return  json
  */
-function getUserList(uid, data) {
+function getUserList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.getUserList(data).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -124,11 +124,11 @@ function getUserList(uid, data) {
  * @param   object authData
  * @return  json
  */
-function createUser(uid, data, file_name) {
+function createUser(uid, data, file_name, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.createUser(data, file_name).then((data) => {
             if (data) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -150,11 +150,11 @@ function createUser(uid, data, file_name) {
  * @param   object authData
  * @return  json
  */
-function getUser(uid, data) {
+function getUser(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.getUser(data).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
                 resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  result.buildings} }})
@@ -175,11 +175,11 @@ function getUser(uid, data) {
  * @param   object authData
  * @return  json
  */
-function updateUser(uid, id, data) {
+function updateUser(uid, id, data, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.updateUser(id, data).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -201,11 +201,11 @@ function updateUser(uid, id, data) {
  * @param   object authData
  * @return  json
  */
-function deleteUser(uid, id) {
+function deleteUser(uid, id, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.deleteUser(id).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -227,11 +227,11 @@ function deleteUser(uid, id) {
  * @param   object authData
  * @return  json
  */
-function getCompanyBuildingListByUser(uid) {
+function getCompanyBuildingListByUser(uid, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.getCompanyBuildingListByUser(uid).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
@@ -306,11 +306,11 @@ function getCompanyListByUser(uid) {
  * @param   object authData
  * @return  json
  */
-function getAllCompanyList(uid, data) {
+function getAllCompanyList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         adminWebModel.getAllCompanyList(data).then((result) => {
             if (result) {
-                let token = jwt.sign({ uid: uid }, key.JWT_SECRET_KEY, {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
