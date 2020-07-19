@@ -68,12 +68,15 @@ function getOwnerList(uid, userdata ,data) {
 function createOwner(uid, userdata ,data, files) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            ownerModel.createOwner(uid, data, files).then((response) => {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
+            ownerModel.createOwner_info(uid, data, files).then((response) => {
+                ownerModel.createBuildingRelationShip(data).then((response) => {
+                    ownerModel.createOwner(uid, data, response).then((response) => {
+                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                            expiresIn: timer.TOKEN_EXPIRATION
+                        })
+                        resolve({ code: code.OK, message: '', data: { 'token': token} })
+                    })
                 })
-                resolve({ code: code.OK, message: '', data: { 'token': token} })
-                
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })

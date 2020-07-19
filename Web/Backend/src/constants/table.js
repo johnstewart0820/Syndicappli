@@ -15,6 +15,7 @@
 const tables = {
     USERS : 'users',
     USERROLE : 'user_role',
+    USER_RELATIONSHIP: 'user_relationship',
     ROLE : 'role',
     APARTMENTS: 'apartments',
     VOTE_AMOUNT_OF_PARTS: 'vote_amount_of_parts',

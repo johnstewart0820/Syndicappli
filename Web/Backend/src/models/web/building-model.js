@@ -62,13 +62,13 @@ function getBuildingList(data) {
             query = `select b.*, b.buildingID as ID, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
+                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
                 where (b.name like ?) and b.permission = "active" group by b.buildingID`
         } else {
             query = `select b.*, b.buildingID as ID, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
+                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
                 where (b.name like ?) and b.permission = "active" and b.companyID = ? group by b.buildingID`
         }
 
@@ -113,13 +113,13 @@ function getCountBuildingList(data) {
             query = `select count(b.buildingID) count
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
+                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
                 where (b.name like ?) and b.permission = "active" group by b.buildingID`
         } else {
             query = `select count(b.buildingID) count
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
+                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
                 where (b.name like ?) and b.permission = "active" and b.companyID = ? group by b.buildingID`
         }
         search_key = '%' + data.search_key + '%'

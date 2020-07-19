@@ -20,6 +20,8 @@ const timeHelper = require('../../helper/timeHelper')
 var ownerModel = {
     getOwnerList: getOwnerList,
     getCountOwnerList: getCountOwnerList,
+    createOwner_info: createOwner_info,
+    createBuildingRelationShip: createBuildingRelationShip,
     createOwner: createOwner,
     getOwner: getOwner,
     updateOwner: updateOwner
@@ -34,7 +36,7 @@ var ownerModel = {
  */
 function getOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `select *, o.userID ID, b.buildingID buildingID from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and o.status = "active" `
+        let query = `select *, o.userID ID, b.buildingID buildingID from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -89,7 +91,7 @@ function getOwnerList(uid, data) {
  */
 function getCountOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `select count(*) count from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and o.status = "active" `
+        let query = `select count(*) count from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and `
         let params = [search_key];
         if (data.role !== "all") {
             query += 'and o.owner_role = ? ';
@@ -114,19 +116,18 @@ function getCountOwnerList(uid, data) {
 
 
 /**
- * create owner
+ * create Owner only owner table
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createOwner(uid, data, files) {
+function createOwner_info(uid, data, files) {
     return new Promise((resolve, reject) => {
-        let confirm_query = `Select * from ` + table.USERS + ` where email = ?`;
-    
-        db.query(confirm_query, [ data.email ],  async function (error, result, fields) {
+        let query = `Select * from ` + table.USERS + ` where email = ?`;
+        db.query(query, [data.email], async function (error, result, fields) {
             if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
+                reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {
                 if (result.length == 0) {
                     let photo_url = ""
@@ -146,88 +147,107 @@ function createOwner(uid, data, files) {
                     }
 
                     let password = bcrypt.hashSync("123456")
-                    let query = `Insert into ` + table.USERS + ` (usertype, type, buildingID, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    await db.query(query, ["owner", data.type, data.buildingID, data.owner_role, data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], function (error, rows, fields)  {
+                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                    db.query(query, ["owner", data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
-                        } 
+                        } else {
+                            resolve("ok")
+                        }
                     })
-                } else {
-                    if ( !result[0].buildingID.split(',').includes(data.buildingID)) {
-                        let buildingID = result[0].buildingID + ',' + data.buildingID;
-                        let query = `Update ` + table.USERS + ` SET buildingID = ? where userID = ?`
-                        await db.query(query, [buildingID, result[0].userID], (error, rows, fields) => {
-                            if (error) {
-                                reject({ message: message.INTERNAL_SERVER_ERROR })
-                            }
-                        })
-                    }
                 }
-                
-                let query = `Select * from ` + table.USERS + ` where email = ?`;
-                db.query(query, [ data.email ], (error, rows, fields) => {
-                    if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR })
-                    } else {
-                        if (rows.length == 0) {
+            }
+        })
+    })
+}
+
+/**
+ * create Owner Relation Ship
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createBuildingRelationShip(data) {
+    return new Promise((resolve, reject) => {
+        let query = `Select * from ` + table.USERS + ` where email = ?`;
+        db.query(query, [data.email], function (error, result, fields) {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR });
+            } else {
+                if (result.length == 0) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                } else {
+                    let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) VALUES (?,?,?)`
+                    db.query(query, [result[0].userID, "building", data.buildingID], function (error, rows, fields)  {
+                        if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            let id = rows[0].userID;
-                            let vote_value_list = JSON.parse(data.vote_value_list);
-                            for (let i in vote_value_list) {
-                                let vote_value = vote_value_list[i];
-                                let query = `Select * from ` + table.APARTMENTS + ` where userID = ?  and apartment_number = ? and buildingID = ?`
-                                db.query(query, [id, vote_value.apartment_number, data.buildingID], (error, rows, fields) => {
+                            resolve(result[0].userID)
+                        }
+                    })
+                }
+            }
+        })
+    })
+}
+/**
+ * create owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createOwner(uid, data, ownerID) {
+    return new Promise((resolve, reject) => {
+        let id = ownerID;
+        let vote_value_list = JSON.parse(data.vote_value_list);
+        for (let i in vote_value_list) {
+            let vote_value = vote_value_list[i];
+            let query = `Select * from ` + table.APARTMENTS + ` where userID = ?  and apartment_number = ? and buildingID = ?`
+            db.query(query, [id, vote_value.apartment_number, data.buildingID], (error, rows, fields) => {
+                if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                    if (rows.length == 0) {
+                        let query = `Insert into ` + table.APARTMENTS + ` (userID, apartment_number, buildingID, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)`
+                        db.query(query, [id, vote_value.apartment_number, data.buildingID, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+                            if (error) {
+                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                            } else {
+                                let query = `Select * from ` + table.APARTMENTS + ` where userID = ? and apartment_number = ?`
+                                db.query(query, [id, vote_value.apartment_number], (error, rows, fields) => {
                                     if (error) {
                                         reject({ message: message.INTERNAL_SERVER_ERROR })
                                     } else {
-                                        if (rows.length == 0) {
-                                            let query = `Insert into ` + table.APARTMENTS + ` (userID, apartment_number, buildingID, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)`
-                                            db.query(query, [id, vote_value.apartment_number, data.buildingID, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+                                        let apartment_id = rows[0].apartmentID;
+                                        for (let i in vote_value.vote) {
+                                            let vote = vote_value.vote[i];
+                                            let query = `Select * from ` + table.VOTE_AMOUNT_OF_PARTS + ` where apartmentID = ? and voteID = ?`
+                                            db.query(query, [apartment_id, vote.voteID], (error, rows, fields) => {
                                                 if (error) {
                                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                                 } else {
-                                                    let query = `Select * from ` + table.APARTMENTS + ` where userID = ? and apartment_number = ?`
-                                                    db.query(query, [id, vote_value.apartment_number], (error, rows, fields) => {
-                                                        if (error) {
-                                                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                        } else {
-                                                            let apartment_id = rows[0].apartmentID;
-                                                            for (let i in vote_value.vote) {
-                                                                let vote = vote_value.vote[i];
-                                                                let query = `Select * from ` + table.VOTE_AMOUNT_OF_PARTS + ` where apartmentID = ? and voteID = ?`
-                                                                db.query(query, [apartment_id, vote.voteID], (error, rows, fields) => {
-                                                                    if (error) {
-                                                                        reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                                    } else {
-                                                                        if (rows.length == 0) {
-                                                                            let query = `Insert into ` + table.VOTE_AMOUNT_OF_PARTS + ` (apartmentID, voteID, amount, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)`
-                                                                            db.query(query, [apartment_id, vote.voteID, vote.vote_amount, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
-                                                                                if (error) {
-                                                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                                                }
-                                                                            })
-                                                                        }
-                                                                    }
-                                                                })
+                                                    if (rows.length == 0) {
+                                                        let query = `Insert into ` + table.VOTE_AMOUNT_OF_PARTS + ` (apartmentID, voteID, amount, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)`
+                                                        db.query(query, [apartment_id, vote.voteID, vote.vote_amount, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+                                                            if (error) {
+                                                                reject({ message: message.INTERNAL_SERVER_ERROR })
                                                             }
-                                                        }
-                                                    })
-        
+                                                        })
+                                                    }
                                                 }
                                             })
                                         }
                                     }
-                                }) 
+                                })
                             }
-                        }
-                        
+                        })
                     }
-                }) 
-            
+                }
                 resolve("ok");
-            }
-        })
+            }) 
+        }
     })
 }
 
