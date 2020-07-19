@@ -147,18 +147,19 @@ function createOwner_info(uid, data, files) {
                     let photo_url = ""
                     let id_front = ""
                     let id_back = ""
-                    if (files.length > 0) {
-                        uploadS3 = await s3Helper.uploadLogoS3(files[0], s3buckets.AVATAR)
+                    if (files.photo_url) {
+                        uploadS3 = await s3Helper.uploadLogoS3(files.photo_url[0], s3buckets.AVATAR)
                         photo_url = uploadS3.Location
                     } 
-                    if (files.length > 1) {
-                        uploadS3 = await s3Helper.uploadLogoS3(files[1], s3buckets.IDENTITY_IMAGE)
+                    if (files.id_card_front) {
+                        uploadS3 = await s3Helper.uploadLogoS3(files.id_card_front[0], s3buckets.IDENTITY_IMAGE)
                         id_front = uploadS3.Location
                     }
-                    if (files.length > 2) {
-                        uploadS3 = await s3Helper.uploadLogoS3(files[2], s3buckets.IDENTITY_IMAGE)
+                    if (files.id_card_back) {
+                        uploadS3 = await s3Helper.uploadLogoS3(files.id_card_back[0], s3buckets.IDENTITY_IMAGE)
                         id_back = uploadS3.Location    
                     }
+                  
 
                     let password = bcrypt.hashSync("123456")
                     let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
@@ -169,6 +170,8 @@ function createOwner_info(uid, data, files) {
                             resolve("ok")
                         }
                     })
+                } else {
+                    resolve("ok")
                 }
             }
         })
@@ -322,16 +325,16 @@ function updateOwner_info(id, data, files) {
         let photo_url = ""
         let id_front = ""
         let id_back = ""
-        if (files.length > 0) {
-            uploadS3 = await s3Helper.uploadLogoS3(files[0], s3buckets.AVATAR)
+        if (files.photo_url) {
+            uploadS3 = await s3Helper.uploadLogoS3(files.photo_url[0], s3buckets.AVATAR)
             photo_url = uploadS3.Location
         } 
-        if (files.length > 1) {
-            uploadS3 = await s3Helper.uploadLogoS3(files[1], s3buckets.IDENTITY_IMAGE)
+        if (files.id_card_front) {
+            uploadS3 = await s3Helper.uploadLogoS3(files.id_card_front[0], s3buckets.IDENTITY_IMAGE)
             id_front = uploadS3.Location
         }
-        if (files.length > 2) {
-            uploadS3 = await s3Helper.uploadLogoS3(files[2], s3buckets.IDENTITY_IMAGE)
+        if (files.id_card_back) {
+            uploadS3 = await s3Helper.uploadLogoS3(files.id_card_back[0], s3buckets.IDENTITY_IMAGE)
             id_back = uploadS3.Location    
         }
 
@@ -356,15 +359,32 @@ function updateOwner_info(id, data, files) {
  */
 function delete_apartments(data, id) {
     return new Promise(async (resolve, reject) => {
-        
-        let query = `Delete ` + table.USERS + ` where userID = ? and buildingID = ?`
-        db.query(query, [id, data.buildingID], async function (error, result, fields) {
+        let query = `Select * from ` + table.APARTMENTS + ` where userID = ? and buildingID = ?`
+        let apartments = [];
+        db.query(query, [id, data.buildingID], function (error, result, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {
-                resolve("ok")
+                apartments = result;
+                let query = `Delete from ` + table.APARTMENTS + ` where userID = ? and buildingID = ?`
+                db.query(query, [id, data.buildingID], function (error, result, fields) {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                    } else {
+                        for (let i in apartments) {
+                            let query = `Delete from ` + table.VOTE_AMOUNT_OF_PARTS + ` where apartmentID = ?`
+                            db.query(query, [apartments[i].apartmentID], function (error, results, fields) {
+                                if (error ){
+                                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                                }
+                            })
+                        }
+                        resolve("ok")
+                    }
+                })
             }
         })
+        
     })
 }
 
