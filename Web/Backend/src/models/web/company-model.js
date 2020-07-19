@@ -136,22 +136,12 @@ function createCompany(uid, data, file) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                 } else {
                                     let companyID = rows[0].companyID;
-                                    let updateQuery = 'UPDATE ' + table.USERS + ' SET companyID = ? WHERE userID = ?'
-                                    query = 'select * from '+ table.USERS +' where userID = ?'
-                                    db.query(query, [uid], (error, rows, fields) => {
-                                        console.log("error3:", error)
+                                    let user_relation_query = 'Insert into ' + table.USER_RELATIONSHIP + ' (userID, type, relationID) VALUES (?, ?, ?)'
+                                    db.query(user_relation_query, [uid, "company", companyID], (error, rows, fields) => {
                                         if (error) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR })
                                         } else {
-                                            let companyIDs = rows[0].companyID + "," + companyID
-                                            db.query(updateQuery, [companyIDs, uid], (error, rows, fields) => {
-                                                console.log("error4:", error)
-                                                if(error){
-                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                } else {
-                                                    resolve("ok");
-                                                }
-                                            })
+                                            resolve("ok");
                                         }
                                     })
                                 }
