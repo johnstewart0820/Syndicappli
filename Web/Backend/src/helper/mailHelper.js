@@ -11,28 +11,36 @@
 
 const dotenv = require('dotenv')
 dotenv.config()
-const mailgun = require("mailgun-js");
+const Mailer = require('nodemailer');
 
-function sendMail(title, email, type, token){
-    return new Promise((resolve, reject) => {
-        const DOMAIN = process.env.MAILGUN_DOMAIN;
-        const mg = mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN});
+function sendMail(title, email, type, token) {
+    return new Promise( async (resolve, reject) => {
         var emailContent = require(`../emailTemplate/${type}`)
 
+        var transporter = Mailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            secure: false,
+            port: 587,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PWD
+            }
+        });
+
         const data = {
-            from: "Syndicappli Support Team <postmaster@sandboxd4abcb2dc5bc4ac2916fcbcbc0028c49.mailgun.org>",
+            from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
             to: email,
             subject: title,
             html: `${emailContent.body}` + `${emailContent.url}` + `${token}` + `&email=` + `${email}` + `${emailContent.body1}`
         };
 
-        mg.messages().send(data, function (error, body) {
-            if(error){
-                reject({message: error})
-            }else {
-                resolve(body)
+        await transporter.sendMail(data, function (err, info) {
+            if(err){
+                reject({message: err})
+            }else{
+                resolve(info)
             }
-        });
+        })
     })
 }
 
