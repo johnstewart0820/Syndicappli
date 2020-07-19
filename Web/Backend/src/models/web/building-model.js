@@ -128,7 +128,10 @@ function getCountBuildingList(data) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows[0].count)
+                if (rows.length == 0)
+                    resolve(0);
+                else
+                    resolve(rows[0].count)
             }
         })
     })
