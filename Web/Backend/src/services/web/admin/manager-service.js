@@ -15,6 +15,8 @@ var message = require('../../../constants/message')
 var code = require('../../../constants/code')
 var key = require('../../../config/key-config')
 var timer  = require('../../../constants/timer')
+var authHelper = require('../../../helper/authHelper')
+
 
 var managerService = {
     getCompanyBuilding: getCompanyBuilding,
@@ -89,24 +91,31 @@ function getManagerList(uid, data, userdata) {
  * @param   object authData
  * @return  json
  */
-function createManager(uid, data, file_name, userdata) {
+function createManager(uid, data, file, userdata) {
     return new Promise((resolve, reject) => {
-        managerModel.createManager(uid, data, file_name).then((data) => {
-            if (data) {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
+        authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            managerModel.checkDuplicateManager(data).then((response) => {
+                managerModel.createManager(uid, data, file).then((data) => {
+                    if (data) {
+                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                            expiresIn: timer.TOKEN_EXPIRATION
+                        })
+        
+                        resolve({ code: code.OK, message: '', data: { 'token': token} })
+                    }
                 })
-
-                resolve({ code: code.OK, message: '', data: { 'token': token} })
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else if (err.message === message.MANAGER_ALREADY_EXIST)
-                reject({ code: code.ALREADY_EXIST, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else if (err.message === message.MANAGER_ALREADY_EXIST)
+                    reject({ code: code.ALREADY_EXIST, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
+        
     })
 }
 

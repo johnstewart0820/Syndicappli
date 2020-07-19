@@ -13,12 +13,16 @@ var db = require('../../database/database')
 var message  = require('../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../constants/table')
+const s3Helper = require('../../helper/s3helper')
+const s3buckets = require('../../constants/s3buckets')
+const timeHelper = require('../../helper/timeHelper')
 
 var companyModel = {
   getCompanyListByUser: getCompanyListByUser,
   getBuildingListByUser: getBuildingListByUser,
   getManagerList: getManagerList,
   getCountManagerList: getCountManagerList,
+  checkDuplicateManager: checkDuplicateManager,
   createManager: createManager,
   getManager: getManager,
   updateManager: updateManager,
@@ -158,18 +162,18 @@ function getCountManagerList(uid, data) {
     })
   }
 
+  
 /**
- * create manager data
+ * verify duplicate manager
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createManager(uid, data, file_name) {
+function checkDuplicateManager(data) {
   return new Promise((resolve, reject) => {
-    let password = bcrypt.hashSync("123456")
     let confirm_query = 'Select * from ' + table.MANAGERS + ' where email = ?';
-    let query = 'Insert into ' + table.MANAGERS + ' (companyID, lastname, firstname, email, password, phone, photo_url, role_companies, role_buildings, role_chat, role_assemblies, role_owners, role_incidents, role_events, role_team, role_providers, role_announcements, role_addons, role_invoices, role_payment_methods) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+
     db.query(confirm_query, [data.email], (error, rows, fields) => {
       if (error) {
         reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -177,31 +181,62 @@ function createManager(uid, data, file_name) {
         if (rows.length > 0)
           reject({ message: message.MANAGER_ALREADY_EXIST })
         else {
-          db.query(query, [ data.companyID, data.lastname, data.firstname, data.email, password, data.phone, file_name, data.role_companies, data.role_buildings, data.role_chat, data.role_assemblies, data.role_owners, data.role_incidents,data.role_events, data.role_team, data.role_providers, data.role_announcements, data.role_addons, data.role_invoices, data.role_payment_methods], (error, rows, fields) => {
-            if (error) {
-              reject({ message: message.INTERNAL_SERVER_ERROR })
-            } else {
-              let query = 'select * from ' + table.MANAGERS + ' where email = ?'
-              db.query(query, [data.email], (error, rows, fields) => {
-                if (error) {
-                  reject({ message: message.INTERNAL_SERVER_ERROR})
-                } else {
-                  let managerID = rows[0].managerID;
-                  let query = 'insert into ' + table.MANAGER_BUILDING + ' (managerID, buildingID) values (?, ?)'
-                  let buildingIDs = data.buildingID.split(",");
-                  for (let i in buildingIDs) {
-                    db.query(query, [managerID, buildingIDs[i]], (error, rows, fields) => {
-                      if (error)
-                        reject({ message: message.INTERNAL_SERVER_ERROR})
-                    })
-                  }
-                  resolve("ok");
-                }
-              })
-
-            }
-          })
+          resolve("ok")
         }
+      }
+    })
+  })
+}
+
+/**
+ * create manager data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createManager(uid, data, file) {
+  return new Promise( async (resolve, reject) => {
+    let file_name
+    if (file)  {
+      uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
+      file_name = uploadS3.Location
+    }
+
+    let password = bcrypt.hashSync("123456")
+    let query = 'Insert into ' + table.MANAGERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    db.query(query, [ "manager", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), data.getCurrentTime()], (error, rows, fields) => {
+      if (error) {
+        reject({ message: message.INTERNAL_SERVER_ERROR })
+      } else {
+        let query = 'select * from ' + table.MANAGERS + ' where email = ?'
+        db.query(query, [data.email], (error, rows, fields) => {
+          if (error) {
+            reject({ message: message.INTERNAL_SERVER_ERROR})
+          } else {
+            let managerID = rows[0].managerID;
+            let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
+            let buildingID = JSON.parse(data.buildingID);
+            for (let i in buildingID) {
+              db.query(query, [managerID, "building", buildingID[i]], (error, rows, fields) => {
+                if (error) {
+                  reject({ message: message.INTERNAL_SERVER_ERROR })
+                } 
+              })
+            }
+            let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
+            let permission_info = JSON.parse(data.permission_info)
+
+            for (let i in permission_info) {
+              db.query(query, [managerID, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
+                if (error)
+                  reject({ message: message.INTERNAL_SERVER_ERROR})
+              })
+            }
+            resolve("ok");
+          }
+        })
+
       }
     })
   })

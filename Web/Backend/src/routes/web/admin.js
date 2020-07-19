@@ -71,7 +71,7 @@ router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
  */
 router.get('/building_company', authMiddleware.checkToken, getBuildingCompanyByUser)
 router.post('/managerList', authMiddleware.checkToken, getManagerList)
-router.post('/manager', authMiddleware.checkToken, createManager)
+router.post('/manager', authMiddleware.checkToken, upload.single('logo'), createManager)
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
 router.post('/managerListByCompanyID/:id', authMiddleware.checkToken, getManagerListByCompanyID)
 router.put('/manager/:id', authMiddleware.checkToken, updateManager)
@@ -517,24 +517,13 @@ function getManagerList(req, res) {
  * @return  json
  */
 function createManager(req, res) {
-    var form = new formidable.IncomingForm();
-    let file_name = "";
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    form.parse(req, function (err, fields, files) {
-        managerService.createManager(userId, fields, file_name, userdata).then((result)=>{
-            res.json(result)
-        }).catch((err) => {
-            res.json(err)
-        });
-    });
-
-    form.on('fileBegin', function (name, file){
-        file_name = Date.now() + '.jpg';
-        file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
-    });
-
-    form.on('file', function (name, file){
+    let file = req.file
+    managerService.createManager(userId, userdata, req.body, file).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
     });
 }
 
