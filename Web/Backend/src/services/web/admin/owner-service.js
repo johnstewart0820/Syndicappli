@@ -128,17 +128,16 @@ function getOwner(uid, userdata ,data) {
 function updateOwner(uid, userdata ,data) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            ownerModel.updateOwner(uid, data).then((ownerList) => {
-                if (ownerList) {
-                    console.log('owner list: ', ownerList)
-                    ownerModel.getCountOwnerList(uid, data).then((ownerCount) => {
-                        console.log('ownerCount: ', ownerCount)
+            ownerModel.updateOwner_info(uid, data, files).then((response) => {
+                ownerModel.delete_apartments(data).then((response) => {
+                    ownerModel.createOwner(uid, data, data.ID).then((response) => {
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
                         })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(ownerCount / Number(data.row_count)), 'ownerlist': ownerList, 'totalcount': ownerCount} })
+                        resolve({ code: code.OK, message: '', data: { 'token': token} })
                     })
-                }
+                })
+                
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })

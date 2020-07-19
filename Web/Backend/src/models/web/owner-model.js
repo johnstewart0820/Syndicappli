@@ -24,6 +24,8 @@ var ownerModel = {
     createBuildingRelationShip: createBuildingRelationShip,
     createOwner: createOwner,
     getOwner: getOwner,
+    updateOwner_info: updateOwner_info,
+    delete_apartments: delete_apartments,
     updateOwner: updateOwner
 }
 
@@ -306,6 +308,67 @@ function getOwner(uid, data) {
         })
     })
 }
+
+
+/**
+ * update Owner only owner table
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateOwner_info(uid, data, files) {
+    return new Promise(async (resolve, reject) => {
+        let photo_url = ""
+        let id_front = ""
+        let id_back = ""
+        if (files.length > 0) {
+            uploadS3 = await s3Helper.uploadLogoS3(files[0], s3buckets.AVATAR)
+            photo_url = uploadS3.Location
+        } 
+        if (files.length > 1) {
+            uploadS3 = await s3Helper.uploadLogoS3(files[1], s3buckets.IDENTITY_IMAGE)
+            id_front = uploadS3.Location
+        }
+        if (files.length > 2) {
+            uploadS3 = await s3Helper.uploadLogoS3(files[2], s3buckets.IDENTITY_IMAGE)
+            id_back = uploadS3.Location    
+        }
+
+        let query = `Update ` + table.USERS + ` set type = ?, owner_role = ?, firstname = ?, lastname = ?, owner_company_name = ?, email = ?, address = ?, phone = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ?, updated_at = ? where userID = ? `
+        db.query(query, [data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, data.email, data.address, data.phone, photo_url, id_front, id_back, timeHelper.getCurrentTime(), data.ID], async function (error, result, fields) {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR });
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+}
+
+
+/**
+ * delete apartments related to the owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function delete_apartments(data) {
+    return new Promise(async (resolve, reject) => {
+        
+        let query = `Delete ` + table.USERS + ` where userID = ? and buildingID = ?`
+        db.query(query, [data.ID, data.buildingID], async function (error, result, fields) {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR });
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+}
+
+
 
 /**
  * update owner
