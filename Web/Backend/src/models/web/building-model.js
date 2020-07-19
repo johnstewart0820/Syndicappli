@@ -66,17 +66,19 @@ function getBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
         let query;
         if (data.companyID == -1) {
-            query = `select b.*, b.buildingID as ID, 0 as total
-                from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
-                where (b.name like ?) and b.permission = "active" group by b.buildingID`
+            query = `select b.*, 0 as total
+                    from ` + table.BUILDINGS + ` b
+                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
+                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
+                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                    where u.userID = 1 and b.permission = 'active' and (b.name like ?)`
         } else {
-            query = `select b.*, b.buildingID as ID, 0 as total
-                from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
-                where (b.name like ?) and b.permission = "active" and b.companyID = ? group by b.buildingID`
+            query = `select b.*, 0 as total
+                    from ` + table.BUILDINGS + ` b
+                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
+                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
+                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                    where u.userID = 1 and b.permission = 'active' and (b.name like ?) and b.companyID = ?`
         }
 
         sort_column = Number(data.sort_column);
@@ -96,7 +98,7 @@ function getBuildingList(uid, data) {
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, data.companyID == -1 ? [ search_key, uid ]: [search_key, data.companyID, uid], (error, rows, fields) => {
+        db.query(query, data.companyID == -1 ? [ search_key]: [search_key, data.companyID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -117,21 +119,23 @@ function getCountBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
         let query;
         if (data.companyID == -1) {
-            query = `select count(b.buildingID) count
-                from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
-                where (b.name like ?) and b.permission = "active" group by b.buildingID`
+            query = `select count(*) as count
+                    from ` + table.BUILDINGS + ` b
+                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
+                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
+                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                    where u.userID = 1 and b.permission = 'active' and (b.name like ?)`
         } else {
-            query = `select count(b.buildingID) count
-                from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = "company" and userID = u.userID)
-                where (b.name like ?) and b.permission = "active" and b.companyID = ? group by b.buildingID`
+            query = `select count(*) as count
+                    from ` + table.BUILDINGS + ` b
+                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
+                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
+                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                    where u.userID = 1 and b.permission = 'active' and (b.name like ?) and b.companyID = ?`
         }
         search_key = '%' + data.search_key + '%'
 
-        db.query(query, data.companyID == -1 ? [ search_key, uid ]: [search_key, data.companyID, uid], (error, rows, fields) => {
+        db.query(query, data.companyID == -1 ? [ search_key ]: [search_key, data.companyID ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
