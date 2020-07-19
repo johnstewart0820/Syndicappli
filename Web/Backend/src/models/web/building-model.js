@@ -70,13 +70,13 @@ function getBuildingList(uid, data) {
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                where (b.name like ?) and b.permission = "active" and u.userID = ?`
+                where (b.name like ?) and b.permission = "active" group by b.buildingID`
         } else {
             query = `select b.*, b.buildingID as ID, 0 as total
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                where (b.name like ?) and b.permission = "active" and b.companyID = ? and u.userID = ?`
+                where (b.name like ?) and b.permission = "active" and b.companyID = ? group by b.buildingID`
         }
 
         sort_column = Number(data.sort_column);
@@ -121,13 +121,13 @@ function getCountBuildingList(uid, data) {
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                where (b.name like ?) and b.permission = "active" and u.userID = ?`
+                where (b.name like ?) and b.permission = "active" group by b.buildingID`
         } else {
             query = `select count(b.buildingID) count
                 from ` + table.BUILDINGS + ` b
                 left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                 left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                where (b.name like ?) and b.permission = "active" and b.companyID = ? and u.userID = ?`
+                where (b.name like ?) and b.permission = "active" and b.companyID = ? group by b.buildingID`
         }
         search_key = '%' + data.search_key + '%'
 
@@ -135,7 +135,10 @@ function getCountBuildingList(uid, data) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows[0].count)
+                if (rows.length == 0)
+                    resolve(0);
+                else
+                    resolve(rows[0].count)
             }
         })
     })
@@ -197,19 +200,17 @@ function createBuilding(uid, data) {
 function getBuilding(uid) {
     return new Promise((resolve, reject) => {
         let get_building_query = 'Select * from ' + table.BUILDINGS + ' where buildingID = ?'
-        let vote_query = 'Select * from ' + table.VOTE_BUILDING_BRANCH + ' where buildingID = ?'
+        let branch_info_query = 'Select * from ' + table.VOTE_BUILDING_BRANCH + ' left join ' + table.BUILDINGS + ' Using (buildingID) where buildingID = ?'
         db.query(get_building_query, [ uid ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                getCompanyListByUser(uid).then((result) => {
-                    db.query(vote_query, [uid], (error, rows1, fields) => {
-                        if (error) {
-                            reject({ message: message.INTERNAL_SERVER_ERROR});
-                        } else {
-                            resolve({building: rows, companyList: result, votelist: rows1})
-                        }
-                    })
+                db.query(branch_info_query, [uid], (error, rows1, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR});
+                    } else {
+                        resolve({building: rows, votelist: rows1})
+                    }
                 })
             }
         })
