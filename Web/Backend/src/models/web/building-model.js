@@ -72,14 +72,14 @@ function getBuildingList(uid, data) {
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = 1 and b.permission = 'active' and (b.name like ?)`
+                    where u.userID = ? and b.permission = 'active' and (b.name like ?)`
         } else {
             query = `select b.*, 0 as total
                     from ` + table.BUILDINGS + ` b
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = 1 and b.permission = 'active' and (b.name like ?) and b.companyID = ?`
+                    where u.userID = ? and b.permission = 'active' and (b.name like ?) and b.companyID = ?`
         }
 
         sort_column = Number(data.sort_column);
@@ -99,7 +99,7 @@ function getBuildingList(uid, data) {
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, data.companyID == -1 ? [ search_key]: [search_key, data.companyID], (error, rows, fields) => {
+        db.query(query, data.companyID == -1 ? [uid, search_key]: [uid, search_key, data.companyID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -125,18 +125,18 @@ function getCountBuildingList(uid, data) {
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = 1 and b.permission = 'active' and (b.name like ?)`
+                    where u.userID = ? and b.permission = 'active' and (b.name like ?)`
         } else {
             query = `select count(*) as count
                     from ` + table.BUILDINGS + ` b
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = 1 and b.permission = 'active' and (b.name like ?) and b.companyID = ?`
+                    where u.userID = ? and b.permission = 'active' and (b.name like ?) and b.companyID = ?`
         }
         search_key = '%' + data.search_key + '%'
 
-        db.query(query, data.companyID == -1 ? [ search_key ]: [search_key, data.companyID ], (error, rows, fields) => {
+        db.query(query, data.companyID == -1 ? [ uid, search_key ]: [ uid, search_key, data.companyID ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -273,8 +273,9 @@ function getManagerCompanyListByUser(uid) {
     return new Promise((resolve, reject) => {
         let query = `select c.*
                     from ` + table.COMPANIES + ` c
-                    left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                    where c.permission = "active" and u.userID = ?`
+                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.type = 'company' and ur.relationID = c.companyID
+                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                    where c.permission = 'active' and u.userID = ?`
 
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
@@ -297,11 +298,12 @@ function getManagerBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
         let query;
 
-        query = `select b.*, b.buildingID as ID, 0 as total
+        query = `select b.*, 0 as total
                 from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                where (b.name like ?) and b.permission = "active" and u.userID = ?`
+                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
+                left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
+                left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                where u.userID = ? and b.permission = 'active' and (b.name like ?)`
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -320,7 +322,7 @@ function getManagerBuildingList(uid, data) {
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, [ search_key, uid ], (error, rows, fields) => {
+        db.query(query, [ uid, search_key ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -340,15 +342,16 @@ function getManagerBuildingList(uid, data) {
 function getManagerCountBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
         let query;
-        query = `select count(b.buildingID) count
+        query = `select count(*) as count
                 from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                left join ` + table.USERS + ` u on c.companyID in (select companyID from ` + table.USERS + ` where userID = u.userID and permission = "active")
-                where (b.name like ?) and b.permission = "active" and u.userID = ?`
+                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
+                left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
+                left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
+                where u.userID = ? and b.permission = 'active' and (b.name like ?)`
 
         search_key = '%' + data.search_key + '%'
 
-        db.query(query, [ search_key, uid ], (error, rows, fields) => {
+        db.query(query, [ uid, search_key ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -422,16 +425,16 @@ function managerCreateBuilding(uid, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getManagerBuilding(uid) {
+function getManagerBuilding(uid, id) {
     return new Promise((resolve, reject) => {
         let get_building_query = 'Select * from ' + table.BUILDINGS + ' where buildingID = ?'
         let vote_query = 'Select * from ' + table.VOTE_BUILDING_BRANCH + ' where buildingID = ?'
-        db.query(get_building_query, [ uid ], (error, rows, fields) => {
+        db.query(get_building_query, [ id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 getCompanyListByUser(uid).then((result) => {
-                    db.query(vote_query, [uid], (error, rows1, fields) => {
+                    db.query(vote_query, [id], (error, rows1, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR});
                         } else {

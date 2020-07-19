@@ -128,7 +128,7 @@ function createBuilding(uid, data, userdata) {
  */
 function getBuilding(uid, data, userdata) {
     return new Promise((resolve, reject) => {
-        buildingModel.getManagerBuilding(data).then((result) => {
+        buildingModel.getManagerBuilding(uid, data).then((result) => {
             if (result) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
