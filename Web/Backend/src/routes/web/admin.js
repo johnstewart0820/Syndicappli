@@ -556,7 +556,7 @@ function getManagerListByCompanyID(req, res) {
     let uid = req.decoded.uid
     let userdata = req.decoded.userdata
     let data = req.params.id
-    managerService.getManager(uid, data, userdata).then((result) => {
+    managerService.getManagerListByCompanyID(uid, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

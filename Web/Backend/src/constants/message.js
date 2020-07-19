@@ -26,6 +26,7 @@ const messages = {
     EMIL_IS_NOT_EXIST: 'Your email Address is not exist or not authorized recipients.',
     INVALID_TOKEN: 'Invalid TOKEN to reset your password, Please try again.',
     ACCOUNT_NOT_EXIST: 'The account does not exist.',
+    COMPANY_NOT_EXIST: 'The company does not exist.',
     INVALID_OLD_PASSWORD: 'Old password does not match!',
     CHANGEPWD_ERROR: 'Sorry, you can not change the password.',
     DATA_NOT_EXIST: 'The data does not exists.',
