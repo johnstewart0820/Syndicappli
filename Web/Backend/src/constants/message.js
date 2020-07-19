@@ -43,6 +43,7 @@ const messages = {
     VERIFIED_TOKEN_SUCCESSFULLY: 'Verified the token to reset your password. Please type your new and confirm password.',
     RESET_PASSWORD_SUCCESSFULLY: 'Reseted your password successfully.',
     COMPANY_ADD_SUCCESSFULLY: 'Created Company Successfully.',
+    COMPANY_UPDATE_SUCCESSFULLY: 'Updated Company Successfully.',
 }
 
 module.exports = messages

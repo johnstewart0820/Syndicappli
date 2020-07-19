@@ -50,7 +50,7 @@ router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingLis
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
 router.post('/company', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), createCompany)
-// router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
+router.put('/company/:id', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), updateCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
 
@@ -293,6 +293,26 @@ function createCompany(req, res) {
     let userdata = req.decoded.userdata
     let file = req.file
     companyService.createCompany(userId, userdata, req.body, file).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+
+/**
+ * Function that updates company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateCompany(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let companyID = req.params.id
+    companyService.updateCompany(companyID, userId, userdata, req.body, file).then((result)=>{
         res.json(result)
     }).catch((err) => {
         res.json(err)
