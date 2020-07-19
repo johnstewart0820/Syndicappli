@@ -34,7 +34,7 @@ var ownerModel = {
  */
 function getOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `select *, b.buildingID ID from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and o.status = "active" `
+        let query = `select *, o.userID ID, b.buildingID buildingID from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and o.status = "active" `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -240,42 +240,36 @@ function createOwner(uid, data, files) {
  */
 function getOwner(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = 'Insert into ' + table.USERS + ' (companyID, name, address, account_holdername, account_address, account_IBAN) values (?, ?, ?, ?, ?, ?)'
-        let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-        db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN ],  async (error, rows, fields) => {
+        let query = 'Select * from ' + table.USERS + ' where userID = ?'
+        let ownerInfo;
+        let vote_amount_info;
+        let apartment_info;
+        db.query(query, [ data.ID ],   (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                await db.query(select_building_query, [],  async (error, rows, fields) => {
-                    if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR });
-                    } else {
-                        let buildingID = rows[0].buildingID;
-                        for (let i in data.vote) {
-                            let query = 'Insert into ' + table.VOTEBRANCH + ' (name) values (?)'
-                            let select_query = 'Select * from ' + table.VOTEBRANCH + ' where name = ?'
-                            let insert_query = 'Insert into ' + table.BUILDING_VOTE_BRANCH + ' (buildingID, voteID) values (?, ?)'
-                            await db.query(query, [ data.vote[i].name ], async (error, rows, fields) => {
+                if (rows.length == 0) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                    ownerInfo = rows[0];
+                    let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) where b.buildingID = ? and a.userID = ?'
+                    db.query(query, [data.buildingID, data.ID], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            apartment_info = rows;
+                            let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) left join ' + table.VOTE_AMOUNT_OF_PARTS + ' va using (apartmentID) left join ' + table.VOTE_BUILDING_BRANCH + ' vb using(voteID) where b.buildingID = ? and a.userID = ? and vb.buildingID = ?'
+                            db.query(query, [data.buildingID, data.ID, data.buildingID],  (error, rows, fields) => {
                                 if (error) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                 } else {
-                                    await db.query(select_query, [ data.vote[i].name ], (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR})
-                                        } else {
-                                            db.query(insert_query, [ buildingID, rows[rows.length - 1].voteID ], (error, rows, fields) => {
-                                                if (error) {
-                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                }
-                                            })
-                                        }
-                                    })
+                                    vote_amount_info = rows;
+                                    resolve({ownerInfo: ownerInfo, amount_info: vote_amount_info, apartment_info: apartment_info});
                                 }
                             })
                         }
-                    }
-                })
-                resolve("ok");
+                    })
+                }
             }
         })
     })
