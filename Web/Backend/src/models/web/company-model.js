@@ -35,15 +35,14 @@ var companyModel = {
 function getCompanyList(uid, data) {
     return new Promise((resolve, reject) => {
 
-        let query = `select c.*, c.companyID ID,
-                    (select count(*) from users where companyID = c.companyID and usertype = "manager") as manager_count,
-                    (select firstname from users where companyID = c.companyID and usertype = "manager" ORDER BY userID asc LIMIT 1) as manager_firstname,
-                    (select lastname from users where companyID = c.companyID and usertype = "manager" ORDER BY userID asc LIMIT 1) as manager_lastname,
-                    concat((select lastname from users where companyID = c.companyID and usertype = "manager" ORDER BY userID asc LIMIT 1), " ",(select firstname from users where companyID = c.companyID and usertype = "manager" ORDER BY userID asc LIMIT 1)) as contact_name,
-                    (select count(a.apartmentID) from apartments a left join users u on u.userID = a.userID and u.usertype = "owner" where u.companyID = c.companyID GROUP BY a.apartmentID) as apartment_count
+        let query = `select c.*,
+                    (select count(m.userID) from users m left join user_relationship usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID) as manager_count,
+                    concat((select firstname from users m left join user_relationship usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID order by m.userID asc limit 1), " ", (select lastname from users m left join user_relationship usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID order by m.userID asc limit 1)) as contact_name,
+                    (select count(a.apartmentID) from apartments a left join buildings b on b.buildingID = a.buildingID and b.permission = 'active' left join companies com on com.companyID = b.companyID and com.permission = 'active' where a.permission = 'active' and com.companyID = c.companyID) as apartment_count
                     from companies c
-                    left join users us on c.companyID in (select userID from users where userID = us.userID)
-                    where us.userID = ? and us.permission = "active" and us.status = "active"`
+                    left join user_relationship ur on ur.relationID = c.companyID and ur.type = 'company'
+                    left join users u on u.userID = ur.userID and u.permission = 'active'
+                    where c.permission = 'active' and u.userID = ? and (c.name like ?)`
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
@@ -54,7 +53,7 @@ function getCompanyList(uid, data) {
             if (sort_column === 0)
                 query += ' order by c.name ';
             else if (sort_column === 1)
-                query += ' order by manager_firstname ';
+                query += ' order by contact_name ';
             else if (sort_column === 2)
                 query += ' order by c.email ';
             else if (sort_column === 3)
@@ -68,7 +67,7 @@ function getCompanyList(uid, data) {
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, [ uid ], (error, rows, fields) => {
+        db.query(query, [ uid, search_key ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -87,13 +86,14 @@ function getCompanyList(uid, data) {
  */
 function getCountCompanyList(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `select count(c.companyID) as cnt
+        let query = `select count(*) as cnt
                     from companies c
-                    left join users us on c.companyID in (select userID from users where userID = us.userID)
-                    where us.userID = ? and us.permission = "active" and us.status = "active"`
-        // search_key = '%' + data.search_key + '%'
+                    left join user_relationship ur on ur.relationID = c.companyID and ur.type = 'company'
+                    left join users u on u.userID = ur.userID and u.permission = 'active'
+                    where c.permission = 'active' and u.userID = ? and (c.name like ?)`
+        search_key = '%' + data.search_key + '%'
 
-        db.query(query, [uid], (error, rows, fields) => {
+        db.query(query, [uid, search_key], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
