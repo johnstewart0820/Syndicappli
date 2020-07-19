@@ -36,7 +36,13 @@ var ownerModel = {
  */
 function getOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `select *, o.userID ID, b.buildingID buildingID from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" `
+        let query = `SELECT
+                    *, users.userID ID
+                    FROM users
+                    LEFT JOIN user_relationship USING ( userID )
+                    LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
+                    Left Join (select count(*) count, buildingID from apartments left join buildings using (buildingID) group by apartments.buildingID) s on buildings.buildingID = s.buildingID
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -44,30 +50,30 @@ function getOwnerList(uid, data) {
         search_key = '%' + data.search_key + '%'
         let params = [search_key];
         if (data.role !== "all") {
-            query += 'and o.owner_role = ? ';
+            query += 'and users.owner_role = ? ';
             params.push(data.role)
         }
 
         if (data.buildingID !== -1) {
-            query += ' and b.buildingID = ?'
+            query += ' and buildings.buildingID = ?'
             params.push(data.buildingID)
         }
 
         if (sort_column === -1)
-            query += ' order by o.userID desc';
+            query += ' order by users.userID desc';
         else {
             if (sort_column === 0)
-                query += ' order by o.lastname ';
+                query += ' order by users.lastname ';
             else if (sort_column === 1)
-                query += ' order by o.firstname ';
+                query += ' order by users.firstname ';
             else if (sort_column === 2) {
-                query += ' order by o.email ';
+                query += ' order by users.email ';
             }
             else if (sort_column === 3) {
-                query += ' order by o.phone ';
+                query += ' order by users.phone ';
             }
             else if (sort_column === 4) {
-                query += ' order by o.owner_role ';
+                query += ' order by users.owner_role ';
             }
             query += data.sort_method;
         }
@@ -91,15 +97,21 @@ function getOwnerList(uid, data) {
  */
 function getCountOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `select count(*) count from ` + table.BUILDINGS + ` b left join ` + table.USERS + ` o on FIND_IN_SET(b.buildingID, o.buildingID) >= 1 where o.firstname like ? and o.usertype = "owner" and o.permission = "active" and `
+        let query = `SELECT
+                    count(*) count
+                    FROM users
+                    LEFT JOIN user_relationship USING ( userID )
+                    LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
+                    Left Join (select count(*) count, buildingID from apartments left join buildings using (buildingID) group by apartments.buildingID) s on buildings.buildingID = s.buildingID
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
         let params = [search_key];
         if (data.role !== "all") {
-            query += 'and o.owner_role = ? ';
+            query += 'and users.owner_role = ? ';
             params.push(data.role)
         }
 
         if (data.buildingID !== -1) {
-            query += ' and b.buildingID = ?'
+            query += ' and buildings.buildingID = ?'
             params.push(data.buildingID)
         }
         search_key = '%' + data.search_key + '%'
