@@ -24,9 +24,18 @@ const authHelper = {
 
 function hasCompanyPermission(userdata, permission){
     return new Promise((resolve, reject) => {
-        if(userdata.role_companies == permission){
+        let status = false
+        for (i in permission) {
+            if (userdata.role_companies == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
             resolve("true")
-        } else {
+        }else{
             reject({ messsage: message.HAS_NO_PERMISSION })
         }
     })

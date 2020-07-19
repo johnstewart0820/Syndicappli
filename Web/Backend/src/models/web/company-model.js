@@ -21,6 +21,7 @@ var companyModel = {
     getCompanyList: getCompanyList,
     getCountCompanyList: getCountCompanyList,
     createCompany: createCompany,
+    getCompany: getCompany
 }
 
 
@@ -157,6 +158,32 @@ function createCompany(uid, data, file) {
                             })
                         }
                     })
+                }
+            }
+        })
+    })
+}
+
+
+/**
+ * get company data by id
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCompany(uid, companyID) {
+    return new Promise((resolve, reject) => {
+        let query = `select * from ` + table.COMPANIES + ` where companyID = ? and permission = "active"`
+        console.log(companyID)
+        db.query(query, [companyID], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    resolve(rows[0])
+                } else {
+                    reject({ message: message.COMPANY_NOT_EXIST })
                 }
             }
         })

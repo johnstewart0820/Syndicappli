@@ -49,9 +49,10 @@ router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingLis
  * company api
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
-// router.post('/company', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), createCompany)
-router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
+router.post('/company', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), createCompany)
+// router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
+router.get('/company/:id', authMiddleware.checkToken, getCompany)
 
 
 /**
@@ -70,6 +71,7 @@ router.get('/building_company', authMiddleware.checkToken, getBuildingCompanyByU
 router.post('/managerList', authMiddleware.checkToken, getManagerList)
 router.post('/manager', authMiddleware.checkToken, createManager)
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
+router.post('/managerListByCompanyID/:id', authMiddleware.checkToken, getManagerListByCompanyID)
 router.put('/manager/:id', authMiddleware.checkToken, updateManager)
 
 
@@ -287,14 +289,25 @@ function createCompany(req, res) {
     }).catch((err) => {
         res.json(err)
     });
-    // form.parse(req, function (err, fields, files) {
-    //
-    // });
-    //
-    // form.on('fileBegin', function (name, file){
-    //     file_name = Date.now() + '.jpg';
-    //     file.path = '/tmp/' + file_name;
-    // });
+}
+
+/**
+ * Function that gets company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCompany(req, res) {
+    let uid = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.params.id
+    companyService.getCompany(uid, userdata, data).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
 }
 
 /**
@@ -392,8 +405,8 @@ function createBuilding(req, res) {
 function getBuilding(req, res) {
 
     let userId = req.decoded.uid
-    let userdata = req.decoded.userdata
     let data = req.params.id
+    let userdata = req.decoded.userdata
     buildingService.getBuilding(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
@@ -524,6 +537,26 @@ function updateManager(req, res) {
     let id = req.params.id;
     let data = req.body
     managerService.updateManager(userId, id, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get manager list by company id
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getManagerListByCompanyID(req, res) {
+
+    let uid = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.params.id
+    managerService.getManagerListByCompanyID(uid, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
