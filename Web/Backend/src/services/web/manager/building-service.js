@@ -9,7 +9,7 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var buildingModel = require('../../../models/web/building-model')
+var buildingModel = require('../../../models/web/manager/building-model')
 var jwt = require('jsonwebtoken')
 var message = require('../../../constants/message')
 var code = require('../../../constants/code')

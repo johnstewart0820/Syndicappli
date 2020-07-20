@@ -154,12 +154,12 @@ function createUser(uid, data, file, userdata) {
  */
 function getUser(uid, id, userdata) {
     return new Promise((resolve, reject) => {
-        authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION. code.SEE_PERMISSION]).then((response) => {
+        authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
             adminWebModel.getUser(id).then((user) => {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
-                resolve({ code: code.OK, message: '', data: { 'token': token, 'user':  user.user, 'companylist': user.companyList} })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'user':  user.user, 'companylist': user.companyList, 'roles': user.roles} })
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })

@@ -229,22 +229,35 @@ function createManager(uid, data, file) {
  */
 function getManager(uid) {
   return new Promise((resolve, reject) => {
-      let get_manager_query = 'Select * from ' + table.USERS + ' left join ' + table.ROLE + ' using (userID) where userID = ?' 
+    return new Promise((resolve, reject) => {
+      let query = 'Select * from ' + table.USERS + ' where userID = ?' 
       
-      db.query(get_manager_query, [ uid ], (error, rows, fields) => {
+      db.query(query, [ uid ], (error, rows, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
-              let building_query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
-              db.query(building_query, [uid], (error, rows1, fields) => {
-                if (error) {
-                  reject({ message: message.INTERNAL_SERVER_ERROR});
-                } else {
-                  resolve({manager: rows, buildingList: rows1})
-                }
-              })
+              if (rows.length == 0)
+                  reject({ message: message.INTERNAL_SERVER_ERROR })
+              else {
+                  let query = 'Select * from ' + table.ROLE + ' where userID = ?'
+                  db.query(query, [uid], (error, roles, fields) => {
+                      if (error) {
+                          reject({ message: message.INTERNAL_SERVER_ERROR })
+                      } else {
+                          let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+                          db.query(query, [uid], (error, rows1, fields) => {
+                            if (error) {
+                              reject({ message: message.INTERNAL_SERVER_ERROR});
+                            } else {
+                              resolve({user: rows[0], buildingList: rows1, roles: roles})
+                            }
+                          })
+                      }
+                  })
+              }     
           }
       })
+    })
   })
 }
 

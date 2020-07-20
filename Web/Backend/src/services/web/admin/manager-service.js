@@ -103,12 +103,12 @@ function createManager(uid, userdata, data, file ) {
  */
 function getManager(uid, id, userdata) {
     return new Promise((resolve, reject) => {
-        authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION. code.SEE_PERMISSION]).then((response) => {
+        authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
             managerModel.getManager(id).then((manager) => {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
-                resolve({ code: code.OK, message: '', data: { 'token': token, 'manager':  manager.manager, 'buildinglist': manager.buildingList} })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'manager':  manager.manager, 'buildinglist': manager.buildingList, 'roles': manager.roles} })
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })

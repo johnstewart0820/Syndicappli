@@ -9,12 +9,18 @@
  * @link      https://turing.ly/api/auth
  */
 
+const dotenv = require('dotenv')
+dotenv.config()
+
 var express = require('express')
 var router = express.Router()
 
 const authMiddleware = require('../../middleware/auth-middleware')
 const buildingService = require('../../services/web/manager/building-service')
+const ownerService = require('../../services/web/manager/owner-service')
 
+var multer  = require('multer')
+var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
 /**
  * building api
  */
@@ -24,8 +30,14 @@ router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 
-
-
+/**
+ * owner api
+ */
+router.post('/ownerList', authMiddleware.checkToken, getOwnerList)
+router.post('/owner', authMiddleware.checkToken,  upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), createOwner)
+router.post('/owner/:id', authMiddleware.checkToken, getOwner)
+router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
+router.delete('/owner/:id', authMiddleware.checkToken, deleteOwner)
 
 /////////////////////////////////////////////////Building///////////////////////////////////////
 
@@ -124,6 +136,110 @@ function updateBuilding(req, res) {
     let id = req.params.id;
     let data = req.body
     buildingService.updateBuilding(userId, id, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get the owner list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getOwnerList(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    ownerService.getOwnerList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+
+/**
+ * Function that create owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let files = req.files
+    ownerService.createOwner(userId, userdata, data, files).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    ownerService.getOwner(userId, userdata, data, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id;
+    let files = req.files
+    ownerService.updateOwner(userId, userdata, data, files, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteOwner(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    ownerService.deleteOwner(userId, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
