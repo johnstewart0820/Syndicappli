@@ -132,9 +132,9 @@ function getUserList(uid, data, userdata) {
 function createUser(uid, data, file, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            adminWebModel.checkDuplicateUser(data).then((data) => {
-                adminWebModel.createUser(uid, data, file).then((data) => {
-                    if (data) {
+            adminWebModel.checkDuplicateUser(data).then((response) => {
+                adminWebModel.createUserInfo(uid, data, file).then((response) => {
+                    if (response) {
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
                         })
@@ -210,6 +210,7 @@ function updateUser(uid, id, data, userdata, file) {
         }).catch((error) => {
             reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
+    })
 }
 
 /**
@@ -221,19 +222,23 @@ function updateUser(uid, id, data, userdata, file) {
  */
 function deleteUser(uid, id, userdata) {
     return new Promise((resolve, reject) => {
-        adminWebModel.deleteUser(id).then((result) => {
-            if (result) {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
-                })
+        authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            adminWebModel.deleteUser(uid, id).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
 
-                resolve({ code: code.OK, message: '', data: { 'token': token } })
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
     })
 }

@@ -203,14 +203,22 @@ function checkDuplicateManager(data) {
 function createManager(uid, data, file) {
   return new Promise( async (resolve, reject) => {
     let file_name
+    let query
+    let params = []
+    let password = bcrypt.hashSync("123456")
     if (file)  {
       uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
       file_name = uploadS3.Location
     }
-
-    let password = bcrypt.hashSync("123456")
-    let query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    db.query(query, [ "manager", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+    if (file == "") {
+      query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      params = [ "manager", data.firstname, data.lastname, data.email, password, data.phone, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
+    } else {
+      query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      params =[ "manager", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
+    }
+    
+    db.query(query, params, (error, rows, fields) => {
       if (error) {
         reject({ message: message.INTERNAL_SERVER_ERROR })
       } else {
@@ -221,7 +229,7 @@ function createManager(uid, data, file) {
           } else {
             let managerID = rows[0].userID;
             let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
-            let buildingID = JSON.parse(data.buildingID);
+            let buildingID = data.buildingID;
             for (let i in buildingID) {
               db.query(query, [managerID, "building", buildingID[i]], (error, rows, fields) => {
                 if (error) {
@@ -229,8 +237,8 @@ function createManager(uid, data, file) {
                 } 
               })
             }
-            let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
-            let permission_info = JSON.parse(data.permission_info)
+            query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
+            let permission_info = data.permission_info
 
             for (let i in permission_info) {
               db.query(query, [managerID, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
@@ -284,13 +292,21 @@ function getManager(uid) {
  */
 function updateManager( id, data, file) {
   return new Promise( async (resolve, reject) => {
-      let file_name
+      let file_name = ""
+      let query
+      let params = []
       if (file)  {
         uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
         file_name = uploadS3.Location
       }
+      if (file_name == "") {
+        query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, updated_at = ? WHERE userID = ?'
+        params = [ data.firstname, data.lastname, data.email, data.phone, id, timeHelper.getCurrentTime() ]
+      } else {
+        query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, photo_url = ?, updated_at = ? WHERE userID = ?'
+        params = [ data.firstname, data.lastname, data.email, data.phone, id, file_name, timeHelper.getCurrentTime() ]
+      }
 
-      let query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, photo_url = ?, updated_at = ? WHERE userID = ?'
       db.query(query, [ data.firstname, data.lastname, data.email, data.phone, id, file_name, timeHelper.getCurrentTime() ],   (error, rows, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -301,7 +317,7 @@ function updateManager( id, data, file) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
               } else {
                 let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
-                let buildingID = JSON.parse(data.buildingID);
+                let buildingID = data.buildingID;
                 for (let i in buildingID) {
                   db.query(query, [id, "building", buildingID[i]], (error, rows, fields) => {
                     if (error) {
@@ -309,8 +325,8 @@ function updateManager( id, data, file) {
                     } 
                   })
                 }
-                let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
-                let permission_info = JSON.parse(data.permission_info)
+                query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
+                let permission_info = data.permission_info
 
                 for (let i in permission_info) {
                   db.query(query, [id, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {

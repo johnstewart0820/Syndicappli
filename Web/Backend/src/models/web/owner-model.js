@@ -331,9 +331,11 @@ function getOwner(uid, data, id) {
  */
 function updateOwner_info(id, data, files) {
     return new Promise(async (resolve, reject) => {
+        
         let photo_url = ""
         let id_front = ""
         let id_back = ""
+
         if (files.photo_url) {
             uploadS3 = await s3Helper.uploadLogoS3(files.photo_url[0], s3buckets.AVATAR)
             photo_url = uploadS3.Location
@@ -346,15 +348,32 @@ function updateOwner_info(id, data, files) {
             uploadS3 = await s3Helper.uploadLogoS3(files.id_card_back[0], s3buckets.IDENTITY_IMAGE)
             id_back = uploadS3.Location    
         }
-
-        let query = `Update ` + table.USERS + ` set type = ?, owner_role = ?, firstname = ?, lastname = ?, owner_company_name = ?, email = ?, address = ?, phone = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ?, updated_at = ? where userID = ? `
-        db.query(query, [data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, data.email, data.address, data.phone, photo_url, id_front, id_back, timeHelper.getCurrentTime(), id], async function (error, result, fields) {
+        
+        let query = `Select * from ` + table.USERS + ` where userID = ?`
+        db.query(query, [id], (error, result, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {
-                resolve("ok")
+                if (result.length == 0) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                } else {
+                    if (photo_url == "")
+                        photo_url = result[0].photo_url
+                    if (id_front == "")
+                        id_front = result[0].identity_card_front
+                    if (id_back == "")
+                        id_back = result[0].identity_card_back
+                    let query = `Update ` + table.USERS + ` set type = ?, owner_role = ?, firstname = ?, lastname = ?, owner_company_name = ?, email = ?, address = ?, phone = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ?, updated_at = ? where userID = ? `
+                    db.query(query, [data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, data.email, data.address, data.phone, photo_url, id_front, id_back, timeHelper.getCurrentTime(), id], async function (error, result, fields) {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR });
+                        } else {
+                            resolve("ok")
+                        }
+                    })
+                }
             }
-        })
+        })        
     })
 }
 

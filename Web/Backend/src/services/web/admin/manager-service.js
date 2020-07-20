@@ -148,6 +148,7 @@ function updateManager(uid, id, data, userdata, file) {
         }).catch((error) => {
             reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
+    })
 }
 
 /**

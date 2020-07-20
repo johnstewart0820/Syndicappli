@@ -22,7 +22,7 @@ var adminModel = {
     updateProfile: updateProfile,
     getUserList: getUserList,
     checkDuplicateUser: checkDuplicateUser,
-    createUser: createUser,
+    createUserInfo: createUserInfo,
     getUser: getUser,
     updateUser: updateUser,
     deleteUser: deleteUser,
@@ -267,52 +267,61 @@ function checkDuplicateUser(data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createUser(uid, data, file) {
-    return new Promise( async (resolve, reject) => {
-      let file_name
-      if (file)  {
-        uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
-        file_name = uploadS3.Location
-      }
-  
-      let password = bcrypt.hashSync("123456")
-      let query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-      db.query(query, [ "admin", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
-        if (error) {
-          reject({ message: message.INTERNAL_SERVER_ERROR })
-        } else {
-          let query = 'select * from ' + table.USERS + ' where email = ?'
-          db.query(query, [data.email], (error, rows, fields) => {
-            if (error) {
-              reject({ message: message.INTERNAL_SERVER_ERROR})
-            } else {
-              let userID = rows[0].userID;
-              let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
-              let companyID = JSON.parse(data.companyID);
-              for (let i in companyID) {
-                db.query(query, [userID, "company", companyID[i]], (error, rows, fields) => {
-                  if (error) {
-                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                  } 
-                })
-              }
-              let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
-              let permission_info = JSON.parse(data.permission_info)
-  
-              for (let i in permission_info) {
-                db.query(query, [companyID, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
-                  if (error)
-                    reject({ message: message.INTERNAL_SERVER_ERROR})
-                })
-              }
-              resolve("ok");
-            }
-          })
-  
+function createUserInfo(uid, data, file) {
+    return new Promise(async (resolve, reject) => {
+
+        let file_name = ""
+        if (file)  {
+            uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
+            file_name = uploadS3.Location
         }
-      })
+    
+        let password = bcrypt.hashSync("123456")
+        let query
+        let params = []
+        if (file_name == "") {
+            query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone,  created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, )';
+            params = ["admin", data.firstname, data.lastname, data.email, password, data.phone, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
+        } else {
+            query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            params = ["admin", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
+        }
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                let query = 'select * from ' + table.USERS + ' where email = ?'
+                db.query(query, [data.email], (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                    } else {
+                        let userID = rows[0].userID;
+                        let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
+                        let companyID = data.companyID
+                        for (let i in companyID) {
+                            db.query(query, [userID, "company", companyID[i]], (error, rows, fields) => {
+                            if (error) {
+                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                            } 
+                            })
+                        }
+                        query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
+                        let permission_info = data.permission_info
+            
+                        for (let i in permission_info) {
+                            let temp = permission_info[i];
+                            db.query(query, [userID, temp.role_name, temp.permission], (error, rows, fields) => {
+                            if (error)
+                                reject({ message: message.INTERNAL_SERVER_ERROR})
+                            })
+                        }
+                        resolve("ok");
+                    }
+                })
+            }
+        })
     })
-  }
+}
 
 /**
  * get manager
@@ -351,14 +360,22 @@ function getUser(uid) {
  */
 function updateUser( id, data, file) {
     return new Promise( async (resolve, reject) => {
-        let file_name
+        let file_name = ""
+        let query
+        let params = []
         if (file)  {
           uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
           file_name = uploadS3.Location
         }
+        if (file == "") {
+            query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, updated_at = ? WHERE userID = ?'
+            params = [ data.firstname, data.lastname, data.email, data.phone, id, timeHelper.getCurrentTime() ]
+        } else {
+            query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, photo_url = ?, updated_at = ? WHERE userID = ?'
+            params = [  data.firstname, data.lastname, data.email, data.phone, id, file_name, timeHelper.getCurrentTime() ]
+        }
   
-        let query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, photo_url = ?, updated_at = ? WHERE userID = ?'
-        db.query(query, [ data.firstname, data.lastname, data.email, data.phone, id, file_name, timeHelper.getCurrentTime() ],   (error, rows, fields) => {
+        db.query(query, params, (error, rows, fields) => {
             if (error) {
               reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -368,7 +385,7 @@ function updateUser( id, data, file) {
                   reject({ message: message.INTERNAL_SERVER_ERROR });
                 } else {
                   let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
-                  let companyID = JSON.parse(data.companyID);
+                  let companyID = data.companyID;
                   for (let i in companyID) {
                     db.query(query, [id, "company", companyID[i]], (error, rows, fields) => {
                       if (error) {
@@ -376,8 +393,8 @@ function updateUser( id, data, file) {
                       } 
                     })
                   }
-                  let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
-                  let permission_info = JSON.parse(data.permission_info)
+                  query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
+                  let permission_info = data.permission_info
   
                   for (let i in permission_info) {
                     db.query(query, [id, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
@@ -400,15 +417,15 @@ function updateUser( id, data, file) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteUser(id) {
+function deleteUser(uid, id) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.USER + ' SET  permission = "false" where userID = ?'
+        let query = 'UPDATE ' + table.USERS + ' SET  permission = "trash", deleted_by = ?, deleted_at = ? where userID = ?'
 
-        db.query(query, [ id ], (error, rows, fields) => {
+        db.query(query, [ uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(id)
+                resolve("ok")
             }
         })
     })
