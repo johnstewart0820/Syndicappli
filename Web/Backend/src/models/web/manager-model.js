@@ -283,7 +283,7 @@ function getManager(uid) {
  * @return  object If success returns object else returns message
  */
 function updateManager( id, data, file) {
-  return new Promise((resolve, reject) => {
+  return new Promise( async (resolve, reject) => {
       let file_name
       if (file)  {
         uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
