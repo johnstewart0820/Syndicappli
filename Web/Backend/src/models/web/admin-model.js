@@ -48,7 +48,7 @@ var adminModel = {
 function getProfile(uid) {
     return new Promise((resolve, reject) => {
         let query = 'SELECT * FROM ' + table.USERS + ' WHERE userID = ? and permission = "active"'
-        let query_role = 'SELECT * from role where userID = ?'
+        let query_role = 'SELECT * from ' + table.ROLE + ' where userID = ?'
 
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
