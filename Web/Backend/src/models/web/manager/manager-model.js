@@ -213,7 +213,6 @@ function createManager(uid, data, file) {
  * @return  object If success returns object else returns message
  */
 function getManager(uid) {
-  return new Promise((resolve, reject) => {
     return new Promise((resolve, reject) => {
       let query = 'Select * from ' + table.USERS + ' where userID = ?' 
       
@@ -247,7 +246,6 @@ function getManager(uid) {
           }
       })
     })
-  })
 }
 
 /**

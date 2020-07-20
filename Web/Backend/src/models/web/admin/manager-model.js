@@ -228,10 +228,16 @@ function createManager(uid, data, file) {
  * @return  object If success returns object else returns message
  */
 function getManager(uid) {
-  return new Promise((resolve, reject) => {
     return new Promise((resolve, reject) => {
-      let query = 'Select * from ' + table.USERS + ' where userID = ?' 
-      
+      let query = `SELECT
+                  *
+                  FROM
+                  users u
+                  LEFT JOIN user_relationship r USING ( userID )
+                  LEFT JOIN buildings b ON b.buildingID = r.relationID
+                  LEFT JOIN apartments a ON b.buildingID = a.buildingID 
+                  WHERE
+                  u.userID = ?`
       db.query(query, [ uid ], (error, rows, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -239,12 +245,15 @@ function getManager(uid) {
               if (rows.length == 0)
                   reject({ message: message.INTERNAL_SERVER_ERROR })
               else {
+                  let response = rows[0]
+                  response['count'] = rows.length;
+                  console.log(rows.length);
                   let query = 'Select * from ' + table.ROLE + ' where userID = ?'
                   db.query(query, [uid], (error, roles, fields) => {
                       if (error) {
                           reject({ message: message.INTERNAL_SERVER_ERROR })
                       } else {
-                          let response = rows[0]
+                          
                           for (let i = 0 ; i < roles.length ; i++ ) {
                               response[roles[i].role_name] = roles[i].permission
                           }
@@ -262,7 +271,6 @@ function getManager(uid) {
           }
       })
     })
-  })
 }
 
 /**
