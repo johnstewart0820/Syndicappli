@@ -15,11 +15,13 @@ var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../constants/table')
 const s3Helper = require('../../helper/s3helper')
 const s3buckets = require('../../constants/s3buckets')
+const timeHelper = require('../../helper/timeHelper')
 
 var adminModel = {
     getProfile: getProfile,
     updateProfile: updateProfile,
     getUserList: getUserList,
+    checkDuplicateUser: checkDuplicateUser,
     createUser: createUser,
     getUser: getUser,
     updateUser: updateUser,
@@ -175,7 +177,7 @@ function getBuildingListByUser(uid) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT * FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and permission = "active"'
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and ( usertype = "admin" or usertype = "superadmin") and permission = "active"'
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
@@ -219,7 +221,7 @@ function getUserList(data) {
  */
 function getCountUserList(data) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT count(*) count FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and permission = "active"'
+        let query = 'SELECT count(*) count FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and ( usertype = "admin" or usertype = "superadmin") and permission = "active"'
         search_key = '%' + data.search_key + '%'
 
         db.query(query, [ search_key, search_key ], (error, rows, fields) => {
@@ -232,32 +234,88 @@ function getCountUserList(data) {
     })
 }
 
+
 /**
- * create user data
+ * confirm exist user
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object company
  * @return  object If success returns object else returns message
  */
-function createUser(data, file_name) {
+function checkDuplicateUser(data) {
     return new Promise((resolve, reject) => {
-        let password = bcrypt.hashSync("123456")
-        let query = 'Insert into ' + table.ADMIN + ' (lastname, firstname, email, phone, photo_url, password, role_companies, role_managers, role_buildings, role_owners, role_orders, role_products, role_discountcodes, role_admins) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 
-        db.query(query, [ data.lastname, data.firstname, data.email, data.phone, file_name, password, data.role_companies, data.role_managers, data.role_buildings, data.role_owners, data.role_orders, data.role_products, data.role_discountcodes, data.role_admins], (error, rows, fields) => {
+        let query = 'Select * from ' + table.USERS + ' where email = ?'
+
+        db.query(query, [ data.email], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                console.log (data.companyID);
-
-                resolve("ok");
+                if (rows.length > 0)
+                    reject({ message: message.USER_EMAIL_DUPLICATED })
+                else
+                    resolve("ok")
             }
         })
     })
 }
 
 /**
- * get user data
+ * create user data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createUser(uid, data, file) {
+    return new Promise( async (resolve, reject) => {
+      let file_name
+      if (file)  {
+        uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
+        file_name = uploadS3.Location
+      }
+  
+      let password = bcrypt.hashSync("123456")
+      let query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      db.query(query, [ "admin", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR })
+        } else {
+          let query = 'select * from ' + table.USERS + ' where email = ?'
+          db.query(query, [data.email], (error, rows, fields) => {
+            if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR})
+            } else {
+              let userID = rows[0].userID;
+              let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
+              let companyID = JSON.parse(data.companyID);
+              for (let i in companyID) {
+                db.query(query, [userID, "company", companyID[i]], (error, rows, fields) => {
+                  if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                  } 
+                })
+              }
+              let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
+              let permission_info = JSON.parse(data.permission_info)
+  
+              for (let i in permission_info) {
+                db.query(query, [companyID, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
+                  if (error)
+                    reject({ message: message.INTERNAL_SERVER_ERROR})
+                })
+              }
+              resolve("ok");
+            }
+          })
+  
+        }
+      })
+    })
+  }
+
+/**
+ * get manager
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
@@ -265,30 +323,24 @@ function createUser(data, file_name) {
  */
 function getUser(uid) {
     return new Promise((resolve, reject) => {
-        getProfile(uid).then((profile) => {
-            let query = 'SELECT buildingID, building_name FROM ' + table.USER + ' Left Join ' + table.BUILDING_MANAGER + ' USING (adminID) Left Join ' + table.BUILDING + ' USING (buildingID) '
-                + 'WHERE adminID = ? and ' + table.BUILDING + '.permission = "true"'
-            db.query(query, [ uid ], (error, rows, fields) => {
-                if (error) {
-                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                } else {
-                    getBuildingListByCompany(profile.companyID).then((buildings) => {
-                        for (let i = 0; i < buildings.length; i ++) {
-                            buildings[i].selected = false;
-                        }
-                        for (let i = 0; i < buildings.length; i ++) {
-                            for (let j = 0; j < rows.length; j ++) {
-                                if (buildings[i].buildingID === rows[j].buildingID)
-                                    buildings[i].selected = true;
-                            }
-                        }
-                        resolve({profile: profile, buildings: buildings})
-                    })
-                }
-            })
+        let query = 'Select * from ' + table.USERS + ' left join ' + table.ROLE + ' using (userID) where userID = ?' 
+        
+        db.query(query, [ uid ], (error, rows, fields) => {
+            if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+                db.query(query, [uid], (error, rows1, fields) => {
+                  if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR});
+                  } else {
+                    resolve({user: rows, companyList: rows1})
+                  }
+                })
+            }
         })
     })
-}
+  }
 
 /**
  * update user
@@ -297,20 +349,49 @@ function getUser(uid) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function updateUser(id, data) {
-    return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.USER + ' SET  (lastname = ?, firstname = ?, email = ?, phone = ?) and permission = "true"'
-        search_key = '%' + data.search_key + '%'
-
-        db.query(query, [ search_key, search_key, search_key, search_key ], (error, rows, fields) => {
+function updateUser( id, data, file) {
+    return new Promise( async (resolve, reject) => {
+        let file_name
+        if (file)  {
+          uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
+          file_name = uploadS3.Location
+        }
+  
+        let query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, photo_url = ?, updated_at = ? WHERE userID = ?'
+        db.query(query, [ data.firstname, data.lastname, data.email, data.phone, id, file_name, timeHelper.getCurrentTime() ],   (error, rows, fields) => {
             if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
+              reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows[0].count)
+              let query = 'Delete from ' + table.ROLE + ' where userID = ?' 
+              db.query(query, [id], async (error, rows, fields) => {
+                if (error) {
+                  reject({ message: message.INTERNAL_SERVER_ERROR });
+                } else {
+                  let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
+                  let companyID = JSON.parse(data.companyID);
+                  for (let i in companyID) {
+                    db.query(query, [id, "company", companyID[i]], (error, rows, fields) => {
+                      if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                      } 
+                    })
+                  }
+                  let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
+                  let permission_info = JSON.parse(data.permission_info)
+  
+                  for (let i in permission_info) {
+                    db.query(query, [id, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
+                      if (error)
+                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                    })
+                  }
+                  resolve("ok");
+                }
+              })
             }
         })
     })
-}
+  }
 
 /**
  * delete user

@@ -210,7 +210,7 @@ function createManager(uid, data, file) {
 
     let password = bcrypt.hashSync("123456")
     let query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    db.query(query, [ "manager", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), data.getCurrentTime()], (error, rows, fields) => {
+    db.query(query, [ "manager", data.firstname, data.lastname, data.email, password, data.phone, file_name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
       if (error) {
         reject({ message: message.INTERNAL_SERVER_ERROR })
       } else {
@@ -219,7 +219,7 @@ function createManager(uid, data, file) {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR})
           } else {
-            let managerID = rows[0].managerID;
+            let managerID = rows[0].userID;
             let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
             let buildingID = JSON.parse(data.buildingID);
             for (let i in buildingID) {
@@ -313,7 +313,7 @@ function updateManager( id, data, file) {
                 let permission_info = JSON.parse(data.permission_info)
 
                 for (let i in permission_info) {
-                  db.query(query, [managerID, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
+                  db.query(query, [id, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
                     if (error)
                       reject({ message: message.INTERNAL_SERVER_ERROR})
                   })

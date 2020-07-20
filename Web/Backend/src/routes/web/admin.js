@@ -38,9 +38,9 @@ router.post('/profile', authMiddleware.checkToken, updateProfile)
  * user api
  */
 router.post('/userList', authMiddleware.checkToken, getUserList)
-router.post('/user', authMiddleware.checkToken, createUser)
+router.post('/user', authMiddleware.checkToken, upload.single('logo'), createUser)
 router.get('/user/:id', authMiddleware.checkToken, getUser)
-router.put('/user/:id', authMiddleware.checkToken, updateUser)
+router.put('/user/:id', authMiddleware.checkToken, upload.single('logo'), updateUser)
 router.delete('/user/:id', authMiddleware.checkToken, deleteUser)
 
 router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingListByUser)
@@ -160,25 +160,15 @@ function getUserList(req, res) {
  * @return  json
  */
 function createUser(req, res) {
-    var form = new formidable.IncomingForm();
-    let file_name = "";
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    form.parse(req, function (err, fields, files) {
-        adminService.createUser(userId, fields, file_name, userdata).then((result)=>{
-            res.json(result)
-        }).catch((err) => {
-            res.json(err)
-        });
+    let file = req.file
+    adminService.createUser(userId, req.body, file, userdata).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
     });
 
-    form.on('fileBegin', function (name, file){
-        file_name = Date.now() + '.jpg';
-        file.path = __dirname + '/../../../public/upload/avatar/' + file_name;
-    });
-
-    form.on('file', function (name, file){
-    });
 }
 
 /**
@@ -215,7 +205,8 @@ function updateUser(req, res) {
     let userdata = req.decoded.userdata
     let id = req.params.id
     let data = req.body
-    adminService.updateUser(userId, id, data, userdata).then((result) => {
+    let file = req.file
+    adminService.updateUser(userId, id, data, userdata, file).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -467,25 +458,6 @@ function updateBuilding(req, res) {
 
 
 //////////////////////////////////////////Manager//////////////////////////////////
-/**
- * Function that get building and company by user
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object req
- * @param   object res
- * @return  json
- */
-function getBuildingCompanyByUser(req, res) {
-
-    let userId = req.decoded.uid
-    let userdata = req.decoded.userdata
-    managerService.getCompanyBuilding(userId, userdata).then((result) => {
-        res.json(result)
-    }).catch((err) => {
-        res.json(err)
-    })
-}
-
 
 /**
  * Function that get manager list

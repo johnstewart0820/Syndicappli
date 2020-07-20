@@ -130,21 +130,24 @@ function getManager(uid, id, userdata) {
  */
 function updateManager(uid, id, data, userdata, file) {
     return new Promise((resolve, reject) => {
-        managerModel.updateManager(id, data, file).then((result) => {
-            if (result) {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
-                })
+        authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            managerModel.updateManager(id, data, file).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
 
-                resolve({ code: code.OK, message: '', data: { 'token': token } })
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
-    })
 }
 
 /**

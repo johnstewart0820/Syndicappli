@@ -15,6 +15,7 @@ var message = require('../../../constants/message')
 var code = require('../../../constants/code')
 var key = require('../../../config/key-config')
 var timer  = require('../../../constants/timer')
+var authHelper = require('../../../helper/authHelper')
 
 var webService = {
     getProfile: getProfile,
@@ -100,19 +101,23 @@ function updateProfile(uid, data, files, userdata) {
  */
 function getUserList(uid, data, userdata) {
     return new Promise((resolve, reject) => {
-        adminWebModel.getUserList(data).then((result) => {
-            if (result) {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
-                })
+        authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
+            adminWebModel.getUserList(data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
 
-                resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(result.count / (Number(data.row_count) === -1 ? result.count : Number(data.row_count))), 'userlist': result.rows } })
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+                    resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(result.count / (Number(data.row_count) === -1 ? result.count : Number(data.row_count))), 'userlist': result.rows } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
     })
 }
@@ -124,46 +129,56 @@ function getUserList(uid, data, userdata) {
  * @param   object authData
  * @return  json
  */
-function createUser(uid, data, file_name, userdata) {
+function createUser(uid, data, file, userdata) {
     return new Promise((resolve, reject) => {
-        adminWebModel.createUser(data, file_name).then((data) => {
-            if (data) {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
+        authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            adminWebModel.checkDuplicateUser(data).then((data) => {
+                adminWebModel.createUser(uid, data, file).then((data) => {
+                    if (data) {
+                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                            expiresIn: timer.TOKEN_EXPIRATION
+                        })
+    
+                        resolve({ code: code.OK, message: '', data: { 'token': token} })
+                    }
                 })
-
-                resolve({ code: code.OK, message: '', data: { 'token': token} })
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else if (err.message === message.USER_EMAIL_DUPLICATED)
+                    reject({ code: code.Al, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
     })
 }
 
 /**
- * Function that get User data
+ * Function that get user
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  json
  */
-function getUser(uid, data, userdata) {
+function getUser(uid, id, userdata) {
     return new Promise((resolve, reject) => {
-        adminWebModel.getUser(data).then((result) => {
-            if (result) {
+        authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION. code.SEE_PERMISSION]).then((response) => {
+            adminWebModel.getUser(id).then((user) => {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
-                resolve({ code: code.OK, message: '', data: { 'token': token,  'user': {'profile': result.profile, 'building':  result.buildings} }})
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'user':  user.user, 'companylist': user.companyList} })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
     })
 }
@@ -175,23 +190,26 @@ function getUser(uid, data, userdata) {
  * @param   object authData
  * @return  json
  */
-function updateUser(uid, id, data, userdata) {
+function updateUser(uid, id, data, userdata, file) {
     return new Promise((resolve, reject) => {
-        adminWebModel.updateUser(id, data).then((result) => {
-            if (result) {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
-                })
+        authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            adminWebModel.updateUser(id, data, file).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
 
-                resolve({ code: code.OK, message: '', data: { 'token': token } })
-            }
-        }).catch((err) => {
-            if (err.message === message.INTERNAL_SERVER_ERROR)
-                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-            else
-                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
-    })
 }
 
 /**
