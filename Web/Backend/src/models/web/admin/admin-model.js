@@ -378,7 +378,7 @@ function updateUser( id, data, file) {
                     if (error) {
                         reject({ message: message.INTERNAL_SERVER_ERROR })
                     } else {
-                        let userID = rows[0].userID;
+                        let userID = id;
                         let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values ?`
                         let companyID = JSON.parse(data.companyID);
                         let param = [];

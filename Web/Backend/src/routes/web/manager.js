@@ -17,6 +17,7 @@ var router = express.Router()
 
 const authMiddleware = require('../../middleware/auth-middleware')
 const buildingService = require('../../services/web/manager/building-service')
+const managerService = require('../../services/web/manager/manager-service')
 const ownerService = require('../../services/web/manager/owner-service')
 
 var multer  = require('multer')
@@ -29,6 +30,15 @@ router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
+
+/**
+ * manager api
+ */
+router.post('/managerList', authMiddleware.checkToken, getManagerList)
+router.post('/manager', authMiddleware.checkToken, upload.single('logo'), createManager)
+router.get('/manager/:id', authMiddleware.checkToken, getManager)
+router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
+router.delete('/manager/:id', authMiddleware.checkToken, deleteManager)
 
 /**
  * owner api
@@ -141,6 +151,110 @@ function updateBuilding(req, res) {
         res.json(err)
     })
 }
+
+///////////////////////////////////Manager///////////////////////////
+
+/**
+ * Function that get manager list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getManagerList(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    managerService.getManagerList(userId, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that create user
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createManager(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    managerService.createManager(userId, userdata, req.body, file).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+
+/**
+ * Function that get manager
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getManager(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.params.id
+    managerService.getManager(userId, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update manager
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateManager(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id;
+    let data = req.body
+    let file = req.file
+    managerService.updateManager(userId, id, data, userdata, file).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete manager
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteManager(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    managerService.deleteManager(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+///////////////////////////////////Owner/////////////////////////////
 
 /**
  * Function that get the owner list

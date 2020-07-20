@@ -19,7 +19,8 @@ const authHelper = {
     hasOwnerPermission: hasOwnerPermission,
     hasOrderPermission: hasOrderPermission,
     hasDiscountcodePermission: hasDiscountcodePermission,
-    hasUserPermission: hasUserPermission
+    hasUserPermission: hasUserPermission,
+    hasTeamPermission: hasTeamPermission,
 }
 
 function hasCompanyPermission(userdata, permission){
@@ -46,6 +47,25 @@ function hasManagerPermission(userdata, permission){
         let status = false
         for (i in permission) {
             if (userdata.role_managers == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
+            resolve("true")
+        }else{
+            reject({ messsage: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasTeamPermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        let status = false
+        for (i in permission) {
+            if (userdata.role_team == permission[i]){
                 status = true
                 break
             } else {

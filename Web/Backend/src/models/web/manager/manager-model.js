@@ -30,7 +30,7 @@ var managerModel = {
 
 
 /**
- * get company list with filter key
+ * get manager list with filter key
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
@@ -41,21 +41,15 @@ function getManagerList(uid, data) {
       let query = `Select *, u.userID ID, u.email email from ` + table.USERS + 
                   ` u left join ` + table.USER_RELATIONSHIP + 
                   ` r using (userID) left join ` + table.BUILDINGS + 
-                  ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
-                  ` c using (companyID) LEFT JOIN ( SELECT count( * ) count, userID FROM apartments GROUP BY userID ) s ON u.userID = s.userID  where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
+                  ` b on b.buildingID = r.relationID ` +
+                  ` where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? `
       search_key = '%' + data.search_key + '%'
       let params = [search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
       }
-      else if (data.companyID != -1) {
-        query += ` and c.companyID = ? group by c.companyID`
-        params.push(data.companyID)
-      }
-      else {
-        query += ` group by c.companyID`
-      }
+      
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -70,14 +64,9 @@ function getManagerList(uid, data) {
           else if (sort_column === 2)
             query += ' order by u.email ';
           else if (sort_column === 3) {
-
+            query += ' order by u.phone'
           }
-          else if (sort_column === 4) {
-
-          }
-          else if (sort_column === 5) {
-            query += ' order by s.count'
-          }
+          
           query += data.sort_method;
       }
       query += ' limit ' + page_num * row_count + ',' + row_count
@@ -103,19 +92,15 @@ function getCountManagerList(uid, data) {
       let query = `Select count(*) count from ` + table.USERS + 
       ` u left join ` + table.USER_RELATIONSHIP + 
       ` r using (userID) left join ` + table.BUILDINGS + 
-      ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
-      ` c using (companyID) LEFT JOIN ( SELECT count( * ) count, userID FROM apartments GROUP BY userID ) s ON u.userID = s.userID  where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
+      ` b on b.buildingID = r.relationID ` +
+      ` where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? `
       search_key = '%' + data.search_key + '%'
       let params = [search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
       }
-      else if (data.companyID != -1) {
-        query += ` and c.companyID = ? group by c.companyID`
-        params.push(data.companyID)
-      }
-      
+     
       db.query(query, params , (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
