@@ -9,7 +9,7 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var managerModel = require('../../../models/web/manager-model')
+var managerModel = require('../../../models/web/admin/manager-model')
 var jwt = require('jsonwebtoken')
 var message = require('../../../constants/message')
 var code = require('../../../constants/code')

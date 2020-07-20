@@ -9,11 +9,11 @@
  * @link      https://turing.ly/
  */
 
-var db = require('../../database/database')
-var message  = require('../../constants/message')
+var db = require('../../../database/database')
+var message  = require('../../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
-var table  = require('../../constants/table')
-var timeHelper = require('../../helper/timeHelper')
+var table  = require('../../../constants/table')
+var timeHelper = require('../../../helper/timeHelper')
 
 var buildingModel = {
     getCompanyListByUser: getCompanyListByUser,

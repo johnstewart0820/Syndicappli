@@ -9,7 +9,7 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var companyModel = require('../../../models/web/company-model')
+var companyModel = require('../../../models/web/admin/company-model')
 var jwt = require('jsonwebtoken')
 var message = require('../../../constants/message')
 var code = require('../../../constants/code')

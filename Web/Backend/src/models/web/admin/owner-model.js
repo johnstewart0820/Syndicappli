@@ -9,13 +9,13 @@
  * @link      https://turing.ly/
  */
 
-var db = require('../../database/database')
-var message  = require('../../constants/message')
+var db = require('../../../database/database')
+var message  = require('../../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
-var table  = require('../../constants/table')
-const s3Helper = require('../../helper/s3helper')
-const s3buckets = require('../../constants/s3buckets')
-const timeHelper = require('../../helper/timeHelper')
+var table  = require('../../../constants/table')
+const s3Helper = require('../../../helper/s3helper')
+const s3buckets = require('../../../constants/s3buckets')
+const timeHelper = require('../../../helper/timeHelper')
 
 var ownerModel = {
     getOwnerList: getOwnerList,
