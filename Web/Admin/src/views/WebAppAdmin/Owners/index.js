@@ -1,1 +1,1 @@
-export { default } from './Owners';
+export { default } from './Main';

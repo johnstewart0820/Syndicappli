@@ -28,7 +28,6 @@ const Companies = (props) => {
   const accessCompanies = authService.getAccess('role_companies');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState(-1);
   const [dataList, setDataList] = useState([]);
@@ -56,22 +55,10 @@ const Companies = (props) => {
     console.log(id);
     history.push('/admin/companies/edit/' + id);
   }
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleAdd = () => {
-    ToastsStore.success('Add new company successfully!');
-    getCompanies();
-  };
-
   useEffect(() => {
     if (accessCompanies !== 'denied')
       getCompanies();
-  }, [page_num, row_count, sort_column, sort_method]);
+  }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
@@ -131,37 +118,11 @@ const Companies = (props) => {
   }
 
   return (
-    <div className={classes.root}>
+    <div>
       {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
       <div className={classes.title}>
-        <Grid item container justify="space-around" alignItems="center">
-          <Grid item xs={12} sm={6} container justify="flex-start" >
-            <Grid item>
-              <Typography variant="h2" className={classes.titleText}>
-                <b>Mes Cabinets</b>
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} sm={6} container justify="flex-end" >
-            <Grid>
-              <MyButton name={"Nouveau Cabinet"} color={"1"} onClick={handleOpen} />
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <Grid item container className={classes.padding} justify="space-between">
-                  <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
-                  <Grid item><p id="transition-modal-title" className={classes.modalTitle}><b>Nouveau Cabinet</b></p></Grid>
-                </Grid>
-                <AddCompany onCancel={handleClose} onAdd={handleAdd} />
-              </Dialog>
-            </Grid>
-          </Grid>
-        </Grid>
       </div>
       <div className={classes.tool}>
       </div>

@@ -1,1 +1,1 @@
-export { default } from './Managers';
+export { default } from './Main';

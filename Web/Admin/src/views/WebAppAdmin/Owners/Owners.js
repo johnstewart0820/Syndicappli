@@ -1,40 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import MyTable from '../../../components/MyTable';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import MyButton from '../../../components/MyButton';
-import Dialog from '@material-ui/core/Dialog';
-import MySelect from '../../../components/MySelect';
-import CloseIcon from '@material-ui/icons/Close';
-import AddOwner from './AddOwner';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog';
+import MyTable from '../../../components/MyTable';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AdminService from '../../../services/api.js';
+import MySelect from '../../../components/MySelect';
+import Grid from '@material-ui/core/Grid';
+import CloseIcon from '@material-ui/icons/Close';
+import AddOwner from './AddOwner';
+import MyButton from '../../../components/MyButton';
+import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import useStyles from './useStyles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
+import useStyles from './useStyles';
 const Owners = (props) => {
   const { history } = props;
-  //const token = authService.getToken();    
+
+  // const token = authService.getToken();    
   // if (!token) {
   //   history.push("/admin/login");
   //   window.location.reload();
   // }
+
   const accessOwners = authService.getAccess('role_owners');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  let company = [];
+
+  const [company, setCompany] = useState([]);
   const [companies, setCompanies] = useState('');
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  let building = [];
+  const [building,setBuilding] = useState([]);
   const [buildings, setBuildings] = useState('');
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
@@ -44,32 +45,23 @@ const Owners = (props) => {
 
   const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
   const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState(0);
   const selectList = [20, 50, 100, 200, -1];
-  const roleList = ['Copropriétaire', 'Sous-compte', 'member of the council'];
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const roleList = ['Tout', 'Copropriétaire', 'Sous-compte', 'member of the council'];
+  const owner_role = ['all', 'owner', 'subaccount', 'member'];
   const handleChangeCompanies = (val) => {
     setCompanies(val);
-    if (val < companyList.length)
-      setCompanyID(companyList[val].companyID);
-    else
-      setCompanyID(-1);
+    setCompanyID(companyList[val].companyID);
   };
   const handleChangeBuildings = (val) => {
     setBuildings(val);
-    if (val < buildingList.length)
-      setBuildingID(buildingList[val].buildingID);
-    else
-      setBuildingID(-1);
+    setBuildingID(buildingList[val].buildingID);
   };
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -77,17 +69,7 @@ const Owners = (props) => {
   const handleCloseDialog = (val) => {
     setOpenDialog(val);
   };
-  const handleAdd = () => {
 
-  };
-  const handleClickAdd = () => {
-    if (accessOwners === 'edit') {
-      setOpen(true);
-    }
-    if (accessOwners === 'see') {
-      setOpenDialog(true);
-    }
-  };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
@@ -103,35 +85,36 @@ const Owners = (props) => {
     console.log(roleList[role])
   }
   useEffect(() => {
-    if (accessOwners === 'Denied') {
+    if (accessOwners === 'denied') {
       setOpenDialog(true);
     } else {
-      getCompanies();
+      getCompanies()
     }
   }, [accessOwners]);
   useEffect(() => {
-    if (accessOwners !== 'Denied') {
+    if (accessOwners !== 'denied') {
       getBuildings();
+      getOwners();
     }
   }, [companyID]);
   useEffect(() => {
-    if (accessOwners !== 'Denied') {
+    if (accessOwners !== 'denied') {
       getOwners();
     }
-  }, [page_num, row_count, sort_column, sort_method, buildingID]);
+  }, [page_num, row_count, sort_column, sort_method, buildingID, role,props.refresh]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
     { key: 'email', field: 'Email' },
     { key: 'phone', field: 'Téléphone' },
-    { key: 'role', field: 'Role' },
-    { key: 'apartment_count', field: 'Lot' }
+    { key: 'owner_role', field: 'Role' },
+    { key: 'count', field: 'Lot' }
   ];
   const columns = [];
   for (let i = 0; i < 6; i++)
     columns[i] = 'asc';
-  const handleClickEdit = (id) => {
-    history.push('/admin/owners/edit/' + id);
+  const handleClickEdit = (id, buildingid) => {
+    history.push('/admin/owners/edit?id=' + id + '&&buildingID=' + buildingid);
   };
   const handleClickDelete = (id) => {
     if (accessOwners === 'edit') {
@@ -144,12 +127,12 @@ const Owners = (props) => {
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
-    setVisibleIndicator(true); 
+    setVisibleIndicator(true);
     AdminService.deleteUser(deleteId)
       .then(
         response => {
           console.log(response.data);
-          setVisibleIndicator(false);  
+          setVisibleIndicator(false);
           if (response.data.code !== 200) {
             console.log('error');
           } else {
@@ -165,24 +148,26 @@ const Owners = (props) => {
         }
       );
   }
+
   const getCompanies = () => {
-    setVisibleIndicator(true); 
+    setVisibleIndicator(true);
     AdminService.getCompanyListByUser()
       .then(
         response => {
-          setVisibleIndicator(false);  
+          setVisibleIndicator(false);
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
+            company.splice(0,company.length);
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
+            company.push('Tout');
             data.companylist.map((item) => (
               company.push(item.name)
             )
             );
-            setCompanyList(data.companylist);
-            setCompanyID(data.companylist[0].companyID);
-            company.push('all');
+            setCompany(company);
+            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
           }
         },
         error => {
@@ -194,29 +179,30 @@ const Owners = (props) => {
   const getBuildings = () => {
     const requestData = {
       'search_key': '',
-      'page_num': page_num - 1,
-      'row_count': row_count,
-      'sort_column': sort_column,
-      'sort_method': sort_method,
+      'page_num': 0,
+      'row_count': 20,
+      'sort_column': -1,
+      'sort_method': 'asc',
       'companyID': companyID
     }
-    setVisibleIndicator(true); 
+    setVisibleIndicator(true);
     AdminService.getBuildingList(requestData)
       .then(
         response => {
-          setVisibleIndicator(false);  
+          setVisibleIndicator(false);
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
+            building.splice(0,building.length);
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
+              building.push('Tout');
             data.buildinglist.map((item) => (
               building.push(item.name)
             )
             );
-            setBuildingList(data.buildinglist);
-            setBuildingID(data.buildinglist[0].buildingID);
-            building.push('all');
+            setBuilding(building);
+            setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
           }
         },
         error => {
@@ -232,19 +218,24 @@ const Owners = (props) => {
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
-      'buildingID': buildingID
+      'role': owner_role[role],
+      'buildingID': buildingID,
+      'companyID' : companyID
     }
-    setVisibleIndicator(true); 
+    setVisibleIndicator(true);
     AdminService.getOwnerList(requestData)
       .then(
         response => {
-          setVisibleIndicator(false);  
+          setVisibleIndicator(false);
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
-            setTotalPage(data.totalpage);
+            if (!data.totalpage)
+              setTotalPage(1);
+            else
+              setTotalPage(data.totalpage);
             setDataList(data.ownerlist);
           }
         },
@@ -255,37 +246,11 @@ const Owners = (props) => {
       );
   }
   return (
-    <div className={classes.root}>
+    <>
       {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
       <div className={classes.title}>
-        <Grid item container justify="space-around" alignItems="center">
-          <Grid item xs={12} sm={6} container justify="flex-start" >
-            <Grid item>
-              <Typography variant="h2" className={classes.titleText}>
-                <b>Mes Copropriétaires</b>
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} sm={6} container justify="flex-end" >
-            <Grid>
-              <MyButton name={"Nouveau copropriétaire"} color={"1"} onClick={handleClickAdd} />
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <Grid item container className={classes.padding} justify="space-between">
-                  <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
-                  <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Copropriétaire</h2></Grid>
-                </Grid>
-                <AddOwner onCancel={handleClose} onAdd={handleAdd} />
-              </Dialog>
-            </Grid>
-          </Grid>
-        </Grid>
       </div>
       <div className={classes.tool}>
         <Grid container spacing={2} direction="column">
@@ -331,7 +296,7 @@ const Owners = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog} />
+
         <MyTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
@@ -343,6 +308,7 @@ const Owners = (props) => {
           cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
+          type="owner"
         />
       </div>
       <Dialog
@@ -370,7 +336,8 @@ const Owners = (props) => {
         </DialogActions>
       </Dialog>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
-    </div>
+
+    </>
   );
 };
 

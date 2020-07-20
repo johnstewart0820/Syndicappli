@@ -33,9 +33,6 @@ const Buildings = (props) => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = useState(-1);
-  const [footerItems, setFooterItems] = useState([]);
-
-  const [allSelect, setAllSelect] = useState(-1);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
@@ -93,17 +90,6 @@ const Buildings = (props) => {
     ToastsStore.success('Add new building successfully!');
     getBuildings();
   };
-  useEffect(() => {
-    getDataList();
-  }, []);
-  const getDataList = () => {
-    setDataList([
-      { ID: 1, name: 'Cheese', address: 4.9 },
-      { ID: 21, name: 'Milk', address: 1.9 },
-      { ID: 23, name: 'Yoghurt', address: 2.4 },
-      { ID: 44, name: 'Heavy Cream', address: 3.9 },
-    ])
-  }
   const getBuildings = () => {
     const requestData = {
       'search_key': '',
@@ -133,9 +119,6 @@ const Buildings = (props) => {
             });
             setDataList(itemlist);
             let amount = 0;
-
-            const items = ['Total', data.totalcount, amount];
-            setFooterItems(items);
           }
         },
         error => {
@@ -145,7 +128,7 @@ const Buildings = (props) => {
       );
   }
   const handleClickDelete = (id) => {
-    if (accessBuildings === 'Edit') {
+    if (accessBuildings === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
     } else {
@@ -153,14 +136,14 @@ const Buildings = (props) => {
     }
   };
   useEffect(() => {
-    if (accessBuildings === 'Denied') {
+    if (accessBuildings === 'denied') {
       setOpenDialog(true);
     }
   }, [accessBuildings]);
   useEffect(() => {
-    if (accessBuildings !== 'Denied')
+    if (accessBuildings !== 'denied')
       getBuildings();
-  }, [page_num, row_count, sort_column, sort_method, companyID]);
+  }, [page_num, row_count, sort_column, sort_method]);
 
 
 

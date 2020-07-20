@@ -55,8 +55,8 @@ const CompaniesEdit = (props) => {
 
   const [avatarurl, setAvatarUrl] = useState("");
   const [avatar, setAvatar] = useState(null);
-  const [managerCount, setamountCompany] = useState('');
-  const [apartmentCount, setApartmentCount] = useState('');
+  const [managerCount, setamountCompany] = useState(0);
+  const [apartmentCount, setApartmentCount] = useState(0);
 
   const [managerDataList, setManagerDataList] = useState([]);
   const [managerTotalpage, setManagerTotalPage] = useState(1);
@@ -76,7 +76,8 @@ const CompaniesEdit = (props) => {
   const managerColumns = [];
   for (let i = 0; i < 4; i++)
     managerColumns[i] = 'asc';
-
+  const [building_refresh, setBuildingRefresh] = React.useState(false);
+  const [manager_refresh, setManagerRefresh] = React.useState(false);
   const [buildingDataList, setBuildingDataList] = useState([]);
   const [buildingTotalpage, setBuildingTotalPage] = useState(1);
   const [building_row_count, setBuildingRowCount] = useState(20);
@@ -103,8 +104,15 @@ const CompaniesEdit = (props) => {
     buildingColumns[i] = 'asc';
 
   const [cardDataList, setCardDataList] = useState([]);
-  const contactList = [20, 50, 100, 200, -1];
-
+  // const contactList = [20, 50, 100, 200, -1];
+  useEffect(() => {
+    if (accessCompanies !== 'denied')
+      getBuildings();
+  }, [building_page_num, building_row_count, building_sort_method, building_sort_column, building_refresh]);
+  useEffect(() => {
+    if (accessCompanies !== 'denied')
+      getManagers();
+  }, [manager_page_num, manager_row_count, manager_sort_method, manager_sort_column, manager_refresh]);
   const handleClick = () => {
     history.goBack();
   };
@@ -146,9 +154,9 @@ const CompaniesEdit = (props) => {
     setVat(event.target.value);
   }
 
-  const handleChangeContact = (value) => {
-    setContact(value);
-  }
+  // const handleChangeContact = (value) => {
+  //   setContact(value);
+  // }
 
   const handleChangeAccountName = (event) => {
     setAccountName(event.target.value);
@@ -177,10 +185,12 @@ const CompaniesEdit = (props) => {
 
   }
   const handleAddManager = () => {
-
+    ToastsStore.success("Added New Manager successfully!");
+    setManagerRefresh(!manager_refresh);
   };
   const handleAddBuilding = () => {
-
+    ToastsStore.success("Added New Building successfully!");
+    setBuildingRefresh(!building_refresh);
   };
   const handleClickSave = () => {
     let cnt = 0;
@@ -197,7 +207,7 @@ const CompaniesEdit = (props) => {
     if (statusActive === false && statusInActive === false) { setErrorsStatus('please select company status'); cnt++; }
     else setErrorsStatus('');
     if (cnt === 0) {
-      //  createBuilding();
+      updateCompany();
     }
   };
   const handleChangeAssemblies360 = (event) => {
@@ -274,10 +284,10 @@ const CompaniesEdit = (props) => {
   };
   const cardCellList = [{ key: 'card_digits', field: '' }, { key: 'card_name', field: '' }, { key: 'expiry_date', field: '' }]
   useEffect(() => {
-    if (accessCompanies === 'Denied') {
+    if (accessCompanies === 'denied') {
       // setOpenDialog(true);
     }
-    if (accessCompanies !== 'Denied') {
+    if (accessCompanies !== 'denied') {
       setVisibleIndicator(true);
       AdminService.getCompany(props.match.params.id)
         .then(
@@ -286,8 +296,8 @@ const CompaniesEdit = (props) => {
             if (response.data.code !== 200) {
               ToastsStore.error(response.data.message);
             } else {
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
+              const data = response.data.data.company;
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
               setName(data.name);
               setAddress(data.address);
               setEmail(data.email);
@@ -298,14 +308,14 @@ const CompaniesEdit = (props) => {
               setAccountAddress(data.account_address);
               setIBAN(data.account_IBAN);
               setAvatarUrl(data.logo_url);
-              setAssemblies360(data.access_360cam);
-              setAssembliesWebcam(data.access_webcam);
-              setAssembliesAudio(data.access_audio);
-              if(data.status === 'active'){
+              setAssemblies360(data.access_360cam === 'true' ? true : false);
+              setAssembliesWebcam(data.access_webcam === 'true' ? true : false);
+              setAssembliesAudio(data.access_audio === 'true' ? true : false);
+              if (data.status === 'active') {
                 setStatusActive(true);
                 setStatusInActive(false);
               }
-              else if(data.status === 'inactive'){
+              else if (data.status === 'inactive') {
                 setStatusActive(false);
                 setStatusInActive(true);
               }
@@ -318,9 +328,108 @@ const CompaniesEdit = (props) => {
         );
     }
   }, [accessCompanies]);
+  const updateCompany = () => {
+    let formdata = new FormData();
+    formdata.set('name', name);
+    formdata.set('address', address);
+    formdata.set('email', email);
+    formdata.set('phone', phone);
+    formdata.set('SIRET', siret);
+    formdata.set('address', address);
+    formdata.set('VAT', vat);
+    formdata.set('account_holdername', accountname);
+    formdata.set('account_address', accountaddress);
+    formdata.set('account_IBAN', IBAN);
+    formdata.set('access_360cam', assemblies360);
+    formdata.set('access_webcam', assembliesWebcam);
+    formdata.set('access_audio', assembliesAudio);
+    formdata.set('status', statusActive === true ? 'active' : 'inactive');
+    formdata.set('logo', avatar === null ? '' : avatar);
+    setVisibleIndicator(true);
+    AdminService.updateCompany(props.match.params.id, formdata)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getManagers = () => {
+    const requestData = {
+      'search_key': '',
+      'page_num': manager_page_num - 1,
+      'row_count': manager_row_count,
+      'sort_column': manager_sort_column,
+      'sort_method': manager_sort_method,
+      'buildingID': -1,
+      'companyID': props.match.params.id
+    }
+    setVisibleIndicator(true);
+    AdminService.getManagerList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+
+            setManagerTotalPage(data.totalpage);
+            setManagerDataList(data.managerlist);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getBuildings = () => {
+    const requestData = {
+      'search_key': '',
+      'page_num': building_page_num - 1,
+      'row_count': building_row_count,
+      'sort_column': building_sort_column,
+      'sort_method': building_sort_method,
+      'companyID': props.match.params.id
+    }
+    setVisibleIndicator(true);
+    AdminService.getBuildingList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            if (!data.totalpage)
+              setBuildingTotalPage(1);
+            else
+              setBuildingTotalPage(data.totalpage);
+            setBuildingDataList(data.buildinglist);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   return (
     <div className={classes.root}>
-            {
+      {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
       <div className={classes.title}>
@@ -388,10 +497,7 @@ const CompaniesEdit = (props) => {
               <Grid item container direction="row" justify="space-between">
                 <Grid item><p className={classes.itemTitle}>Coordonnees</p></Grid>
                 <Grid item>
-                  {
-                    managerCount === '' ? null :
-                      <p className={classes.itemTitle}><b>Nombre de gestionnaires : </b>{managerCount}</p>
-                  }
+                  <p className={classes.itemTitle}><b>Nombre de gestionnaires : </b>{managerCount}</p>
                 </Grid>
               </Grid>
               <Grid item container direction="row" justify="space-between">
@@ -408,10 +514,7 @@ const CompaniesEdit = (props) => {
                     <span className={classes.error}>{errorsAddress}</span>}
                 </Grid>
                 <Grid xs={5} item container direction="row-reverse">
-                  {
-                    apartmentCount === '' ? null :
-                      <p className={classes.itemTitle}><b>Nombre de lots : </b>{apartmentCount}</p>
-                  }
+                  <p className={classes.itemTitle}><b>Nombre de lots : </b>{apartmentCount}</p>
                 </Grid>
               </Grid>
             </Grid>
@@ -441,7 +544,7 @@ const CompaniesEdit = (props) => {
                   <span className={classes.error}>{errorsPhone}</span>}
               </Grid>
             </Grid>
-            <Grid item container alignItems="center" spacing={1}>
+            {/* <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Contact</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <MySelect
@@ -452,7 +555,7 @@ const CompaniesEdit = (props) => {
                   onChangeSelect={handleChangeContact}
                 />
               </Grid>
-            </Grid>
+            </Grid> */}
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>SIRET</p></Grid>
               <Grid xs={5} item container alignItems="stretch" direction="column">

@@ -354,6 +354,24 @@ export const EditUserStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize :18
       },
-  }
+  },
+  editAvatar:{
+    [theme.breakpoints.up('xl')]: {
+      width: 54,
+      height: 54,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 38,
+      height: 38,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 27,
+      height: 27,
+    },
+      backgroundColor: 'white',
+      borderRadius: '50%',
+      color: 'gray',
+    cursor: 'pointer',
+  },
 }));
   export default useStyles;

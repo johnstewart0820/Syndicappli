@@ -51,10 +51,10 @@ const ProductsOwner = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessProducts === 'Edit'){
+    if(accessProducts === 'edit'){
       setOpen(true);
     }
-    if(accessProducts === 'See'){
+    if(accessProducts === 'see'){
       setOpenDialog(true);
     }
   };
@@ -103,13 +103,13 @@ const ProductsOwner = (props) => {
     );
   }
   useEffect(()=>{
-    if(accessProducts === 'Denied'){
+    if(accessProducts === 'denied'){
       setOpenDialog(true);
     }
   });
   useEffect(() => {
     // getDataList();
-    if(accessProducts !== 'Denied')
+    if(accessProducts !== 'denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -123,7 +123,7 @@ const ProductsOwner = (props) => {
     history.push('/admin/products/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessProducts === 'Edit'){
+    if(accessProducts === 'edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{

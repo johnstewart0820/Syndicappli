@@ -253,7 +253,6 @@ const getCompanies = ()=>{
                          <Multiselect
                             selected={buildings}
                             no={'No buildings found'}
-                            hint={'Add new Buildings'}
                             all={buildingsList} 
                             onSelected={handleChangeBuildings}
                         />

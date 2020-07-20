@@ -177,7 +177,6 @@ const AddBuilding = (props) => {
                                 variant="outlined"
                                 value={addClefs}
                                 onChange={handleChangeAddClefs}
-                                placeholder="Ajouter..."
                             />
                         </Grid>
                     </Grid>

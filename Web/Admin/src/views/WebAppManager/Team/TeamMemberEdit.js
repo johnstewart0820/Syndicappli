@@ -91,10 +91,10 @@ const TeamMemberEdit = (props) => {
   })
   const allBuildings = allCompanies;
   useEffect(() => {
-    if(accessTeam === 'Denied'){
+    if(accessTeam === 'denied'){
       setOpenDialog(true);
     }
-    if(accessTeam !== 'Denied'){
+    if(accessTeam !== 'denied'){
       getCompanies();
     }
   },[accessTeam]);
@@ -306,16 +306,16 @@ const getCompanies = ()=>{
                   <p className={classes.itemTitle}>Lots : 120000</p>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
               </Grid>
             <Grid xs item container direction="column" spacing={5}>
@@ -327,12 +327,10 @@ const getCompanies = ()=>{
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
-                      id="outlined-basic" 
                       variant="outlined" 
-                      placeholder="johndoe@gmail.com"
                       value={lastname}
                       onChange={handleChangeLastName} 
-                      disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}
                       fullWidth
                     />
                   </Grid>
@@ -345,13 +343,11 @@ const getCompanies = ()=>{
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
-                      id="outlined-basic" 
                       className={classes.text} 
                       variant="outlined" 
-                      placeholder="johndoe@gmail.com"
                       value={firstname}
                       onChange={handleChangeFirstName} 
-                      disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}
                       fullWidth
                     />
                   </Grid>  
@@ -364,13 +360,11 @@ const getCompanies = ()=>{
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
-                      id="outlined-basic" 
                       className={classes.text} 
                       variant="outlined" 
-                      placeholder="johndoe@gmail.com"
                       value={email}
                       onChange={handleChangeEmail} 
-                      disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}
                       fullWidth
                     />
                   </Grid>  
@@ -383,13 +377,11 @@ const getCompanies = ()=>{
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
                     <TextField 
-                      id="outlined-basic" 
                       className={classes.text} 
                       variant="outlined" 
-                      placeholder="0102030405"
                       value={phonenumber}
                       onChange={handleChangePhoneNumber} 
-                      disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}
                       fullWidth
                     />
                   </Grid>  
@@ -406,7 +398,7 @@ const getCompanies = ()=>{
                           onChangeSelect={handleChangeCompanies}
                           value={companies}
                           width="80%"
-                        disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}
                       />
                       {errorsCompanies.length > 0 && 
                       <span className={classes.error}>{errorsCompanies}</span>}
@@ -418,10 +410,9 @@ const getCompanies = ()=>{
                     <Multiselect
                       selected={buildings}
                       no={'No buildings found'}
-                      hint={'Add new Buildings'}
                       all={allBuildings} 
                       onSelected={handleChangeBuildings}
-                      disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}
                       />
                     {errorsBuildings.length > 0 && 
                     <span className={classes.error}>{errorsBuildings}</span>}
@@ -581,7 +572,7 @@ const getCompanies = ()=>{
           </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
               <MyDialog open={openDialog} role={accessTeam} onClose={handleCloseDialog}/>
-              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessTeam ==='See'? 'disabled' : !'disabled')}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessTeam ==='see'? 'disabled' : !'disabled')}/>
             </Grid>
         </div>
       </Grid>

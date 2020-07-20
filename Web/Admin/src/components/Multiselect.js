@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import useGlobal from 'Global/global';
 
 const animatedComponents = makeAnimated();
 const Multiselect = (props)=> {
-    const [suggestions, setSuggestions] = React.useState(props.all);
-    const [tags, setTags] = React.useState(props.selected);
-    const handleChange = (value)=>{
-      props.onSelected(value);
+    const handleChange = async (value)=>{
+      await props.onSelected(value);
     }
     return (
-      <div style={{width: '80%'}}>
+      <div style={{width: props.width}}>
         <Select 
-          options={suggestions} 
-          defaultValue={tags}
+          isClearable={true}
+          options={props.all} 
+          value={props.selected}
           components={animatedComponents} 
-          placeholder={props.hint}
           onChange={handleChange}
           isDisabled={props.disabled === 'disabled'? true : null}
           isMulti />

@@ -77,10 +77,10 @@ const Team = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessTeam === 'Edit'){
+    if(accessTeam === 'edit'){
       setOpen(true);
     }
-    if(accessTeam === 'See'){
+    if(accessTeam === 'see'){
       setOpenDialog(true);
     }
   };
@@ -95,17 +95,17 @@ const Team = (props) => {
     setSortMethod(direct);
   }
   useEffect(()=>{
-    if(accessTeam === 'Denied'){
+    if(accessTeam === 'denied'){
       setOpenDialog(true);
     }else{
       getCompanies();
     }
   },[accessTeam]);
   useEffect(() => {
-    if(accessTeam === 'Denied'){
+    if(accessTeam === 'denied'){
       setOpenDialog(true);
     }
-    if(accessTeam !== 'Denied')
+    if(accessTeam !== 'denied')
         getManagers();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -121,7 +121,7 @@ const Team = (props) => {
     history.push('/admin/managers/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessTeam === 'Edit'){
+    if(accessTeam === 'edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{

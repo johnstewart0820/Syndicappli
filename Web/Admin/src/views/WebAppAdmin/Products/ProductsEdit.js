@@ -54,10 +54,10 @@ const ProductsEdit = (props) => {
   })
   const buildingsList = companiesList;
   useEffect(() => {
-    if(accessProducts === 'Denied'){
+    if(accessProducts === 'denied'){
       setOpenDialog(true);
     }
-    if(accessProducts !== 'Denied'){
+    if(accessProducts !== 'denied'){
       
     }
   }, [accessProducts]);
@@ -135,10 +135,9 @@ const handleChangeRenewal = (event) => {
                     <Multiselect
                         selected={categorie}
                         no={'No companies found'}
-                        hint={'Add new Companies'}
                         all={companiesList} 
                         onSelected={handleChangeCategorie}
-                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
                     />
                     {errorsCategorie.length > 0 && 
                     <span className={classes.error}>{errorsCategorie}</span>}
@@ -150,10 +149,9 @@ const handleChangeRenewal = (event) => {
                     <Multiselect
                         selected={billingCycle}
                         no={'No buildings found'}
-                        hint={'Add new Buildings'}
                         all={buildingsList} 
                         onSelected={handleChangeBillingCycle}
-                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
                     />
                     {errorsBillingCycle.length > 0 && 
                     <span className={classes.error}>{errorsBillingCycle}</span>}
@@ -165,7 +163,7 @@ const handleChangeRenewal = (event) => {
                     <Checkbox 
                         checked={renewal}
                         onChange={handleChangeRenewal} 
-                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
                     />
                     {errorsRenewal.length > 0 && 
                     <span className={classes.error}>{errorsRenewal}</span>}
@@ -180,7 +178,7 @@ const handleChangeRenewal = (event) => {
                         variant="outlined"
                         value={productName}
                         onChange={handleChangeProductName} 
-                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
                     />
                     {errorsProductName.length > 0 && 
                     <span className={classes.error}>{errorsProductName}</span>}
@@ -197,7 +195,7 @@ const handleChangeRenewal = (event) => {
                         onChange={handleChangeProductDescription} 
                         multiline
                         rows={5}
-                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
                     />
                     {errorsProductDescription.length > 0 && 
                     <span className={classes.error}>{errorsProductDescription}</span>}
@@ -212,7 +210,7 @@ const handleChangeRenewal = (event) => {
                         onChangeSelect={handleChangePriceType}
                         value={priceType}
                         width="80%"
-                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
                     />
                     {errorsPriceType.length > 0 && 
                     <span className={classes.error}>{errorsPriceType}</span>}
@@ -227,14 +225,14 @@ const handleChangeRenewal = (event) => {
                         variant="outlined" 
                         value={price}
                         onChange={handleChangePrice} 
-                        disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
                     />
                     {errorsPrice.length > 0 && 
                     <span className={classes.error}>{errorsPrice}</span>}
                 </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts ==='See'? 'disabled' : !'disabled')}/>
+              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}/>
             </Grid>
           </Grid>
         </div>

@@ -201,7 +201,7 @@ const Routes = () => {
         component={OwnerEdit}
         exact
         layout={MainLayout}
-        path="/admin/owners/edit/:id"
+        path="/admin/owners/edit"
       />
       <RouteWithLayout
         component={AdminHelp}

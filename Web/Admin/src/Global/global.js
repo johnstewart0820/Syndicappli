@@ -5,6 +5,9 @@ const initialState = {
   lastname : ' ',
   avatarurl: '',
   smsAuth : '',
+  multi_tags : [],
+  multi_suggestions : [],
+  multi_ID: []
 };
  
 const actions = {
@@ -19,6 +22,15 @@ const actions = {
     },
     setSmsAuth : (store, smsAuth)=>{
         store.setState({smsAuth: smsAuth});
+    },
+    setMultiTags: (store, multi_tags)=>{
+        store.setState({multi_tags : multi_tags});
+    },
+    setMultiSuggestions : (store, multi_suggestions)=>{
+        store.setState({multi_suggestions: multi_suggestions});
+    },
+    setMultiID : (store, multi_ID)=>{
+        store.setState({multi_ID: multi_ID});
     }
 };
  

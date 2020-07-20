@@ -72,10 +72,10 @@ const Owners = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessOwners === 'Edit'){
+    if(accessOwners === 'edit'){
       setOpen(true);
     }
-    if(accessOwners === 'See'){
+    if(accessOwners === 'see'){
       setOpenDialog(true);
     }
   };
@@ -98,41 +98,47 @@ const Owners = (props) => {
   const getDatas = ()=>{
     const requestData = {
       'search_key': '',
-      'page_num' : page_num-1,
-      'row_count' : row_count,
-      'sort_column' : sort_column,
-      'sort_method' : sort_method
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method,
     }
+    // setVisibleIndicator(true);
     AdminService.getUserList(requestData)
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-
-          setTotalPage(data.totalpage);
-          setDataList(data.userlist);
+      .then(
+        response => {
+          // setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            // ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            if (!data.totalpage)
+              setTotalPage(1);
+            else
+              setTotalPage(data.totalpage);
+            let datalist = data.userlist;
+            const itemlist = [];
+            datalist.map((data, i) => {
+              itemlist[i] = { isChecked: false, ...data };
+            });
+            setDataList(itemlist);
+          }
+        },
+        error => {
+          // ToastsStore.error("Can't connect to the server!");
+          // setVisibleIndicator(false);
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-      }
-    );
+      );
   }
   useEffect(()=>{
-    if(accessOwners === 'Denied'){
+    if(accessOwners === 'denied'){
       setOpenDialog(true);
     }
   },[]);
   useEffect(() => {
     // getDataList();
-    if(accessOwners !== 'Denied')
+    if(accessOwners !== 'denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -146,11 +152,11 @@ const Owners = (props) => {
   const columns = [];
   for(let i = 0; i < 6; i++)
     columns[i] = 'asc';
-  const handleClickEdit = (id) => {
+  const handleClickedit = (id) => {
     history.push('/admin/owners/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessOwners === 'Edit'){
+    if(accessOwners === 'edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{
@@ -249,17 +255,19 @@ const Owners = (props) => {
       </div> 
       <div className={classes.body}>
         <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog}/>
-        <SelectTable 
-          onChangeSelect={handleChangeSelect} 
-          onChangePage={handleChangePagination} 
-          onSelectSort={handleSort} 
-          page={page_num} 
-          columns={columns} 
-          products={dataList} 
-          totalpage={totalpage} 
-          cells={cellList} 
-          onClickEdit={handleClickEdit}
+        <SelectTable
+          onChangeSelect={handleChangeSelect}
+          onChangePage={handleChangePagination}
+          onSelectSort={handleSort}
+          page={page_num}
+          columns={columns}
+          products={dataList}
+          totalpage={totalpage}
+          cells={cellList}
+          onClickedit={handleClickedit}
           onClickDelete={handleClickDelete}
+          onImport={handleClickImport}
+          onExport={handleClickExport}
         />
       </div>
       <Dialog

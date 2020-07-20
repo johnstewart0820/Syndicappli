@@ -159,10 +159,10 @@ const BuildingsEdit = (props) => {
   }
 
   useEffect(() => {
-    if (accessBuildings === 'Denied') {
+    if (accessBuildings === 'denied') {
       setOpenDialog(true);
     }
-    if (accessBuildings !== 'Denied') {
+    if (accessBuildings !== 'denied') {
       setVisibleIndicator(true);
       AdminService.getBuilding(props.match.params.id)
         .then(
@@ -226,14 +226,11 @@ const BuildingsEdit = (props) => {
               <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField
-                  id="outlined-basic"
-                  className={classes.text}
                   variant="outlined"
-                  placeholder="Cabinet Loiselet & Daigremant"
                   value={name}
                   fullWidth
                   onChange={handleChangeName}
-                  disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
                 />
                 {errorsName.length > 0 &&
                   <span className={classes.error}>{errorsName}</span>}
@@ -248,7 +245,7 @@ const BuildingsEdit = (props) => {
                   onChangeSelect={handleChangeCompanies}
                   value={companies}
                   width="100%"
-                  disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
                 />
                 {errorsCompanies.length > 0 &&
                   <span className={classes.error}>{errorsCompanies}</span>}
@@ -258,14 +255,11 @@ const BuildingsEdit = (props) => {
               <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <TextField
-                  id="outlined-basic"
-                  className={classes.text}
                   rows={3} multiline
                   variant="outlined"
-                  placeholder="41 route de"
                   value={address}
                   onChange={handleChangeAddress}
-                  disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
                 />
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
@@ -307,16 +301,14 @@ const BuildingsEdit = (props) => {
               </Grid>
               <Grid item >
                 <TextField
-                  id="outlined-basic"
                   variant="outlined"
                   value={addClefs}
                   onChange={handleChangeAddClefs}
-                  placeholder="Ajouter..."
                 />
               </Grid>
             </Grid>
             <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')} />
+              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')} />
             </Grid>
           </Grid>
         </div>
@@ -331,12 +323,10 @@ const BuildingsEdit = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      id="outlined-basic"
-                      className={classes.text}
                       variant="outlined"
                       value={accountHolder}
                       onChange={handleChangeAccountHolder}
-                      disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -346,14 +336,12 @@ const BuildingsEdit = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      id="outlined-basic"
-                      className={classes.text}
                       rows={3}
                       multiline
                       variant="outlined"
                       value={accountAddress}
                       onChange={handleChangeAccountAddress}
-                      disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -363,20 +351,18 @@ const BuildingsEdit = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      id="outlined-basic"
-                      className={classes.text}
                       variant="outlined"
                       value={accountIban}
                       onChange={handleChangeAccountIban}
-                      disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')} /></Grid>
-              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessBuildings === 'See' ? 'disabled' : !'disabled')} />  </Grid>
+              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')} /></Grid>
+              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')} />  </Grid>
             </Grid>
             <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog} />
           </Grid>

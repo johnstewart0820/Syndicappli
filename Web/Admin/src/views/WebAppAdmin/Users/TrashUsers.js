@@ -14,7 +14,7 @@ import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsStore } from 'react-toasts';
 
-const Users = (props) => {
+const TrashUsers = (props) => {
   const { history } = props;
 
   //const token = authService.getToken();    
@@ -89,7 +89,7 @@ const Users = (props) => {
   useEffect(() => {
     if (accessUsers !== 'denied')
       getUsers();
-  }, [page_num, row_count, sort_column, sort_method,props.refresh]);
+  }, [page_num, row_count, sort_column, sort_method]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -185,4 +185,4 @@ const Users = (props) => {
   );
 };
 
-export default withRouter(Users);
+export default withRouter(TrashUsers);

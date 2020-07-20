@@ -43,10 +43,10 @@ const DiscountCodesEdit = (props) => {
   
 
   useEffect(() => {
-    if(accessDiscountCodes === 'Denied'){
+    if(accessDiscountCodes === 'denied'){
       setOpenDialog(true);
     }
-    if(accessDiscountCodes !== 'Denied'){
+    if(accessDiscountCodes !== 'denied'){
       
     }
   }, [accessDiscountCodes]);
@@ -142,7 +142,7 @@ const handleClickSave = ()=>{
                             data={customerTypeList} 
                             onChangeSelect={handleChangeCustomerType}
                             value={customerType}
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsCustomerType.length > 0 && 
                         <span className={classes.error}>{errorsCustomerType}</span>}
@@ -157,7 +157,7 @@ const handleClickSave = ()=>{
                             variant="outlined"
                             value={codeName}
                             onChange={handleChangeCodeName} 
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsCodeName.length > 0 && 
                         <span className={classes.error}>{errorsCodeName}</span>}
@@ -173,7 +173,7 @@ const handleClickSave = ()=>{
                             value={startDate}
                             onChange={handleChangeStartDate} 
                             type="date"
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsStartDate.length > 0 && 
                         <span className={classes.error}>{errorsStartDate}</span>}
@@ -189,7 +189,7 @@ const handleClickSave = ()=>{
                             value={endDate}
                             onChange={handleChangeEndDate} 
                             type="date"
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsEndDate.length > 0 && 
                         <span className={classes.error}>{errorsEndDate}</span>}
@@ -203,7 +203,7 @@ const handleClickSave = ()=>{
                             data={discountTypeList} 
                             onChangeSelect={handleChangeDiscountType}
                             value={discountType}
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsDiscountType.length > 0 && 
                         <span className={classes.error}>{errorsDiscountType}</span>}
@@ -218,7 +218,7 @@ const handleClickSave = ()=>{
                             variant="outlined"
                             value={disocuntAmount}
                             onChange={handleChangeDiscountAmount} 
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsDiscountAmount.length > 0 && 
                         <span className={classes.error}>{errorsDiscountAmount}</span>}
@@ -232,7 +232,7 @@ const handleClickSave = ()=>{
                             data={billingCyclesList} 
                             onChangeSelect={handleChangeBillingCycles}
                             value={billingCycles}
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsBillingCycles.length > 0 && 
                         <span className={classes.error}>{errorsBillingCycles}</span>}
@@ -247,7 +247,7 @@ const handleClickSave = ()=>{
                             variant="outlined"
                             value={maxAmountOfUse}
                             onChange={handleChangeMaxAmountOfUse} 
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsMaxAmountOfUse.length > 0 && 
                         <span className={classes.error}>{errorsMaxAmountOfUse}</span>}
@@ -262,14 +262,14 @@ const handleClickSave = ()=>{
                             variant="outlined"
                             value={maxAmountOfUsePerUser}
                             onChange={handleChangeMaxAmountOfUsePerUser} 
-                            disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}
+                            disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}
                         />
                         {errorsMaxAmountOfUsePerUser.length > 0 && 
                         <span className={classes.error}>{errorsMaxAmountOfUsePerUser}</span>}
                     </Grid>
                 </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessDiscountCodes ==='See'? 'disabled' : !'disabled')}/>
+              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessDiscountCodes ==='see'? 'disabled' : !'disabled')}/>
             </Grid>
           </Grid>
         </div>

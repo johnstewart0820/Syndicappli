@@ -59,10 +59,10 @@ const OwnerEdit = (props) => {
   const [errorsAddress, setErrorsAddress] = React.useState('');
 
   useEffect(() => {
-    if(accessOwners === 'Denied'){
+    if(accessOwners === 'denied'){
       setOpenDialog(true);
     }
-    if(accessOwners !== 'Denied'){
+    if(accessOwners !== 'denied'){
       //  
     }
   },[accessOwners]);
@@ -214,16 +214,16 @@ const handleChangeBuildings = (val) => {
                   </label>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
                 <Grid item container direction="row-reverse">
-                  <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
+                  <MyButton   name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}/>
                 </Grid>
               </Grid>
             </Grid>
@@ -238,7 +238,7 @@ const handleChangeBuildings = (val) => {
                               data={titleList} 
                               onChangeSelect={handleChangeOwnerTitle}
                               value={ownerTitle}
-                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                           />
                           {errorsOwnerTitle.length > 0 && 
                           <span className={classes.error}>{errorsOwnerTitle}</span>}
@@ -253,7 +253,7 @@ const handleChangeBuildings = (val) => {
                               variant="outlined"
                               value={lastname}
                               onChange={handleChangeLastName} 
-                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                               fullWidth
                           />
                           {errorsLastname.length > 0 && 
@@ -269,7 +269,7 @@ const handleChangeBuildings = (val) => {
                               variant="outlined" 
                               value={firstname}
                               onChange={handleChangeFirstName} 
-                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                               fullWidth
                           />
                           {errorsFirstname.length > 0 && 
@@ -285,7 +285,7 @@ const handleChangeBuildings = (val) => {
                               variant="outlined"
                               value={email}
                               onChange={handleChangeEmail} 
-                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                               fullWidth
                           />
                           {errorsEmail.length > 0 && 
@@ -301,7 +301,7 @@ const handleChangeBuildings = (val) => {
                               variant="outlined" 
                               value={phonenumber}
                               onChange={handleChangePhoneNumber} 
-                              disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                              disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                           />
                           {errorsPhonenumber.length > 0 && 
                           <span className={classes.error}>{errorsPhonenumber}</span>}
@@ -324,7 +324,7 @@ const handleChangeBuildings = (val) => {
                         onChange={handleChangeAddress} 
                         multiline
                         rows={3}
-                        disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                         fullWidth
                     />
                     {errorsAddress.length > 0 && 
@@ -339,7 +339,7 @@ const handleChangeBuildings = (val) => {
                         data={companiesList} 
                         onChangeSelect={handleChangeCompanies}
                         value={companies}
-                        disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                         width="50%"
                     />
                     {errorsCompanies.length > 0 && 
@@ -354,7 +354,7 @@ const handleChangeBuildings = (val) => {
                         data={buildingsList} 
                         onChangeSelect={handleChangeBuildings}
                         value={buildings}
-                        disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                         width="50%"
                     />
                     {errorsBuildings.length > 0 && 
@@ -369,7 +369,7 @@ const handleChangeBuildings = (val) => {
                             <Checkbox 
                                 checked={isSubAccount}
                                 onChange={handleChangeIsSubAccount} 
-                                disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                                disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                             />
                         </Grid>
                     </Grid>
@@ -381,7 +381,7 @@ const handleChangeBuildings = (val) => {
                             <Checkbox 
                                 checked={isMemberCouncil}
                                 onChange={handleChangeIsMemberCouncil} 
-                                disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                                disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                             />
                         </Grid>
                     </Grid>
@@ -398,7 +398,7 @@ const handleChangeBuildings = (val) => {
                         onChange={handleChangeApartNumber} 
                         style={{width: 100}}
                         type="number"
-                        disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                     />
                 </Grid>
             </Grid>
@@ -416,25 +416,25 @@ const handleChangeBuildings = (val) => {
                         onChange={handleChangeApartNumber} 
                         style={{width: 100}}
                         type="number"
-                        disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                        disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                     />
                 </Grid>
                 <Grid  item><p className={classes.itemTitle}>tantièmes</p></Grid>
             </Grid>
-            <Grid item style={{marginTop: 10, marginBottom: 10}}><MyButton name = {"Ajouter un lot"} bgColor="grey"  disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/></Grid>
+            <Grid item style={{marginTop: 10, marginBottom: 10}}><MyButton name = {"Ajouter un lot"} bgColor="grey"  disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}/></Grid>
             <Grid xs={12} item container direction="column" style={{marginTop: 30}}>
                 <p className={classes.itemTitle}>Pièce d'identité</p>
                 <Grid item container justify="flex-start">
                     <IdCard 
                       onClose = {handleClickCloseIdcard}
                       idcardurls={idcardurls} 
-                      disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}
                       state={state}
                       type="first"
                       badge="first"
                     />
                     
-                    <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
+                    <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}/>
                     <label htmlFor="img_idcard">
                         {
                             <div className={classes.img}>
@@ -447,7 +447,7 @@ const handleChangeBuildings = (val) => {
           </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
               <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog}/>
-              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessOwners ==='See'? 'disabled' : !'disabled')}/>
+              <MyButton   name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessOwners ==='see'? 'disabled' : !'disabled')}/>
             </Grid>
         </div>
       </Grid>

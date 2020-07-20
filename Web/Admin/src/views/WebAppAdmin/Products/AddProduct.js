@@ -99,7 +99,6 @@ const handleChangeRenewal = (event) => {
                         <Multiselect
                             selected={categorie}
                             no={'No companies found'}
-                            hint={'Add new Companies'}
                             all={companiesList} 
                             onSelected={handleChangeCategorie}
                         />
@@ -113,7 +112,6 @@ const handleChangeRenewal = (event) => {
                          <Multiselect
                             selected={billingCycle}
                             no={'No buildings found'}
-                            hint={'Add new Buildings'}
                             all={buildingsList} 
                             onSelected={handleChangeBillingCycle}
                         />

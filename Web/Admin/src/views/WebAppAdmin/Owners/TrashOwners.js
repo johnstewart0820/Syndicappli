@@ -1,59 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import MyTable from '../../../components/MyTable';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import MySelect from '../../../components/MySelect';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog';
+import MyTable from '../../../components/MyTable';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AdminService from '../../../services/api.js';
+import MySelect from '../../../components/MySelect';
+import Grid from '@material-ui/core/Grid';
+import CloseIcon from '@material-ui/icons/Close';
+import AddOwner from './AddOwner';
+import MyButton from '../../../components/MyButton';
+import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import useStyles from './useStyles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 
-const Managers = (props) => {
+import useStyles from './useStyles';
+const Owners = (props) => {
   const { history } = props;
-  //const token = authService.getToken();    
+
+  // const token = authService.getToken();    
   // if (!token) {
   //   history.push("/admin/login");
   //   window.location.reload();
   // }
-  const accessManagers = authService.getAccess('role_managers');
+
+  const accessOwners = authService.getAccess('role_owners');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [openDelete, setOpenDelete] = React.useState(false);
-  const [footerItems, setFooterItems] = useState([]);
-  const [deleteId, setDeleteId] = useState(-1);
-  const classes = useStyles();
-  const [company, setCompany] = useState([]);
+
+  let company = [];
   const [companies, setCompanies] = useState('');
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
-  const [building, setBuilding] = useState([]);
+
+  let building = [];
   const [buildings, setBuildings] = useState('');
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+
+  const [deleteId, setDeleteId] = useState(-1);
+  const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
   const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
+  const [role, setRole] = useState(0);
   const selectList = [20, 50, 100, 200, -1];
-
+  const roleList = ['Tout', 'Copropriétaire', 'Sous-compte', 'member of the council'];
+  const owner_role = ['all', 'owner', 'subaccount', 'member'];
   const handleChangeCompanies = (val) => {
     setCompanies(val);
     setCompanyID(companyList[val].companyID);
   };
   const handleChangeBuildings = (val) => {
-    setBuildings(val);
     setBuildingID(buildingList[val].buildingID);
+    setBuildings(val);
+
   };
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -61,6 +70,7 @@ const Managers = (props) => {
   const handleCloseDialog = (val) => {
     setOpenDialog(val);
   };
+
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
@@ -71,40 +81,43 @@ const Managers = (props) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
+  const handleChangeRoles = (value) => {
+    setRole(value);
+    console.log(roleList[role])
+  }
   useEffect(() => {
-    if (accessManagers === 'denied') {
+    if (accessOwners === 'denied') {
       setOpenDialog(true);
     } else {
-      getCompanies();
+      getCompanies()
     }
-  }, [accessManagers]);
+  }, [accessOwners]);
   useEffect(() => {
-    getBuildings();
-    getManagers();
+    if (accessOwners !== 'denied') {
+      getBuildings();
+    }
   }, [companyID]);
   useEffect(() => {
-    if (accessManagers === 'denied') {
-      setOpenDialog(true);
+    if (accessOwners !== 'denied') {
+      getOwners();
     }
-    if (accessManagers !== 'denied')
-      getManagers();
-  }, [page_num, row_count, sort_column, sort_method, buildingID, props.refresh]);
+  }, [page_num, row_count, sort_column, sort_method, buildingID, role]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
     { key: 'email', field: 'Email' },
-    { key: 'connection', field: 'Connexions/mois' },
-    { key: 'dailytime', field: 'Temps connexion/jour' },
-    { key: 'apartment', field: 'Lots' }
+    { key: 'phone', field: 'Téléphone' },
+    { key: 'owner_role', field: 'Role' },
+    { key: 'count', field: 'Lot' }
   ];
   const columns = [];
-  for (let i = 0; i < 5; i++)
+  for (let i = 0; i < 6; i++)
     columns[i] = 'asc';
-  const handleClickEdit = (id) => {
-    history.push('/admin/managers/edit/' + id);
+  const handleClickEdit = (id, buildingid) => {
+    history.push('/admin/owners/edit?id=' + id + '&&buildingID=' + buildingid);
   };
   const handleClickDelete = (id) => {
-    if (accessManagers === 'edit') {
+    if (accessOwners === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
     } else {
@@ -121,17 +134,12 @@ const Managers = (props) => {
           console.log(response.data);
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
-            // if(response.data.status === 'Token is Expired') {
-            //   authService.logout();
-            //   history.push('/');
-            // }
             console.log('error');
           } else {
             console.log('success');
             alert('Deleted successful');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
-            // getDatas();
           }
         },
         error => {
@@ -140,40 +148,7 @@ const Managers = (props) => {
         }
       );
   }
-  const getManagers = () => {
-    const requestData = {
-      'search_key': '',
-      'page_num': page_num - 1,
-      'row_count': row_count,
-      'sort_column': sort_column,
-      'sort_method': sort_method,
-      'buildingID': buildingID,
-      'companyID' : companyID
-    }
-    setVisibleIndicator(true);
-    AdminService.getManagerList(requestData)
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
 
-            setTotalPage(data.totalpage);
-            setDataList(data.managerlist);
-            let amount_connection = 0;
-            const items = ['Total', '', data.totalcount, amount_connection, amount_connection, amount_connection];
-            setFooterItems(items);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }
   const getCompanies = () => {
     setVisibleIndicator(true);
     AdminService.getCompanyListByUser()
@@ -183,7 +158,6 @@ const Managers = (props) => {
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
-            company.splice(0,company.length);
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             company.push('Tout');
@@ -191,12 +165,11 @@ const Managers = (props) => {
               company.push(item.name)
             )
             );
-            setCompany(company);
             setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
           }
         },
         error => {
-          ToastsStore.error("Can't connect to the server!");
+          ToastsStore.error('Cant connect to the server!');
           setVisibleIndicator(false);
         }
       );
@@ -218,8 +191,6 @@ const Managers = (props) => {
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
-            building.splice(0,building.length);
-            buildingList.splice(0,buildingList.length)
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             building.push('Tout');
@@ -227,8 +198,40 @@ const Managers = (props) => {
               building.push(item.name)
             )
             );
-            setBuilding(building);
             setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getOwners = () => {
+    const requestData = {
+      'search_key': '',
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method,
+      'role': owner_role[role],
+      'buildingID': buildingID
+    }
+    setVisibleIndicator(true);
+    AdminService.getOwnerList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            if (!data.totalpage)
+              setTotalPage(1);
+            else
+              setTotalPage(data.totalpage);
+            setDataList(data.ownerlist);
           }
         },
         error => {
@@ -246,7 +249,7 @@ const Managers = (props) => {
       </div>
       <div className={classes.tool}>
         <Grid container spacing={2} direction="column">
-          <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+          <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
             <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
@@ -259,7 +262,7 @@ const Managers = (props) => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+          <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
             <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
@@ -272,10 +275,23 @@ const Managers = (props) => {
               </Grid>
             </Grid>
           </Grid>
+          <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Rôle</p></Grid>
+            <Grid xs item container direction="row-reverse">
+              <Grid item container direction="column" alignItems="stretch">
+                <MySelect
+                  color="gray"
+                  data={roleList}
+                  onChangeSelect={handleChangeRoles}
+                  value={role}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
       </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessManagers} onClose={handleCloseDialog} />
+
         <MyTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
@@ -287,8 +303,7 @@ const Managers = (props) => {
           cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
-          tblFooter="true"
-          footerItems={footerItems}
+          type="owner"
         />
       </div>
       <Dialog
@@ -316,8 +331,9 @@ const Managers = (props) => {
         </DialogActions>
       </Dialog>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
+
     </>
   );
 };
 
-export default withRouter(Managers);
+export default withRouter(Owners);

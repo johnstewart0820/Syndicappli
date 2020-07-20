@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
@@ -265,34 +265,47 @@ export default function SelectTable(props) {
   const [direction, setDirection] = useState(props.columns);
   const tempDirection = props.columns;
   let tempDirect = [];
+  // let selectList = [];
+  const [selectList, setSelectList] = useState([]);
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
       tempDirect[i] = '⯆';
   }
-  const allData = 4;
+  const allData = 3;
   const [cells, setCells] = useState(props.cells);
-  const items = props.products;
-  // const [items, setItems] = useState(props.products);
+  const [items, setItems] = useState([]);
   const footer = props.footerItems ? props.footerItems : [];
   const [direct, setDirect] = React.useState(tempDirect);
   const dataList = [20, 50, 100, 200, "all"];
 
   const [value, setValue] = React.useState(0);
-  let selectList = [];
+  useEffect(() => {
+    setItems(props.products)
+  });
   const handleChange = (event) => {
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
   };
   const handleChangeSelect = (event, id) => {
-      if(event.target.checked === true){
-        selectList.push(items[id].ID);
-        items[id].isChecked = false;
-      }
-      else{
-        selectList.splice(selectList.indexOf(items[id].ID),1);
-        items[id].isChecked = true;
-      }
-      // setItems(items);
+    let mItems = [...items];
+    if(selectList.length === allData){
+      selectList.splice(0,allData);
+      selectList.push(-1);
+    }else{
+        if(selectList.length === 1 && selectList[0] === -1)
+          selectList.splice(0,1);
+        if (event.target.checked === true) {
+          selectList.push(mItems[id].userID);
+        }
+        else {
+          console.log('s:'+event.target.checked)
+          selectList.splice(selectList.indexOf(mItems[id].userID), 1);
+        }
+    }
+    setSelectList(selectList);
+    mItems[id].isChecked = event.target.checked;
+    setItems(mItems);
+    console.log(selectList)
   };
   const handleChangePage = (event, page) => {
     props.onChangePage(page);
@@ -313,44 +326,44 @@ export default function SelectTable(props) {
 
     props.onSelectSort(index, direction[index]);
   }
-  const handleClick = () => {
-    props.onClick();
-  }
-  const handleClickAllSelect = ()=>{
-    if(selectList.length === 1 && selectList[0] === -1){
-        selectList.splice(0,selectList.length);
-        for(let i = 0; i < items.length; i++){
-          items[i].isChecked = false;
-        }
+  const handleClickAllSelect = () => {
+    let mItems = [...items];
+    if (selectList.length === 1 && selectList[0] === -1) {
+      selectList.splice(0, selectList.length);
+      for (let i = 0; i < mItems.length; i++) {
+        mItems[i].isChecked = false;
+      }
     }
-    else if(selectList.length !== allData){
-        selectList.splice(0,selectList.length);
-        selectList.push(-1);
-        
-        for(let i = 0; i < items.length; i++){
-          items[i].isChecked = true;
-        }
+    else if (selectList.length !== allData) {
+      selectList.splice(0,selectList.length);
+      selectList[0] = -1;
+      for (let i = 0; i < mItems.length; i++) {
+        mItems[i].isChecked = true;
+      }
     }
+    setItems(mItems);
+    setSelectList(selectList);
+    console.log(selectList)
   }
-  const handleClickImport = ()=>{
-      props.onImport();
+  const handleClickImport = () => {
+    props.onImport();
   }
-  const handleClickExport = ()=>{
-      props.onExport(selectList);
+  const handleClickExport = () => {
+    props.onExport(selectList);
   }
   return (
     <Grid container direction="column" spacing={2}>
-                <Grid item container spacing={2} direction="row">
-          <Grid item>
-            <MyButton   name={"Tout sélectionner/déselectionner"} bgColor={"#00C9FF"} onClick={handleClickAllSelect}/>
-          </Grid>
-          <Grid item>
-            <MyButton   name={"Importer"} bgColor={"#00C9FF"} onClick={handleClickImport}/>
-          </Grid>
-          <Grid item>
-            <MyButton   name={"Exporter"} bgColor={"#00C9FF"} onClick={handleClickExport}/>
-          </Grid>
+      <Grid item container spacing={2} direction="row">
+        <Grid item>
+          <MyButton name={"Tout sélectionner/déselectionner"} bgColor={"#00C9FF"} onClick={handleClickAllSelect} />
         </Grid>
+        <Grid item>
+          <MyButton name={"Importer"} bgColor={"#00C9FF"} onClick={handleClickImport} />
+        </Grid>
+        <Grid item>
+          <MyButton name={"Exporter"} bgColor={"#00C9FF"} onClick={handleClickExport} />
+        </Grid>
+      </Grid>
       <Grid item container direction="row-reverse">
         <div>
           <FormControl className={classes.margin}>
@@ -372,7 +385,7 @@ export default function SelectTable(props) {
           <TableHead>
             <TableRow >
               {
-                  <TableCell align="center"></TableCell>
+                <TableCell align="center"></TableCell>
               }
               {
                 cells.map((cell, i) => (
@@ -395,12 +408,12 @@ export default function SelectTable(props) {
             {items.map((item, i) => (
               <TableRow key={i}>
                 {
-                    <TableCell key={i}>
-                      <Checkbox
-                        checked={item.isChecked}
-                        onChange={(event) => handleChangeSelect(event,i)}
-                      />
-                    </TableCell>
+                  <TableCell key={i}>
+                    <Checkbox
+                      checked={item.isChecked}
+                      onChange={(event) => handleChangeSelect(event, i)}
+                    />
+                  </TableCell>
                 }
                 {
                   cells.map((cell) => {

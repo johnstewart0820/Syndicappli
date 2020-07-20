@@ -109,7 +109,7 @@ const SidebarNav = props => {
       className={clsx(classes.root, className)}
     >
       {pages.map(page => (
-        page.status !== 'Denied' ?
+        page.status !== 'denied' ?
         <ListItem
           className={classes.item}
           disableGutters

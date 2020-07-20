@@ -59,10 +59,10 @@ const DiscountCodes = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessDiscountCodes === 'Edit'){
+    if(accessDiscountCodes === 'edit'){
       setOpen(true);
     }
-    if(accessDiscountCodes === 'See'){
+    if(accessDiscountCodes === 'see'){
       setOpenDialog(true);
     }
   };
@@ -117,13 +117,13 @@ const DiscountCodes = (props) => {
     );
   }
   useEffect(()=>{
-    if(accessDiscountCodes === 'Denied'){
+    if(accessDiscountCodes === 'denied'){
       setOpenDialog(true);
     }
   });
   useEffect(() => {
     // getDataList();
-    if(accessDiscountCodes !== 'Denied')
+    if(accessDiscountCodes !== 'denied')
         getDatas();
   }, [page_num, row_count,sort_column, sort_method]);
   const cellList = [ 
@@ -142,7 +142,7 @@ const DiscountCodes = (props) => {
     history.push('/admin/discountcodes/edit/'+id);
   };
   const handleClickDelete = (id)=>{
-    if(accessDiscountCodes === 'Edit'){
+    if(accessDiscountCodes === 'edit'){
       setOpenDelete(true);
       setDeleteId(id);
     }else{

@@ -117,18 +117,18 @@ export const AddManagerStyles = makeStyles(theme => ({
   },
   root: {
       '& .MuiOutlinedInput-input':{
-          [theme.breakpoints.up('xl')]: {
-            padding: '8px 12px',
-            fontSize: 17
-          },
-          [theme.breakpoints.down('lg')]: {
-            padding: '6px 8px',
-            fontSize: 12
-          },
-          [theme.breakpoints.down('md')]: {
-            padding: '4px 6px',
-            fontSize: 8
-          },
+        [theme.breakpoints.up('xl')]: {
+          padding: '8px 12px',
+          fontSize: 17
+        },
+        [theme.breakpoints.down('lg')]: {
+          padding: '6px 8px',
+          fontSize: 12
+        },
+        [theme.breakpoints.down('md')]: {
+          padding: '4px 6px',
+          fontSize: 8
+        },
       },
       '& p':{
           marginBottom: 0
@@ -291,7 +291,6 @@ export const EditManagerStyles = makeStyles(theme => ({
     },
   },
   size: {
-    cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
       width: 214,
       height: 214,
@@ -390,7 +389,6 @@ export const EditManagerStyles = makeStyles(theme => ({
     },
   },
   img: {
-    cursor: 'pointer',
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',
@@ -416,6 +414,7 @@ export const EditManagerStyles = makeStyles(theme => ({
     },
   },
   editAvatar:{
+    cursor:'pointer',
     [theme.breakpoints.up('xl')]: {
       width: 54,
       height: 54,

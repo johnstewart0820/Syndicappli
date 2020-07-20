@@ -29,7 +29,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box >
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -74,10 +74,10 @@ const Products = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessProducts === 'Edit'){
+    if(accessProducts === 'edit'){
       setOpen(true);
     }
-    if(accessProducts === 'See'){
+    if(accessProducts === 'see'){
       setOpenDialog(true);
     }
   };

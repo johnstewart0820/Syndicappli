@@ -15,22 +15,22 @@ const ResponsiveDialog= (props)=> {
   const [open, setOpen] = React.useState(props.open);
   var content = '';
   switch(props.role){
-    case 'See': content="you can only see"; break;
-    case 'Denied': content = "you can't access"; break;
+    case 'see': content="you can only see"; break;
+    case 'denied': content = "you can't access"; break;
   }
   React.useEffect(()=>{
-    if(props.role !== 'Edit'){
+    if(props.role !== 'edit'){
       setOpen(props.open);
     }
   },[props.role]);
   const handleClose = () => {
     setOpen(false);
-    if(props.role ==='Denied'){
+    if(props.role ==='denied'){
       props.onClose(false);
 
       history.goBack();
     }
-    if(props.role === 'See')
+    if(props.role === 'see')
       props.onClose(false);
   };
   return (

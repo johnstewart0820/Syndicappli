@@ -8,7 +8,6 @@ import theme from 'theme';
 import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
 import MyButton from './MyButton';
-import { Checkbox } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
@@ -259,8 +258,6 @@ const useStyles = makeStyles({
 });
 
 export default function ProductTable(props) {
-  const { onClickEdit, ...rest } = props;
-
   const classes = useStyles();
   const [direction, setDirection] = useState(props.columns);
   const tempDirection = props.columns;
@@ -269,7 +266,7 @@ export default function ProductTable(props) {
     for (let i = 0; i < tempDirection.length; i++)
       tempDirect[i] = '⯆';
   }
-  const [cells, setCells] = useState(props.cells);
+  const [cells] = useState(props.cells);
   const items = props.products;
   const footer = props.footerItems ? props.footerItems : [];
   const [direct, setDirect] = React.useState(tempDirect);
@@ -302,6 +299,30 @@ export default function ProductTable(props) {
   }
   const handleClick = () => {
     props.onClick();
+  }
+  const Value = (val)=>{
+    switch(val){
+      case 'active' : return 'actif'; 
+      case 'inactive' : return 'inactif'; 
+      case 'owner' : return 'Copropriétaire'; 
+      case 'subaccount' : return 'Sous-compte'; 
+      case 'member' : return 'member of the council'; 
+      default: return val; 
+    }
+  }
+  const handleClickEdit = (id) => {
+    if(props.type === 'owner'){
+      props.onClickEdit(items[id].ID,items[id].buildingID);
+    }else{
+      props.onClickEdit(items[id].ID);
+    }
+  }
+  const handleClickDelete = (id) => {
+    if(props.type === 'owner'){
+      props.onClickDelete(items[id].ID,items[id].buildingID);
+    }else{
+      props.onClickDelete(items[id].ID);
+    }
   }
   return (
     <Grid container direction="column" spacing={2}>
@@ -344,22 +365,23 @@ export default function ProductTable(props) {
           </TableHead>
           <TableBody>
             {items.map((item, i) => (
-              <TableRow key={item.ID}>
+              <TableRow key={i}>
                 {
-                  cells.map((cell) => {
+                  cells.map((cell,j) => {
                     const value = item[cell.key];
                     return (
-                      <TableCell key={cell.key} onClick={() => props.onClickEdit(item.ID)}>
-
+                      <TableCell key={j} onClick={() => handleClickEdit(i)}>
                         {
-                          value === 'active' ? 'actif' : value === 'inactive' ? 'inactif' : value}
-                      </TableCell>);
+                          Value(value)
+                        }
+                      </TableCell>
+                    );
                   })
                 }
                 <TableCell align="right">
-                  <EditIcon className={classes.editItem} onClick={() => props.onClickEdit(item.ID)} />
+                  <EditIcon className={classes.editItem} onClick={() => handleClickEdit(i)} />
                       &nbsp;&nbsp;
-                  <DeleteIcon className={classes.editItem} onClick={() => props.onClickDelete(item.ID)}></DeleteIcon>
+                  <DeleteIcon className={classes.editItem} onClick={() => handleClickDelete(i)}></DeleteIcon>
                 </TableCell>
               </TableRow>
             ))}

@@ -22,7 +22,7 @@ const validateForm = (errors) => {
 const Login = (props) => {
   const classes = useStyles();
   if (!authService.getFirstLoginState()) {
-    localStorage.setItem("firstlogin", JSON.stringify("true"));
+    localStorage.setItem("firstlogin", JSON.stringify("false"));
   }
 
   const [globalState, globalActions] = useGlobal();

@@ -66,10 +66,10 @@ const OrdersManager = (props) => {
 
   };
   const handleClickExport = () => {
-    if (accessOrders === 'Edit') {
+    if (accessOrders === 'edit') {
       setOpen(true);
     }
-    if (accessOrders === 'See') {
+    if (accessOrders === 'see') {
       setOpenDialog(true);
     }
   };
@@ -150,13 +150,13 @@ const OrdersManager = (props) => {
       );
   }
   useEffect(() => {
-    if (accessOrders === 'Denied') {
+    if (accessOrders === 'denied') {
       setOpenDialog(true);
     }
   });
   useEffect(() => {
     //  getDataList();
-    if (accessOrders !== 'Denied')
+    if (accessOrders !== 'denied')
       getDatas();
   }, [page_num, row_count, sort_column, sort_method]);
 
@@ -167,7 +167,7 @@ const OrdersManager = (props) => {
     history.push('/admin/orders/edit/' + id);
   };
   const handleClickDelete = (id) => {
-    if (accessOrders === 'Edit') {
+    if (accessOrders === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
     } else {

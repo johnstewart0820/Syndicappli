@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import MyDialog from '../../../components/MyDialog';
-import CloseIcon from '@material-ui/icons/Close';
-import AddBuilding from './AddBuilding';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -20,7 +16,7 @@ import MySelect from '../../../components/MySelect';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-const Buildings = (props) => {
+const TrashBuildings = (props) => {
   const { history } = props;
   // const token = authService.getToken();    
   // if (!token) {
@@ -162,6 +158,8 @@ const Buildings = (props) => {
     console.log(companyID)
   }, [page_num, row_count, sort_column, sort_method, companyID, props.refresh]);
 
+
+
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
@@ -256,4 +254,4 @@ const Buildings = (props) => {
   );
 };
 
-export default withRouter(Buildings);
+export default withRouter(TrashBuildings);

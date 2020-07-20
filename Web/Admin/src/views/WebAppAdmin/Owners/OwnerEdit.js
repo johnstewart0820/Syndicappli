@@ -32,14 +32,14 @@ const OwnerEdit = (props) => {
   const [state, setState] = React.useState(false);
   const classes = useStyles();
 
-  const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision or PACS'];
+  const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
 
-  let company = [];
+  const [company, setCompany] = React.useState([]);
   const [companies, setCompanies] = React.useState('');
   const [companyList, setCompanyList] = React.useState([]);
   const [companyID, setCompanyID] = React.useState(-1);
 
-  let building = [];
+  const [building, setBuilding] = React.useState([]);
   const [buildings, setBuildings] = React.useState('');
   const [buildingList, setBuildingList] = React.useState([]);
   const [buildingID, setBuildingID] = React.useState(-1);
@@ -50,14 +50,14 @@ const OwnerEdit = (props) => {
   const [avatarurl, setAvatarUrl] = React.useState("");
   const [avatar, setAvatar] = React.useState(null);
   const [idcardurls, setIdcardUrls] = React.useState([]);
-  const [idcards, setIdcards] = React.useState([null]);
+  const [idcards, setIdcards] = React.useState([]);
   const [ownerTitle, setOwnerTitle] = React.useState('');
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [phonenumber, setPhoneNumber] = React.useState('');
   const [address, setAddress] = React.useState('');
-  const [apartNumber, setApartNumber] = React.useState('');
+  const [apartNumber, setApartNumber] = React.useState([]);
   const [companyName, setCompanyName] = React.useState('');
 
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
@@ -72,25 +72,49 @@ const OwnerEdit = (props) => {
 
   const [lotsList, setLotsList] = React.useState([]);
   const [stateLots, setStateLots] = React.useState(false);
-  const voteList = [{ name: 'asd' }, { name: 'ad' }, { name: 'sdf' }];
-
+  const [buildingVote, setBuildingVote] = React.useState([]);
+  const [voteAmount, setVoteAmount] = React.useState(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
+  let voteLists = [];
   useEffect(() => {
-    if (accessOwners === 'Denied') {
+    if (accessOwners === 'denied') {
       setOpenDialog(true);
     }
-    if (accessOwners !== 'Denied') {
-      //  
+    if (accessOwners !== 'denied') {
       getCompanies();
+      getBuildings();
     }
   }, [accessOwners]);
   useEffect(() => {
-    getBuildings();
-  }, [companyID]);
+    let params = new URLSearchParams(window.location.search);
+    setVisibleIndicator(true);
+    AdminService.getBuilding(params.get('buildingID'))
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            buildingVote.splice(0, buildingVote.length)
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            const vote_list = data.vote_list;
+            vote_list.map((vote, i) =>
+              buildingVote.push(vote)
+            )
+            setBuildingVote(buildingVote);
+            setCompanyID(data.building[0].companyID)
+            getOwner();
+
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }, []);
   const handleClick = () => {
     history.goBack();
-  };
-  const handleClose = () => {
-    props.onCancel();
   };
   const handleClickSave = () => {
     let cnt = 0;
@@ -106,9 +130,9 @@ const OwnerEdit = (props) => {
       if (firstname.length === 0) { setErrorsFirstname('please enter owner first name'); cnt++; }
       else setErrorsFirstname('');
     }
-    if (companies.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
+    if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
     else setErrorsCompanies('');
-    if (buildings.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+    if (buildingID === -1) { setErrorsBuildings('please select buildings'); cnt++; }
     else setErrorsBuildings('');
     if (email.length === 0) { setErrorsEmail('please enter owner email'); cnt++; }
     else setErrorsEmail('');
@@ -118,8 +142,7 @@ const OwnerEdit = (props) => {
     else setErrorsAddress('');
 
     if (cnt === 0) {
-
-      handleClose();
+      updateOwner();
     }
   }
   const handleCloseDialog = (val) => {
@@ -146,8 +169,15 @@ const OwnerEdit = (props) => {
     setIdcardUrls(idcardurls);
     setState(!state);
   }
-  const handleChangeApartNumber = (event) => {
-    setApartNumber(event.target.value);
+  const handleChangeApartNumber = (event, i) => {
+    let apartment = [...apartNumber];
+    apartment[i] = +event.target.value;
+    setApartNumber(apartment);
+  }
+  const handleChangeVoteAmount = (event, i, j) => {
+    let voteamount = [...voteAmount];
+    voteamount[i][j] = +event.target.value;
+    setVoteAmount(voteamount);
   }
   const handleChangeIsSubAccount = (event) => {
     setIsSubAccount(event.target.checked);
@@ -192,20 +222,14 @@ const OwnerEdit = (props) => {
   }
   const handleChangeCompanies = (val) => {
     setCompanies(val);
-    if (val < companyList.length)
-      setCompanyID(companyList[val].companyID);
-    else
-      setCompanyID(-1);
+    setCompanyID(companyList[val].companyID);
   };
   const handleChangeBuildings = (val) => {
     setBuildings(val);
-    if (val < buildingList.length)
-      setBuildingID(buildingList[val].buildingID);
-    else
-      setBuildingID(-1);
+    setBuildingID(buildingList[val].buildingID);
   };
   const handleClickAddLots = (event) => {
-    lotsList.push(voteList);
+    lotsList.push(buildingVote);
     setLotsList(lotsList);
     setStateLots(!stateLots);
   }
@@ -214,21 +238,19 @@ const OwnerEdit = (props) => {
     AdminService.getCompanyListByUser()
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             data.companylist.map((item) => (
               company.push(item.name)
             )
             );
-            setCompanyList(data.companylist);
-            setCompanyID(data.companylist[0].companyID);
-            company.push('all');
+            companyList.push(...data.companylist);
+            setCompanyList(companyList);
+            setCompany(company);
           }
         },
         error => {
@@ -238,37 +260,164 @@ const OwnerEdit = (props) => {
       );
   }
   const getBuildings = () => {
+    let params = new URLSearchParams(window.location.search);
     const requestData = {
       'search_key': '',
       'page_num': 0,
-      'row_count': '-1',
-      'sort_column': '',
-      'sort_method': '',
-      'companyID': companyID
+      'row_count': 20,
+      'sort_column': -1,
+      'sort_method': 'asc',
+      'companyID': -1
     }
     setVisibleIndicator(true);
     AdminService.getBuildingList(requestData)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
-            console.log('error');
+            ToastsStore.error(response.data.message);
           } else {
-            console.log('success');
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             data.buildinglist.map((item) => (
               building.push(item.name)
             )
             );
-            setBuildingList(data.buildinglist);
-            setBuildingID(data.buildinglist[0].buildingID);
-            building.push('all');
+            setBuildingList(...data.buildinglist);
+            setBuilding(building);
+            setBuildingID(params.get('buildingID'));
+            for (let i = 0; i < building.length; i++)
+              if (data.buildinglist[i].buildingID == params.get('buildingID')) {
+                setBuildings(i);
+              }
+          }
+
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getVoteList = () => {
+    for (let i = 0; i < apartNumber.length; i++) {
+      let votes = [];
+      for (let j = 0; j < voteAmount[i].length; j++) {
+        const vote = {
+          'voteID': buildingVote[j].voteID,
+          'vote_amount': voteAmount[i][j]
+        }
+        votes.push(vote);
+      }
+      const voteList = {
+        'apartment_number': apartNumber[i],
+        'vote': votes
+      }
+      voteLists.push(voteList);
+    }
+  }
+  const updateOwner = () => {
+    let params = new URLSearchParams(window.location.search);
+    getVoteList();
+    let formdata = new FormData();
+    formdata.set('type', titleList[ownerTitle]);
+    formdata.set('email', email);
+    formdata.set('owner_role', isSubAccount ? 'subaccount' : isMemberCouncil ? 'member' : 'owner');
+    formdata.set('buildingID', buildingID);
+    formdata.set('firstname', firstname);
+    formdata.set('lastname', lastname);
+    formdata.set('owner_company_name', companyName);
+    formdata.set('address', address);
+    formdata.set('phone', phonenumber);
+    formdata.set('photo_url', avatar === null ? '' : avatar)
+    formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0])
+    formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1])
+    formdata.set('vote_value_list', JSON.stringify(voteLists));
+    setVisibleIndicator(true);
+    AdminService.updateOwner(params.get('id'), formdata)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            ToastsStore.success("Updated Successfully!");
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getOwner = () => {
+    let params = new URLSearchParams(window.location.search);
+    var data = {};
+    data['ID'] = params.get('id');
+    data['buildingID'] = params.get('buildingID');
+    setVisibleIndicator(true);
+    AdminService.getOwner(params.get('id'), data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            const ownerInfo = data.owner.ownerInfo;
+            const apartmentInfo = data.owner.apartment_info;
+            const amountInfo = data.owner.amount_info;
+            for (let i = 0; i < companyList.length; i++)
+              if (companyList[i].companyID == ownerInfo.companyID) {
+                setCompanies(i);
+              }
+            setOwnerTitle(titleList.indexOf(ownerInfo.usertype));
+            setFirstName(ownerInfo.firstname);
+            setLastName(ownerInfo.lastname);
+            setEmail(ownerInfo.email);
+            setPhoneNumber(ownerInfo.phone);
+            setAddress(ownerInfo.address);
+            if (ownerInfo.owner_role === 'subaccount') {
+              setIsSubAccount(true);
+              setIsMemberCouncil(false);
+            } else if (ownerInfo.owner_role === 'member') {
+              setIsMemberCouncil(true);
+              setIsSubAccount(false);
+            } else if (ownerInfo.owner_role === 'owner') {
+              setIsMemberCouncil(false);
+              setIsSubAccount(false);
+            }
+            setAvatarUrl(ownerInfo.photo_url);
+            let urls = [];
+            let apartment = [...apartNumber];
+            let apartmentId = [];
+            if (ownerInfo.identity_card_front.length !== 0)
+              urls.push(ownerInfo.identity_card_front);
+            if (ownerInfo.identity_card_back.length !== 0)
+              urls.push(ownerInfo.identity_card_back);
+            setIdcardUrls(urls);
+            for (let i = 0; i < apartmentInfo.length; i++) {
+              apartment.push(apartmentInfo[i].apartment_number);
+              apartmentId.push(apartmentInfo[i].apartmentID);
+            }
+            for (let i = 0; i < apartmentId.length; i++) {
+              for (let j = 0; j < amountInfo.length; j++)
+                if (amountInfo[j].apartmentID === apartmentId[i]) {
+                  voteAmount[i].push(amountInfo[j].amount);
+                }
+              setVoteAmount(voteAmount);
+              setApartNumber(apartment);
+              lotsList.push([...buildingVote]);
+            }
+            setLotsList(lotsList);
+            setStateLots(!stateLots);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -315,32 +464,33 @@ const OwnerEdit = (props) => {
             <Grid item>
               <Grid container direction="column" spacing={2}>
                 <Grid item container direction="row-reverse">
-                  <input className={classes.input} type="file" id="img_avatar" onChange={handleLoadFront} />
-                  <label htmlFor="img_avatar">
-                    {
-                      <Badge
-                        overlap="circle"
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'right',
-                          right: -20,
-                          top: 10,
-                          border: '2px solid gray',
-                          padding: '1px 4px',
-                        }}
-                        badgeContent={<EditOutlinedIcon className={classes.editAvatar} />}
-                      >
-                        <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
-                      </Badge>
-                    }
-                  </label>
+                  <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                      right: -20,
+                      top: 10,
+                      border: '2px solid gray',
+                      padding: '1px 4px',
+                    }}
+                    badgeContent={
+                      <div>
+                        <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                        <label htmlFor="img_front">
+                          <EditOutlinedIcon className={classes.editAvatar} />
+                        </label>
+                      </div>}
+                  >
+                    <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
+                  </Badge>
                 </Grid>
                 <Grid item container direction="row-reverse">
                   <MyButton
                     name={"Se connecter en tant que"}
                     color={"1"}
                     onClick={handleClickLoginAsOwner}
-                    disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                    disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   />
                 </Grid>
                 <Grid item container direction="row-reverse">
@@ -348,7 +498,7 @@ const OwnerEdit = (props) => {
                     name={"Réinitialiser le mot de passe"}
                     bgColor={"#00C9FF"}
                     onClick={handleClickResetPassword}
-                    disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                    disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   />
                 </Grid>
                 <Grid item container direction="row-reverse">
@@ -356,7 +506,7 @@ const OwnerEdit = (props) => {
                     name={"Suspendre le compte"}
                     bgColor={"#00C9FF"}
                     onClick={handleClickSuspendAccount}
-                    disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                    disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   />
                 </Grid>
                 <Grid item container direction="row-reverse">
@@ -364,7 +514,7 @@ const OwnerEdit = (props) => {
                     name={"Supprimer le compte"}
                     bgColor={"#00C9FF"}
                     onClick={handleClickDeleteAccount}
-                    disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                    disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   />
                 </Grid>
               </Grid>
@@ -380,7 +530,7 @@ const OwnerEdit = (props) => {
                       data={titleList}
                       onChangeSelect={handleChangeOwnerTitle}
                       value={ownerTitle}
-                      disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                     />
                     {errorsOwnerTitle.length > 0 &&
                       <span className={classes.error}>{errorsOwnerTitle}</span>}
@@ -396,7 +546,7 @@ const OwnerEdit = (props) => {
                           variant="outlined"
                           value={companyName}
                           onChange={handleChangeCompanyName}
-                          disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                          disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                           fullWidth
                         />
                         {errorsCompanyName.length > 0 &&
@@ -413,7 +563,7 @@ const OwnerEdit = (props) => {
                             variant="outlined"
                             value={lastname}
                             onChange={handleChangeLastName}
-                            disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                            disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                             fullWidth
                           />
                           {errorsLastname.length > 0 &&
@@ -428,7 +578,7 @@ const OwnerEdit = (props) => {
                             variant="outlined"
                             value={firstname}
                             onChange={handleChangeFirstName}
-                            disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                            disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                             fullWidth
                           />
                           {errorsFirstname.length > 0 &&
@@ -445,7 +595,7 @@ const OwnerEdit = (props) => {
                       variant="outlined"
                       value={email}
                       onChange={handleChangeEmail}
-                      disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                       fullWidth
                     />
                     {errorsEmail.length > 0 &&
@@ -460,7 +610,7 @@ const OwnerEdit = (props) => {
                       variant="outlined"
                       value={phonenumber}
                       onChange={handleChangePhoneNumber}
-                      disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                     />
                     {errorsPhonenumber.length > 0 &&
                       <span className={classes.error}>{errorsPhonenumber}</span>}
@@ -481,8 +631,8 @@ const OwnerEdit = (props) => {
                   value={address}
                   onChange={handleChangeAddress}
                   multiline
-                  rows={3}
-                  disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                  rows={10}
+                  disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   fullWidth
                 />
                 {errorsAddress.length > 0 &&
@@ -497,7 +647,8 @@ const OwnerEdit = (props) => {
                   data={company}
                   onChangeSelect={handleChangeCompanies}
                   value={companies}
-                  disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                  disabled={"disabled"}
+                  // disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   width="50%"
                 />
                 {errorsCompanies.length > 0 &&
@@ -512,7 +663,8 @@ const OwnerEdit = (props) => {
                   data={building}
                   onChangeSelect={handleChangeBuildings}
                   value={buildings}
-                  disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                  disabled={"disabled"}
+                  // disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   width="50%"
                 />
                 {errorsBuildings.length > 0 &&
@@ -527,7 +679,7 @@ const OwnerEdit = (props) => {
                     <Checkbox
                       checked={isSubAccount}
                       onChange={handleChangeIsSubAccount}
-                      disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -539,7 +691,7 @@ const OwnerEdit = (props) => {
                     <Checkbox
                       checked={isMemberCouncil}
                       onChange={handleChangeIsMemberCouncil}
-                      disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                      disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -560,10 +712,9 @@ const OwnerEdit = (props) => {
                                   <TextField
                                     className={classes.text}
                                     variant="outlined"
-                                    value={apartNumber}
-                                    onChange={handleChangeApartNumber}
+                                    value={apartNumber[i] || ""}
+                                    onChange={(event) => handleChangeApartNumber(event, i)}
                                     style={{ width: 100 }}
-                                    type="number"
                                   />
                                 </Grid>
                               </Grid>
@@ -571,18 +722,18 @@ const OwnerEdit = (props) => {
 
                               <Grid item container direction="column" spacing={1} >
                                 {
-                                  lot.map((vote, j) => {
+                                  lot.map((vote1, j) => {
                                     return (
                                       <Grid key={j} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.itemTitle}>{vote.name}</p></Grid>
+                                        <Grid item><p className={classes.itemTitle}>{vote1.vote_branch_name}</p></Grid>
                                         <Grid item >
                                           <TextField
                                             className={classes.text}
                                             variant="outlined"
-                                            value={apartNumber}
-                                            onChange={handleChangeApartNumber}
+                                            value={voteAmount[i][j] || ""}
+                                            onChange={(event) => handleChangeVoteAmount(event, i, j)}
                                             style={{ width: 100 }}
-                                            type="number"
+
                                           />
                                         </Grid>
                                         <Grid item><p className={classes.itemTitle}>tantièmes</p></Grid>
@@ -605,7 +756,7 @@ const OwnerEdit = (props) => {
                   name={"Ajouter un lot"}
                   bgColor="grey"
                   onClick={handleClickAddLots}
-                  disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                  disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                 />
               </Grid>
             </Grid>
@@ -615,13 +766,13 @@ const OwnerEdit = (props) => {
                 <IdCard
                   onClose={handleClickCloseIdcard}
                   idcardurls={idcardurls}
-                  disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+                  disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
                   state={state}
                   type="first"
                   badge="first"
                 />
 
-                <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')} />
+                <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')} />
                 <label htmlFor="img_idcard">
                   {
                     <div className={classes.img}>
@@ -638,7 +789,7 @@ const OwnerEdit = (props) => {
               name={"Sauvegarder"}
               color={"1"}
               onClick={handleClickSave}
-              disabled={(accessOwners === 'See' ? 'disabled' : !'disabled')}
+              disabled={(accessOwners === 'see' ? 'disabled' : !'disabled')}
             />
           </Grid>
         </div>

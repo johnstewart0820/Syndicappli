@@ -17,12 +17,12 @@ const AddOwner = (props) => {
     const [state, setState] = React.useState(false);
     const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
 
-    let company = [];
+    const [company, setCompany] = React.useState([]);
     const [companies, setCompanies] = React.useState('');
     const [companyList, setCompanyList] = React.useState([]);
     const [companyID, setCompanyID] = React.useState(-1);
 
-    let building = [];
+    const [building, setBuilding] = React.useState([]);
     const [buildings, setBuildings] = React.useState('');
     const [buildingList, setBuildingList] = React.useState([]);
     const [buildingID, setBuildingID] = React.useState(-1);
@@ -33,7 +33,7 @@ const AddOwner = (props) => {
     const [avatarurl, setAvatarUrl] = React.useState("");
     const [avatar, setAvatar] = React.useState(null);
     const [idcardurls, setIdcardUrls] = React.useState([]);
-    const [idcards, setIdcards] = React.useState([null]);
+    const [idcards, setIdcards] = React.useState([]);
     const [ownerTitle, setOwnerTitle] = React.useState('');
     const [lastname, setLastName] = React.useState('');
     const [firstname, setFirstName] = React.useState('');
@@ -57,10 +57,7 @@ const AddOwner = (props) => {
     const [stateLots, setStateLots] = React.useState(false);
     const [buildingVote, setBuildingVote] = React.useState([]);
     const [voteAmount, setVoteAmount] = React.useState(Array.from({length: 100},()=> Array.from({length: buildingVote.length}, () => null)));
-    // const voteAmount = [];
-    // const apartNumber = [];
     let voteLists = [];
-    let votes = [];
     const handleClose = () => {
         props.onCancel();
     };
@@ -84,9 +81,9 @@ const AddOwner = (props) => {
             if (firstname.length === 0) { setErrorsFirstname('please enter owner first name'); cnt++; }
             else setErrorsFirstname('');
         }
-        if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
+        if (company.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
         else setErrorsCompanies('');
-        if (buildingID === -1) { setErrorsBuildings('please select buildings'); cnt++; }
+        if (building.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
         else setErrorsBuildings('');
         if (email.length === 0) { setErrorsEmail('please enter owner email'); cnt++; }
         else setErrorsEmail('');
@@ -100,8 +97,10 @@ const AddOwner = (props) => {
         }
     }
     const handleLoadFront = (event) => {
-        setAvatar(event.target.files[0]);
-        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+        if(event.target.files[0] !== null){
+            setAvatar(event.target.files[0]);
+            setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+        }
     }
 
     const handleLoadIdcard = (event) => {
@@ -173,17 +172,11 @@ const AddOwner = (props) => {
     }
     const handleChangeCompanies = (val) => {
         setCompanies(val);
-        if (val < companyList.length)
-            setCompanyID(companyList[val].companyID);
-        else
-            setCompanyID(-1);
+        setCompanyID(companyList[val].companyID);
     };
     const handleChangeBuildings = (val) => {
         setBuildings(val);
-        if (val < buildingList.length)
-            setBuildingID(buildingList[val].buildingID);
-        else
-            setBuildingID(-1);
+        setBuildingID(buildingList[val].buildingID);
     };
     const handleClickAddLots = (event) => {
         lotsList.push(buildingVote);
@@ -200,16 +193,17 @@ const AddOwner = (props) => {
                     if (response.data.code !== 200) {
                         ToastsStore.error(response.data.message);
                     } else {
+                        company.splice(0,company.length);
                         console.log('success');
                         const data = response.data.data;
+                        company.push('Tout');
                         localStorage.setItem("token", JSON.stringify(data.token));
                         data.companylist.map((item) => (
                             company.push(item.name)
                         )
                         );
-                        setCompanyList(data.companylist);
-                        setCompanyID(data.companylist[0].companyID);
-                        company.push('all');
+                        setCompany(company)
+                        setCompanyList([{'companyID':-1},...data.companylist]);
                     }
                 },
                 error => {
@@ -235,6 +229,8 @@ const AddOwner = (props) => {
                     if (response.data.code !== 200) {
                         ToastsStore.error(response.data.message);
                     } else {
+                        buildingList.splice(0,buildingList.length);
+                        building.splice(0,building.length);
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
                         data.buildinglist.map((item) => (
@@ -242,8 +238,8 @@ const AddOwner = (props) => {
                         )
                         );
                         setBuildingList(data.buildinglist);
-                        setBuildingID(data.buildinglist[0].buildingID);
-                        building.push('all');
+                        setBuilding(building)
+                        // setBuildingID(data.buildinglist[0].buildingID);
                     }
                 },
                 error => {
@@ -254,6 +250,7 @@ const AddOwner = (props) => {
     }
     useEffect(() => {
         setVisibleIndicator(true);
+        console.log(buildingID);
         AdminService.getBuilding(buildingID)
             .then(
                 response => {
@@ -261,6 +258,11 @@ const AddOwner = (props) => {
                     if (response.data.code !== 200) {
                         ToastsStore.error(response.data.message);
                     } else {
+                        buildingVote.splice(0,buildingVote.length);
+                        lotsList.splice(0,lotsList.length);
+                        setLotsList(lotsList);
+                        setStateLots(!stateLots);
+
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
                         const vote_list = data.vote_list;
@@ -278,6 +280,7 @@ const AddOwner = (props) => {
     }, [buildingID]);
     const getVoteList = () => {
         for (let i = 0; i < apartNumber.length; i++) {
+            let votes = [];
             for (let j = 0; j < voteAmount[i].length; j++) {
                 const vote = {
                     'voteID': buildingVote[j].voteID,
@@ -286,7 +289,7 @@ const AddOwner = (props) => {
                 votes.push(vote);
             }
             const voteList = {
-                'apartment_number': apartNumber[i],
+                'apartment_number': apartNumber[i], 
                 'vote': votes
             }
             voteLists.push(voteList);
@@ -294,20 +297,22 @@ const AddOwner = (props) => {
     }
     const createOwner = () => {
         getVoteList();
-        const requestData = {
-            'type': ownerTitle,
-            'owner_role': isSubAccount,
-            'buildingID': buildingID,
-            'firstname': firstname,
-            'lastname': lastname,
-            'owner_company_name': companyName,
-            'address': address,
-            'phone': phonenumber,
-            'vote_value_list': voteLists,
-            'photo': [avatarurl, ...idcardurls]
-        }
+        let formdata = new FormData();
+        formdata.set('type', titleList[ownerTitle]);
+        formdata.set('email',email);
+        formdata.set('owner_role', isSubAccount ? 'subaccount': isMemberCouncil? 'member': 'owner');
+        formdata.set('buildingID', buildingID);
+        formdata.set('firstname', firstname);
+        formdata.set('lastname', lastname);
+        formdata.set('owner_company_name', companyName);
+        formdata.set('address', address);
+        formdata.set('phone', phonenumber);
+        formdata.set('photo_url',avatar === null ? '' : avatar)
+        formdata.set('id_card_front',idcards[0] === null ? '' : idcards[0])
+        formdata.set('id_card_back',idcards[1] === null ? '' : idcards[1])
+        formdata.set('vote_value_list', JSON.stringify(voteLists));
         setVisibleIndicator(true);
-        AdminService.createOwner(requestData)
+        AdminService.createOwner(formdata)
             .then(
                 response => {
                     setVisibleIndicator(false);
@@ -518,10 +523,9 @@ const AddOwner = (props) => {
                                                                 <TextField
                                                                     className={classes.text}
                                                                     variant="outlined"
-                                                                    value={apartNumber[i]}
+                                                                    value={apartNumber[i] || ""}
                                                                     onChange={(event) => handleChangeApartNumber(event, i)}
                                                                     style={{ width: 100 }}
-                                                                    type="number"
                                                                 />
                                                             </Grid>
                                                         </Grid>
@@ -532,15 +536,15 @@ const AddOwner = (props) => {
                                                                 lot.map((vote1, j) => {
                                                                     return (
                                                                         <Grid key={j} item container alignItems="center" spacing={1}>
-                                                                            <Grid item><p className={classes.title}>{vote1.name}</p></Grid>
+                                                                            <Grid item><p className={classes.title}>{vote1.vote_branch_name}</p></Grid>
                                                                             <Grid item >
                                                                                 <TextField
                                                                                     className={classes.text}
                                                                                     variant="outlined"
-                                                                                    value={voteAmount[i][j]}
+                                                                                    value={voteAmount[i][j] || ""}
                                                                                     onChange={(event) => handleChangeVoteAmount(event, i, j)}
                                                                                     style={{ width: 100 }}
-                                                                                    type="number"
+                                                                                    
                                                                                 />
                                                                             </Grid>
                                                                             <Grid item><p className={classes.title}>tantièmes</p></Grid>

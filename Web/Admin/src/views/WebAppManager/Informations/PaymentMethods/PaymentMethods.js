@@ -193,7 +193,7 @@ const PaymentMethods = (props) => {
                       variant="outlined"
                       value={accountHolder}
                       onChange={handleChangeAccountHolder}
-                      disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings ==='see'? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -210,7 +210,7 @@ const PaymentMethods = (props) => {
                       variant="outlined"
                       value={accountAddress}
                       onChange={handleChangeAccountAddress}
-                      disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings ==='see'? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
@@ -225,15 +225,15 @@ const PaymentMethods = (props) => {
                       variant="outlined"
                       value={accountIban}
                       onChange={handleChangeAccountIban}
-                      disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings ==='see'? 'disabled' : !'disabled')}
                     />
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid  item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name = {"Editer le mandat"} color={"1"} disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/></Grid>
-              <Grid item><MyButton name = {"Supprimer"} bgColor="grey" disabled={(accessBuildings ==='See'? 'disabled' : !'disabled')}/>  </Grid>
+              <Grid item><MyButton name = {"Editer le mandat"} color={"1"} disabled={(accessBuildings ==='see'? 'disabled' : !'disabled')}/></Grid>
+              <Grid item><MyButton name = {"Supprimer"} bgColor="grey" disabled={(accessBuildings ==='see'? 'disabled' : !'disabled')}/>  </Grid>
             </Grid>
             <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog}/>
           </Grid>

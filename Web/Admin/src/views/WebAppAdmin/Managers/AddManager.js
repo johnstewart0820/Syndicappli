@@ -1,18 +1,23 @@
 import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../../components/MyButton';
-import ScrollBar from 'react-perfect-scrollbar';
+import Multiselect from '../../../components/Multiselect.js';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { AddManagerStyles as useStyles } from './useStyles';
 import AdminService from '../../../services/api.js';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import useGlobal from 'Global/global';
+
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddManager = (props) => {
     const classes = useStyles();
-
-    const permissionList = ['', 'Editer', 'Voir', 'Refusé'];
-
+    const [globalState, globalActions] = useGlobal();
+    const permissionList = ['Voir', 'Editer', 'Refusé'];
+    const role_permission = ['see', 'edit', 'denied'];
+    const [visibleIndicator, setVisibleIndicator] = React.useState(false);
     const [avatarurl, setAvatarUrl] = React.useState("");
     const [avatar, setAvatar] = React.useState(null);
     const [lastname, setLastName] = React.useState('');
@@ -24,24 +29,21 @@ const AddManager = (props) => {
     const [companies, setCompanies] = React.useState('');
     const [companyList, setCompanyList] = React.useState([]);
     const [companyID, setCompanyID] = React.useState(-1);
-    let building = [];
-    const [buildings, setBuildings] = React.useState('');
     const [buildingList, setBuildingList] = React.useState([]);
-    const [buildingID, setBuildingID] = React.useState(-1);
-
-    const [buildingsPermission, setBuildingsPermission] = React.useState('');
-    const [chatPermission, setChatPermission] = React.useState('');
-    const [ownersPermission, setOwnersPermission] = React.useState('');
-    const [incidentsPermission, setIncidentsPermission] = React.useState('');
-    const [assembliesPermission, setAssembliesPermission] = React.useState('');
-    const [eventsPermission, setEventsPermission] = React.useState('');
-    const [teamPermission, setTeamPermission] = React.useState('');
-    const [providersPermission, setProvidersPermission] = React.useState('');
-    const [announcementsPermission, setAnnouncementsPermission] = React.useState('');
-    const [companyPermission, setCompanyPermission] = React.useState('');
-    const [addonsPermission, setAddonsPermission] = React.useState('');
-    const [invoicesPermission, setInvoicesPermission] = React.useState('');
-    const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState('');
+    let buildingID1 = [];
+    const [buildingsPermission, setBuildingsPermission] = React.useState(0);
+    const [chatPermission, setChatPermission] = React.useState(0);
+    const [ownersPermission, setOwnersPermission] = React.useState(0);
+    const [incidentsPermission, setIncidentsPermission] = React.useState(0);
+    const [assembliesPermission, setAssembliesPermission] = React.useState(0);
+    const [eventsPermission, setEventsPermission] = React.useState(0);
+    const [teamPermission, setTeamPermission] = React.useState(0);
+    const [providersPermission, setProvidersPermission] = React.useState(0);
+    const [announcementsPermission, setAnnouncementsPermission] = React.useState(0);
+    const [companyPermission, setCompanyPermission] = React.useState(0);
+    const [addonsPermission, setAddonsPermission] = React.useState(0);
+    const [invoicesPermission, setInvoicesPermission] = React.useState(0);
+    const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
 
     const [errorsCompanies, setErrorsCompanies] = React.useState('');
     const [errorsBuildings, setErrorsBuildings] = React.useState('');
@@ -49,20 +51,6 @@ const AddManager = (props) => {
     const [errorsFirstname, setErrorsFirstname] = React.useState('');
     const [errorsEmail, setErrorsEmail] = React.useState('');
     const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
-    const [errorsBuildingsPermission, setErrorsBuildingsPermission] = React.useState('');
-    const [errorsIncidentsPermission, setErrorsIncidentsPermission] = React.useState('');
-    const [errorsOwnersPermission, setErrorsOwnersPermission] = React.useState('');
-    const [errorsChatPermission, setErrorsChatPermission] = React.useState('');
-    const [errorsAssembliesPermission, setErrorsAssembliesPermission] = React.useState('');
-    const [errorsEventsPermission, setErrorsEventsPermission] = React.useState('');
-    const [errorsTeamPermission, setErrorsTeamPermission] = React.useState('');
-    const [errorsProvidersPermission, setErrorsProvidersPermission] = React.useState('');
-    const [errorsAnnouncementsPermission, setErrorsAnnouncementsPermission] = React.useState('');
-    const [errorsCompanyPermission, setErrorsCompanyPermission] = React.useState('');
-    const [errorsAddonsPermission, setErrorsAddonsPermission] = React.useState('');
-    const [errorsInvoicesPermission, setErrorsInvoicesPermission] = React.useState('');
-    const [errorsPaymentMethodsPermission, setErrorsPaymentMethodsPermission] = React.useState('');
-
     const handleClose = () => {
         props.onCancel();
     };
@@ -72,44 +60,16 @@ const AddManager = (props) => {
         else setErrorsLastname('');
         if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
         else setErrorsFirstname('');
-        if (companies.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
+        if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
         else setErrorsCompanies('');
-        if (buildings.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+        if (globalState.multi_ID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
         else setErrorsBuildings('');
         if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
         else setErrorsEmail('');
         if (phonenumber.length === 0) { setErrorsPhonenumber('please enter your phone number'); cnt++; }
         else setErrorsPhonenumber('');
-        if (buildingsPermission.length === 0) { setErrorsBuildingsPermission('please select permission to buildings'); cnt++; }
-        else setErrorsBuildingsPermission('');
-        if (ownersPermission.length === 0) { setErrorsOwnersPermission('please select permission to owners'); cnt++; }
-        else setErrorsOwnersPermission('');
-        if (chatPermission.length === 0) { setErrorsChatPermission('please select permission to chat'); cnt++; }
-        else setErrorsChatPermission('');
-        if (incidentsPermission.length === 0) { setErrorsIncidentsPermission('please select permission to incidents'); cnt++; }
-        else setErrorsIncidentsPermission('');
-        if (assembliesPermission.length === 0) { setErrorsAssembliesPermission('please select permission to assemblies'); cnt++; }
-        else setErrorsAssembliesPermission('');
-        if (eventsPermission.length === 0) { setErrorsEventsPermission('please select permission to events'); cnt++; }
-        else setErrorsEventsPermission('');
-        if (teamPermission.length === 0) { setErrorsTeamPermission('please select permission to team'); cnt++; }
-        else setErrorsTeamPermission('');
-        if (providersPermission.length === 0) { setErrorsProvidersPermission('please select permission to providers'); cnt++; }
-        else setErrorsProvidersPermission('');
-        if (announcementsPermission.length === 0) { setErrorsAnnouncementsPermission('please select permission to announcements'); cnt++; }
-        else setErrorsAnnouncementsPermission('');
-        if (companyPermission.length === 0) { setErrorsCompanyPermission('please select permission to company'); cnt++; }
-        else setErrorsCompanyPermission('');
-        if (addonsPermission.length === 0) { setErrorsAddonsPermission('please select permission to addons'); cnt++; }
-        else setErrorsAddonsPermission('');
-        if (invoicesPermission.length === 0) { setErrorsInvoicesPermission('please select permission to invoices'); cnt++; }
-        else setErrorsInvoicesPermission('');
-        if (paymentMethodsPermission.length === 0) { setErrorsPaymentMethodsPermission('please select permission to payment methods'); cnt++; }
-        else setErrorsPaymentMethodsPermission('');
-
         if (cnt === 0) {
-
-            handleClose();
+            createManager();
         }
     }
     const handleLoadFront = (event) => {
@@ -125,29 +85,35 @@ const AddManager = (props) => {
     }
     const handleChangeEmail = (event) => {
         event.preventDefault();
-        let errorsMail = 
-              validEmailRegex.test(event.target.value)
+        let errorsMail =
+            validEmailRegex.test(event.target.value)
                 ? ''
                 : 'Email is not valid!';
-              setEmail(event.target.value);
-              setErrorsEmail(errorsMail);
+        setEmail(event.target.value);
+        setErrorsEmail(errorsMail);
     }
     const handleChangePhoneNumber = (event) => {
         setPhoneNumber(event.target.value);
     }
     const handleChangeCompanies = (val) => {
         setCompanies(val);
-        if (val < companyList.length)
-            setCompanyID(companyList[val].companyID);
-        else
-            setCompanyID(-1);
+        setCompanyID(companyList[val].companyID);
     };
-    const handleChangeBuildings = (val) => {
-        setBuildings(val);
-        if (val < buildingList.length)
-            setBuildingID(buildingList[val].buildingID);
-        else
-            setBuildingID(-1);
+    const handleChangeBuildings = async (val) => {
+        if (val !== null) {
+            await globalActions.setMultiTags(val);
+            buildingID1.splice(0, buildingID1.length)
+            for (let i = 0; i < val.length; i++)
+                for (let j = 0; j < buildingList.length; j++)
+                    if (val[i].label == buildingList[j].name) {
+                        buildingID1.push(buildingList[j].buildingID);
+                    }
+            globalActions.setMultiID(buildingID1);
+        }
+        else {
+            await globalActions.setMultiTags([]);
+            globalActions.setMultiID([]);
+        }
     };
     const handleChangeBuildingsPermission = (val) => {
         setBuildingsPermission(val);
@@ -191,36 +157,159 @@ const AddManager = (props) => {
     useEffect(() => {
         getCompanies();
     }, [companies]);
+    useEffect(() => {
+        handleChangeBuildings([])
+        getBuildings();
+    }, [companyID])
     const getCompanies = () => {
         AdminService.getCompanyListByUser()
             .then(
                 response => {
-                    console.log(response.data);
-                    // setVisibleIndicator(false);  
+                    setVisibleIndicator(false);
                     if (response.data.code !== 200) {
-                        console.log('error');
+                        ToastsStore.error(response.data.message);
                     } else {
-                        console.log('success');
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
+                        company.push('');
                         data.companylist.map((item) => (
                             company.push(item.name)
                         )
                         );
-                        setCompanyList(data.companylist);
-                        setCompanyID(data.companylist[0].companyID);
-                        company.push('all');
-                        //   getBuildings();
+                        setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
                     }
                 },
                 error => {
-                    console.log('fail');
-                    // setVisibleIndicator(false);
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
+    const getBuildings = () => {
+        const requestData = {
+            'search_key': '',
+            'page_num': 0,
+            'row_count': 20,
+            'sort_column': -1,
+            'sort_method': 'asc',
+            'companyID': companyID
+        }
+        setVisibleIndicator(true);
+        AdminService.getBuildingList(requestData)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    if (response.data.code !== 200) {
+                        ToastsStore.error(response.data.message);
+                    } else {
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        let buildings1 = [];
+                        data.buildinglist.map((item, i) => (
+                            buildings1[i] = { label: item.name, value: item.buildingID }
+                        )
+                        );
+                        setBuildingList(data.buildinglist);
+                        globalActions.setMultiSuggestions(buildings1);
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
+    const createManager = () => {
+        let permissionInfos = [
+            {
+                'role_name': 'role_buildings',
+                'permission': role_permission[buildingsPermission]
+            },
+            {
+                'role_name': 'role_owners',
+                'permission': role_permission[ownersPermission]
+            },
+            {
+                'role_name': 'role_chat',
+                'permission': role_permission[chatPermission]
+            },
+            {
+                'role_name': 'role_incidents',
+                'permission': role_permission[incidentsPermission]
+            },
+            {
+                'role_name': 'role_assemblies',
+                'permission': role_permission[assembliesPermission]
+            },
+            {
+                'role_name': 'role_events',
+                'permission': role_permission[eventsPermission]
+            },
+            {
+                'role_name': 'role_team',
+                'permission': role_permission[teamPermission]
+            },
+            {
+                'role_name': 'role_providers',
+                'permission': role_permission[providersPermission]
+            },
+            {
+                'role_name': 'role_advertisement',
+                'permission': role_permission[announcementsPermission]
+            },
+            {
+                'role_name': 'role_company',
+                'permission': role_permission[companyPermission]
+            },
+            {
+                'role_name': 'role_addons',
+                'permission': role_permission[addonsPermission]
+            },
+            {
+                'role_name': 'role_invoices',
+                'permission': role_permission[invoicesPermission]
+            },
+            {
+                'role_name': 'role_payments',
+                'permission': role_permission[paymentMethodsPermission]
+            },
+        ]
+        let formdata = new FormData();
+        formdata.set('companyID', companyID);
+        formdata.set('buildingID', JSON.stringify(globalState.multi_ID));
+        formdata.set('firstname', firstname);
+        formdata.set('lastname', lastname);
+        formdata.set('email', email);
+        formdata.set('phone', phonenumber);
+        formdata.set('logo', avatar === null ? '' : avatar);
+        formdata.set('permission_info', JSON.stringify(permissionInfos));
+
+
+        setVisibleIndicator(true);
+        AdminService.createManager(formdata)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    if (response.data.code !== 200) {
+                        ToastsStore.error(response.data.message);
+                    } else {
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        props.onAdd();
+                        handleClose();
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
                 }
             );
     }
     return (
         <div className={classes.root}>
+            {
+                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+            }
             <div className={classes.paper} sm={12}>
                 <Grid container spacing={2} >
                     <Grid item container justify="center" alignItems="center">
@@ -237,14 +326,14 @@ const AddManager = (props) => {
                                 <span className={classes.error}>{errorsCompanies}</span>}
                         </Grid>
                     </Grid>
-                    <Grid item container justify="center" alignItems="center">
-                        <Grid xs={3} item container><p className={classes.title}>Immeuble</p></Grid>
-                        <Grid xs={9} item container>
-                            <MySelect
-                                color="gray"
-                                data={building}
-                                onChangeSelect={handleChangeBuildings}
-                                value={buildings}
+                    <Grid item container alignItems="center">
+                        <Grid item xs={3}><p className={classes.title}>Immeubles</p></Grid>
+                        <Grid xs={9} item container alignItems="stretch">
+                            <Multiselect
+                                selected={globalState.multi_tags}
+                                no={'No buildings found'}
+                                all={globalState.multi_suggestions}
+                                onSelected={handleChangeBuildings}
                                 width="80%"
                             />
                             {errorsBuildings.length > 0 &&
@@ -255,7 +344,6 @@ const AddManager = (props) => {
                         <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
                         <Grid xs={6} item container>
                             <TextField
-                                id="outlined-basic"
                                 className={classes.text}
                                 variant="outlined"
                                 value={lastname}
@@ -264,13 +352,12 @@ const AddManager = (props) => {
                             {errorsLastname.length > 0 &&
                                 <span className={classes.error}>{errorsLastname}</span>}
                         </Grid>
-                        <Grid xs={3}></Grid>
+                        <Grid xs={3} item></Grid>
                     </Grid>
                     <Grid item container justify="space-between" alignItems="center">
                         <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
                         <Grid xs={6} item container>
                             <TextField
-                                id="outlined-basic"
                                 className={classes.text}
                                 variant="outlined"
                                 value={firstname}
@@ -279,13 +366,12 @@ const AddManager = (props) => {
                             {errorsFirstname.length > 0 &&
                                 <span className={classes.error}>{errorsFirstname}</span>}
                         </Grid>
-                        <Grid xs={3}></Grid>
+                        <Grid xs={3} item></Grid>
                     </Grid>
                     <Grid item container justify="space-between" alignItems="center">
                         <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
                         <Grid xs={6} item container>
                             <TextField
-                                id="outlined-basic"
                                 className={classes.text}
                                 variant="outlined"
                                 value={email}
@@ -294,13 +380,12 @@ const AddManager = (props) => {
                             {errorsEmail.length > 0 &&
                                 <span className={classes.error}>{errorsEmail}</span>}
                         </Grid>
-                        <Grid xs={3}></Grid>
+                        <Grid xs={3} item></Grid>
                     </Grid>
                     <Grid item container justify="space-between" alignItems="center">
                         <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
                         <Grid xs={6} item container>
                             <TextField
-                                id="outlined-basic"
                                 className={classes.text}
                                 variant="outlined"
                                 value={phonenumber}
@@ -309,7 +394,7 @@ const AddManager = (props) => {
                             {errorsPhonenumber.length > 0 &&
                                 <span className={classes.error}>{errorsPhonenumber}</span>}
                         </Grid>
-                        <Grid xs={3}></Grid>
+                        <Grid xs={3} item></Grid>
                     </Grid>
                     <Grid xs={12} item container direction="column" >
                         <p className={classes.title}>Photo</p>
@@ -339,8 +424,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeBuildingsPermission}
                             value={buildingsPermission}
                         />
-                        {errorsBuildingsPermission.length > 0 &&
-                            <span className={classes.error}>{errorsBuildingsPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Copropriétaires</p>
@@ -350,8 +433,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeOwnersPermission}
                             value={ownersPermission}
                         />
-                        {errorsOwnersPermission.length > 0 &&
-                            <span className={classes.error}>{errorsOwnersPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Messagerie</p>
@@ -361,8 +442,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeChatPermission}
                             value={chatPermission}
                         />
-                        {errorsChatPermission.length > 0 &&
-                            <span className={classes.error}>{errorsChatPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Incidents</p>
@@ -372,8 +451,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeIncidentsPermission}
                             value={incidentsPermission}
                         />
-                        {errorsIncidentsPermission.length > 0 &&
-                            <span className={classes.error}>{errorsIncidentsPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Assemblées</p>
@@ -383,8 +460,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeAssembliesPermission}
                             value={assembliesPermission}
                         />
-                        {errorsAssembliesPermission.length > 0 &&
-                            <span className={classes.error}>{errorsAssembliesPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Événements</p>
@@ -394,8 +469,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeEventsPermission}
                             value={eventsPermission}
                         />
-                        {errorsEventsPermission.length > 0 &&
-                            <span className={classes.error}>{errorsEventsPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Équipe</p>
@@ -405,8 +478,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeTeamPermission}
                             value={teamPermission}
                         />
-                        {errorsTeamPermission.length > 0 &&
-                            <span className={classes.error}>{errorsTeamPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Prestataires</p>
@@ -416,8 +487,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeProvidersPermission}
                             value={providersPermission}
                         />
-                        {errorsProvidersPermission.length > 0 &&
-                            <span className={classes.error}>{errorsProvidersPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Annonces</p>
@@ -427,8 +496,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeAnnouncementsPermission}
                             value={announcementsPermission}
                         />
-                        {errorsAnnouncementsPermission.length > 0 &&
-                            <span className={classes.error}>{errorsAnnouncementsPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Cabinet</p>
@@ -438,8 +505,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeCompanyPermission}
                             value={companyPermission}
                         />
-                        {errorsCompanyPermission.length > 0 &&
-                            <span className={classes.error}>{errorsCompanyPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Modules</p>
@@ -449,8 +514,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeAddonsPermission}
                             value={addonsPermission}
                         />
-                        {errorsAddonsPermission.length > 0 &&
-                            <span className={classes.error}>{errorsAddonsPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Factures</p>
@@ -460,8 +523,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangeInvoicesPermission}
                             value={invoicesPermission}
                         />
-                        {errorsInvoicesPermission.length > 0 &&
-                            <span className={classes.error}>{errorsInvoicesPermission}</span>}
                     </Grid>
                     <Grid xs={6} item container direction="column">
                         <p className={classes.title}>Moyens de paiement</p>
@@ -471,8 +532,6 @@ const AddManager = (props) => {
                             onChangeSelect={handleChangePaymentMethodsPermission}
                             value={paymentMethodsPermission}
                         />
-                        {errorsPaymentMethodsPermission.length > 0 &&
-                            <span className={classes.error}>{errorsPaymentMethodsPermission}</span>}
                     </Grid>
                 </Grid>
                 <div className={classes.footer}>
@@ -482,7 +541,7 @@ const AddManager = (props) => {
                     </Grid>
                 </div>
             </div>
-            <ScrollBar />
+            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>
     );
 };

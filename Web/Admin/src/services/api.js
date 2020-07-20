@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
-const API_URL = "http://192.168.105.38:3001/api/";
+const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
+// const API_URL = "http://192.168.105.38:3001/api/";
 class AdminService {
   //Login
   login(data) {
@@ -44,6 +44,15 @@ class AdminService {
   }
   getUser(id) {
     return axios.get(API_URL + 'web/admin/user/' + id, { headers: authHeader() });
+  }
+  createUser(data) {
+    return axios.post(API_URL + 'web/admin/user',
+      data,
+      { headers: authHeader() });
+  }
+  updateUser(id, data) {
+    return axios.put(API_URL + 'web/admin/user/' + id, data,
+      { headers: authHeader() });
   }
   deleteUser(id) {
     return axios.delete(API_URL + 'web/admin/user/' + id, { headers: authHeader() });
@@ -98,6 +107,13 @@ class AdminService {
       data,
       { headers: authHeader() });
   }
+  updateOwner(id, data) {
+    return axios.put(API_URL + 'web/admin/owner/' + id, data,
+      { headers: authHeader() });
+  }
+  getOwner(id,data) {
+    return axios.post(API_URL + 'web/admin/owner/'+ id ,data, { headers: authHeader() });
+  }
   //Manager Part
   getManagerList(data) {
     return axios.post(API_URL + 'web/admin/managerList',
@@ -108,6 +124,13 @@ class AdminService {
     return axios.post(API_URL + 'web/admin/manager',
       data,
       { headers: authHeader() });
+  }
+  updateManager(id, data) {
+    return axios.put(API_URL + 'web/admin/manager/' + id, data,
+      { headers: authHeader() });
+  }
+  getManager(id) {
+    return axios.get(API_URL + 'web/admin/manager/' + id, { headers: authHeader() });
   }
 }
 export class OwnerService {

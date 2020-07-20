@@ -156,10 +156,10 @@ const Invoices = (props) => {
 
   };
   const handleClickAdd = ()=>{
-    if(accessProducts === 'Edit'){
+    if(accessProducts === 'edit'){
       setOpen(true);
     }
-    if(accessProducts === 'See'){
+    if(accessProducts === 'see'){
       setOpenDialog(true);
     }
   };
