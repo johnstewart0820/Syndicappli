@@ -43,8 +43,6 @@ router.get('/user/:id', authMiddleware.checkToken, getUser)
 router.put('/user/:id', authMiddleware.checkToken, upload.single('logo'), updateUser)
 router.delete('/user/:id', authMiddleware.checkToken, deleteUser)
 
-router.get('/company_building', authMiddleware.checkToken, getCompanyBuildingListByUser)
-
 /**
  * company api
  */
@@ -72,8 +70,8 @@ router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 router.post('/managerList', authMiddleware.checkToken, getManagerList)
 router.post('/manager', authMiddleware.checkToken, upload.single('logo'), createManager)
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
-router.post('/managerListByCompanyID/:id', authMiddleware.checkToken, getManagerListByCompanyID)
 router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
+router.delete('/manager/:id', authMiddleware.checkToken, deleteManager)
 
 
 /**
@@ -214,7 +212,7 @@ function updateUser(req, res) {
 }
 
 /**
- * Function that get user list
+ * Function that delete user
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
@@ -232,23 +230,6 @@ function deleteUser(req, res) {
     })
 }
 
-/**
- * Function that get company and building list by user
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object req
- * @param   object res
- * @return  json
- */
-function getCompanyBuildingListByUser(req, res) {
-    let userId = req.decoded.uid
-    let userdata = req.decoded.userdata
-    adminService.getCompanyBuildingListByUser(userId, userdata).then((result) => {
-        res.json(result)
-    }).catch((err) => {
-        res.json(err)
-    })
-}
 
 ////////////////////////////////////Company///////////////////////////////////////
 
@@ -541,19 +522,18 @@ function updateManager(req, res) {
 }
 
 /**
- * Function that get manager list by company id
+ * Function that delete manager
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
  * @return  json
  */
-function getManagerListByCompanyID(req, res) {
-
-    let uid = req.decoded.uid
+function deleteManager(req, res) {
+    let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    let data = req.params.id
-    managerService.getManagerListByCompanyID(uid, data, userdata).then((result) => {
+    let id = req.params.id
+    managerService.deleteManager(userId, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

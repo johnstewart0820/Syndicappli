@@ -17,60 +17,17 @@ const s3Helper = require('../../helper/s3helper')
 const s3buckets = require('../../constants/s3buckets')
 const timeHelper = require('../../helper/timeHelper')
 
-var companyModel = {
-  getCompanyListByUser: getCompanyListByUser,
-  getBuildingListByUser: getBuildingListByUser,
+var managerModel = {
+
   getManagerList: getManagerList,
   getCountManagerList: getCountManagerList,
   checkDuplicateManager: checkDuplicateManager,
   createManager: createManager,
   getManager: getManager,
   updateManager: updateManager,
+  deleteManager: deleteManager
 }
 
-/**
- * get count for building list for search filter
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object authData
- * @return  object If success returns object else returns message
- */
-function getCompanyListByUser(uid) {
-  return new Promise((resolve, reject) => {
-    let query = `select * from admin_company left join companies using (companyID)
-    where adminID = ? and permission not like "deleted"`
-
-    db.query(query, [uid], (error, rows, fields) => {
-      if (error) {
-        reject({ message: message.INTERNAL_SERVER_ERROR })
-      } else {
-        resolve(rows)
-      }
-    })
-  })
-}
-
-/**
- * get count for building list for search filter
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object authData
- * @return  object If success returns object else returns message
- */
-function getBuildingListByUser(uid) {
-  return new Promise((resolve, reject) => {
-    let query = `select * from (select * from admin_company left join companies using (companyID) where adminID = ? and permission not like "deleted" ) m
-    left join (select * from buildings where permission not like "deleted") n using(companyID)`
-
-    db.query(query, [uid], (error, rows, fields) => {
-      if (error) {
-        reject({ message: message.INTERNAL_SERVER_ERROR })
-      } else {
-        resolve(rows)
-      }
-    })
-  })
-}
 
 /**
  * get company list with filter key
@@ -342,4 +299,25 @@ function updateManager( id, data, file) {
   })
 }
 
-module.exports = companyModel
+/**
+ * delete manager
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteManager(uid, id) {
+  return new Promise((resolve, reject) => {
+      let query = 'UPDATE ' + table.USERS + ' SET  permission = "trash", deleted_by = ?, deleted_at = ? where userID = ?'
+
+      db.query(query, [ uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+          if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+              resolve("ok")
+          }
+      })
+  })
+}
+
+module.exports = managerModel
