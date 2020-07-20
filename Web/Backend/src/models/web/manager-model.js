@@ -38,7 +38,7 @@ var managerModel = {
  */
 function getManagerList(uid, data) {
     return new Promise((resolve, reject) => {
-      let query = `Select *, u.email email from ` + table.USERS + 
+      let query = `Select *, u.userID ID, u.email email from ` + table.USERS + 
                   ` u left join ` + table.USER_RELATIONSHIP + 
                   ` r using (userID) left join ` + table.BUILDINGS + 
                   ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
@@ -50,10 +50,12 @@ function getManagerList(uid, data) {
         params.push(data.buildingID)
       }
       else if (data.companyID != -1) {
-        query += ` and c.companyID = ?`
+        query += ` and c.companyID = ? group by c.companyID`
         params.push(data.companyID)
       }
-
+      else {
+        query += ` group by c.companyID`
+      }
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -110,7 +112,7 @@ function getCountManagerList(uid, data) {
         params.push(data.buildingID)
       }
       else if (data.companyID != -1) {
-        query += ` and c.companyID = ?`
+        query += ` and c.companyID = ? group by c.companyID`
         params.push(data.companyID)
       }
       
@@ -167,7 +169,7 @@ function createManager(uid, data, file) {
       uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
       file_name = uploadS3.Location
     }
-    if (file == "") {
+    if (file_name == "") {
       query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
       params = [ "manager", data.firstname, data.lastname, data.email, password, data.phone, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
     } else {
@@ -180,30 +182,36 @@ function createManager(uid, data, file) {
         reject({ message: message.INTERNAL_SERVER_ERROR })
       } else {
         let query = 'select * from ' + table.USERS + ' where email = ?'
-        db.query(query, [data.email], (error, rows, fields) => {
+        db.query(query, [data.email], async (error, rows, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR})
           } else {
             let managerID = rows[0].userID;
-            let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
-            let buildingID = data.buildingID;
+            let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values ?`
+            let buildingID = JSON.parse(data.buildingID);
+            let param = [];
             for (let i in buildingID) {
-              db.query(query, [managerID, "building", buildingID[i]], (error, rows, fields) => {
-                if (error) {
-                  reject({ message: message.INTERNAL_SERVER_ERROR })
-                } 
-              })
+              param.push([managerID,"building", buildingID[i]])
             }
-            query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
-            let permission_info = data.permission_info
-
-            for (let i in permission_info) {
-              db.query(query, [managerID, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
-                if (error)
-                  reject({ message: message.INTERNAL_SERVER_ERROR})
-              })
-            }
-            resolve("ok");
+            db.query(query, [param], (error, rows, fields) => {
+              if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+              } else {
+                let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values ?'
+                let permission_info = JSON.parse(data.permission_info);
+                let params = []
+                for (let i in permission_info) {
+                  params.push([managerID, permission_info[i].role_name, permission_info[i].permission])
+                }
+                db.query(query, [params], (error, rows, fields) => {
+                  if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                  } else {
+                    resolve("ok");
+                  }
+                })
+              }
+            })
           }
         })
 
@@ -258,13 +266,13 @@ function updateManager( id, data, file) {
       }
       if (file_name == "") {
         query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, updated_at = ? WHERE userID = ?'
-        params = [ data.firstname, data.lastname, data.email, data.phone, id, timeHelper.getCurrentTime() ]
+        params = [ data.firstname, data.lastname, data.email, data.phone, timeHelper.getCurrentTime(), id ]
       } else {
         query = 'UPDATE ' + table.USERS + ' SET firstname = ?, lastname = ?, email = ?, phone = ?, photo_url = ?, updated_at = ? WHERE userID = ?'
-        params = [ data.firstname, data.lastname, data.email, data.phone, id, file_name, timeHelper.getCurrentTime() ]
+        params = [ data.firstname, data.lastname, data.email, data.phone, file_name, timeHelper.getCurrentTime(), id ]
       }
 
-      db.query(query, [ data.firstname, data.lastname, data.email, data.phone, id, file_name, timeHelper.getCurrentTime() ],   (error, rows, fields) => {
+      db.query(query, params,   (error, rows, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
@@ -273,25 +281,39 @@ function updateManager( id, data, file) {
               if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
               } else {
-                let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values (?, ?, ?)`
-                let buildingID = data.buildingID;
-                for (let i in buildingID) {
-                  db.query(query, [id, "building", buildingID[i]], (error, rows, fields) => {
-                    if (error) {
+                let query = `Delete from ` + table.USER_RELATIONSHIP + ` where userID = ?`
+                db.query(query, [id], (error, rows, fields) => {
+                  if (error) {
                       reject({ message: message.INTERNAL_SERVER_ERROR })
-                    } 
-                  })
-                }
-                query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values (?, ?, ?)'
-                let permission_info = data.permission_info
-
-                for (let i in permission_info) {
-                  db.query(query, [id, permission_info[i].role_name, permission_info[i].permission], (error, rows, fields) => {
-                    if (error)
-                      reject({ message: message.INTERNAL_SERVER_ERROR})
-                  })
-                }
-                resolve("ok");
+                  } else {
+                    let managerID = rows[0].userID;
+                    let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) Values ?`
+                    let buildingID = JSON.parse(data.buildingID);
+                    let param = [];
+                    for (let i in buildingID) {
+                      param.push([managerID,"building", buildingID[i]])
+                    }
+                    db.query(query, [param], (error, rows, fields) => {
+                      if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                      } else {
+                        let query = 'insert into ' + table.ROLE + ' (userID, role_name, permission) values ?'
+                        let permission_info = JSON.parse(data.permission_info);
+                        let params = []
+                        for (let i in permission_info) {
+                          params.push([managerID, permission_info[i].role_name, permission_info[i].permission])
+                        }
+                        db.query(query, [params], (error, rows, fields) => {
+                          if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                          } else {
+                            resolve("ok");
+                          }
+                        })
+                      }
+                    })
+                  }
+                })
               }
             })
           }

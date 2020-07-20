@@ -66,7 +66,7 @@ function getManagerList(uid, data, userdata) {
  * @param   object authData
  * @return  json
  */
-function createManager(uid, data, file, userdata) {
+function createManager(uid, userdata, data, file ) {
     return new Promise((resolve, reject) => {
         authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             managerModel.checkDuplicateManager(data).then((response) => {
