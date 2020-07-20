@@ -81,7 +81,7 @@ router.post('/ownerList', authMiddleware.checkToken, getOwnerList)
 router.post('/owner', authMiddleware.checkToken,  upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), createOwner)
 router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
-
+router.delete('/owner/:id', authMiddleware.checkToken, deleteOwner)
 
 /**
  * Function that get profile data
@@ -619,6 +619,25 @@ function updateOwner(req, res){
     let id = req.params.id;
     let files = req.files
     ownerService.updateOwner(userId, userdata, data, files, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteOwner(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    ownerService.deleteOwner(userId, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
