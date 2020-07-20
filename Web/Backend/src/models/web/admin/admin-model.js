@@ -320,12 +320,16 @@ function getUser(uid) {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
+                            let response = rows[0]
+                            for (let i = 0 ; i < roles.length ; i++ ) {
+                                response[roles[i].role_name] = roles[i].permission
+                            }
                             let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
                             db.query(query, [uid], (error, rows1, fields) => {
                               if (error) {
                                 reject({ message: message.INTERNAL_SERVER_ERROR});
                               } else {
-                                resolve({user: rows[0], companyList: rows1, roles: roles})
+                                resolve({user: response, companyList: rows1})
                               }
                             })
                         }

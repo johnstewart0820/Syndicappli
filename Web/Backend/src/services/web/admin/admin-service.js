@@ -159,7 +159,7 @@ function getUser(uid, id, userdata) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
-                resolve({ code: code.OK, message: '', data: { 'token': token, 'user':  user.user, 'companylist': user.companyList, 'roles': user.roles} })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'user':  user.user, 'companylist': user.companyList} })
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
