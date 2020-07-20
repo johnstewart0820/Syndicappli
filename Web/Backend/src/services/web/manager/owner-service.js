@@ -37,9 +37,7 @@ function getOwnerList(uid, userdata ,data) {
         authHelper.hasOwnerPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
             ownerModel.getOwnerList(uid, data).then((ownerList) => {
                 if (ownerList) {
-                    console.log('owner list: ', ownerList)
                     ownerModel.getCountOwnerList(uid, data).then((ownerCount) => {
-                        console.log('ownerCount: ', ownerCount)
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
                         })

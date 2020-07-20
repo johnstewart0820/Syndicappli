@@ -44,7 +44,6 @@ function getOwnerList(uid, data) {
                     FROM users
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
-                    Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
                     WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
 
@@ -60,10 +59,6 @@ function getOwnerList(uid, data) {
         if (data.buildingID != -1) {
             query += ` and buildings.buildingID = ?`
             params.push(data.buildingID)
-        }
-        else if (data.companyID != -1) {
-            query += ` and companies.companyID = ?`
-            params.push(data.companyID)
         }
 
         if (sort_column === -1)
@@ -111,7 +106,6 @@ function getCountOwnerList(uid, data) {
                     FROM users
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
-                    Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
                     WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
         let params = [search_key];
@@ -124,10 +118,7 @@ function getCountOwnerList(uid, data) {
             query += ` and buildings.buildingID = ?`
             params.push(data.buildingID)
         }
-        else if (data.companyID != -1) {
-            query += ` and companies.companyID = ?`
-            params.push(data.companyID)
-        }
+
         search_key = '%' + data.search_key + '%'
 
         db.query(query, params, (error, rows, fields) => {
