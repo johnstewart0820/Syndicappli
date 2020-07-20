@@ -45,7 +45,7 @@ function getOwnerList(uid, data) {
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
-                    Left Join (select count(*) count, buildingID from apartments left join buildings using (buildingID) group by apartments.buildingID) s on buildings.buildingID = s.buildingID
+                    LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
                     WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
 
         sort_column = Number(data.sort_column);
@@ -81,6 +81,8 @@ function getOwnerList(uid, data) {
             }
             else if (sort_column === 4) {
                 query += ' order by users.owner_role ';
+            } else if (sort_column === 5) {
+                query += ' order by s.count ';
             }
             query += data.sort_method;
         }
@@ -110,7 +112,7 @@ function getCountOwnerList(uid, data) {
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
-                    Left Join (select count(*) count, buildingID from apartments left join buildings using (buildingID) group by apartments.buildingID) s on buildings.buildingID = s.buildingID
+                    LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
                     WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
         let params = [search_key];
         if (data.role !== "all") {

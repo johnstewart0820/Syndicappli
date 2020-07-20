@@ -42,7 +42,7 @@ function getManagerList(uid, data) {
                   ` u left join ` + table.USER_RELATIONSHIP + 
                   ` r using (userID) left join ` + table.BUILDINGS + 
                   ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
-                  ` c using (companyID) where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
+                  ` c using (companyID) LEFT JOIN ( SELECT count( * ) count, userID FROM apartments GROUP BY userID ) s ON u.userID = s.userID  where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
       search_key = '%' + data.search_key + '%'
       let params = [search_key, search_key, uid];
       if (data.buildingID != -1) {
@@ -59,14 +59,14 @@ function getManagerList(uid, data) {
       page_num = Number(data.page_num);
       
       if (sort_column === -1)
-        query += ' order by userID desc';
+        query += ' order by u.userID desc';
       else {
           if (sort_column === 0)
-            query += ' order by firstname ';
+            query += ' order by u.firstname ';
           else if (sort_column === 1) 
-            query += ' order by lastname ';
+            query += ' order by u.lastname ';
           else if (sort_column === 2)
-            query += ' order by email ';
+            query += ' order by u.email ';
           else if (sort_column === 3) {
 
           }
@@ -74,7 +74,7 @@ function getManagerList(uid, data) {
 
           }
           else if (sort_column === 5) {
-
+            query += ' order by s.count'
           }
           query += data.sort_method;
       }
@@ -99,10 +99,10 @@ function getManagerList(uid, data) {
 function getCountManagerList(uid, data) {
     return new Promise((resolve, reject) => {
       let query = `Select count(*) count from ` + table.USERS + 
-                  ` u left join ` + table.USER_RELATIONSHIP + 
-                  ` r using (userID) left join ` + table.BUILDINGS + 
-                  ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
-                  ` c using (companyID) where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
+      ` u left join ` + table.USER_RELATIONSHIP + 
+      ` r using (userID) left join ` + table.BUILDINGS + 
+      ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
+      ` c using (companyID) LEFT JOIN ( SELECT count( * ) count, userID FROM apartments GROUP BY userID ) s ON u.userID = s.userID  where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
       search_key = '%' + data.search_key + '%'
       let params = [search_key, search_key, uid];
       if (data.buildingID != -1) {
@@ -134,7 +134,7 @@ function getCountManagerList(uid, data) {
  */
 function checkDuplicateManager(data) {
   return new Promise((resolve, reject) => {
-    let confirm_query = 'Select * from ' + table.MANAGERS + ' where email = ?';
+    let confirm_query = 'Select * from ' + table.USERS + ' where email = ?';
 
     db.query(confirm_query, [data.email], (error, rows, fields) => {
       if (error) {
