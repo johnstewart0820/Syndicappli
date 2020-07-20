@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
-import SelectTable from '../../../components/SelectTable';
+import MyTable from '../../../components/MyTable';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {ManagerService as Service} from '../../../services/api.js';
+import AdminService from '../../../services/api.js';
 import MySelect from '../../../components/MySelect';
 import Grid from '@material-ui/core/Grid';
+import CloseIcon from '@material-ui/icons/Close';
+import AddOwner from './AddOwner';
+import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import useStyles from './useStyles';
 
-const ManagerService = new Service();
+import useStyles from './useStyles';
 const Owners = (props) => {
   const { history } = props;
 
@@ -28,12 +30,12 @@ const Owners = (props) => {
   const accessOwners = authService.getAccess('role_owners');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
-  const [company, setCompany] = useState([]);
+  let company = [];
   const [companies, setCompanies] = useState('');
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  const [building,setBuilding] = useState([]);
+  let building = [];
   const [buildings, setBuildings] = useState('');
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
@@ -58,8 +60,9 @@ const Owners = (props) => {
     setCompanyID(companyList[val].companyID);
   };
   const handleChangeBuildings = (val) => {
-    setBuildings(val);
     setBuildingID(buildingList[val].buildingID);
+    setBuildings(val);
+
   };
   const handleCloseDelete = () => {
     setOpenDelete(false);
@@ -92,14 +95,13 @@ const Owners = (props) => {
   useEffect(() => {
     if (accessOwners !== 'denied') {
       getBuildings();
-      getOwners();
     }
   }, [companyID]);
   useEffect(() => {
     if (accessOwners !== 'denied') {
       getOwners();
     }
-  }, [page_num, row_count, sort_column, sort_method, buildingID, role,props.refresh]);
+  }, [page_num, row_count, sort_column, sort_method, buildingID, role]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -122,19 +124,11 @@ const Owners = (props) => {
       setOpenDialog(true);
     }
   };
-  const handleClickAllSelect = ()=>{
-  }
-  const handleClickImport = ()=>{
-    // setPageNum();
-  }
-  const handleClickExport = ()=>{
-    // setPageNum();
-  }
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    ManagerService.deleteUser(deleteId)
+    AdminService.deleteUser(deleteId)
       .then(
         response => {
           console.log(response.data);
@@ -157,14 +151,13 @@ const Owners = (props) => {
 
   const getCompanies = () => {
     setVisibleIndicator(true);
-    ManagerService.getCompanyListByUser()
+    AdminService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
-            company.splice(0,company.length);
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             company.push('Tout');
@@ -172,7 +165,6 @@ const Owners = (props) => {
               company.push(item.name)
             )
             );
-            setCompany(company);
             setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
           }
         },
@@ -192,22 +184,20 @@ const Owners = (props) => {
       'companyID': companyID
     }
     setVisibleIndicator(true);
-    ManagerService.getBuildingList(requestData)
+    AdminService.getBuildingList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
-            building.splice(0,building.length);
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
-              building.push('Tout');
+            building.push('Tout');
             data.buildinglist.map((item) => (
               building.push(item.name)
             )
             );
-            setBuilding(building);
             setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
           }
         },
@@ -225,11 +215,10 @@ const Owners = (props) => {
       'sort_column': sort_column,
       'sort_method': sort_method,
       'role': owner_role[role],
-      'buildingID': buildingID,
-      'companyID' : companyID
+      'buildingID': buildingID
     }
     setVisibleIndicator(true);
-    ManagerService.getOwnerList(requestData)
+    AdminService.getOwnerList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -302,7 +291,8 @@ const Owners = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-      <SelectTable
+
+        <MyTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -311,10 +301,8 @@ const Owners = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickedit={handleClickEdit}
+          onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
-          onImport={handleClickImport}
-          onExport={handleClickExport}
           type="owner"
         />
       </div>

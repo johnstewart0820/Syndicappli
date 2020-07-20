@@ -18,16 +18,18 @@ const useStyles = makeStyles(theme => ({
         paddingTop: 30,
     },
     root: {
-        '& .MuiTextField-root': {
-            width: '500',
-        },
-        '& .MuiOutlinedInput-root':{
-            width: 160
-        },
-        '& .MuiOutlinedInput-input':{
-            padding: '3px 26px 3px 12px',
-            fontSize: 16
-        },
+        [theme.breakpoints.up('xl')]: {
+            padding: '17px 25px',
+            fontSize: 22,
+          },
+          [theme.breakpoints.down('lg')]: {
+            padding: '12px 18px',
+            fontSize: 15,
+          },
+          [theme.breakpoints.down('md')]: {
+            padding: '8px 13px',
+            fontSize: 11,
+          },
     },
 }));
 

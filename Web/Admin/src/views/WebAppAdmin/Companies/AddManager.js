@@ -15,8 +15,8 @@ const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"
 const AddManager = (props) => {
     const classes = useStyles();
     const [globalState, globalActions] = useGlobal();
-    const permissionList = ['Voir', 'Editer',  'Refusé'];
-    const role_permission = ['see', 'edit',  'denied'];
+    const permissionList = ['Voir', 'Editer', 'Refusé'];
+    const role_permission = ['see', 'edit', 'denied'];
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
     const [avatarurl, setAvatarUrl] = React.useState("");
     const [avatar, setAvatar] = React.useState(null);
@@ -100,15 +100,20 @@ const AddManager = (props) => {
         setCompanyID(companyList[val].companyID);
     };
     const handleChangeBuildings = async (val) => {
-        await globalActions.setMultiTags(val);
-        buildingID1.splice(0,buildingID1.length)
-        for(let i = 0 ; i < val.length; i++)
-        for(let j = 0; j < buildingList.length; j++)
-        if(val[i].label == buildingList[j].name)
-        {
-            buildingID1.push(buildingList[j].buildingID);
+        if (val !== null) {
+            await globalActions.setMultiTags(val);
+            buildingID1.splice(0, buildingID1.length)
+            for (let i = 0; i < val.length; i++)
+                for (let j = 0; j < buildingList.length; j++)
+                    if (val[i].label == buildingList[j].name) {
+                        buildingID1.push(buildingList[j].buildingID);
+                    }
+            globalActions.setMultiID(buildingID1);
         }
-        globalActions.setMultiID(buildingID1)
+        else {
+            await globalActions.setMultiTags([]);
+            globalActions.setMultiID([]);
+        }
     };
     const handleChangeBuildingsPermission = (val) => {
         setBuildingsPermission(val);
@@ -166,12 +171,12 @@ const AddManager = (props) => {
                     } else {
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
-                        company.push('Tout');
+                        company.push('');
                         data.companylist.map((item) => (
                             company.push(item.name)
                         )
                         );
-                        setCompanyList([{'companyID':-1},...data.companylist]);
+                        setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
                     }
                 },
                 error => {
@@ -200,8 +205,8 @@ const AddManager = (props) => {
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
                         let buildings1 = [];
-                        data.buildinglist.map((item,i) => (
-                            buildings1[i] = {label:item.name,value:item.buildingID}
+                        data.buildinglist.map((item, i) => (
+                            buildings1[i] = { label: item.name, value: item.buildingID }
                         )
                         );
                         setBuildingList(data.buildinglist);
@@ -217,67 +222,67 @@ const AddManager = (props) => {
     const createManager = () => {
         let permissionInfos = [
             {
-                'role_name' : 'role_buildings',
-                'permission' : role_permission[buildingsPermission]
+                'role_name': 'role_buildings',
+                'permission': role_permission[buildingsPermission]
             },
             {
-                'role_name' : 'role_owners',
-                'permission' : role_permission[ownersPermission]
+                'role_name': 'role_owners',
+                'permission': role_permission[ownersPermission]
             },
             {
-                'role_name' : 'role_chat',
-                'permission' : role_permission[chatPermission]
+                'role_name': 'role_chat',
+                'permission': role_permission[chatPermission]
             },
             {
-                'role_name' : 'role_incidents',
-                'permission' : role_permission[incidentsPermission]
+                'role_name': 'role_incidents',
+                'permission': role_permission[incidentsPermission]
             },
             {
-                'role_name' : 'role_assemblies',
-                'permission' : role_permission[assembliesPermission]
+                'role_name': 'role_assemblies',
+                'permission': role_permission[assembliesPermission]
             },
             {
-                'role_name' : 'role_events',
-                'permission' : role_permission[eventsPermission]
+                'role_name': 'role_events',
+                'permission': role_permission[eventsPermission]
             },
             {
-                'role_name' : 'role_team',
-                'permission' : role_permission[teamPermission]
+                'role_name': 'role_team',
+                'permission': role_permission[teamPermission]
             },
             {
-                'role_name' : 'role_providers',
-                'permission' : role_permission[providersPermission]
+                'role_name': 'role_providers',
+                'permission': role_permission[providersPermission]
             },
             {
-                'role_name' : 'role_advertisement',
-                'permission' : role_permission[announcementsPermission]
+                'role_name': 'role_advertisement',
+                'permission': role_permission[announcementsPermission]
             },
             {
-                'role_name' : 'role_company',
-                'permission' : role_permission[companyPermission]
+                'role_name': 'role_company',
+                'permission': role_permission[companyPermission]
             },
             {
-                'role_name' : 'role_addons',
-                'permission' : role_permission[addonsPermission]
+                'role_name': 'role_addons',
+                'permission': role_permission[addonsPermission]
             },
             {
-                'role_name' : 'role_invoices',
-                'permission' : role_permission[invoicesPermission]
+                'role_name': 'role_invoices',
+                'permission': role_permission[invoicesPermission]
             },
             {
-                'role_name' : 'role_payments',
-                'permission' : role_permission[paymentMethodsPermission]
+                'role_name': 'role_payments',
+                'permission': role_permission[paymentMethodsPermission]
             },
         ]
         let formdata = new FormData();
-        formdata.set('companyID',companyID);
-        formdata.set('buildingID',JSON.stringify(globalState.multi_ID));
-        formdata.set('firstname',firstname);
-        formdata.set('lastname',lastname);
-        formdata.set('email',email);
-        formdata.set('phone',phonenumber);
-        formdata.set('logo',avatar === null ? '': avatar);
-        formdata.set('permission_info',JSON.stringify(permissionInfos));
+        formdata.set('companyID', companyID);
+        formdata.set('buildingID', JSON.stringify(globalState.multi_ID));
+        formdata.set('firstname', firstname);
+        formdata.set('lastname', lastname);
+        formdata.set('email', email);
+        formdata.set('phone', phonenumber);
+        formdata.set('logo', avatar === null ? '' : avatar);
+        formdata.set('permission_info', JSON.stringify(permissionInfos));
 
 
         setVisibleIndicator(true);
@@ -327,11 +332,12 @@ const AddManager = (props) => {
                             <Multiselect
                                 selected={globalState.multi_tags}
                                 no={'No buildings found'}
-                                all={globalState.multi_suggestions} 
+                                all={globalState.multi_suggestions}
                                 onSelected={handleChangeBuildings}
+                                width="80%"
                             />
-                            {errorsBuildings.length > 0 && 
-                            <span className={classes.error}>{errorsBuildings}</span>}
+                            {errorsBuildings.length > 0 &&
+                                <span className={classes.error}>{errorsBuildings}</span>}
                         </Grid>
                     </Grid>
                     <Grid item container justify="space-between" alignItems="center">

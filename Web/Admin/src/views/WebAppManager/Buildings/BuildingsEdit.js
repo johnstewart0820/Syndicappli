@@ -5,20 +5,20 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MyButton from 'components/MyButton';
 import authService from '../../../services/authService.js';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import MySelect from '../../../components/MySelect.js';
 import { withRouter } from 'react-router-dom';
 import MyDialog from '../../../components/MyDialog.js';
 import { EditBuildingStyles as useStyles } from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import { ManagerService as Service } from '../../../services/api.js';
-
+import {ManagerService as Service} from '../../../services/api.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
 const ManagerService = new Service();
 const BuildingsEdit = (props) => {
   const { history } = props;
   // const token = authService.getToken();    
   // if (!token) {
-  //   history.push("/admin/login");
+  //   history.push("/login");
   //   window.location.reload();
   // }
   const accessBuildings = authService.getAccess('role_buildings');
@@ -34,12 +34,25 @@ const BuildingsEdit = (props) => {
   const [accountIban, setAccountIban] = React.useState('');
   const [addClefs, setAddClefs] = React.useState('');
   const [clefList, setClefList] = React.useState([]);
+  const [companyList, setCompanyList] = React.useState([]);
   const [companyID, setCompanyID] = React.useState(-1);
 
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
+  const [errorsCompanies, setErrorsCompanies] = React.useState('');
+
+  const [companies, setCompanies] = React.useState('');
+  const [company, setCompany] = React.useState([]);
   const handleClick = () => {
     history.goBack();
+  };
+
+  const handleChangeCompanies = (val) => {
+    setCompanies(val);
+    if (val < companyList.length)
+      setCompanyID(companyList[val].companyID);
+    else
+      setCompanyID(-1);
   };
   const handleChangeName = (event) => {
     setName(event.target.value);
@@ -81,12 +94,15 @@ const BuildingsEdit = (props) => {
     else setErrorsName('');
     if (address.length === 0) { setErrorsAddress('please enter your first name'); cnt++; }
     else setErrorsAddress('');
+    if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
+    else setErrorsCompanies('');
     if (cnt === 0) {
       updateBuilding();
     }
   };
   const updateBuilding = () => {
     const requestData = {
+      'companyID': companyID,
       'name': name,
       'address': address,
       'vote_branches': clefList,
@@ -113,21 +129,48 @@ const BuildingsEdit = (props) => {
         }
       );
   };
+  const getCompanyList = (id) => {
+    setVisibleIndicator(true);
+    ManagerService.getCompanyListByUser()
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            console.log('error');
+          } else {
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            data.companylist.map((item) => (
+              company.push(item.name)
+            )
+            );
+            setCompanyList(data.companylist);
+            setCompany(company);
+            for (let i = 0; i < company.length; i++)
+              if (data.companylist[i].companyID === id)
+                setCompanies(i);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect")
+          setVisibleIndicator(false);
+        }
+      );
+  }
 
   useEffect(() => {
     if (accessBuildings === 'denied') {
       setOpenDialog(true);
     }
     if (accessBuildings !== 'denied') {
+      setVisibleIndicator(true);
       ManagerService.getBuilding(props.match.params.id)
         .then(
           response => {
-            console.log(response.data);
-            // setVisibleIndicator(false);  
+            setVisibleIndicator(false);
             if (response.data.code !== 200) {
-              console.log('error');
+              ToastsStore.error(response.data.message);
             } else {
-              console.log('success');
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               const building = data.building[0];
@@ -135,6 +178,7 @@ const BuildingsEdit = (props) => {
               vote_list.map((vote) =>
                 clefList.push(vote)
               )
+              getCompanyList(building.companyID);
               setName(building.name);
               setAddress(building.address);
               setAccountHolder(building.account_holdername);
@@ -146,8 +190,8 @@ const BuildingsEdit = (props) => {
             }
           },
           error => {
-            console.log('fail');
-            // setVisibleIndicator(false);
+            ToastsStore.error("Can't connect to the server!");
+            setVisibleIndicator(false);
           }
         );
     }
@@ -182,7 +226,6 @@ const BuildingsEdit = (props) => {
               <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField
-                  className={classes.text}
                   variant="outlined"
                   value={name}
                   fullWidth
@@ -193,11 +236,25 @@ const BuildingsEdit = (props) => {
                   <span className={classes.error}>{errorsName}</span>}
               </Grid>
             </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <MySelect
+                  color="gray"
+                  data={company}
+                  onChangeSelect={handleChangeCompanies}
+                  value={companies}
+                  width="100%"
+                  disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
+                />
+                {errorsCompanies.length > 0 &&
+                  <span className={classes.error}>{errorsCompanies}</span>}
+              </Grid>
+            </Grid>
             <Grid item container direction="column" spacing={2}>
               <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <TextField
-                  className={classes.text}
                   rows={3} multiline
                   variant="outlined"
                   value={address}
@@ -211,26 +268,30 @@ const BuildingsEdit = (props) => {
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p className={classes.itemTitle}>Clefs de répartition</p></Grid>
             </Grid>
-            <Grid item container direction="column" state={state} >
-              {
-                clefList.map((clef, i) => (
-                  <Grid container spacing={5}>
+            {
+              state !== null ?
+                <Grid item container direction="column">
+                  {
+                    clefList.map((clef, i) => (
+                      <Grid container spacing={5}>
 
-                    <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
-                      <Grid item>
-                        <RemoveCircleOutlineIcon
-                          className={classes.plus}
-                          onClick={() => handleClickRemoveClef(i)}
-                        />
+                        <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
+                          <Grid item>
+                            <RemoveCircleOutlineIcon
+                              className={classes.plus}
+                              onClick={() => handleClickRemoveClef(i)}
+                            />
+                          </Grid>
+                          <Grid item xs={6} >
+                            <p className={classes.itemTitle} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
+                          </Grid>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={6} >
-                        <p className={classes.itemTitle} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                ))
-              }
-            </Grid>
+                    ))
+                  }
+                </Grid>
+                : null
+            }
             <Grid xs={6} item container alignItems="center" justify="space-between" direction="row-reverse" alignItems="center">
               <Grid item>
                 <AddCircleOutlineIcon
@@ -262,7 +323,6 @@ const BuildingsEdit = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      className={classes.text}
                       variant="outlined"
                       value={accountHolder}
                       onChange={handleChangeAccountHolder}
@@ -276,7 +336,6 @@ const BuildingsEdit = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      className={classes.text}
                       rows={3}
                       multiline
                       variant="outlined"
@@ -292,7 +351,6 @@ const BuildingsEdit = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      className={classes.text}
                       variant="outlined"
                       value={accountIban}
                       onChange={handleChangeAccountIban}

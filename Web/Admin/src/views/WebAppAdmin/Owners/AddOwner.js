@@ -239,7 +239,7 @@ const AddOwner = (props) => {
                         );
                         setBuildingList(data.buildinglist);
                         setBuilding(building)
-                        // setBuildingID(data.buildinglist[0].buildingID);
+                        setBuildingID(data.buildinglist[0].buildingID);
                     }
                 },
                 error => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import SelectTable from '../../../components/SelectTable';
+import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import MyDialog from '../../../components/MyDialog';
@@ -11,16 +11,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import {ManagerService as Service} from '../../../services/api.js';
+import AdminService from '../../../services/api.js';
 import MySelect from '../../../components/MySelect';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-const ManagerService = new Service();
-const Buildings = (props) => {
+
+const TrashBuildings = (props) => {
   const { history } = props;
   // const token = authService.getToken();    
   // if (!token) {
-  //   history.push("/login");
+  //   history.push("/admin/login");
   //   window.location.reload();
   // }
   const accessBuildings = authService.getAccess('role_buildings');
@@ -45,28 +45,19 @@ const Buildings = (props) => {
   const cellList = [
     { key: 'name', field: 'Nom' },
     { key: 'address', field: 'Adresse' },
+    { key: 'total', field: 'CA HT' },
   ];
 
   const columns = [];
-  for (let i = 0; i < 2; i++)
+  for (let i = 0; i < 3; i++)
     columns[i] = 'asc';
 
   const handleClickEdit = (id) => {
     console.log(id);
-    history.push('/manager/buildings/edit/' + id);
+    history.push('/admin/buildings/edit/' + id);
   }
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
-  }
-  const handleClickAllSelect = () => {
-
-  }
-  const handleClickImport = () => {
-    // setPageNum();
-  }
-  const handleClickExport = (data) => {
-    // setPageNum();
-    console.log(data);
   }
   const handleChangeCompanies = (val) => {
     setCompanies(val);
@@ -87,7 +78,7 @@ const Buildings = (props) => {
   };
   const getCompanies = () => {
     setVisibleIndicator(true);
-    ManagerService.getCompanyListByUser()
+    AdminService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
@@ -120,7 +111,7 @@ const Buildings = (props) => {
       'companyID': companyID
     }
     setVisibleIndicator(true);
-    ManagerService.getBuildingList(requestData)
+    AdminService.getBuildingList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -167,11 +158,13 @@ const Buildings = (props) => {
     console.log(companyID)
   }, [page_num, row_count, sort_column, sort_method, companyID, props.refresh]);
 
+
+
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    ManagerService.deleteUser(deleteId)
+    AdminService.deleteUser(deleteId)
       .then(
         response => {
           console.log(response.data);
@@ -217,7 +210,7 @@ const Buildings = (props) => {
       </div>
       <div className={classes.body}>
         <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog} />
-        <SelectTable
+        <MyTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -228,8 +221,8 @@ const Buildings = (props) => {
           cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
-          onImport={handleClickImport}
-          onExport={handleClickExport}
+          tblFooter="true"
+          footerItems={footerItems}
         />
       </div>
       <Dialog
@@ -261,4 +254,4 @@ const Buildings = (props) => {
   );
 };
 
-export default withRouter(Buildings);
+export default withRouter(TrashBuildings);

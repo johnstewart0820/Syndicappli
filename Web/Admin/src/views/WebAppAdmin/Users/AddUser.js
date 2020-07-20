@@ -224,13 +224,14 @@ const AddUser = (props) => {
             <div className={classes.paper} sm={12}>
                 <Grid container spacing={2} >
                     <Grid item container alignItems="center">
-                        <Grid xs={3} item ><p className={classes.title}>Carbinets</p></Grid>
+                        <Grid xs={3} item container><p className={classes.title}>Carbinets</p></Grid>
                         <Grid xs={9} item container alignItems="stretch">
                             <Multiselect
                                 selected={globalState.multi_tags}
                                 no={'No companies found'}
                                 all={globalState.multi_suggestions}
                                 onSelected={handleChangeCompanies}
+                                width="100%"
                             />
                             {errorsCompanies.length > 0 &&
                                 <span className={classes.error}>{errorsCompanies}</span>}
@@ -238,7 +239,7 @@ const AddUser = (props) => {
                     </Grid>
                     <Grid item container justify="space-between" alignItems="center">
                         <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
-                        <Grid xs={6} item container>
+                        <Grid xs={9} item container>
                             <TextField
                                 className={classes.text}
                                 variant="outlined"

@@ -1,1 +1,1 @@
-export { default } from './Buildings';
+export { default } from './Main';

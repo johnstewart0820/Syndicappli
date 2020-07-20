@@ -52,6 +52,17 @@ const useStyles = makeStyles(theme => ({
       fontSize :9
     },
   },
+  tool: {
+    [theme.breakpoints.up('xl')]: {
+      minHeight: 67
+    },
+    [theme.breakpoints.down('lg')]: {
+      minHeight: 47
+    },
+    [theme.breakpoints.down('md')]: {
+      minHeight: 33
+    },
+  },
   paper: {
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',
@@ -71,7 +82,20 @@ const useStyles = makeStyles(theme => ({
   },
   close: {
     color: 'gray'
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 
 export const AddBuildingStyles = makeStyles(theme => ({
@@ -93,18 +117,18 @@ export const AddBuildingStyles = makeStyles(theme => ({
   },
   root: {
       '& .MuiOutlinedInput-input':{
-          [theme.breakpoints.up('xl')]: {
-            padding: '8px 12px',
-            fontSize: 17
-          },
-          [theme.breakpoints.down('lg')]: {
-            padding: '6px 8px',
-            fontSize: 12
-          },
-          [theme.breakpoints.down('md')]: {
-            padding: '4px 6px',
-            fontSize: 8
-          },
+        [theme.breakpoints.up('xl')]: {
+          padding: '17px 25px',
+          fontSize: 22,
+        },
+        [theme.breakpoints.down('lg')]: {
+          padding: '12px 18px',
+          fontSize: 15,
+        },
+        [theme.breakpoints.down('md')]: {
+          padding: '8px 13px',
+          fontSize: 11,
+        },
       },
       '& .MuiOutlinedInput-multiline':{
         padding: 0
@@ -173,7 +197,20 @@ export const AddBuildingStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 export const EditBuildingStyles = makeStyles(theme => ({
   root: {

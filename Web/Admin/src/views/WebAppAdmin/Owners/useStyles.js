@@ -237,16 +237,16 @@ export const EditOwnerStyles = makeStyles(theme => ({
     },
     '& .MuiOutlinedInput-input':{
       [theme.breakpoints.up('xl')]: {
-        padding: '8px 12px',
-        fontSize: 17
+        padding: '17px 25px',
+        fontSize: 22,
       },
       [theme.breakpoints.down('lg')]: {
-        padding: '6px 8px',
-        fontSize: 12
+        padding: '12px 18px',
+        fontSize: 15,
       },
       [theme.breakpoints.down('md')]: {
-        padding: '4px 6px',
-        fontSize: 8
+        padding: '8px 13px',
+        fontSize: 11,
       },
     },
     '& p':{

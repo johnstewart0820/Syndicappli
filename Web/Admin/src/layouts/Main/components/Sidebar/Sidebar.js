@@ -82,6 +82,17 @@ const Sidebar = props => {
   const accessProducts = authService.getAccess('role_products'); 
   const accessManagers = authService.getAccess('role_managers'); 
   const accessOrders = authService.getAccess('role_orders'); 
+  const accessChat = authService.getAccess('role_chat'); 
+  const accessInvoices = authService.getAccess('role_invoices'); 
+  const accessEvents = authService.getAccess('role_events');   
+  const accessProviders = authService.getAccess('role_providers'); 
+  const accessIncidents = authService.getAccess('role_incidents'); 
+  const accessAddons = authService.getAccess('role_addons');   
+  const accessCompany = authService.getAccess('role_company'); 
+  const accessAssemblies = authService.getAccess('role_assemblies'); 
+  const accessTeam = authService.getAccess('role_team');   
+  const accessAdvertisement = authService.getAccess('role_advertisement'); 
+  const accessPayments = authService.getAccess('role_payments'); 
 
   const admin_pages = [
     {
@@ -157,55 +168,55 @@ const Sidebar = props => {
       title: 'Mes Copropriétaires',
       href: '/manager/owners',
       icon: <AccountBoxIcon className={classes.icon}/>,
-      status: accessManagers
+      status: accessOwners
     },
     {
       title: 'Messagerie',
       href: '/manager/chat',
       icon: <PeopleIcon className={classes.icon}/>,
-      status: accessBuildings
+      status: accessChat
     },
     {
       title: 'Incidents',
       href: '/manager/incidents',
       icon: <SettingsIcon className={classes.icon}/>,
-      status: accessOwners
+      status: accessIncidents
     },
     {
       title: 'Assemblées',
       href: '/manager/assemblies',
       icon: <LockOpenIcon className={classes.icon}/>,
-      status: accessProducts
+      status: accessAssemblies
     },
     {
       title: 'Événements',
       href: '/manager/events',
       icon: <ImageIcon className={classes.icon}/>,
-      status: accessDiscountCodes
+      status: accessEvents
     },
     {
       title: 'Mon équipe',
       href: '/manager/team',
       icon: <ShoppingBasketIcon className={classes.icon}/>,
-      status: accessDiscountCodes
+      status: accessTeam
     },
     {
       title: 'Mes prestataires',
       href: '/manager/providers',
       icon: <LockOpenIcon className={classes.icon}/>,
-      status: accessProducts
+      status: accessProviders
     },
     {
       title: 'Annonces',
       href: '/manager/announcements',
       icon: <ImageIcon className={classes.icon}/>,
-      status: accessDiscountCodes
+      status: accessAdvertisement
     },
     {
       title: 'Modules',
       href: '/manager/addons',
       icon: <ShoppingBasketIcon className={classes.icon}/>,
-      status: accessDiscountCodes
+      status: accessAddons
     },
   ];
   const owner_pages = [

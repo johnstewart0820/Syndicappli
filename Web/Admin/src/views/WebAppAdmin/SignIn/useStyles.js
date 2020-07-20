@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
       paddingTop: theme.spacing(10.5),
       '& .MuiOutlinedInput-input': {
         padding: '11px 17px',
-        fontSize: 16,
+        fontSize: 15,
       },
     },
     [theme.breakpoints.down('md')]: {

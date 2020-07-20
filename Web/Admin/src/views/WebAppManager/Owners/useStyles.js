@@ -82,7 +82,20 @@ const useStyles = makeStyles(theme => ({
   },
   close: {
     color: 'gray'
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 
 export const AddOwnerStyles = makeStyles(theme => ({
@@ -190,7 +203,20 @@ export const AddOwnerStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 export const EditOwnerStyles = makeStyles(theme => ({
   root: {
@@ -261,16 +287,16 @@ export const EditOwnerStyles = makeStyles(theme => ({
   plus:{
     color: '#707070',
     [theme.breakpoints.up('xl')]: {
-      width:31 , 
-      height: 31,
+      width:54 , 
+      height: 54,
     },
     [theme.breakpoints.down('lg')]: {
-      width:22 , 
-      height: 22,
+      width:38 , 
+      height: 38,
     },
     [theme.breakpoints.down('md')]: {
-      width:15 , 
-      height: 15,
+      width:27 , 
+      height: 27,
     },
   },
   size: {

@@ -53,6 +53,7 @@ const ManagerEdit = (props) => {
   const [addonsPermission, setAddonsPermission] = React.useState(0);
   const [invoicesPermission, setInvoicesPermission] = React.useState(0);
   const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
+  const [apartNumber, setApartNumber]  =React.useState('');
 
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
@@ -153,6 +154,7 @@ const ManagerEdit = (props) => {
             setProvidersPermission(role_permission.indexOf(profile.role_providers));
             setTeamPermission(role_permission.indexOf(profile.role_team));
             setCompanyID(profile.companyID);
+            setApartNumber(profile.count);
             let buildingID = [];
             data.buildinglist.map((item, i) => (
               buildingID[i] = item.relationID
@@ -423,7 +425,7 @@ const ManagerEdit = (props) => {
                 <p className={classes.itemTitle}>Temps connexion/jour : 1h</p>
               </Grid>
               <Grid item container direction="row-reverse">
-                <p className={classes.itemTitle}>Lots : 120000</p>
+                <p className={classes.itemTitle}>Lots : {apartNumber}</p>
               </Grid>
               <Grid item container direction="row-reverse">
                 <MyButton name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')} />
