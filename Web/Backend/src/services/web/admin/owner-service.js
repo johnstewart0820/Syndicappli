@@ -189,10 +189,10 @@ function updateOwnerStatus(uid, userdata, data, id) {
  * @param   object authData
  * @return  json
  */
-function deleteOwner(uid, id, userdata) {
+function deleteOwner(uid, id, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            ownerModel.deleteOwner(uid, id).then((result) => {
+            ownerModel.deleteOwner(uid, id, data).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

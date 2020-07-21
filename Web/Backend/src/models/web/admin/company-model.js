@@ -44,7 +44,7 @@ function getCompanyList(uid, data) {
                     from ` + table.COMPANIES + ` c
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID 
-                    where c.permission = 'active' and u.userID = ? and (c.name like ?) and u.permission = 'active'`
+                    where c.permission = ? and u.userID = ? and (c.name like ?) and u.permission = 'active'`
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
@@ -69,7 +69,7 @@ function getCompanyList(uid, data) {
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, [ uid, search_key ], (error, rows, fields) => {
+        db.query(query, [ data.status, uid, search_key ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -92,10 +92,10 @@ function getCountCompanyList(uid, data) {
                     from ` + table.COMPANIES + ` c
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID 
-                    where c.permission = 'active' and u.userID = ? and (c.name like ?) and u.permission = 'active'`
+                    where c.permission = ? and u.userID = ? and (c.name like ?) and u.permission = 'active'`
         search_key = '%' + data.search_key + '%'
 
-        db.query(query, [uid, search_key], (error, rows, fields) => {
+        db.query(query, [data.status, uid, search_key], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -222,10 +222,10 @@ function getCompany(uid, companyID) {
 }
 
 
-function deleteCompany(uid, id){
+function deleteCompany(uid, id, data){
     return new Promise((resolve, reject) => {
         let query = 'UPDATE ' + table.COMPANIES + ' SET permission = ?, deleted_at = ? WHERE companyID = ?'
-        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], async (error, rows, fields) => {
+        db.query(query, [ data.status, timeHelper.getCurrentTime(), id ], async (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -244,7 +244,7 @@ function deleteCompany(uid, id){
                                     } else {
                                         if(rows1.length > 0) {
                                             for (var j = 0 ; j < rows1.length ; j++) {
-                                                await db.query(manager_delete_query, ['trash', timeHelper.getCurrentTime(), rows1[j].userID])
+                                                await db.query(manager_delete_query, [data.status, timeHelper.getCurrentTime(), rows1[j].userID])
                                             }
                                         }
                                     }
@@ -255,7 +255,7 @@ function deleteCompany(uid, id){
                 })
 
                 let building_delete_query = 'UPDATE ' + table.BUILDINGS + ' SET permission = ?, deleted_at = ? WHERE companyID = ?'
-                await db.query(building_delete_query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+                await db.query(building_delete_query, [ data.status, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
                     if (error) {
                         reject({ message: message.INTERNAL_SERVER_ERROR })
                     }

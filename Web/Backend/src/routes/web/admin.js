@@ -227,7 +227,8 @@ function deleteUser(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    adminService.deleteUser(userId, id, userdata).then((result) => {
+    let data = req.body
+    adminService.deleteUser(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -368,7 +369,8 @@ function deleteCompany(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    companyService.deleteCompany(userId, id, userdata).then((result) => {
+    let data = req.body
+    companyService.deleteCompany(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -493,7 +495,8 @@ function deleteBuilding(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    buildingService.deleteBuilding(userId, id, userdata).then((result) => {
+    let data = req.body
+    buildingService.deleteBuilding(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -596,7 +599,8 @@ function deleteManager(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    managerService.deleteManager(userId, id, userdata).then((result) => {
+    let data = req.body
+    managerService.deleteManager(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -742,7 +746,8 @@ function deleteOwner(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    ownerService.deleteOwner(userId, id, userdata).then((result) => {
+    let data = req.body
+    ownerService.deleteOwner(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

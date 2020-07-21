@@ -209,10 +209,10 @@ function updateUser(uid, id, data, userdata, file) {
  * @param   object authData
  * @return  json
  */
-function deleteUser(uid, id, userdata) {
+function deleteUser(uid, id, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasUserPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            adminWebModel.deleteUser(uid, id).then((result) => {
+            adminWebModel.deleteUser(uid, id, data).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

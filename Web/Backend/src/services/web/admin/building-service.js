@@ -209,9 +209,9 @@ function updateBuilding(uid, id, data, userdata) {
  * @param   object authData
  * @return  json
  */
-function deleteBuilding(uid, id, userdata) {
+function deleteBuilding(uid, id, userdata, data) {
     return new Promise((resolve, reject) => {
-        buildingModel.deleteBuilding(uid, id).then((result) => {
+        buildingModel.deleteBuilding(uid, id, data).then((result) => {
             if (result) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION

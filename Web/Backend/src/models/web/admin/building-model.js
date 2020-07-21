@@ -92,13 +92,13 @@ function getBuildingList(uid, data) {
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                     where c.permission = 'active' 
                     and b.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company') 
-                    and b.permission = 'active' and (b.name like ?)`
+                    and b.permission = ? and (b.name like ?)`
         } else {
             query = `select b.*, 0 as total, b.buildingID as ID
                     from ` + table.BUILDINGS + ` b
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
                     where c.permission = 'active'
-                    and b.permission = 'active' and (b.name like ?)
+                    and b.permission = ? and (b.name like ?)
                     and b.companyID = ?`
         }
 
@@ -119,7 +119,7 @@ function getBuildingList(uid, data) {
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, data.companyID == -1 ? [uid, search_key]: [search_key, data.companyID], (error, rows, fields) => {
+        db.query(query, data.companyID == -1 ? [uid, data.status, search_key]: [ data.status, search_key, data.companyID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -145,18 +145,18 @@ function getCountBuildingList(uid, data) {
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = ? and b.permission = 'active' and (b.name like ?)`
+                    where u.userID = ? and b.permission = ? and (b.name like ?)`
         } else {
             query = `select count(*) as count
                     from ` + table.BUILDINGS + ` b
                     left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = ? and b.permission = 'active' and (b.name like ?) and b.companyID = ?`
+                    where u.userID = ? and b.permission = ? and (b.name like ?) and b.companyID = ?`
         }
         search_key = '%' + data.search_key + '%'
 
-        db.query(query, data.companyID == -1 ? [ uid, search_key ]: [ uid, search_key, data.companyID ], (error, rows, fields) => {
+        db.query(query, data.companyID == -1 ? [ uid, data.status, search_key ]: [ uid, data.status, search_key, data.companyID ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -296,15 +296,15 @@ function updateBuilding(uid, id, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteBuilding(uid, id) {
+function deleteBuilding(uid, id, data) {
     return new Promise((resolve, reject) => {
         let query = 'UPDATE ' + table.BUILDINGS + ' SET permission = ?, deleted_at = ? WHERE buildingID = ?'
-        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+        db.query(query, [ data.status, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 let delete_apartment_query = 'UPDATE ' + table.APARTMENTS + ' SET permission = ? WHERE buildingID = ?'
-                db.query(delete_apartment_query, [ 'trash', id ], (error, rows, fields) => {
+                db.query(delete_apartment_query, [ data.status, id ], (error, rows, fields) => {
                   if(error){
                       reject({ message: message.INTERNAL_SERVER_ERROR })
                   } else {

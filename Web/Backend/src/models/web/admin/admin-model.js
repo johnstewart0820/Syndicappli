@@ -146,7 +146,7 @@ function updateProfile(uid, data, files) {
  */
 function getUserList(data) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT *, userID ID FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and ( usertype = "admin" or usertype = "superadmin") and permission = "active"'
+        let query = 'SELECT *, userID ID FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and ( usertype = "admin" or usertype = "superadmin") and permission = ?'
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
@@ -168,7 +168,7 @@ function getUserList(data) {
         if (row_count !== -1) {
             query += ' limit ' + page_num * row_count + ',' + row_count
         }
-        db.query(query, [ search_key, search_key ], (error, rows, fields) => {
+        db.query(query, [ search_key, search_key, data.status ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -190,10 +190,10 @@ function getUserList(data) {
  */
 function getCountUserList(data) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT count(*) count FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and ( usertype = "admin" or usertype = "superadmin") and permission = "active"'
+        let query = 'SELECT count(*) count FROM ' + table.USERS + ' WHERE (lastname like ? or firstname like ?) and ( usertype = "admin" or usertype = "superadmin") and permission = ?'
         search_key = '%' + data.search_key + '%'
 
-        db.query(query, [ search_key, search_key ], (error, rows, fields) => {
+        db.query(query, [ search_key, search_key, data.status ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -420,11 +420,11 @@ function updateUser( id, data, file) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteUser(uid, id) {
+function deleteUser(uid, id, data) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.USERS + ' SET  permission = "trash", deleted_by = ?, deleted_at = ? where userID = ?'
+        let query = 'UPDATE ' + table.USERS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where userID = ?'
 
-        db.query(query, [ uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+        db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {

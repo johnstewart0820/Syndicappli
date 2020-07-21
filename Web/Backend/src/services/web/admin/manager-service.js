@@ -190,10 +190,10 @@ function updateManagerStatus(uid, id, data, userdata) {
  * @param   object authData
  * @return  json
  */
-function deleteManager(uid, id, userdata) {
+function deleteManager(uid, id, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            managerModel.deleteManager(uid, id).then((result) => {
+            managerModel.deleteManager(uid, id, data).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

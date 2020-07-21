@@ -146,9 +146,9 @@ function getCompany(uid, userdata, companyID) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteCompany(uid, id, userdata) {
+function deleteCompany(uid, id, userdata, data) {
     return new Promise((resolve, reject) => {
-        companyModel.deleteCompany(uid, id).then((result) => {
+        companyModel.deleteCompany(uid, id, data).then((result) => {
             if (result) {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION

@@ -400,11 +400,11 @@ function updateManagerStatus(id, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteManager(uid, id) {
+function deleteManager(uid, id, data) {
   return new Promise((resolve, reject) => {
-      let query = 'UPDATE ' + table.USERS + ' SET  permission = "trash", deleted_by = ?, deleted_at = ? where userID = ?'
+      let query = 'UPDATE ' + table.USERS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where userID = ?'
 
-      db.query(query, [ uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+      db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
           if (error) {
               reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
