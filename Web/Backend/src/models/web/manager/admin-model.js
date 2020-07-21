@@ -18,7 +18,9 @@ const s3buckets = require('../../../constants/s3buckets')
 
 var adminModel = {
     getProfile: getProfile,
-    updateProfile: updateProfile
+    updateProfile: updateProfile,
+    getCompany: getCompany,
+    updateCompany: updateCompany
 }
 
 /**
@@ -127,6 +129,74 @@ function updateProfile(uid, data, file) {
                 }
             })
         }
+    })
+}
+
+/**
+ * get company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCompany(uid) {
+    return new Promise((resolve, reject) => {
+        let query = `select b.companyID from ` + table.USER_RELATIONSHIP + ` ur left join ` + table.BUILDINGS + ` b on b.buildingID = ur.relationID where b.permission = 'active' and ur.type = 'building' and ur.userID = ? limit 1`
+        let get_company_query = `select * from ` + table.COMPANIES + ` where companyID = ? and permission = 'active'`
+        db.query(query, [ uid ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    db.query(get_company_query, [ rows[0].companyID ], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            if(rows.length > 0){
+                                resolve(rows[0])
+                            }else {
+                                reject({ message: message.COMPANY_NOT_EXIST })
+                            }
+                        }
+                    })
+                } else {
+                    reject({ message: message.COMPANY_NOT_EXIST })
+                }
+            }
+        })
+    })
+}
+
+/**
+ * update company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateCompany(uid, data, file) {
+    return new Promise(async (resolve, reject) => {
+        var file_name = ""
+
+        if(file) {
+            uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.COMPANY_LOGO)
+            file_name = uploadS3.Location
+        }
+
+        let query = ''
+        if(file_name == ""){
+            query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, email = ?, phone = ?, address = ? WHERE companyID = ?'
+        } else {
+            query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, email = ?, logo_url = ?, phone = ?, address = ? WHERE companyID = ?'
+        }
+
+        db.query(query, file_name == "" ? [ data.name, data.email, data.phone, data.address, data.companyID ] : [ data.name, data.email, file_name, data.phone, data.address, data.companyID ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("OK")
+            }
+        })
     })
 }
 

@@ -31,6 +31,12 @@ router.get('/profile', authMiddleware.checkToken, getProfile)
 router.post('/profile', authMiddleware.checkToken, upload.single('avatar'), updateProfile)
 
 /**
+ * my company api
+ */
+router.get('/mycompany', authMiddleware.checkToken, getCompany)
+router.post('/mycompany', authMiddleware.checkToken, upload.single('logo'), updateCompany)
+
+/**
  * building api
  */
 router.post('/buildingList', authMiddleware.checkToken, getBuildingList)
@@ -94,6 +100,48 @@ function updateProfile(req, res) {
     let file = req.file
     let data = req.body
     adminService.updateProfile(userId, data, file, userdata).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+
+/**
+ * Function that get profile data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCompany(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+
+    adminService.getCompany(userId, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update profile data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+
+
+function updateCompany(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let data = req.body
+    adminService.updateCompany(userId, data, file, userdata).then((result)=>{
         res.json(result)
     }).catch((err) => {
         res.json(err)
