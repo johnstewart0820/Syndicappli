@@ -22,7 +22,8 @@ var companyModel = {
     getCountCompanyList: getCountCompanyList,
     createCompany: createCompany,
     updateCompany: updateCompany,
-    getCompany: getCompany
+    getCompany: getCompany,
+    deleteCompany: deleteCompany
 }
 
 
@@ -39,11 +40,11 @@ function getCompanyList(uid, data) {
         let query = `select c.*, c.companyID as ID, 
                     (select count(m.userID) from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID) as manager_count,
                     concat((select firstname from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID order by m.userID asc limit 1), " ", (select lastname from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID order by m.userID asc limit 1)) as contact_name,
-                    (select count(a.apartmentID) from ` + table.APARTMENTS + ` a left join ` + table.BUILDINGS + ` b on b.buildingID = a.buildingID and b.permission = 'active' left join ` + table.COMPANIES + ` com on com.companyID = b.companyID and com.permission = 'active' where a.permission = 'active' and com.companyID = c.companyID) as apartment_count
+                    (select count(a.apartmentID) from ` + table.APARTMENTS + ` a left join ` + table.BUILDINGS + ` b on b.buildingID = a.buildingID left join ` + table.COMPANIES + ` com on com.companyID = b.companyID where a.permission = 'active' and b.permission = 'active' and com.permission = 'active' and com.companyID = c.companyID) as apartment_count
                     from ` + table.COMPANIES + ` c
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
-                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where c.permission = 'active' and u.userID = ? and (c.name like ?)`
+                    left join ` + table.USERS + ` u on u.userID = ur.userID 
+                    where c.permission = 'active' and u.userID = ? and (c.name like ?) and u.permission = 'active'`
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
@@ -90,8 +91,8 @@ function getCountCompanyList(uid, data) {
         let query = `select count(*) as cnt
                     from ` + table.COMPANIES + ` c
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
-                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where c.permission = 'active' and u.userID = ? and (c.name like ?)`
+                    left join ` + table.USERS + ` u on u.userID = ur.userID 
+                    where c.permission = 'active' and u.userID = ? and (c.name like ?) and u.permission = 'active'`
         search_key = '%' + data.search_key + '%'
 
         db.query(query, [uid, search_key], (error, rows, fields) => {
@@ -164,9 +165,9 @@ function createCompany(uid, data, file) {
  */
 function updateCompany(companyID, uid, data, file) {
     return new Promise((resolve, reject) => {
-        let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ?';
+        let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ? and companyID != ?';
         let query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, account_holdername = ?, account_address = ?, account_IBAN = ?, logo_url = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
-        db.query(confirm_query, [data.email], async function (error, rows, fields) {
+        db.query(confirm_query, [data.email, companyID], async function (error, rows, fields) {
             if(error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})
             } else {
@@ -215,6 +216,20 @@ function getCompany(uid, companyID) {
                 } else {
                     reject({ message: message.COMPANY_NOT_EXIST })
                 }
+            }
+        })
+    })
+}
+
+
+function deleteCompany(uid, id){
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.COMPANIES + ' SET permission = ?, deleted_at = ? WHERE companyID = ?'
+        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("OK")
             }
         })
     })
