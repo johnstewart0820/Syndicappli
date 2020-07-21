@@ -60,6 +60,7 @@ router.delete('/company/:id', authMiddleware.checkToken, deleteCompany)
  * building api
  */
 router.post('/buildingList', authMiddleware.checkToken, getBuildingList)
+router.post('/buildingListByCompany', authMiddleware.checkToken, getBuildingListByCompany)
 router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser)
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
@@ -388,6 +389,27 @@ function getBuildingList(req, res) {
     let data = req.body
 
     buildingService.getBuildingList(userId, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get building list by Company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getBuildingListByCompany(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+
+    buildingService.getBuildingListByCompany(userId, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
