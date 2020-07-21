@@ -19,6 +19,7 @@ var randtoken = require('rand-token');
 
 var authModel = {
     login: login,
+    login_as: login_as,
     saveSMS: saveSMS,
     verifySMS: verifySMS,
     verifyUser: verifyUser,
@@ -58,6 +59,31 @@ function login(authData) {
                             }
                         }
                     })
+                } else {
+                    reject({ message: message.ACCOUNT_NOT_EXIST })
+                }
+            }
+        })
+    })
+}
+
+/**
+ * Check user login status with user ID
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function login_as(data) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE userID = ?'
+
+        db.query(query, [ data.userID ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if (rows.length > 0) {
+                    resolve(rows[0])
                 } else {
                     reject({ message: message.ACCOUNT_NOT_EXIST })
                 }

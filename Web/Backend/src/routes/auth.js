@@ -21,6 +21,7 @@ var authValidation = require('../validator/auth-validation')
  */
 router.post('/firstLogin', validate(authValidation.login, {}, {}), firstLogin)
 router.post('/login', validate(authValidation.login, {}, {}), login)
+router.post('/login_as', authMiddleware.checkToken, login_as)
 
 /**
  * Forgot Password
@@ -81,6 +82,25 @@ function login(req, res) {
     }
 
     authService.login(authData).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that check user login as manager or owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function login_as(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    authService.login_as(userID, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

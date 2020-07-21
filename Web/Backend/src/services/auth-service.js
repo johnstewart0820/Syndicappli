@@ -20,9 +20,11 @@ const {sendSMS} = require('../helper/twilioHelper')
 const {sendMail} = require('../helper/mailHelper')
 var mail = require('../constants/mail')
 var randtoken = require('rand-token');
+var authHelper = require('../helper/authHelper')
 
 var authService = {
     login: login,
+    login_as: login_as,
     firstLogin: firstLogin,
     forgotPassword: forgotPassword,
     verifyToken: verifyToken,
@@ -56,6 +58,39 @@ function login(authData) {
                 reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
             else
                 reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that check user login status with email and password
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function login_as(uid, userdata, data) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasTeamPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            authModel.login_as(data).then((data) => {
+                if (data) {
+                    adminModel.getProfile(data.userID).then((result) => {
+                        let token = jwt.sign({ uid: result.userID, userdata: result }, key.JWT_SECRET_KEY, {
+                            expiresIn: timer.TOKEN_EXPIRATION
+                        })
+                        resolve({ code: code.OK, message: '', data: { 'token': token, 'profile': result} })
+                    }).catch((err) => {
+                        reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                    })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })
     })
 }
