@@ -1,6 +1,6 @@
 /**
  * Auth router file
- * 
+ *
  * @package   backend/src/routes
  * @author    Taras Hryts <streaming9663@gmail.com>
  * @copyright 2020 Say Digital Company
@@ -16,12 +16,20 @@ var express = require('express')
 var router = express.Router()
 
 const authMiddleware = require('../../middleware/auth-middleware')
+const adminService = require('../../services/web/manager/admin-service')
 const buildingService = require('../../services/web/manager/building-service')
 const managerService = require('../../services/web/manager/manager-service')
 const ownerService = require('../../services/web/manager/owner-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
+
+/**
+ * profile api
+ */
+router.get('/profile', authMiddleware.checkToken, getProfile)
+router.post('/profile', authMiddleware.checkToken, upload.single('avatar'), updateProfile)
+
 /**
  * building api
  */
@@ -30,6 +38,7 @@ router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
+router.delete('/building/:id', authMiddleware.checkToken, deleteBuilding)
 
 /**
  * manager api
@@ -48,6 +57,49 @@ router.post('/owner', authMiddleware.checkToken,  upload.fields([{name: 'photo_u
 router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
 router.delete('/owner/:id', authMiddleware.checkToken, deleteOwner)
+
+
+/**
+ * Function that get profile data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getProfile(req, res) {
+    let userId = req.decoded.uid
+
+    adminService.getProfile(userId).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update profile data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+
+
+function updateProfile(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let data = req.body
+    adminService.updateProfile(userId, data, file, userdata).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+
 
 /////////////////////////////////////////////////Building///////////////////////////////////////
 
@@ -146,6 +198,26 @@ function updateBuilding(req, res) {
     let id = req.params.id;
     let data = req.body
     buildingService.updateBuilding(userId, id, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that deletes building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteBuilding(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    buildingService.deleteBuilding(userId, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

@@ -1,5 +1,5 @@
 /**
- * Manager service file
+ * Auth service file
  *
  * @package   backend/src/services
  * @author    Taras Hryts <streaming9663@gmail.com>
@@ -9,7 +9,7 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var managerMobileModel = require('../../../models/mobile/manager-model')
+var adminWebModel = require('../../../models/web/manager/admin-model')
 var jwt = require('jsonwebtoken')
 var message = require('../../../constants/message')
 var code = require('../../../constants/code')
@@ -21,6 +21,7 @@ var webService = {
     updateProfile: updateProfile
 }
 
+
 /**
  * Function that get profile data with uID
  *
@@ -28,11 +29,11 @@ var webService = {
  * @param   object authData
  * @return  json
  */
-
 function getProfile(uid) {
     return new Promise((resolve, reject) => {
-        managerMobileModel.getProfile(uid).then((data) => {
+        adminWebModel.getProfile(uid).then((data) => {
             if (data) {
+                let userId = data.userID
                 let token = jwt.sign({ uid: data.userID, userdata: data }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
@@ -57,7 +58,7 @@ function getProfile(uid) {
  */
 function updateProfile(uid, data, file, userdata) {
     return new Promise((resolve, reject) => {
-        managerMobileModel.updateProfile(uid, data, file).then((data) => {
+        adminWebModel.updateProfile(uid, data, file).then((data) => {
             if (data) {
                 let token = jwt.sign({ uid: uid, userdata:userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
@@ -73,5 +74,6 @@ function updateProfile(uid, data, file, userdata) {
         })
     })
 }
+
 
 module.exports = webService

@@ -9,14 +9,14 @@
  * @link      https://turing.ly/
  */
 
-var db = require('../../database/database')
-var message  = require('../../constants/message')
+var db = require('../../../database/database')
+var message  = require('../../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
-var table  = require('../../constants/table')
-const s3Helper = require('../../helper/s3helper')
-const s3buckets = require('../../constants/s3buckets')
+var table  = require('../../../constants/table')
+const s3Helper = require('../../../helper/s3helper')
+const s3buckets = require('../../../constants/s3buckets')
 
-var managerModel = {
+var adminModel = {
     getProfile: getProfile,
     updateProfile: updateProfile
 }
@@ -31,7 +31,7 @@ var managerModel = {
 function getProfile(uid) {
     return new Promise((resolve, reject) => {
         let query = 'SELECT * FROM ' + table.USERS + ' WHERE userID = ? and permission = "active"'
-        let query_role = 'SELECT r.* FROM user_role ur LEFT JOIN role r ON ur.roleID=r.roleID WHERE ur.userID=?'
+        let query_role = 'SELECT * from ' + table.ROLE + ' where userID = ?'
 
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
@@ -130,5 +130,4 @@ function updateProfile(uid, data, file) {
     })
 }
 
-
-module.exports = managerModel
+module.exports = adminModel

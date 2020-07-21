@@ -22,6 +22,7 @@ var buildingModel = {
     managerCreateBuilding: managerCreateBuilding,
     getManagerBuilding: getManagerBuilding,
     managerUpdateBuilding: managerUpdateBuilding,
+    managerDeleteBuilding: managerDeleteBuilding
 }
 
 /**
@@ -60,12 +61,12 @@ function getManagerBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
         let query;
 
-        query = `select b.*, 0 as total
+        query = `select b.*, 0 as total, b.buildingID as ID
                 from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
-                left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
-                left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                where u.userID = ? and b.permission = 'active' and (b.name like ?)`
+                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
+                where c.permission = 'active' 
+                and b.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company') 
+                and b.permission = 'active' and (b.name like ?)`
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -106,10 +107,10 @@ function getManagerCountBuildingList(uid, data) {
         let query;
         query = `select count(*) as count
                 from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
-                left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
-                left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                where u.userID = ? and b.permission = 'active' and (b.name like ?)`
+                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
+                where c.permission = 'active' 
+                and b.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company') 
+                and b.permission = 'active' and (b.name like ?)`
 
         search_key = '%' + data.search_key + '%'
 
@@ -261,5 +262,31 @@ function managerUpdateBuilding(uid, id, data) {
 }
 
 
+/**
+ * delete building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function managerDeleteBuilding(uid, id) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.BUILDINGS + ' SET permission = ?, deleted_at = ? WHERE buildingID = ?'
+        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                let delete_apartment_query = 'UPDATE ' + table.APARTMENTS + ' SET permission = ? WHERE buildingID = ?'
+                db.query(delete_apartment_query, [ 'trash', id ], (error, rows, fields) => {
+                    if(error){
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                        resolve("OK")
+                    }
+                })
+            }
+        })
+    })
+}
 
 module.exports = buildingModel

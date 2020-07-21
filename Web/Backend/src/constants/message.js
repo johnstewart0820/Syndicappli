@@ -39,7 +39,7 @@ const messages = {
     BUILDING_NOT_EXSIT: "Building Information does not exist.",
 
     SMS_CODE_SENT_SUCCESSFULLY: 'Sent the SMS Code to Your Phone.',
-    EMAIL_RESET_LINK_SENT_SUCCESSFULLY: 'Sent the link to reset your password. Please check your email.',
+    EMAIL_RESET_LINK_SENT_SUCCESSFULLY: 'Sent the new password to your email. Please check your email.',
     VERIFIED_TOKEN_SUCCESSFULLY: 'Verified the token to reset your password. Please type your new and confirm password.',
     RESET_PASSWORD_SUCCESSFULLY: 'Reseted your password successfully.',
     COMPANY_ADD_SUCCESSFULLY: 'Created Company Successfully.',
