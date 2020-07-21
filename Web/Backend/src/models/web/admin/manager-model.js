@@ -39,19 +39,19 @@ var managerModel = {
 function getManagerList(uid, data) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
-      count(*) count, u.userID ID, u.firstname, u.lastname, u.email
+      ifnull(sum(a.count), 0) count, u.userID ID, u.firstname, u.lastname, u.email
       FROM
       users u 
-      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = "active" 
+      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = ? 
       LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
-      Left JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
-      LEFT JOIN apartments a ON b.buildingID = a.buildingID and a.permission = "active"
+      LEFT JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
+      LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
       WHERE
       u.firstname like ? and u.lastname like ? and u.created_by = ? 
       AND u.usertype = "manager" `
       
       search_key = '%' + data.search_key + '%'
-      let params = [search_key, search_key, uid];
+      let params = [data.status, search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
@@ -107,19 +107,19 @@ function getManagerList(uid, data) {
 function getCountManagerList(uid, data) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
-      count(*) count, u.userID, u.firstname, u.lastname, u.email
+      sum(a.count) count, u.userID, u.firstname, u.lastname, u.email
       FROM
       users u 
-      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = "active" 
+      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = ? 
       LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
-      Left JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
-      LEFT JOIN apartments a ON b.buildingID = a.buildingID and a.permission = "active"
+      LEFT JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
+      LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
       WHERE
       u.firstname like ? and u.lastname like ? and u.created_by = ? 
       AND u.usertype = "manager" `
       
       search_key = '%' + data.search_key + '%'
-      let params = [search_key, search_key, uid];
+      let params = [data.status, search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
@@ -244,43 +244,54 @@ function createManager(uid, data, file) {
 function getManager(uid, id) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
-                  *
-                  FROM
-                  users u
-                  LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = "active"
-                  LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
-                  LEFT JOIN apartments a ON b.buildingID = a.buildingID and a.permission = "active"
-                  WHERE
-                  u.userID = ? and u.created_by = ?`
-      db.query(query, [ id, uid ], (error, rows, fields) => {
+      u.*,
+      ifnull( sum( a.count ), 0 ) count 
+      FROM
+      users u
+      LEFT JOIN user_relationship r ON u.userID = r.userID 
+      AND u.permission = "active"
+      LEFT JOIN buildings b ON b.buildingID = r.relationID AND b.permission = "active"
+      LEFT JOIN companies c on b.companyID = c.companyID AND c.permission = "active"
+      LEFT JOIN ( SELECT count( * ) count, buildingID, permission FROM apartments WHERE permission = "active" GROUP BY buildingID ) a ON b.buildingID = a.buildingID 
+      WHERE
+      u.userID = ?	 
+      AND u.created_by = ?`
+      db.query(query, [ id, uid ], (error, result, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
-              if (rows.length == 0)
+              if (result.length == 0)
                   reject({ message: message.INTERNAL_SERVER_ERROR })
               else {
-                  let response = rows[0]
-                  response['count'] = rows.length;
-                  console.log(rows.length);
-                  let query = 'Select * from ' + table.ROLE + ' where userID = ?'
-                  db.query(query, [uid], (error, roles, fields) => {
-                      if (error) {
-                          reject({ message: message.INTERNAL_SERVER_ERROR })
-                      } else {
-                          
-                          for (let i = 0 ; i < roles.length ; i++ ) {
-                              response[roles[i].role_name] = roles[i].permission
+                  let query = `Select r.relationID from users u left join user_relationship r on u.userID = r.userID where u.userID = ?`
+                  db.query(query, [id], (error, rows, fields) => {
+                    if (error) {
+                      reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                      let response = result[0]
+                      response['companyID'] = rows[0].relationID
+                      let query = 'Select * from ' + table.ROLE + ' where userID = ?'
+                      db.query(query, [id], (error, roles, fields) => {
+                          if (error) {
+                              reject({ message: message.INTERNAL_SERVER_ERROR })
+                          } else {
+                              
+                              for (let i = 0 ; i < roles.length ; i++ ) {
+                                  response[roles[i].role_name] = roles[i].permission
+                              }
+                              let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+                              db.query(query, [id], (error, rows1, fields) => {
+                                if (error) {
+                                  reject({ message: message.INTERNAL_SERVER_ERROR});
+                                } else {
+                                  resolve({user: response, buildingList: rows1})
+                                }
+                              })
                           }
-                          let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
-                          db.query(query, [uid], (error, rows1, fields) => {
-                            if (error) {
-                              reject({ message: message.INTERNAL_SERVER_ERROR});
-                            } else {
-                              resolve({user: response, buildingList: rows1})
-                            }
-                          })
-                      }
+                      })
+                    }
                   })
+                  
               }     
           }
       })
