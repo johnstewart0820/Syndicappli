@@ -225,11 +225,42 @@ function getCompany(uid, companyID) {
 function deleteCompany(uid, id){
     return new Promise((resolve, reject) => {
         let query = 'UPDATE ' + table.COMPANIES + ' SET permission = ?, deleted_at = ? WHERE companyID = ?'
-        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], async (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve("OK")
+                let get_buildings_by_company = `Select * from ` + table.BUILDINGS + ` where companyID = ?`
+                let get_managers_by_building = `Select * from ` + table.USER_RELATIONSHIP + ` where type = 'building' and relationID = ?`
+                let manager_delete_query = 'UPDATE ' + table.USERS + ' SET permission = ?, deleted_at = ? WHERE userID = ? and usertype = "manager"'
+                await db.query(get_buildings_by_company, [ id ], async (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                        if(rows.length > 0){
+                            for (var i = 0 ; i < rows.length ; i++){
+                                await db.query(get_managers_by_building, [ rows[i].buildingID ], async (error1, rows1, fields) => {
+                                    if (error1) {
+                                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                                    } else {
+                                        if(rows1.length > 0) {
+                                            for (var j = 0 ; j < rows1.length ; j++) {
+                                                await db.query(manager_delete_query, ['trash', timeHelper.getCurrentTime(), rows1[j].userID])
+                                            }
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    }
+                })
+
+                let building_delete_query = 'UPDATE ' + table.BUILDINGS + ' SET permission = ?, deleted_at = ? WHERE companyID = ?'
+                await db.query(building_delete_query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    }
+                })
+                resolve("Ok")
             }
         })
     })
