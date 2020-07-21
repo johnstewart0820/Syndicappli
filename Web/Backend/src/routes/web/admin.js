@@ -75,6 +75,7 @@ router.post('/manager', authMiddleware.checkToken, upload.single('logo'), create
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
 router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
 router.delete('/manager/:id', authMiddleware.checkToken, deleteManager)
+router.put('/manager/:id/status', authMiddleware.checkToken, updateManagerStatus)
 
 
 /**
@@ -85,7 +86,7 @@ router.post('/owner', authMiddleware.checkToken,  upload.fields([{name: 'photo_u
 router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
 router.delete('/owner/:id', authMiddleware.checkToken, deleteOwner)
-
+router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
 /**
  * Function that get profile data
  *
@@ -602,6 +603,27 @@ function deleteManager(req, res) {
     })
 }
 
+
+/**
+ * Function that update manager status
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateManagerStatus(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id;
+    let data = req.body
+    managerService.updateManagerStatus(userId, id, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
 /**
  * Function that get the owner list
  *
@@ -681,6 +703,27 @@ function updateOwner(req, res){
     let id = req.params.id;
     let files = req.files
     ownerService.updateOwner(userId, userdata, data, files, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update owner status
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateOwnerStatus(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id;
+    ownerService.updateOwner(userId, userdata, data, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

@@ -25,6 +25,7 @@ var managerModel = {
   createManager: createManager,
   getManager: getManager,
   updateManager: updateManager,
+  updateManagerStatus: updateManagerStatus,
   deleteManager: deleteManager
 }
 
@@ -76,13 +77,13 @@ function getManagerList(uid, data) {
           else if (sort_column === 2)
             query += ' order by u.email ';
           else if (sort_column === 3) {
-
+            query += ' order by u.userID ';
           }
           else if (sort_column === 4) {
-
+            query += ' order by u.userID ';
           }
           else if (sort_column === 5) {
-            query += ' order by count'
+            query += ' order by count '
           }
           query += data.sort_method;
       }
@@ -263,13 +264,13 @@ function getManager(uid, id) {
               if (result.length == 0)
                   reject({ message: message.INTERNAL_SERVER_ERROR })
               else {
-                  let query = `Select r.relationID from users u left join user_relationship r on u.userID = r.userID where u.userID = ?`
+                  let query = `Select b.companyID from users u left join user_relationship r on u.userID = r.userID left join buildings b on b.buildingID = r.relationID where u.userID = ?`
                   db.query(query, [id], (error, rows, fields) => {
                     if (error) {
                       reject({ message: message.INTERNAL_SERVER_ERROR })
                     } else {
                       let response = result[0]
-                      response['companyID'] = rows[0].relationID
+                      response['companyID'] = rows[0].companyID
                       let query = 'Select * from ' + table.ROLE + ' where userID = ?'
                       db.query(query, [id], (error, roles, fields) => {
                           if (error) {
@@ -366,6 +367,27 @@ function updateManager( id, data, file) {
                 })
               }
             })
+          }
+      })
+  })
+}
+
+/**
+ * update manager status
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateManagerStatus(id, data) {
+  return new Promise((resolve, reject) => {
+      let query = 'UPDATE ' + table.USERS + ' SET  status = ? where userID = ?'
+
+      db.query(query, [ data.status, id ], (error, rows, fields) => {
+          if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+              resolve("ok")
           }
       })
   })
