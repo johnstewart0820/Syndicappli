@@ -727,7 +727,7 @@ function updateOwnerStatus(req, res){
     let userdata = req.decoded.userdata
     let data = req.body
     let id = req.params.id;
-    ownerService.updateOwner(userId, userdata, data, id).then((result) => {
+    ownerService.updateOwnerStatus(userId, userdata, data, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
