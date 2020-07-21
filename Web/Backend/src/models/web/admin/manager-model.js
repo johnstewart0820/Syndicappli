@@ -241,18 +241,18 @@ function createManager(uid, data, file) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getManager(uid) {
+function getManager(uid, id) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
                   *
                   FROM
                   users u
-                  LEFT JOIN user_relationship r USING ( userID )
-                  LEFT JOIN buildings b ON b.buildingID = r.relationID
-                  LEFT JOIN apartments a ON b.buildingID = a.buildingID 
+                  LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = "active"
+                  LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
+                  LEFT JOIN apartments a ON b.buildingID = a.buildingID and a.permission = "active"
                   WHERE
-                  u.userID = ?`
-      db.query(query, [ uid ], (error, rows, fields) => {
+                  u.userID = ? and u.created_by = ?`
+      db.query(query, [ id, uid ], (error, rows, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
