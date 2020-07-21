@@ -38,24 +38,30 @@ var managerModel = {
  */
 function getManagerList(uid, data) {
     return new Promise((resolve, reject) => {
-      let query = `Select *, u.userID ID, u.email email from ` + table.USERS + 
-                  ` u left join ` + table.USER_RELATIONSHIP + 
-                  ` r using (userID) left join ` + table.BUILDINGS + 
-                  ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
-                  ` c using (companyID) LEFT JOIN ( SELECT count( * ) count, userID FROM apartments GROUP BY userID ) s ON u.userID = s.userID  where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
+      let query = `SELECT
+      count(*) count, u.userID ID, u.firstname, u.lastname, u.email
+      FROM
+      users u 
+      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = "active" 
+      LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
+      Left JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
+      LEFT JOIN apartments a ON b.buildingID = a.buildingID and a.permission = "active"
+      WHERE
+      u.firstname like ? and u.lastname like ? and u.created_by = ? 
+      AND u.usertype = "manager" `
+      
       search_key = '%' + data.search_key + '%'
       let params = [search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
-      }
-      else if (data.companyID != -1) {
-        query += ` and c.companyID = ? group by c.companyID`
+      } else if (data.companyID != -1) {
+        query += ` and c.companyID = ?`
         params.push(data.companyID)
       }
-      else {
-        query += ` group by c.companyID`
-      }
+
+      query += ` GROUP BY u.userID `
+
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -76,7 +82,7 @@ function getManagerList(uid, data) {
 
           }
           else if (sort_column === 5) {
-            query += ' order by s.count'
+            query += ' order by count'
           }
           query += data.sort_method;
       }
@@ -100,27 +106,35 @@ function getManagerList(uid, data) {
  */
 function getCountManagerList(uid, data) {
     return new Promise((resolve, reject) => {
-      let query = `Select count(*) count from ` + table.USERS + 
-      ` u left join ` + table.USER_RELATIONSHIP + 
-      ` r using (userID) left join ` + table.BUILDINGS + 
-      ` b on b.buildingID = r.relationID left join ` + table.COMPANIES + 
-      ` c using (companyID) LEFT JOIN ( SELECT count( * ) count, userID FROM apartments GROUP BY userID ) s ON u.userID = s.userID  where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? and u.created_by = ?`
+      let query = `SELECT
+      count(*) count, u.userID, u.firstname, u.lastname, u.email
+      FROM
+      users u 
+      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = "active" 
+      LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
+      Left JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
+      LEFT JOIN apartments a ON b.buildingID = a.buildingID and a.permission = "active"
+      WHERE
+      u.firstname like ? and u.lastname like ? and u.created_by = ? 
+      AND u.usertype = "manager" `
+      
       search_key = '%' + data.search_key + '%'
       let params = [search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
-      }
-      else if (data.companyID != -1) {
-        query += ` and c.companyID = ? group by c.companyID`
+      } else if (data.companyID != -1) {
+        query += ` and c.companyID = ?`
         params.push(data.companyID)
       }
-      
+
+      query += ` GROUP BY u.userID `
+      query = `Select count(*) count, sum(t.count) sum from (` + query + `) t`;
       db.query(query, params , (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
-          resolve(rows[0].count)  
+          resolve({count: rows[0].count, sum: rows[0].sum})  
         }
       })
     })

@@ -43,7 +43,7 @@ function getManagerList(uid, data, userdata) {
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
                         })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(managerCount / Number(data.row_count)), 'managerlist': managerList, 'totalcount': managerCount} })
+                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(managerCount.count / Number(data.row_count)), 'managerlist': managerList, 'totalcount': managerCount.count, 'sum': managerCount.sum} })
                     })
                 }
             }).catch((err) => {
