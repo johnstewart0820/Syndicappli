@@ -27,7 +27,8 @@ var ownerModel = {
     updateOwner_info: updateOwner_info,
     updateOwner: updateOwner,
     delete_apartments: delete_apartments,
-    deleteOwner: deleteOwner
+    deleteOwner: deleteOwner,
+    updateOwnerStatus: updateOwnerStatus
 }
 
 /**
@@ -471,9 +472,30 @@ function updateOwner(uid, data) {
  */
 function deleteOwner(uid, id) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.USERS + ' SET  permission = "trash", deleted_by = ?, deleted_at = ? where userID = ?'
+        let query = 'UPDATE ' + table.USERS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where userID = ?'
   
-        db.query(query, [ uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+        db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+  }
+
+/**
+ * update owner status
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateOwnerStatus(id, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.USERS + ' SET  status = ? where userID = ?'
+  
+        db.query(query, [ data.status, id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {

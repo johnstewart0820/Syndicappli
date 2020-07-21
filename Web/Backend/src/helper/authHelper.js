@@ -37,7 +37,7 @@ function hasCompanyPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -56,7 +56,7 @@ function hasManagerPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -75,7 +75,7 @@ function hasTeamPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -94,7 +94,7 @@ function hasBuildingPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -113,7 +113,7 @@ function hasOwnerPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -132,7 +132,7 @@ function hasOrderPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -151,7 +151,7 @@ function hasProductPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -170,7 +170,7 @@ function hasDiscountcodePermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }
@@ -189,7 +189,7 @@ function hasUserPermission(userdata, permission){
         if(status == true){
             resolve("true")
         }else{
-            reject({ messsage: message.HAS_NO_PERMISSION })
+            reject({ message: message.HAS_NO_PERMISSION })
         }
     })
 }

@@ -44,7 +44,7 @@ router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
-router.delete('/building/:id', authMiddleware.checkToken, deleteBuilding)
+router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
 
 /**
  * team api
@@ -53,7 +53,8 @@ router.post('/teamList', authMiddleware.checkToken, getManagerList)
 router.post('/team', authMiddleware.checkToken, upload.single('logo'), createManager)
 router.get('/team/:id', authMiddleware.checkToken, getManager)
 router.put('/team/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
-router.delete('/team/:id', authMiddleware.checkToken, deleteManager)
+router.post('/team/:id/delete', authMiddleware.checkToken, deleteManager)
+router.put('/team/:id/status', authMiddleware.checkToken, updateManagerStatus)
 
 /**
  * owner api
@@ -62,8 +63,8 @@ router.post('/ownerList', authMiddleware.checkToken, getOwnerList)
 router.post('/owner', authMiddleware.checkToken,  upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), createOwner)
 router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
-router.delete('/owner/:id', authMiddleware.checkToken, deleteOwner)
-
+router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
+router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
 
 /**
  * Function that get profile data
@@ -265,7 +266,8 @@ function deleteBuilding(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    buildingService.deleteBuilding(userId, id, userdata).then((result) => {
+    let data = req.params.data
+    buildingService.deleteBuilding(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -367,7 +369,28 @@ function deleteManager(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    managerService.deleteManager(userId, id, userdata).then((result) => {
+    let data = req.body
+    managerService.deleteManager(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update manager status
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateManagerStatus(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id;
+    let data = req.body
+    managerService.updateManagerStatus(userId, id, data, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -473,7 +496,29 @@ function deleteOwner(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    ownerService.deleteOwner(userId, id, userdata).then((result) => {
+    let data = req.params.data
+    ownerService.deleteOwner(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update owner status
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateOwnerStatus(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id;
+    ownerService.updateOwnerStatus(userId, userdata, data, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

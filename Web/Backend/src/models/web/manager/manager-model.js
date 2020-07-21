@@ -48,11 +48,11 @@ function getManagerList(uid, data) {
       LEFT JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
       LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
       WHERE
-      u.firstname like ? and u.lastname like ? and u.created_by = ?
+      u.firstname like ? and u.lastname like ? 
       AND u.usertype = "manager" `
       
       search_key = '%' + data.search_key + '%'
-      let params = [ data.status, search_key, search_key, uid];
+      let params = [ data.status, search_key, search_key];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
@@ -108,11 +108,11 @@ function getCountManagerList(uid, data) {
       LEFT JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
       LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
       WHERE
-      u.firstname like ? and u.lastname like ? and u.created_by = ? 
+      u.firstname like ? and u.lastname like ?
       AND u.usertype = "manager" `
       
       search_key = '%' + data.search_key + '%'
-      let params = [ data.status, search_key, search_key, uid];
+      let params = [ data.status, search_key, search_key];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
@@ -231,7 +231,7 @@ function createManager(uid, data, file) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getManager(uid, id) {
+function getManager(id) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
       u.*,
@@ -244,47 +244,37 @@ function getManager(uid, id) {
       LEFT JOIN companies c on b.companyID = c.companyID AND c.permission = "active"
       LEFT JOIN ( SELECT count( * ) count, buildingID, permission FROM apartments WHERE permission = "active" GROUP BY buildingID ) a ON b.buildingID = a.buildingID 
       WHERE
-      u.userID = ?	 
-      AND u.created_by = ?`
-      db.query(query, [ id, uid ], (error, result, fields) => {
+      u.userID = ? `
+      db.query(query, [ id ], (error, result, fields) => {
           if (error) {
             reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
               if (result.length == 0)
                   reject({ message: message.INTERNAL_SERVER_ERROR })
               else {
-                  let query = `Select b.companyID from users u left join user_relationship r on u.userID = r.userID left join buildings b on b.buildingID = r.relationID where u.userID = ?`
-                  db.query(query, [id], (error, rows, fields) => {
+                let response = result[0]
+                let query = 'Select * from ' + table.ROLE + ' where userID = ?'
+                db.query(query, [id], (error, roles, fields) => {
                     if (error) {
-                      reject({ message: message.INTERNAL_SERVER_ERROR })
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
                     } else {
-                      let response = result[0]
-                      response['companyID'] = rows[0].companyID
-                      let query = 'Select * from ' + table.ROLE + ' where userID = ?'
-                      db.query(query, [id], (error, roles, fields) => {
+                        
+                        for (let i = 0 ; i < roles.length ; i++ ) {
+                            response[roles[i].role_name] = roles[i].permission
+                        }
+                        let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+                        db.query(query, [id], (error, rows1, fields) => {
                           if (error) {
-                              reject({ message: message.INTERNAL_SERVER_ERROR })
+                            reject({ message: message.INTERNAL_SERVER_ERROR});
                           } else {
-                              
-                              for (let i = 0 ; i < roles.length ; i++ ) {
-                                  response[roles[i].role_name] = roles[i].permission
-                              }
-                              let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
-                              db.query(query, [id], (error, rows1, fields) => {
-                                if (error) {
-                                  reject({ message: message.INTERNAL_SERVER_ERROR});
-                                } else {
-                                  resolve({user: response, buildingList: rows1})
-                                }
-                              })
+                            resolve({user: response, buildingList: rows1})
                           }
-                      })
+                        })
                     }
-                  })
-                  
-              }     
-          }
-      })
+                })
+              }
+            }
+        })
     })
 }
 

@@ -270,15 +270,15 @@ function managerUpdateBuilding(uid, id, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function managerDeleteBuilding(uid, id) {
+function managerDeleteBuilding(uid, id, data) {
     return new Promise((resolve, reject) => {
         let query = 'UPDATE ' + table.BUILDINGS + ' SET permission = ?, deleted_at = ? WHERE buildingID = ?'
-        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+        db.query(query, [ data.status, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 let delete_apartment_query = 'UPDATE ' + table.APARTMENTS + ' SET permission = ? WHERE buildingID = ?'
-                db.query(delete_apartment_query, [ 'trash', id ], (error, rows, fields) => {
+                db.query(delete_apartment_query, [ data.status, id ], (error, rows, fields) => {
                     if(error){
                         reject({ message: message.INTERNAL_SERVER_ERROR })
                     } else {
