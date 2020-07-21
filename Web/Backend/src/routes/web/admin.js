@@ -53,6 +53,7 @@ router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), upd
 // router.put('/company/:id', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), updateCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
+router.delete('/company/:id', authMiddleware.checkToken, deleteCompany)
 
 
 /**
@@ -63,6 +64,7 @@ router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
+router.delete('/building/:id', authMiddleware.checkToken, deleteBuilding)
 
 /**
  * manager api
@@ -352,6 +354,24 @@ function getCompanyListByUser(req, res) {
     })
 }
 
+/**
+ * Function that delete company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteCompany(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    companyService.deleteCompany(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 
 /**
  * Function that get building list
@@ -431,6 +451,26 @@ function updateBuilding(req, res) {
     let id = req.params.id;
     let data = req.body
     buildingService.updateBuilding(userId, id, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that deletes building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteBuilding(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    buildingService.deleteBuilding(userId, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

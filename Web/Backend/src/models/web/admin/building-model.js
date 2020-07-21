@@ -22,6 +22,7 @@ var buildingModel = {
     createBuilding: createBuilding,
     getBuilding: getBuilding,
     updateBuilding: updateBuilding,
+    deleteBuilding: deleteBuilding,
 
     getManagerCompanyListByUser: getManagerCompanyListByUser,
     getManagerBuildingList: getManagerBuildingList,
@@ -263,6 +264,33 @@ function updateBuilding(uid, id, data) {
                             }
                         })
                     }
+                })
+            }
+        })
+    })
+}
+
+/**
+ * delete building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteBuilding(uid, id) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.BUILDINGS + ' SET permission = ?, deleted_at = ? WHERE buildingID = ?'
+        db.query(query, [ 'trash', timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                let delete_apartment_query = 'UPDATE ' + table.APARTMENTS + ' SET permission = ? WHERE buildingID = ?'
+                db.query(delete_apartment_query, [ 'trash', id ], (error, rows, fields) => {
+                  if(error){
+                      reject({ message: message.INTERNAL_SERVER_ERROR })
+                  } else {
+                      resolve("OK")
+                  }
                 })
             }
         })
