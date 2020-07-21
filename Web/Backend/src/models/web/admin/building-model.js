@@ -17,6 +17,7 @@ var timeHelper = require('../../../helper/timeHelper')
 
 var buildingModel = {
     getCompanyListByUser: getCompanyListByUser,
+    getBuildingListByCompany: getBuildingListByCompany,
     getBuildingList: getBuildingList,
     getCountBuildingList: getCountBuildingList,
     createBuilding: createBuilding,
@@ -48,6 +49,32 @@ function getCompanyListByUser(uid) {
                     where c.permission = 'active' and u.userID = ?`
 
         db.query(query, [ uid ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows);
+            }
+        })
+    })
+}
+
+/**
+ * get company list with filter key
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingListByCompany(uid, data) {
+    return new Promise((resolve, reject) => {
+        let query = ``
+        if(data.companyID == -1){
+            query = `select * from ` + table.BUILDINGS + ` where permission = 'active' and companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company')`
+        } else {
+            query = `select * from ` + table.BUILDINGS + ` where permission = 'active' and companyID = ?`
+        }
+
+        db.query(query, [ data.companyID == -1 ? uid : data.companyID ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {

@@ -20,11 +20,12 @@ const { SEE_PERMISSION } = require('../../../constants/code')
 
 var buildingService = {
     getCompanyListByUser: getCompanyListByUser,
+    getBuildingListByCompany: getBuildingListByCompany,
     getBuildingList: getBuildingList,
     createBuilding: createBuilding,
     getBuilding: getBuilding,
     updateBuilding: updateBuilding,
-    deleteBuilding: deleteBuilding,
+    deleteBuilding: deleteBuilding
 }
 
 
@@ -45,6 +46,32 @@ function getCompanyListByUser(uid, userdata) {
                 })
 
                 resolve({ code: code.OK, message: '', data: { 'token': token, 'companylist': result } })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that get company list by user
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function getBuildingListByCompany(uid, data, userdata) {
+    return new Promise((resolve, reject) => {
+        buildingModel.getBuildingListByCompany(uid, data).then((result) => {
+            if (result) {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'buildinglist': result } })
             }
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)
