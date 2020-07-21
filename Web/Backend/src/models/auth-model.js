@@ -15,6 +15,7 @@ var bcrypt = require('bcrypt-nodejs')
 var table  = require('../constants/table')
 var jwt = require('jsonwebtoken')
 var key = require('../config/key-config')
+var randtoken = require('rand-token');
 
 var authModel = {
     login: login,
@@ -22,6 +23,7 @@ var authModel = {
     verifySMS: verifySMS,
     verifyUser: verifyUser,
     saveToken: saveToken,
+    saveRandomPassword: saveRandomPassword,
     saveRefreshToken: saveRefreshToken,
     verifyToken: verifyToken,
     resetPassword: resetPassword,
@@ -165,6 +167,29 @@ function saveToken(email, token) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 resolve("Ok")
+            }
+        })
+    })
+}
+
+/**
+ * Save random token
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function saveRandomPassword(email){
+    return new Promise((resolve, reject) => {
+        let randomPassword = randtoken.generate(15);
+        let new_pass = bcrypt.hashSync(randomPassword)
+        let query = 'UPDATE ' + table.USERS + ' SET password = ? WHERE email = ?'
+
+        db.query(query, [ new_pass, email ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(randomPassword)
             }
         })
     })

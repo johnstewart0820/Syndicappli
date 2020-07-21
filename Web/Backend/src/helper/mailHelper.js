@@ -31,7 +31,7 @@ function sendMail(title, email, type, token) {
             from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
             to: email,
             subject: title,
-            html: `${emailContent.body}` + `${emailContent.url}` + `${token}` + `&email=` + `${email}` + `${emailContent.body1}`
+            html: `${emailContent.body}` + `${token}` + `${emailContent.body1}`
         };
 
         await transporter.sendMail(data, function (err, info) {

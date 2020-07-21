@@ -106,26 +106,22 @@ function firstLogin(authData) {
  */
 function forgotPassword(email){
     return new Promise((resolve, reject) => {
-        var tmpToken = randtoken.generate(15);
-        let reset_token = jwt.sign({ tmpToken: tmpToken}, key.JWT_SECRET_KEY, {
-            expiresIn: timer.SMS_TOKEN_EXPIRATION
-        })
         authModel.verifyUser(email).then((data) => {
-            sendMail(mail.TITLE_FORGOT_PASSWORD, email, mail.TYPE_FORGOT_PASSWORD, reset_token)
-                .then((response) => {
-                    authModel.saveToken(email, reset_token).then((result) => {
+            authModel.saveRandomPassword(email).then((randomPassword) => {
+                sendMail(mail.TITLE_FORGOT_PASSWORD, email, mail.TYPE_FORGOT_PASSWORD, randomPassword)
+                    .then((response) => {
                         resolve({ code: code.OK, message: message.EMAIL_RESET_LINK_SENT_SUCCESSFULLY, data: {}})
-                    }).catch((err) => {
-                        reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
                     })
-                })
-                .catch((err) => {
-                    if(err.message.statusCode == code.BAD_REQUEST){
-                        reject({ code: code.INTERNAL_SERVER_ERROR, message: message.EMIL_IS_NOT_EXIST, data: {} })
-                    } else {
-                        reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                    }
-                })
+                    .catch((err) => {
+                        if(err.message.statusCode == code.BAD_REQUEST){
+                            reject({ code: code.INTERNAL_SERVER_ERROR, message: message.EMIL_IS_NOT_EXIST, data: {} })
+                        } else {
+                            reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                        }
+                    })
+            }).catch((err) => {
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            })
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)
                 reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
