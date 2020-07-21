@@ -41,7 +41,7 @@ router.post('/userList', authMiddleware.checkToken, getUserList)
 router.post('/user', authMiddleware.checkToken, upload.single('logo'), createUser)
 router.get('/user/:id', authMiddleware.checkToken, getUser)
 router.put('/user/:id', authMiddleware.checkToken, upload.single('logo'), updateUser)
-router.delete('/user/:id', authMiddleware.checkToken, deleteUser)
+router.post('/user/:id/delete', authMiddleware.checkToken, deleteUser)
 
 /**
  * company api
@@ -53,7 +53,7 @@ router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), upd
 // router.put('/company/:id', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), updateCompany)
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
-router.delete('/company/:id', authMiddleware.checkToken, deleteCompany)
+router.post('/company/:id/delete', authMiddleware.checkToken, deleteCompany)
 
 
 /**
@@ -65,7 +65,7 @@ router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
-router.delete('/building/:id', authMiddleware.checkToken, deleteBuilding)
+router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
 
 /**
  * manager api
@@ -74,7 +74,7 @@ router.post('/managerList', authMiddleware.checkToken, getManagerList)
 router.post('/manager', authMiddleware.checkToken, upload.single('logo'), createManager)
 router.get('/manager/:id', authMiddleware.checkToken, getManager)
 router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
-router.delete('/manager/:id', authMiddleware.checkToken, deleteManager)
+router.post('/manager/:id/delete', authMiddleware.checkToken, deleteManager)
 router.put('/manager/:id/status', authMiddleware.checkToken, updateManagerStatus)
 
 
@@ -85,7 +85,7 @@ router.post('/ownerList', authMiddleware.checkToken, getOwnerList)
 router.post('/owner', authMiddleware.checkToken,  upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), createOwner)
 router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
-router.delete('/owner/:id', authMiddleware.checkToken, deleteOwner)
+router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
 /**
  * Function that get profile data

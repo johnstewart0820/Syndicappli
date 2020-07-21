@@ -47,13 +47,13 @@ function getOwnerList(uid, data) {
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
         search_key = '%' + data.search_key + '%'
-        let params = [search_key];
+        let params = [search_key, data.status];
         if (data.role !== "all") {
             query += 'and users.owner_role = ? ';
             params.push(data.role)
@@ -114,8 +114,8 @@ function getCountOwnerList(uid, data) {
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
-        let params = [search_key];
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? `
+        let params = [search_key, data.status];
         if (data.role !== "all") {
             query += 'and users.owner_role = ? ';
             params.push(data.role)

@@ -42,17 +42,17 @@ function getManagerList(uid, data) {
       let query = `SELECT
       ifnull(sum(a.count), 0) count, u.userID ID, u.firstname, u.lastname, u.email
       FROM
-      users u 
-      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = ? 
+      (select * from users where permission = ?) u 
+      LEFT JOIN user_relationship r on u.userID = r.userID
       LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
       LEFT JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
       LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
       WHERE
-      u.firstname like ? and u.lastname like ? and u.created_by = ? 
+      u.firstname like ? and u.lastname like ? and u.created_by = ?
       AND u.usertype = "manager" `
       
       search_key = '%' + data.search_key + '%'
-      let params = [data.status, search_key, search_key, uid];
+      let params = [ data.status, search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
@@ -110,8 +110,8 @@ function getCountManagerList(uid, data) {
       let query = `SELECT
       sum(a.count) count, u.userID, u.firstname, u.lastname, u.email
       FROM
-      users u 
-      LEFT JOIN user_relationship r on u.userID = r.userID and u.permission = ? 
+      (select * from users where permission = ?) u 
+      LEFT JOIN user_relationship r on u.userID = r.userID 
       LEFT JOIN buildings b ON b.buildingID = r.relationID and b.permission = "active"
       LEFT JOIN companies c ON c.companyID = b.companyID and c.permission = "active"
       LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
@@ -120,7 +120,7 @@ function getCountManagerList(uid, data) {
       AND u.usertype = "manager" `
       
       search_key = '%' + data.search_key + '%'
-      let params = [data.status, search_key, search_key, uid];
+      let params = [ data.status, search_key, search_key, uid];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
