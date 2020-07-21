@@ -38,18 +38,31 @@ var managerModel = {
  */
 function getManagerList(uid, data) {
     return new Promise((resolve, reject) => {
-      let query = `Select *, u.userID ID, u.email email from ` + table.USERS + 
-                  ` u left join ` + table.USER_RELATIONSHIP + 
-                  ` r using (userID) left join ` + table.BUILDINGS + 
-                  ` b on b.buildingID = r.relationID ` +
-                  ` where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? `
+      let query = `SELECT
+      u.userID ID,
+      u.firstname firstname,
+      u.lastname lastname,
+      u.email email,
+      u.phone phone 
+      FROM
+      users u
+      LEFT JOIN user_relationship r USING ( userID )
+      LEFT JOIN buildings b ON r.relationID = b.buildingID
+      LEFT JOIN companies c ON c.companyID = b.companyID 
+      WHERE
+      u.firstname like ? and u.lastname like ? and
+      u.permission = ? 
+      AND u.usertype = "manager" 
+      AND b.companyID = ? `
+
       search_key = '%' + data.search_key + '%'
-      let params = [search_key, search_key, uid];
+      let params = [search_key, search_key, data.status, data.companyID];
       if (data.buildingID != -1) {
-        query += ` and b.buildingID = ?`
+        query += ` and b.buildingID = ? `
         params.push(data.buildingID)
       }
-      
+
+      query += ` GROUP BY u.userID `
       sort_column = Number(data.sort_column);
       row_count = Number(data.row_count);
       page_num = Number(data.page_num);
@@ -64,7 +77,7 @@ function getManagerList(uid, data) {
           else if (sort_column === 2)
             query += ' order by u.email ';
           else if (sort_column === 3) {
-            query += ' order by u.phone'
+            query += ' order by u.phone '
           }
           
           query += data.sort_method;
@@ -89,18 +102,32 @@ function getManagerList(uid, data) {
  */
 function getCountManagerList(uid, data) {
     return new Promise((resolve, reject) => {
-      let query = `Select count(*) count from ` + table.USERS + 
-      ` u left join ` + table.USER_RELATIONSHIP + 
-      ` r using (userID) left join ` + table.BUILDINGS + 
-      ` b on b.buildingID = r.relationID ` +
-      ` where u.permission = "active" and u.usertype = "manager" and u.firstname like ? and u.lastname like ? `
+      let query = `SELECT
+      u.userID ID,
+      u.firstname firstname,
+      u.lastname lastname,
+      u.email email,
+      u.phone phone 
+      FROM
+      users u
+      LEFT JOIN user_relationship r USING ( userID )
+      LEFT JOIN buildings b ON r.relationID = b.buildingID
+      LEFT JOIN companies c ON c.companyID = b.companyID 
+      WHERE
+      u.firstname like ? and u.lastname like ? and
+      u.permission = ? 
+      AND u.usertype = "manager" 
+      AND b.companyID = ? `
+
       search_key = '%' + data.search_key + '%'
-      let params = [search_key, search_key, uid];
+      let params = [search_key, search_key, data.status, data.companyID];
       if (data.buildingID != -1) {
-        query += ` and b.buildingID = ?`
+        query += ` and b.buildingID = ? `
         params.push(data.buildingID)
       }
-     
+
+      query += ` GROUP BY u.userID `
+      query = `select count(*) count from(` + query + `) t`
       db.query(query, params , (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })

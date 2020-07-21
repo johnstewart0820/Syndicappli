@@ -41,13 +41,13 @@ router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 router.delete('/building/:id', authMiddleware.checkToken, deleteBuilding)
 
 /**
- * manager api
+ * team api
  */
-router.post('/managerList', authMiddleware.checkToken, getManagerList)
-router.post('/manager', authMiddleware.checkToken, upload.single('logo'), createManager)
-router.get('/manager/:id', authMiddleware.checkToken, getManager)
-router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
-router.delete('/manager/:id', authMiddleware.checkToken, deleteManager)
+router.post('/teamList', authMiddleware.checkToken, getManagerList)
+router.post('/team', authMiddleware.checkToken, upload.single('logo'), createManager)
+router.get('/team/:id', authMiddleware.checkToken, getManager)
+router.put('/team/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
+router.delete('/team/:id', authMiddleware.checkToken, deleteManager)
 
 /**
  * owner api
