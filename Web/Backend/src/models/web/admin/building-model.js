@@ -44,9 +44,7 @@ function getCompanyListByUser(uid) {
     return new Promise((resolve, reject) => {
         let query = `select c.*
                     from ` + table.COMPANIES + ` c
-                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.type = 'company' and ur.relationID = c.companyID
-                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where c.permission = 'active' and u.userID = ?`
+                    where c.permission = 'active' and c.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where type = 'company' and userID = ?)`
 
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
@@ -69,9 +67,9 @@ function getBuildingListByCompany(uid, data) {
     return new Promise((resolve, reject) => {
         let query = ``
         if(data.companyID == -1){
-            query = `select * from ` + table.BUILDINGS + ` where permission = 'active' and companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company')`
+            query = `select b.* from ` + table.BUILDINGS + ` b left join ` + table.COMPANIES + ` c on c.companyID = b.companyID where c.permission = 'active' and b.permission = 'active' and b.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company')`
         } else {
-            query = `select * from ` + table.BUILDINGS + ` where permission = 'active' and companyID = ?`
+            query = `select b.* from ` + table.BUILDINGS + ` b left join ` + table.COMPANIES + ` c on c.companyID = b.companyID where c.permission = 'active' and b.permission = 'active' and b.companyID = ?`
         }
 
         db.query(query, [ data.companyID == -1 ? uid : data.companyID ], (error, rows, fields) => {
