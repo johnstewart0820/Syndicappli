@@ -406,7 +406,7 @@ function delete_apartments(data, id) {
                         for (let i in apartments) {
                             let query = `Delete from ` + table.VOTE_AMOUNT_OF_PARTS + ` where apartmentID = ?`
                             db.query(query, [apartments[i].apartmentID], function (error, results, fields) {
-                                if (error ){
+                                if (error ){ 
                                     reject({ message: message.INTERNAL_SERVER_ERROR });
                                 }
                             })
@@ -471,8 +471,6 @@ function updateOwner(uid, data) {
         })
     })
 }
-
-
 
 /**
  * update owner status

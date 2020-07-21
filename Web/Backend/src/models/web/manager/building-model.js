@@ -36,9 +36,10 @@ function getManagerCompanyListByUser(uid) {
     return new Promise((resolve, reject) => {
         let query = `select c.*
                     from ` + table.COMPANIES + ` c
-                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.type = 'company' and ur.relationID = c.companyID
+                    left join ` + table.BUILDINGS + ` b on c.companyID = b.companyID
+                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = b.buildingID and ur.type = "building"
                     left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where c.permission = 'active' and u.userID = ?`
+                    where c.permission = 'active' and u.userID = ? group by u.userID`
 
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
