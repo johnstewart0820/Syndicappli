@@ -85,13 +85,15 @@ function createOwner_info(uid, data) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR });
                                         } else {
                                             let saID = rows[0].userID
-                                            for (let i in buildings) {
-                                                let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
-                                                await db.query(query, [saID, "building", buildings[i].buildingID], (error, result, fields) => {
-                                                    if (error) {
-                                                        reject({ message: message.INTERNAL_SERVER_ERROR });
-                                                    }
-                                                })                                                 
+                                            if (buildings.length > 0) {
+                                                for (let i in buildings) {
+                                                    let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
+                                                    await db.query(query, [saID, "building", buildings[i].buildingID], (error, result, fields) => {
+                                                        if (error) {
+                                                            reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                        }
+                                                    })                                                 
+                                                }
                                             }
                                             sendMail(mail.TITLE_SUBACCOUNT_INVITE, data.email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword, randomToken)
                                             .then((response) => {
