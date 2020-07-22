@@ -17,9 +17,16 @@ var router = express.Router()
 
 const authMiddleware = require('../../middleware/auth-middleware')
 const ownerService = require('../../services/web/owner/owner-service')
+const adminService = require('../../services/web/owner/admin-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
+
+/**
+ * profile api
+ */
+router.get('/profile', authMiddleware.checkToken, getProfile)
+router.post('/profile', authMiddleware.checkToken, upload.single('avatar'), updateProfile)
 
 /**
  * owner api
@@ -30,6 +37,49 @@ router.post('/subAccount/:id', authMiddleware.checkToken, getOwner)
 router.put('/subAccount/:id', authMiddleware.checkToken, updateOwner)
 router.delete('/subAccount/:id', authMiddleware.checkToken, deleteOwner)
 
+
+///////////////////////////////////Profile/////////////////////////////
+
+/**
+ * Function that get profile data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getProfile(req, res) {
+    let userId = req.decoded.uid
+
+    adminService.getProfile(userId).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update profile data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+
+
+function updateProfile(req, res) {
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let data = req.body
+    adminService.updateProfile(userId, data, file, userdata).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
 
 ///////////////////////////////////Owner/////////////////////////////
 
