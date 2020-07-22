@@ -113,7 +113,7 @@ function createOwner_info(uid, data) {
                         }
                     })
                 } else {
-                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                    reject({ message: message.COMPANY_ALREADY_EXIST });
                 }
             }
         })

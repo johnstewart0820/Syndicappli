@@ -34,6 +34,7 @@ const messages = {
     SEND_CHALLENGE_ERROR: 'Sorry, sending challenge email failed.',
     API_KEY_REQUIRED: 'API key is required for this functionality',
     COMPANY_ALREADY_EXIST: 'Company is already exist.',
+    OWNER_ALREADY_EXIST: 'Owner is already exist.',
     MANAGER_ALREADY_EXIST: 'Manager is already exist.',
     HAS_NO_PERMISSION: "You don't have a permission to see or edit this section.",
     BUILDING_NOT_EXSIT: "Building Information does not exist.",
