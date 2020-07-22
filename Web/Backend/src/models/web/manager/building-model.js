@@ -147,20 +147,28 @@ function managerCreateBuilding(uid, data) {
                                 } else {
                                     if(rows.length > 0){
                                         let buildingID = rows[0] .buildingID
-                                        query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
-                                        let vote_branches = []
-                                        let item
-                                        for ( var i = 0 ; i < data.vote_branches.length ; i++){
-                                            item = data.vote_branches[i]
-                                            vote_branches.push([buildingID, item.name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
-                                        }
-                                        db.query(query, [vote_branches],  (error, rows, fields) => {
+                                        let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) values (?, ?, ?)`
+                                        db.query(query, [rows[0].userID, "building", buildingID], (error, rows, fields) => {
                                             if (error) {
                                                 reject({ message: message.INTERNAL_SERVER_ERROR });
                                             } else {
-                                                resolve("OK")
+                                                query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
+                                                let vote_branches = []
+                                                let item
+                                                for ( var i = 0 ; i < data.vote_branches.length ; i++){
+                                                    item = data.vote_branches[i]
+                                                    vote_branches.push([buildingID, item.name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
+                                                }
+                                                db.query(query, [vote_branches],  (error, rows, fields) => {
+                                                    if (error) {
+                                                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                    } else {
+                                                        resolve("OK")
+                                                    }
+                                                })
                                             }
                                         })
+                                        
                                     } else {
                                         reject({ message: message.BUILDING_NOT_EXSIT });
                                     }
