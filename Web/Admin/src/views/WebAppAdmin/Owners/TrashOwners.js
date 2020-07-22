@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
-import MyTable from '../../../components/MyTable';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AdminService from '../../../services/api.js';
 import MySelect from '../../../components/MySelect';
 import Grid from '@material-ui/core/Grid';
-import CloseIcon from '@material-ui/icons/Close';
-import AddOwner from './AddOwner';
-import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -18,6 +14,7 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import useStyles from './useStyles';
+import TrashTable from 'components/TrashTable.js';
 const Owners = (props) => {
   const { history } = props;
 
@@ -99,7 +96,7 @@ const Owners = (props) => {
   }, [companyID]);
   useEffect(() => {
     if (accessOwners !== 'denied') {
-      getOwners();
+      getTrashOwners();
     }
   }, [page_num, row_count, sort_column, sort_method, buildingID, role]);
   const cellList = [
@@ -108,22 +105,42 @@ const Owners = (props) => {
     { key: 'email', field: 'Email' },
     { key: 'phone', field: 'Téléphone' },
     { key: 'owner_role', field: 'Role' },
-    { key: 'count', field: 'Lot' }
+    { key: 'count', field: 'Lot' },
+    { key: '', field: ''}
   ];
   const columns = [];
   for (let i = 0; i < 6; i++)
     columns[i] = 'asc';
-  const handleClickEdit = (id, buildingid) => {
-    history.push('/admin/owners/edit?id=' + id + '&&buildingID=' + buildingid);
-  };
-  const handleClickDelete = (id) => {
-    if (accessOwners === 'edit') {
-      setOpenDelete(true);
-      setDeleteId(id);
-    } else {
-      setOpenDialog(true);
+    const handleClickRestore = (id,buildingID) => {
+        let data={
+            'status': 'active'
+        }
+      AdminService.deleteOwner(id,data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Restored successfully!");
+              getTrashOwners();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
     }
-  };
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
@@ -155,17 +172,24 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            company.push('Tout');
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+          switch(response.data.code){
+            case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                company.push('Tout');
+                data.companylist.map((item) => (
+                  company.push(item.name)
+                )
+                );
+                setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -188,17 +212,24 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            building.push('Tout');
-            data.buildinglist.map((item) => (
-              building.push(item.name)
-            )
-            );
-            setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+          switch(response.data.code){
+            case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                building.push('Tout');
+                data.buildinglist.map((item) => (
+                  building.push(item.name)
+                )
+                );
+                setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -207,7 +238,7 @@ const Owners = (props) => {
         }
       );
   }
-  const getOwners = () => {
+  const getTrashOwners = () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
@@ -215,23 +246,32 @@ const Owners = (props) => {
       'sort_column': sort_column,
       'sort_method': sort_method,
       'role': owner_role[role],
-      'buildingID': buildingID
+      'buildingID': buildingID,
+      'companyID': companyID,
+      'status': 'trash'
     }
     setVisibleIndicator(true);
     AdminService.getOwnerList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.ownerlist);
+          switch(response.data.code){
+            case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                if (!data.totalpage)
+                  setTotalPage(1);
+                else
+                  setTotalPage(data.totalpage);
+                setDataList(data.ownerlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -292,7 +332,7 @@ const Owners = (props) => {
       </div>
       <div className={classes.body}>
 
-        <MyTable
+        <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -301,9 +341,9 @@ const Owners = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickEdit={handleClickEdit}
-          onClickDelete={handleClickDelete}
+          onClickRestore={handleClickRestore}
           type="owner"
+          access={accessOwners}
         />
       </div>
       <Dialog

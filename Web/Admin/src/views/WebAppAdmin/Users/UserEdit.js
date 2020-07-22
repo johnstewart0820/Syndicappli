@@ -70,19 +70,25 @@ const UserEdit = (props) => {
         .then(
            response => {
             setVisibleIndicator(false);
-            if (response.data.code !== 200) {
-              ToastsStore.error(response.data.message);
-            } else {
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              let companies = [];
-              data.companylist.map((item, i) => (
-                companies[i] = { label: item.name, value: item.companyID }
-              )
-              );
-               setCompanyList(data.companylist);
-              globalActions.setMultiSuggestions(companies);
-              console.log('companylist:',companyList)
+            switch(response.data.code){
+              case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                let companies = [];
+                data.companylist.map((item, i) => (
+                  companies[i] = { label: item.name, value: item.companyID }
+                )
+                );
+                 setCompanyList(data.companylist);
+                globalActions.setMultiSuggestions(companies);
+                break;
+              case 401:
+                authService.logout();
+                history.push('/login');
+                window.location.reload();
+                break;
+              default:
+                ToastsStore.error(response.data.message);
             }
           },
           error => {
@@ -101,42 +107,53 @@ const UserEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            const profile = data.user;
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhoneNumber(profile.phone);
-            setAvatarUrl(profile.photo_url);
-            setCompaniesPermission(role_permission.indexOf(profile.role_companies));
-            setManagersPermission(role_permission.indexOf(profile.role_managers));
-            setBuildingsPermission(role_permission.indexOf(profile.role_buildings));
-            setOwnersPermission(role_permission.indexOf(profile.role_owners));
-            setOrdersPermission(role_permission.indexOf(profile.role_orders));
-            setProductsPermission(role_permission.indexOf(profile.role_products));
-            setDiscountodesPermission(role_permission.indexOf(profile.role_discountcodes));
-            setUsersPermission(role_permission.indexOf(profile.role_users));
-            let companyID = [];
-            data.companylist.map((item, i) => (
-              companyID[i] = item.relationID
-            )
-            );
-            let companies = [];
-            for(let i = 0 ; i < companyID.length; i++)
-              for(let j = 0; j < companyList.length; j++)
-                if(companyID[i] === companyList[j].companyID){
-                  companies[i] = {label:companyList[j].name,value:companyList[j].companyID};
-                  break;
-                }
-            globalActions.setMultiTags(companies);
-            globalActions.setMultiID(companyID);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              const profile = data.user;
+              setLastName(profile.lastname);
+              setFirstName(profile.firstname);
+              setEmail(profile.email);
+              setPhoneNumber(profile.phone);
+              setAvatarUrl(profile.photo_url);
+              setCompaniesPermission(role_permission.indexOf(profile.role_companies));
+              setManagersPermission(role_permission.indexOf(profile.role_managers));
+              setBuildingsPermission(role_permission.indexOf(profile.role_buildings));
+              setOwnersPermission(role_permission.indexOf(profile.role_owners));
+              setOrdersPermission(role_permission.indexOf(profile.role_orders));
+              setProductsPermission(role_permission.indexOf(profile.role_products));
+              setDiscountodesPermission(role_permission.indexOf(profile.role_discountcodes));
+              setUsersPermission(role_permission.indexOf(profile.role_users));
+              let companyID = [];
+              data.companylist.map((item, i) => (
+                companyID[i] = item.relationID
+              )
+              );
+              let companies = [];
+              for(let i = 0 ; i < companyID.length; i++)
+                for(let j = 0; j < companyList.length; j++)
+                  if(companyID[i] === companyList[j].companyID){
+                    companies[i] = {label:companyList[j].name,value:companyList[j].companyID};
+                    break;
+                  }
+              globalActions.setMultiTags(companies);
+              globalActions.setMultiID(companyID);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+              globalActions.setMultiTags([]);
+              globalActions.setMultiID([]);
           }
         },
         error => {
+          globalActions.setMultiTags([]);
+          globalActions.setMultiID([]);
           ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
@@ -275,12 +292,19 @@ const UserEdit = (props) => {
         .then(
             response => {
                 setVisibleIndicator(false);
-                if (response.data.code !== 200) {
-                    ToastsStore.error(response.data.message);
-                } else {
+                switch(response.data.code){
+                  case 200:
                     const data = response.data.data;
                     localStorage.setItem("token", JSON.stringify(data.token));
                     ToastsStore.success('Updated user successfully!');
+                    break;
+                  case 401:
+                    authService.logout();
+                    history.push('/login');
+                    window.location.reload();
+                    break;
+                  default:
+                    ToastsStore.error(response.data.message);
                 }
             },
             error => {
@@ -329,7 +353,12 @@ const UserEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                      <input 
+                        className={classes.input} 
+                        type="file" id="img_front" 
+                        onChange={handleLoadFront} 
+                        disabled={(accessUsers === 'see' ? true : false)}
+                      />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
@@ -350,7 +379,8 @@ const UserEdit = (props) => {
                       no={'No companies found'}
                       all={globalState.multi_suggestions}
                       onSelected={handleChangeCompanies}
-                      disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessUsers === 'see' ? true : false)}
+                      width="80%"
                     />
                     {errorsCompanies.length > 0 &&
                       <span className={classes.error}>{errorsCompanies}</span>}
@@ -361,14 +391,15 @@ const UserEdit = (props) => {
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
+              <Grid xs={12} sm={6} item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
                     className={classes.text}
                     variant="outlined"
                     value={lastname}
                     onChange={handleChangeLastName}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
+                    fullWidth
                   />
                 </Grid>
                 {errorsLastname.length > 0 &&
@@ -377,14 +408,15 @@ const UserEdit = (props) => {
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Prénom</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
+              <Grid xs={12} sm={6} item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
                     className={classes.text}
                     variant="outlined"
                     value={firstname}
                     onChange={handleChangeFirstName}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
+                    fullWidth
                   />
                 </Grid>
                 {errorsFirstname.length > 0 &&
@@ -393,14 +425,15 @@ const UserEdit = (props) => {
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Email</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
+              <Grid xs={12} sm={6} item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
                     className={classes.text}
                     variant="outlined"
                     value={email}
                     onChange={handleChangeEmail}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
+                    fullWidth
                   />
                 </Grid>
                 {errorsEmail.length > 0 &&
@@ -409,14 +442,15 @@ const UserEdit = (props) => {
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
+              <Grid xs={12} sm={6} item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
                     className={classes.text}
                     variant="outlined"
                     value={phonenumber}
                     onChange={handleChangePhoneNumber}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
+                    fullWidth
                   />
                 </Grid>
                 {errorsPhonenumber.length > 0 &&
@@ -435,7 +469,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={companiesPermission}
                     onChangeSelect={handleChangeCompaniesPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item container direction="column">
@@ -445,7 +479,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={managersPermission}
                     onChangeSelect={handleChangeManagersPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item container direction="column">
@@ -455,7 +489,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={buildingsPermission}
                     onChangeSelect={handleChangeBuildingsPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item container direction="column">
@@ -465,7 +499,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={ownersPermission}
                     onChangeSelect={handleChangeOwnersPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item container direction="column">
@@ -475,7 +509,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={ordersPermission}
                     onChangeSelect={handleChangeOrdersPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item container direction="column">
@@ -485,7 +519,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={productsPermission}
                     onChangeSelect={handleChangeProductsPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item container direction="column">
@@ -495,7 +529,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={discountCodesPermission}
                     onChangeSelect={handleChangeDiscountCodesPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item container direction="column">
@@ -505,7 +539,7 @@ const UserEdit = (props) => {
                     data={permissionList}
                     value={usersPermission}
                     onChangeSelect={handleChangeUsersPermission}
-                    disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
               </Grid>
@@ -513,7 +547,7 @@ const UserEdit = (props) => {
           </Grid>
           <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
             <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog} />
-            <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessUsers === 'see' ? 'disabled' : !'disabled')} />
+            <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessUsers === 'see' ? true : false)} />
           </Grid>
         </div>
       </Grid>

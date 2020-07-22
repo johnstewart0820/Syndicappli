@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
-import AddBuilding from './AddBuilding';
+import AddTeamMember from './AddTeamMember';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
@@ -13,8 +13,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
-import Buildings from './Buildings';
-import TrashBuildings from './TrashBuildings';
+import useGlobal from 'Global/global';
+import TrashTeamMembers from './TrashTeamMembers';
+import TeamMembers from './TeamMembers';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -54,8 +55,8 @@ const Main = (props) => {
     //   history.push("/admin/login");
     //   window.location.reload();
     // }
-
-    const accessBuildings = authService.getAccess('role_buildings');
+    const [globalState,globalActions] = useGlobal();
+    const accessTeam = authService.getAccess('role_team');
     const [value, setValue] = React.useState(0);
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
@@ -65,13 +66,15 @@ const Main = (props) => {
     };
     const handleClose = () => {
         setOpen(false);
+        globalActions.setMultiTags([]);
+        globalActions.setMultiSuggestions([]);
     };
     const handleAdd = () => {
-        ToastsStore.success("Added New Building successfully!");
+        ToastsStore.success("Added New Team Member successfully!");
         setRefresh(!refresh);
     };
     const handleClickAdd = () => {
-        if (accessBuildings === 'edit') {
+        if (accessTeam === 'edit') {
             setOpen(true);
         }
     };
@@ -83,7 +86,7 @@ const Main = (props) => {
                     <Grid item xs={12} sm={6} container justify="flex-start" >
                         <Grid item>
                             <Typography variant="h2" className={classes.titleText}>
-                                <b>Mes Immeubles</b>
+                                <b>Mon équipe</b>
                             </Typography>
                         </Grid>
                     </Grid>
@@ -92,12 +95,12 @@ const Main = (props) => {
                             {
                                 value === 0 ?
                                     <MyButton 
-                                        name={"Nouvel Immeubles"} 
+                                        name={"Nouveau Équipe"} 
                                         color={"1"} 
                                         onClick={handleClickAdd} 
-                                        style={{ visibility: accessBuildings === 'edit' ? 'visible' : 'hidden' }}
+                                        style={{ visibility: accessTeam === 'edit' ? 'visible' : 'hidden' }}
                                     />
-                                    : <MyButton name={"Nouvel Immeubles"} style={{ visibility: 'hidden' }} />
+                                    : <MyButton name={"Nouveau Équipe"} style={{ visibility: 'hidden' }} />
                             }
                             <Dialog
                                 open={open}
@@ -105,11 +108,11 @@ const Main = (props) => {
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
                             >
-                                <Grid item container className={classes.padding} >
-                                    <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
-                                    <Grid xs={12} item ><p id="transition-modal-title" className={classes.modalTitle}><b>Nouvel immmeuble</b></p></Grid>
+                                <Grid item container className={classes.padding} justify="space-between">
+                                    <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
+                                    <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Gestionnaire</h2></Grid>
                                 </Grid>
-                                <AddBuilding onCancel={handleClose} onAdd={handleAdd} />
+                                <AddTeamMember onCancel={handleClose} onAdd={handleAdd} refresh={refresh}/>
                             </Dialog>
                         </Grid>
                     </Grid>
@@ -123,16 +126,16 @@ const Main = (props) => {
                         }
                     }}
                 >
-                    <Tab xs={12} sm={4} label="Immeubles" {...a11yProps(0)} className={classes.tabTitle} />
+                    <Tab xs={12} sm={4} label="Équipe" {...a11yProps(0)} className={classes.tabTitle} />
                     <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} />
                 </Tabs>
             </div>
             <div className={classes.body}>
                 <TabPanel value={value} index={0}>
-                    <Buildings refresh={refresh} />
+                    <TeamMembers refresh={refresh} />
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <TrashBuildings />
+                    <TrashTeamMembers />
                 </TabPanel>
             </div>
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />

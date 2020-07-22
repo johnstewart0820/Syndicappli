@@ -10,9 +10,11 @@ import IdCard from 'components/IdCard';
 import { AddOwnerStyles as useStyles } from './useStyles';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import authService from 'services/authService';
+import {withRouter} from 'react-router-dom';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddOwner = (props) => {
+    const {history} = props;
     const classes = useStyles();
     const [state, setState] = React.useState(false);
     const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
@@ -188,23 +190,30 @@ const AddOwner = (props) => {
         AdminService.getCompanyListByUser()
             .then(
                 response => {
-                    console.log(response.data);
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        company.splice(0,company.length);
-                        console.log('success');
-                        const data = response.data.data;
-                        company.push('Tout');
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        data.companylist.map((item) => (
-                            company.push(item.name)
-                        )
-                        );
-                        setCompany(company)
-                        setCompanyList([{'companyID':-1},...data.companylist]);
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            company.splice(0,company.length);
+                            console.log('success');
+                            const data = response.data.data;
+                            company.push('Tout');
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            data.companylist.map((item) => (
+                                company.push(item.name)
+                            )
+                            );
+                            setCompany(company)
+                            setCompanyList([{'companyID':-1},...data.companylist]);
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
+
                 },
                 error => {
                     ToastsStore.error('Cant connect to the server!');
@@ -214,33 +223,36 @@ const AddOwner = (props) => {
     }
     const getBuildings = () => {
         const requestData = {
-            'search_key': '',
-            'page_num': 0,
-            'row_count': 20,
-            'sort_column': -1,
-            'sort_method': 'asc',
             'companyID': companyID
         }
         setVisibleIndicator(true);
-        AdminService.getBuildingList(requestData)
+        AdminService.getBuildingListByCompany(requestData)
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        buildingList.splice(0,buildingList.length);
-                        building.splice(0,building.length);
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        data.buildinglist.map((item) => (
-                            building.push(item.name)
-                        )
-                        );
-                        setBuildingList(data.buildinglist);
-                        setBuilding(building)
-                        setBuildingID(data.buildinglist[0].buildingID);
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            buildingList.splice(0,buildingList.length);
+                            building.splice(0,building.length);
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            data.buildinglist.map((item) => (
+                                building.push(item.name)
+                            )
+                            );
+                            setBuildingList(data.buildinglist);
+                            setBuilding(building)
+                            setBuildings(0);
+                            setBuildingID(data.buildinglist[0].buildingID);
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -255,22 +267,29 @@ const AddOwner = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        buildingVote.splice(0,buildingVote.length);
-                        lotsList.splice(0,lotsList.length);
-                        setLotsList(lotsList);
-                        setStateLots(!stateLots);
-
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        const vote_list = data.vote_list;
-                        vote_list.map((vote) =>
-                            buildingVote.push(vote)
-                        )
-                        setBuildingVote(buildingVote);
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            buildingVote.splice(0,buildingVote.length);
+                            lotsList.splice(0,lotsList.length);
+                            setLotsList(lotsList);
+                            setStateLots(!stateLots);
+    
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            const vote_list = data.vote_list;
+                            vote_list.map((vote) =>
+                                buildingVote.push(vote)
+                            )
+                            setBuildingVote(buildingVote);
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -316,14 +335,21 @@ const AddOwner = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        props.onAdd();
-                        handleClose();
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            props.onAdd();
+                            handleClose();
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -598,4 +624,4 @@ const AddOwner = (props) => {
     );
 };
 
-export default AddOwner;
+export default withRouter(AddOwner);

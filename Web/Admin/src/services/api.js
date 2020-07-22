@@ -30,14 +30,13 @@ class AdminService {
   //My Account
   updateProfile(data) {
     return axios.post(API_URL + 'web/admin/profile',
-      // {lastname: data.lastname , firstname: data.firstname ,
-      // email: data.email , phone: data.phone}, 
       data,
       { headers: authHeader() });
   }
   getProfile() {
     return axios.get(API_URL + 'web/admin/profile', { headers: authHeader() });
   }
+
   //User
   getUserList(data) {
     return axios.post(API_URL + 'web/admin/userList', data, { headers: authHeader() });
@@ -54,9 +53,10 @@ class AdminService {
     return axios.put(API_URL + 'web/admin/user/' + id, data,
       { headers: authHeader() });
   }
-  deleteUser(id) {
-    return axios.delete(API_URL + 'web/admin/user/' + id, { headers: authHeader() });
+  deleteUser(id, status) {
+    return axios.post(API_URL + 'web/admin/user/' + id + '/delete', status, { headers: authHeader() });
   }
+
   //Company Part
   getCompanyList(data) {
     return axios.post(API_URL + 'web/admin/companyList',
@@ -75,10 +75,11 @@ class AdminService {
   getCompany(id) {
     return axios.get(API_URL + 'web/admin/company/' + id, { headers: authHeader() });
   }
-  //Building Part
-  getCompanyListByUser() {
-    return axios.get(API_URL + 'web/admin/companyListByUser', { headers: authHeader() });
+  deleteCompany(id, status) {
+    return axios.post(API_URL + 'web/admin/company/' + id + '/delete', status, { headers: authHeader() });
   }
+
+  //Building Part
   getBuildingList(data) {
     return axios.post(API_URL + 'web/admin/buildingList',
       data,
@@ -96,6 +97,10 @@ class AdminService {
   getBuilding(id) {
     return axios.get(API_URL + 'web/admin/building/' + id, { headers: authHeader() });
   }
+  deleteBuilding(id, status) {
+    return axios.post(API_URL + 'web/admin/building/' + id + '/delete', status, { headers: authHeader() });
+  }
+
   //Owner Part
   getOwnerList(data) {
     return axios.post(API_URL + 'web/admin/ownerList',
@@ -107,13 +112,21 @@ class AdminService {
       data,
       { headers: authHeader() });
   }
+  setSuspendOwner(id, data) {
+    return axios.put(API_URL + 'web/admin/owner/' + id + '/status', data,
+      { headers: authHeader() });
+  }
   updateOwner(id, data) {
     return axios.put(API_URL + 'web/admin/owner/' + id, data,
       { headers: authHeader() });
   }
-  getOwner(id,data) {
-    return axios.post(API_URL + 'web/admin/owner/'+ id ,data, { headers: authHeader() });
+  getOwner(id, data) {
+    return axios.post(API_URL + 'web/admin/owner/' + id, data, { headers: authHeader() });
   }
+  deleteOwner(id, status) {
+    return axios.post(API_URL + 'web/admin/owner/' + id + '/delete', status, { headers: authHeader() });
+  }
+
   //Manager Part
   getManagerList(data) {
     return axios.post(API_URL + 'web/admin/managerList',
@@ -132,16 +145,70 @@ class AdminService {
   getManager(id) {
     return axios.get(API_URL + 'web/admin/manager/' + id, { headers: authHeader() });
   }
+  setSuspendManager(id, data) {
+    return axios.put(API_URL + 'web/admin/manager/' + id + '/status', data,
+      { headers: authHeader() });
+  }
+  deleteManager(id, status) {
+    return axios.post(API_URL + 'web/admin/manager/' + id + '/delete', status, { headers: authHeader() });
+  }
+
+  getBuildingListByCompany(data) {
+    return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
+  }
+  getCompanyListByUser() {
+    return axios.get(API_URL + 'web/admin/companyListByUser', { headers: authHeader() });
+  }
 }
 export class OwnerService {
-
+  //My Account
+  updateProfile(data) {
+    return axios.post(API_URL + 'web/owner/profile',
+      data,
+      { headers: authHeader() });
+  }
+  getProfile() {
+    return axios.get(API_URL + 'web/owner/profile', { headers: authHeader() });
+  }
+  //SubAccount Part
+  getOwnerList(data) {
+    return axios.post(API_URL + 'web/owner/subAccountList',
+      data,
+      { headers: authHeader() });
+  }
+  createOwner(data) {
+    return axios.post(API_URL + 'web/owner/subAccount',
+      data,
+      { headers: authHeader() });
+  }
+  getOwner(id, data) {
+    return axios.post(API_URL + 'web/owner/subAccount/' + id, data, { headers: authHeader() });
+  }
+  deleteOwner(id) {
+    return axios.delete(API_URL + 'web/owner/subAccount/' + id, { headers: authHeader() });
+  }
 }
 
 export class ManagerService {
-  //Building Part
-  getCompanyListByUser() {
-    return axios.get(API_URL + 'web/manager/companyListByUser', { headers: authHeader() });
+  //My Account
+  updateProfile(data) {
+    return axios.post(API_URL + 'web/manager/profile',
+      data,
+      { headers: authHeader() });
   }
+  getProfile() {
+    return axios.get(API_URL + 'web/manager/profile', { headers: authHeader() });
+  }
+  //My Company
+  updateMyCompany(data) {
+    return axios.post(API_URL + 'web/manager/mycompany',
+      data,
+      { headers: authHeader() });
+  }
+  getMyCompany() {
+    return axios.get(API_URL + 'web/manager/mycompany', { headers: authHeader() });
+  }
+  //Building Part
   getBuildingList(data) {
     return axios.post(API_URL + 'web/manager/buildingList',
       data,
@@ -158,6 +225,62 @@ export class ManagerService {
   }
   getBuilding(id) {
     return axios.get(API_URL + 'web/manager/building/' + id, { headers: authHeader() });
+  }
+  deleteBuilding(id, status) {
+    return axios.post(API_URL + 'web/manager/building/' + id + '/delete', status, { headers: authHeader() });
+  }
+  //Owner Part
+  getOwnerList(data) {
+    return axios.post(API_URL + 'web/manager/ownerList',
+      data,
+      { headers: authHeader() });
+  }
+  createOwner(data) {
+    return axios.post(API_URL + 'web/manager/owner',
+      data,
+      { headers: authHeader() });
+  }
+  updateOwner(id, data) {
+    return axios.put(API_URL + 'web/manager/owner/' + id, data,
+      { headers: authHeader() });
+  }
+  getOwner(id, data) {
+    return axios.post(API_URL + 'web/manager/owner/' + id, data, { headers: authHeader() });
+  }
+  deleteOwner(id, status) {
+    return axios.post(API_URL + 'web/manager/owner/' + id + '/delete', status, { headers: authHeader() });
+  }
+  //Team Part
+  getTeamMemberList(data) {
+    return axios.post(API_URL + 'web/manager/teamList',
+      data,
+      { headers: authHeader() });
+  }
+  createTeamMember(data) {
+    return axios.post(API_URL + 'web/manager/team',
+      data,
+      { headers: authHeader() });
+  }
+  updateTeamMember(id, data) {
+    return axios.put(API_URL + 'web/manager/team/' + id, data,
+      { headers: authHeader() });
+  }
+  getTeamMember(id) {
+    return axios.get(API_URL + 'web/manager/team/' + id, { headers: authHeader() });
+  }
+  setSuspendTeamMember(id, data) {
+    return axios.put(API_URL + 'web/manager/team/' + id + '/status', data,
+      { headers: authHeader() });
+  }
+  deleteTeamMember(id, status) {
+    return axios.post(API_URL + 'web/manager/team/' + id + '/delete', status, { headers: authHeader() });
+  }
+
+  getCompanyListByUser() {
+    return axios.get(API_URL + 'web/manager/companyListByUser', { headers: authHeader() });
+  }
+  getBuildingListByCompany(data) {
+    return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
   }
 }
 

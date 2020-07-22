@@ -67,7 +67,7 @@ const Main = (props) => {
         setOpen(false);
     };
     const handleAdd = () => {
-        ToastsStore.success("Added New Owner successfully!");
+        ToastsStore.success("Added New User successfully!");
         setRefresh(!refresh);
     };
     const handleClickAdd = () => {
@@ -91,7 +91,12 @@ const Main = (props) => {
                         <Grid>
                             {
                                 value === 0 ?
-                                    <MyButton name={"Nouvel Utilisateur"} color={"1"} onClick={handleClickAdd} />
+                                    <MyButton 
+                                        name={"Nouvel Utilisateur"} 
+                                        color={"1"} 
+                                        onClick={handleClickAdd} 
+                                        style={{ visibility: accessUsers === 'edit' ? 'visible' : 'hidden' }}
+                                    />
                                     : <MyButton name={"Nouvel Utilisateur"} style={{ visibility: 'hidden' }} />
                             }
                             <Dialog

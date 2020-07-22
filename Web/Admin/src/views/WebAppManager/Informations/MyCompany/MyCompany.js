@@ -9,10 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../../components/MyButton';
 import {withRouter} from 'react-router-dom';
-import AdminService from '../../../../services/api.js';
+import {ManagerService as Service} from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
 import CircularProgress  from '@material-ui/core/CircularProgress';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -221,6 +220,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }));
+const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const MyCompany = (props) => {
   const {history} = props;
@@ -235,7 +235,7 @@ const MyCompany = (props) => {
   const [address , setAddress] = React.useState('');
   const [email , setEmail] = React.useState('');
   const [phone , setPhone] = React.useState('');
-
+  const [companyID, setCompanyID] = React.useState(-1);
   const [errorsName , setErrorsName] = React.useState('');
   const [errorsAddress , setErrorsAddress] = React.useState('');
   const [errorsEmail , setErrorsEmail] = React.useState('');
@@ -270,21 +270,29 @@ const MyCompany = (props) => {
   useEffect(()=>{
 
     setVisibleIndicator(true);
-    AdminService.getProfile()
+    ManagerService.getMyCompany()
     .then(      
       response => {        
-        setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          
-        } else {
-          localStorage.setItem("token", JSON.stringify(response.data.data.token));
-          const profile = response.data.data.profile;
-          setName(profile.name);
-          setAddress(profile.address);
-          setEmail(profile.email);
-          setPhone(profile.phone);
-          setAvatarUrl((AdminService.getProfileAvatar() + profile.photo_url));
-        }
+        setVisibleIndicator(false);
+        switch(response.data.code){
+          case 200:
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            const mycompany = response.data.data.profile;
+            setName(mycompany.name);
+            setAddress(mycompany.address);
+            setEmail(mycompany.email);
+            setPhone(mycompany.phone);
+            setAvatarUrl(mycompany.logo_url);
+            setCompanyID(mycompany.companyID);
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+        }  
       },
       error => {
         console.log('fail');        
@@ -307,23 +315,30 @@ const MyCompany = (props) => {
   }
   const setData = ()=>{
     let formdata = new FormData();
-
+    formdata.set('companyID', companyID);
     formdata.set('name', name);
     formdata.set('address', address);
     formdata.set('email', email);
     formdata.set('phone', phone);
-    formdata.set('avatar', avatar === null? '':avatar);
+    formdata.set('logo', avatar === null? '':avatar);
     setVisibleIndicator(true);
-    AdminService.updateProfile(formdata)
+    ManagerService.updateMyCompany(formdata)
     .then(      
       response => {        
-        console.log(response.data);
-         setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-        } else {
+         setVisibleIndicator(false); 
+         switch(response.data.code){
+          case 200:
             ToastsStore.success("Updated successfully!");
            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-        }
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+        } 
       },
       error => {
         ToastsStore.error(error);     

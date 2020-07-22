@@ -1,16 +1,23 @@
-import React, {  useEffect } from 'react';
-import {ToastsContainer, ToastsContainerPosition, ToastsStore} from 'react-toasts';
+import React, { useState, useEffect } from 'react';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { makeStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../../components/MyButton';
 import MySelect from '../../../../components/MySelect';
-import {withRouter} from 'react-router-dom';
-import AdminService from '../../../../services/api.js';
+import { withRouter } from 'react-router-dom';
+import { OwnerService as Service } from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
-import CircularProgress  from '@material-ui/core/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import SubAccountsTable from './components/SubAccountsTable';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -25,24 +32,24 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    '& .MuiOutlinedInput-multiline':{
+    '& .MuiOutlinedInput-multiline': {
       padding: 0
     },
-    '& .MuiOutlinedInput-input':{
-        [theme.breakpoints.up('xl')]: {
-          padding: '17px 25px',
-          fontSize: 22,
-        },
-        [theme.breakpoints.down('lg')]: {
-          padding: '12px 18px',
-          fontSize: 15,
-        },
-        [theme.breakpoints.down('md')]: {
-          padding: '8px 13px',
-          fontSize: 11,
-        },
+    '& .MuiOutlinedInput-input': {
+      [theme.breakpoints.up('xl')]: {
+        padding: '17px 25px',
+        fontSize: 22,
+      },
+      [theme.breakpoints.down('lg')]: {
+        padding: '12px 18px',
+        fontSize: 15,
+      },
+      [theme.breakpoints.down('md')]: {
+        padding: '8px 13px',
+        fontSize: 11,
+      },
     },
-    '& p':{
+    '& p': {
       marginBottom: 0
     }
   },
@@ -57,11 +64,11 @@ const useStyles = makeStyles(theme => ({
       minHeight: 33
     },
   },
-  title:{
+  title: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
   },
-  body:{
+  body: {
     [theme.breakpoints.up('xl')]: {
       borderRadius: 30,
     },
@@ -73,7 +80,7 @@ const useStyles = makeStyles(theme => ({
     },
     marginBottom: 40
   },
-  item:{
+  item: {
     marginTop: theme.spacing(5),
   },
   paper: {
@@ -84,7 +91,7 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     display: 'none',
-  }, 
+  },
   div_indicator: {
     width: '100%',
     height: '100%',
@@ -98,7 +105,7 @@ const useStyles = makeStyles(theme => ({
   indicator: {
     color: 'gray'
   },
-  backTitle:{
+  backTitle: {
     cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
@@ -110,33 +117,34 @@ const useStyles = makeStyles(theme => ({
       fontSize: 9,
     },
   },
-  error:{
-      color: 'red',
-      [theme.breakpoints.up('xl')]: {
-        fontSize: 18,
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize: 13,
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize: 9,
-      },
+  error: {
+    color: 'red',
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 18,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 13,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 9,
+    },
   },
-  headerTitle:{
-      [theme.breakpoints.up('xl')]: {
-        fontSize :35
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize :25
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize :18
-      },
+  headerTitle: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 35
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 25
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 18
+    },
   },
 }));
+const OwnerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const SubAccounts = (props) => {
-  const {history} = props;
+  const { history } = props;
 
   // const token = authService.getToken();    
   // if (!token) {
@@ -144,191 +152,257 @@ const SubAccounts = (props) => {
   //   window.location.reload();
   // }
   const classes = useStyles();
-  const [ownerTitle , setOwnerTitle] = React.useState('');
-  const [lastname , setLastName] = React.useState('');
-  const [firstname , setFirstName] = React.useState('');
+  const [ownerTitle, setOwnerTitle] = React.useState(0);
+  const [lastname, setLastName] = React.useState('');
+  const [firstname, setFirstName] = React.useState('');
   const [companyname, setCompanyName] = React.useState('');
-  const [email , setEmail] = React.useState('');
-  const [mobile , setMobile] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [mobile, setMobile] = React.useState('');
 
-  const [errorsOwnerTitle , setErrorsOwnerTitle] = React.useState('');
-  const [errorsLastName , setErrorsLastName] = React.useState('');
-  const [errorsFirstName , setErrorsFirstName] = React.useState('');
-  const [errorsCompanyName , setErrorsCompanyName] = React.useState('');
-  const [errorsEmail , setErrorsEmail] = React.useState('');
-  const [errorsMobile , setErrorsMobile] = React.useState('');
+  const [errorsOwnerTitle, setErrorsOwnerTitle] = React.useState('');
+  const [errorsLastName, setErrorsLastName] = React.useState('');
+  const [errorsFirstName, setErrorsFirstName] = React.useState('');
+  const [errorsCompanyName, setErrorsCompanyName] = React.useState('');
+  const [errorsEmail, setErrorsEmail] = React.useState('');
+  const [errorsMobile, setErrorsMobile] = React.useState('');
 
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const titleList=['','Mr','Mrs','Company'];
-  const items = [
-    {lastname: 'Doe' , firstname: 'John' , email: 'john@hotmail.hr', accept: false},
-    {lastname: 'Doe' , firstname: 'John' , email: 'john@hotmail.hr', accept: true},
-    {lastname: 'Doe' , firstname: 'John' , email: 'john@hotmail.hr', accept: true},
-  ]
-  const handleChangeLastName = (event)=>{
+  const titleList = ['', 'Mr', 'Mrs', 'Company'];
+
+  const [dataList, setDataList] = useState([]);
+  const [openDelete, setOpenDelete] = React.useState(false);
+
+  const [deleteId, setDeleteId] = useState(-1);
+
+  const handleChangeLastName = (event) => {
     setLastName(event.target.value);
   }
-  const handleChangeFirstName = (event)=>{
+  const handleChangeFirstName = (event) => {
     setFirstName(event.target.value);
   }
-  const handleChangeEmail = (event)=>{
+  const handleChangeEmail = (event) => {
     event.preventDefault();
-    let errorsMail = 
-          validEmailRegex.test(event.target.value)
-            ? ''
-            : 'Email is not valid!';
-          setEmail(event.target.value);
-          setErrorsEmail(errorsMail);
+    let errorsMail =
+      validEmailRegex.test(event.target.value)
+        ? ''
+        : 'Email is not valid!';
+    setEmail(event.target.value);
+    setErrorsEmail(errorsMail);
   }
-  const handleChangeMobile = (event)=>{
+  const handleChangeMobile = (event) => {
     setMobile(event.target.value);
   }
-  const handleChangeCompanyName = (event)=>{
+  const handleChangeCompanyName = (event) => {
     setCompanyName(event.target.value);
   }
-  const handleChangeOwnerTitle = (value)=>{
+  const handleChangeOwnerTitle = (value) => {
     setOwnerTitle(value);
   }
-  useEffect(()=>{
+  const handleClickViewDetails = () => {
 
+  }
+  const handleClickResend = () => {
+
+  }
+  const handleClickDelete = (id) => {
+    setOpenDelete(true);
+    setDeleteId(id);
+  };
+  const handleDelete = () => {
+    handleCloseDelete();
+    setDeleteId(-1);
     setVisibleIndicator(true);
-    AdminService.getProfile()
-    .then(      
-      response => {        
-        setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          
-        } else {
-          localStorage.setItem("token", JSON.stringify(response.data.data.token));
-          const profile = response.data.data.profile;
-          setLastName(profile.lastname);
-          setFirstName(profile.firstname);
-          setEmail(profile.email);
-          setMobile(profile.mobile);
-        }
-      },
-      error => {
-        console.log('fail');        
+    OwnerService.deleteOwner(deleteId)
+      .then(
+        response => {
           setVisibleIndicator(false);
-      }
-    );   
-  }, []);
-  const handleClickDelete = (num)=>{
-    
-  }
-  const onClickInvite = (event)=>{
-    let cnt = 0;
-    if(ownerTitle.length === 0) {setErrorsOwnerTitle('please enter select your owner title'); cnt++;}
-    else setErrorsOwnerTitle('');
-    if(lastname.length === 0) {setErrorsLastName('please enter your last name'); cnt++;}
-    else setErrorsLastName('');
-    if(firstname.length === 0) {setErrorsFirstName('please enter your first name'); cnt++;}
-    else setErrorsFirstName('');
-    if(ownerTitle !== 3 && companyname.length === 0) {setErrorsCompanyName('please enter your company name'); cnt++;}
-    else setErrorsCompanyName('');
-    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
-    else setErrorsEmail('');
-    if(mobile.length === 0) {setErrorsMobile('please enter your mobile number'); cnt++;}
-    else setErrorsMobile('');
-    if(cnt === 0) setData();
-  }
-  const setData = ()=>{
-    let formdata = new FormData();
-
-    formdata.set('lastname', lastname);
-    formdata.set('firstname', firstname);
-    formdata.set('email', email);
-    formdata.set('mobile', mobile);
-    setVisibleIndicator(true);
-    AdminService.updateProfile(formdata)
-    .then(      
-      response => {        
-        console.log(response.data);
-         setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-        } else {
-            ToastsStore.success("Updated successfully!");
-           localStorage.setItem("token", JSON.stringify(response.data.data.token));
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getOwners();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        ToastsStore.error(error);     
-         setVisibleIndicator(false);
-      }
-    );  
+      );
   }
-
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+  const onClickInvite = () => {
+    let cnt = 0;
+    if (ownerTitle.length === 0) { setErrorsOwnerTitle('please enter select your owner title'); cnt++; }
+    else setErrorsOwnerTitle('');
+    if (lastname.length === 0) { setErrorsLastName('please enter your last name'); cnt++; }
+    else setErrorsLastName('');
+    if (firstname.length === 0) { setErrorsFirstName('please enter your first name'); cnt++; }
+    else setErrorsFirstName('');
+    if (ownerTitle === 3 && companyname.length === 0) { setErrorsCompanyName('please enter your company name'); cnt++; }
+    else setErrorsCompanyName('');
+    if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
+    else setErrorsEmail('');
+    if (mobile.length === 0) { setErrorsMobile('please enter your mobile number'); cnt++; }
+    else setErrorsMobile('');
+    if (cnt === 0) createOwner();
+  }
+  const createOwner = () => {
+    let data = {
+      'firstname': firstname,
+      'lastname': lastname,
+      'ownertype': titleList[ownerTitle],
+      'email': email,
+      'mobile': mobile
+    }
+    setVisibleIndicator(true);
+    OwnerService.createOwner(data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Invited New Owner successfully!");
+              getOwners();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getOwners = () => {
+    const requestData = {
+      // 'search_key': '',
+      // 'page_num': page_num - 1,
+      // 'row_count': row_count,
+      // 'sort_column': sort_column,
+      // 'sort_method': sort_method,
+      // 'role': owner_role[role],
+      // 'buildingID': buildingID,
+      // 'companyID' : companyID,
+      // 'status': 'active'
+    }
+    setVisibleIndicator(true);
+    OwnerService.getOwnerList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              // if (!data.totalpage)
+              //   setTotalPage(1);
+              // else
+              //   setTotalPage(data.totalpage);
+              setDataList(data.ownerlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   return (
     <div>
-    {
-      visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-    }
-    <div className={classes.root}>
-      <div className={classes.title}>
-        <Grid item container justify="space-around">
-          <Grid item xs={6} container justify="flex-start" >
-            <Grid item>
-              <Typography variant="h2" className={classes.headerTitle}>
-                <b>Sous comptes</b>
-              </Typography>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
+      <div className={classes.root}>
+        <div className={classes.title}>
+          <Grid item container justify="space-around">
+            <Grid item xs={6} container justify="flex-start" >
+              <Grid item>
+                <Typography variant="h2" className={classes.headerTitle}>
+                  <b>Sous comptes</b>
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid item xs={6} container justify="flex-end" >
             </Grid>
           </Grid>
-          <Grid item xs={6} container justify="flex-end" >
-          </Grid>
-        </Grid>
-      </div>
-      <div className={classes.tool}>
-        <Grid xs={12} sm={8} md={8} lg={8} xl={6}>
-          <p className={classes.backTitle}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut 
-          tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum 
+        </div>
+        <div className={classes.tool}>
+          <Grid xs={12} sm={8} md={8} lg={8} xl={6} item container>
+            <p className={classes.backTitle}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut
+            tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum
           vitae. Suspendisse vehicula laoreet ullamcorper. </p>
-        </Grid>
-      </div> 
-      <div className={classes.body}>
-        <Grid item container xs={12} sm={8} md={8} lg={8} xl={6} justify="flex-start" direction="column" spacing={4}>
+          </Grid>
+        </div>
+        <div className={classes.body}>
+          <Grid item container xs={12} sm={8} md={8} lg={8} xl={6} justify="flex-start" direction="column" spacing={4}>
             <Grid item></Grid>
             <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p className={classes.title}>Civilité</p></Grid>
-                <Grid xs item container direction="column">
-                    <MySelect 
-                        color="gray" 
-                        data={titleList} 
-                        onChangeSelect={handleChangeOwnerTitle}
-                        value={ownerTitle}
-                        width="50%"
-                    />
-                    {errorsOwnerTitle.length > 0 && 
-                    <span className={classes.error}>{errorsOwnerTitle}</span>}
-                </Grid>
+              <Grid item><p className={classes.title}>Civilité</p></Grid>
+              <Grid xs item container direction="column">
+                <MySelect
+                  color="gray"
+                  data={titleList}
+                  onChangeSelect={handleChangeOwnerTitle}
+                  value={ownerTitle}
+                  width="50%"
+                />
+                {errorsOwnerTitle.length > 0 &&
+                  <span className={classes.error}>{errorsOwnerTitle}</span>}
+              </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p className={classes.backTitle}>Nom</p></Grid>
-                <Grid xs item container alignItems="stretch" direction="column">
-                  <Grid item>
-                    <TextField 
-                      id="outlined-basic" 
-                      variant="outlined"
-                      value={lastname}
-                      onChange={handleChangeLastName}
-                    />
-                  </Grid>
-                  {errorsLastName.length > 0 && 
-                  <span className={classes.error}>{errorsLastName}</span>}
+              <Grid item><p className={classes.backTitle}>Nom</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    value={lastname}
+                    onChange={handleChangeLastName}
+                  />
                 </Grid>
+                {errorsLastName.length > 0 &&
+                  <span className={classes.error}>{errorsLastName}</span>}
+              </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.backTitle}>Prénom</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
                     variant="outlined"
                     value={firstname}
                     onChange={handleChangeFirstName}
                   />
-                </Grid>  
-                {errorsFirstName.length > 0 && 
-                      <span className={classes.error}>{errorsFirstName}</span>}
+                </Grid>
+                {errorsFirstName.length > 0 &&
+                  <span className={classes.error}>{errorsFirstName}</span>}
               </Grid>
             </Grid>
             {
@@ -337,57 +411,82 @@ const SubAccounts = (props) => {
                   <Grid item><p className={classes.backTitle}>Cabinet Nom</p></Grid>
                   <Grid xs item container alignItems="stretch" direction="column">
                     <Grid item>
-                      <TextField 
-                        id="outlined-basic" 
+                      <TextField
                         variant="outlined"
                         value={companyname}
                         onChange={handleChangeCompanyName}
                       />
-                    </Grid>  
-                    {errorsCompanyName.length > 0 && 
-                          <span className={classes.error}>{errorsCompanyName}</span>}
+                    </Grid>
+                    {errorsCompanyName.length > 0 &&
+                      <span className={classes.error}>{errorsCompanyName}</span>}
                   </Grid>
-                </Grid> 
-              : <div/>
+                </Grid>
+                : <div />
             }
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.backTitle}>Email</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
                     variant="outlined"
                     value={email}
                     onChange={handleChangeEmail}
                   />
-                </Grid>  
-                {errorsEmail.length > 0 && 
-                      <span className={classes.error}>{errorsEmail}</span>}
+                </Grid>
+                {errorsEmail.length > 0 &&
+                  <span className={classes.error}>{errorsEmail}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.backTitle}>Mobile</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
                     variant="outlined"
                     value={mobile}
                     onChange={handleChangeMobile}
                   />
-                </Grid>  
-                {errorsMobile.length > 0 && 
-                      <span className={classes.error}>{errorsMobile}</span>}
+                </Grid>
+                {errorsMobile.length > 0 &&
+                  <span className={classes.error}>{errorsMobile}</span>}
               </Grid>
             </Grid>
           </Grid>
-        <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-          <MyButton   name={"Inviter"} color={"1"} onClick = {onClickInvite}/>
-        </Grid>
-        <SubAccountsTable items={items} onClikDelete={handleClickDelete}/>
+          <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
+            <MyButton name={"Inviter"} color={"1"} onClick={onClickInvite} />
+          </Grid>
+          <SubAccountsTable
+            items={dataList}
+            onClikDelete={handleClickDelete}
+            onClickViewDetails={handleClickViewDetails}
+            onClickResend={handleClickResend}
+          />
+        </div>
       </div>
-    </div>
-    <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure to delete this owner?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

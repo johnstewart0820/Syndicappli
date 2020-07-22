@@ -9,10 +9,12 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../../components/MyButton';
 import {withRouter} from 'react-router-dom';
-import AdminService from '../../../../services/api.js';
+import { OwnerService as Service} from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
 import CircularProgress  from '@material-ui/core/CircularProgress';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import IdCard from 'components/IdCard';
+import useGlobal from 'Global/global';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -193,16 +195,22 @@ const useStyles = makeStyles(theme => ({
     border: '1px dashed rgba(112,112,112,0.43)',
     borderRadius: 8,
     [theme.breakpoints.up('xl')]: {
-      width: 222,
-      height: 176,
+      width: 362,
+      height: 278,
+      marginTop: 30,
+      marginRight: 30
     },
     [theme.breakpoints.down('lg')]: {
-      width: 155,
-      height: 123,
+      width: 253,
+      height: 177,
+      marginTop: 21,
+      marginRight: 21
     },
     [theme.breakpoints.down('md')]: {
-      width: 109,
-      height: 86,
+      width: 177,
+      height: 124,
+      marginTop: 15,
+      marginRight: 15
     },
   },
   plus:{
@@ -221,6 +229,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }));
+const OwnerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const MyAccount = (props) => {
   const {history} = props;
@@ -231,6 +240,7 @@ const MyAccount = (props) => {
   //   window.location.reload();
   // }
   const classes = useStyles();
+  const [globalState, globalActions] = useGlobal();
   const [lastname , setLastName] = React.useState('');
   const [firstname , setFirstName] = React.useState('');
   const [address , setAddress] = React.useState('');
@@ -251,9 +261,10 @@ const MyAccount = (props) => {
 
   const [avatarurl, setAvatarUrl] = React.useState('');
   const [avatar, setAvatar] = React.useState(null);
-  const [authurl, setAuthUrl] = React.useState('');
-  const [auth, setAuth] = React.useState(null);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+  const [idcardurls, setIdcardUrls] = React.useState([]);
+  const [idcards, setIdcards] = React.useState([]);
+  const [state, setState] = React.useState(false);
 
   const handleChangeLastName = (event)=>{
     setLastName(event.target.value);
@@ -289,27 +300,38 @@ const MyAccount = (props) => {
     setAvatar(event.target.files[0]);
     setAvatarUrl(URL.createObjectURL(event.target.files[0]));
   }
-  const handleLoadAuth = (event) => {
-    setAuth(event.target.files[0]);
-    setAuthUrl(URL.createObjectURL(event.target.files[0]));
-  }
+
   useEffect(()=>{
 
     setVisibleIndicator(true);
-    AdminService.getProfile()
+    OwnerService.getProfile()
     .then(      
       response => {        
         setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          
-        } else {
-          localStorage.setItem("token", JSON.stringify(response.data.data.token));
-          const profile = response.data.data.profile;
-          setLastName(profile.lastname);
-          setFirstName(profile.firstname);
-          setEmail(profile.email);
-          setPhone(profile.phone);
-          setAvatarUrl((AdminService.getProfileAvatar() + profile.photo_url));
+        switch(response.data.code){
+          case 200:
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            const profile = response.data.data.profile;
+            setLastName(profile.lastname);
+            setFirstName(profile.firstname);
+            setEmail(profile.email);
+            setPhone(profile.phone);
+            setAvatarUrl(profile.photo_url);
+            setAddress(profile.address);
+            let urls = [];
+              if (profile.identity_card_front.length !== 0)
+                urls.push(profile.identity_card_front);
+              if (profile.identity_card_back.length !== 0)
+                urls.push(profile.identity_card_back);
+              setIdcardUrls(urls);
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
         }
       },
       error => {
@@ -346,30 +368,58 @@ const MyAccount = (props) => {
     formdata.set('firstname', firstname);
     formdata.set('email', email);
     formdata.set('phone', phone);
+    formdata.set('address',address);
     formdata.set('old_password', old_password);
     formdata.set('new_password', new_password);
     formdata.set('avatar', avatar === null? '':avatar);
+    formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0]);
+    formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1]);
     setVisibleIndicator(true);
-    AdminService.updateProfile(formdata)
+    OwnerService.updateProfile(formdata)
     .then(      
       response => {        
-        console.log(response.data);
-         setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          setErrorsOldPassword('The current password is not correct');
-        } else {
+         setVisibleIndicator(false); 
+         switch(response.data.code){
+          case 200:
             ToastsStore.success("Updated successfully!");
            setErrorsOldPassword('');
            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-        }
+           globalActions.setFirstName(firstname);
+           globalActions.setLastName(lastname);
+           globalActions.setAvatarUrl(avatarurl);
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+            setErrorsOldPassword('The current password is not correct');
+        } 
       },
       error => {
-        ToastsStore.error(error);     
+        ToastsStore.error("Can't connect to the server!");     
          setVisibleIndicator(false);
       }
     );  
   }
-
+  const handleLoadIdcard = (event) => {
+    idcardurls.push(URL.createObjectURL(event.target.files[0]));
+    idcards.push(event.target.files[0])
+    setIdcards(idcards);
+    setIdcardUrls(idcardurls);
+    setState(!state);
+  }
+  const handleClickCloseIdcard = (num) => {
+    delete idcardurls[num];
+    delete idcards[num];
+    // idcardurls.splice(num, 1);
+    // idcards.splice(num, 1);
+    setIdcards(idcards);
+    setIdcardUrls(idcardurls);
+    setState(!state);
+  }
   return (
     <div>
     {
@@ -544,18 +594,24 @@ const MyAccount = (props) => {
                       <span className={classes.error}>{errorsConfirmPassword}</span>}
               </Grid>
             </Grid>
-            <Grid item container direction="column" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Pièce d'identité avec face photo visible, uniquement pour authentification</p></Grid>
-              <Grid  item container justify="flex-start">
-                <input className={classes.input} type="file" id="img_auth" onChange={handleLoadAuth}/>
-                <label htmlFor="img_auth">
-                    {
-                            authurl === '' ?
-                            <div className={classes.img}>
-                               <AddCircleOutlineIcon className={classes.plus}/>
-                            </div> :
-                            <img className={classes.img} src={authurl} alt=""/>
-                    }
+            <Grid xs={12} item container direction="column" style={{ marginTop: 30 }}>
+              <p className={classes.itemTitle}>Pièce d'identité avec face photo visible, uniquement pour authentification</p>
+              <Grid item container justify="flex-start">
+                <IdCard
+                  onClose={handleClickCloseIdcard}
+                  idcardurls={idcardurls}
+                  state={state}
+                  type="first"
+                  badge="first"
+                />
+
+                <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} />
+                <label htmlFor="img_idcard">
+                  {
+                    <div className={classes.img}>
+                      <AddCircleOutlineIcon className={classes.plus} />
+                    </div>
+                  }
                 </label>
               </Grid>
             </Grid>

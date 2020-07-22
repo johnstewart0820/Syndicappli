@@ -70,7 +70,7 @@ const Main = (props) => {
         globalActions.setMultiSuggestions([]);
     };
     const handleAdd = () => {
-        ToastsStore.success("Added New Owner successfully!");
+        ToastsStore.success("Added New Manager successfully!");
         setRefresh(!refresh);
     };
     const handleClickAdd = () => {
@@ -94,7 +94,12 @@ const Main = (props) => {
                         <Grid>
                             {
                                 value === 0 ?
-                                    <MyButton name={"Nouveau Gestionnaires"} color={"1"} onClick={handleClickAdd} />
+                                    <MyButton 
+                                        name={"Nouveau Gestionnaires"} 
+                                        color={"1"} 
+                                        onClick={handleClickAdd} 
+                                        style={{ visibility: accessManagers === 'edit' ? 'visible' : 'hidden' }}
+                                    />
                                     : <MyButton name={"Nouveau Gestionnaires"} style={{ visibility: 'hidden' }} />
                             }
                             <Dialog

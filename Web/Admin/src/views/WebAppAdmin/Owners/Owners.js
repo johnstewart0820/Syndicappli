@@ -114,36 +114,41 @@ const Owners = (props) => {
   for (let i = 0; i < 6; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id, buildingid) => {
-    history.push('/admin/owners/edit?id=' + id + '&&buildingID=' + buildingid);
+    history.push('/manager/owners/edit?id=' + id + '&&buildingID=' + buildingid);
   };
-  const handleClickDelete = (id) => {
-    if (accessOwners === 'edit') {
+  const handleClickDelete = (id, buildingid) => {
       setOpenDelete(true);
       setDeleteId(id);
-    } else {
-      setOpenDialog(true);
-    }
   };
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    AdminService.deleteUser(deleteId)
+    let data = {
+      'status': 'trash'
+    }
+    AdminService.deleteOwner(deleteId,data)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            alert('Deleted successful');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getOwners();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -155,19 +160,26 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            company.splice(0,company.length);
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            company.push('Tout');
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompany(company);
-            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+          switch(response.data.code){
+            case 200:
+              company.splice(0,company.length);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              company.push('Tout');
+              data.companylist.map((item) => (
+                company.push(item.name)
+              )
+              );
+              setCompany(company);
+              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -178,31 +190,35 @@ const Owners = (props) => {
   }
   const getBuildings = () => {
     const requestData = {
-      'search_key': '',
-      'page_num': 0,
-      'row_count': 20,
-      'sort_column': -1,
-      'sort_method': 'asc',
       'companyID': companyID
     }
     setVisibleIndicator(true);
-    AdminService.getBuildingList(requestData)
+    AdminService.getBuildingListByCompany(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            building.splice(0,building.length);
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-              building.push('Tout');
-            data.buildinglist.map((item) => (
-              building.push(item.name)
-            )
-            );
-            setBuilding(building);
-            setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+          switch(response.data.code){
+            case 200:
+              building.splice(0,building.length);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+                building.push('Tout');
+              data.buildinglist.map((item) => (
+                building.push(item.name)
+              )
+              );
+              setBuilding(building);
+              setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+              setBuildings(0);
+              setBuildingID(-1);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -220,23 +236,31 @@ const Owners = (props) => {
       'sort_method': sort_method,
       'role': owner_role[role],
       'buildingID': buildingID,
-      'companyID' : companyID
+      'companyID' : companyID,
+      'status': 'active'
     }
     setVisibleIndicator(true);
     AdminService.getOwnerList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.ownerlist);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.ownerlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -309,6 +333,7 @@ const Owners = (props) => {
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
           type="owner"
+          access={accessOwners}
         />
       </div>
       <Dialog
@@ -322,8 +347,7 @@ const Owners = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Are you sure to delete this owner?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

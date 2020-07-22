@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import MyTable from '../../../components/MyTable';
-import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import MyDialog from '../../../components/MyDialog';
 import { withRouter } from 'react-router-dom';
@@ -11,16 +9,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import AdminService from '../../../services/api.js';
-import MySelect from '../../../components/MySelect';
+import {ManagerService as Service} from '../../../services/api.js';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import TrashTable from 'components/TrashTable';
+const ManagerService = new Service();
 const TrashBuildings = (props) => {
   const { history } = props;
   // const token = authService.getToken();    
   // if (!token) {
-  //   history.push("/admin/login");
+  //   history.push("/login");
   //   window.location.reload();
   // }
   const accessBuildings = authService.getAccess('role_buildings');
@@ -30,10 +28,6 @@ const TrashBuildings = (props) => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = useState(-1);
-  const [footerItems, setFooterItems] = useState([]);
-  let company = [];
-  const [companies, setCompanies] = useState('');
-  const [companyList, setCompanyList] = useState([]);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
@@ -45,24 +39,43 @@ const TrashBuildings = (props) => {
   const cellList = [
     { key: 'name', field: 'Nom' },
     { key: 'address', field: 'Adresse' },
-    { key: 'total', field: 'CA HT' },
+    { key: '', field: ''}
   ];
 
   const columns = [];
-  for (let i = 0; i < 3; i++)
+  for (let i = 0; i < 2; i++)
     columns[i] = 'asc';
 
-  const handleClickEdit = (id) => {
-    console.log(id);
-    history.push('/admin/buildings/edit/' + id);
+    const handleClickRestore = (id) => {
+      let data={
+          'status': 'active'
+      }
+    ManagerService.deleteBuilding(id,data)
+    .then(
+      response => {
+        setVisibleIndicator(false);
+        switch(response.data.code){
+          case 200:
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            ToastsStore.success("Restored successfully!");
+            getTrashBuildings();
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+        }
+      },
+      error => {
+        ToastsStore.error("Can't connect to the server!");
+        setVisibleIndicator(false);
+      }
+    );
   }
-  const handleChangeSelect = (value) => {
-    setRowCount(selectList[value]);
-  }
-  const handleChangeCompanies = (val) => {
-    setCompanies(val);
-    setCompanyID(companyList[val].companyID);
-  };
   const handleChangePagination = (value) => {
     setPageNum(value);
   }
@@ -78,21 +91,26 @@ const TrashBuildings = (props) => {
   };
   const getCompanies = () => {
     setVisibleIndicator(true);
-    AdminService.getCompanyListByUser()
+    ManagerService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            company.push('Tout');
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                setCompanyID(item.companyID)
+              )
+              );
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -101,34 +119,38 @@ const TrashBuildings = (props) => {
         }
       );
   }
-  const getBuildings = () => {
+  const getTrashBuildings = () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
-      'companyID': companyID
+      'companyID': companyID,
+      'status': 'trash'
     }
     setVisibleIndicator(true);
-    AdminService.getBuildingList(requestData)
+    ManagerService.getBuildingList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.buildinglist);
-            let amount = 0;
-
-            const items = ['Total', data.totalcount, amount];
-            setFooterItems(items);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.buildinglist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -154,28 +176,36 @@ const TrashBuildings = (props) => {
   }, [accessBuildings]);
   useEffect(() => {
     if (accessBuildings !== 'denied')
-      getBuildings();
-    console.log(companyID)
+      getTrashBuildings();
   }, [page_num, row_count, sort_column, sort_method, companyID, props.refresh]);
-
-
-
+  const handleChangeSelect = (value) => {
+    setRowCount(selectList[value]);
+  }
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    AdminService.deleteUser(deleteId)
+    let data={
+      'status':'active'
+    }
+    ManagerService.deleteBuilding(deleteId,data)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            alert('Deleted successful');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
+          switch(response.data.code){
+            case 200:
+              console.log('success');
+              alert('Deleted successful');
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -192,25 +222,10 @@ const TrashBuildings = (props) => {
       <div className={classes.title}>
       </div>
       <div className={classes.tool}>
-        <Grid container spacing={2} direction="column">
-          <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
-            <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
-            <Grid xs item container direction="row-reverse">
-              <Grid item container direction="column" alignItems="stretch">
-                <MySelect
-                  color="gray"
-                  data={company}
-                  onChangeSelect={handleChangeCompanies}
-                  value={companies}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
       </div>
       <div className={classes.body}>
         <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog} />
-        <MyTable
+        <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -219,10 +234,8 @@ const TrashBuildings = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickEdit={handleClickEdit}
-          onClickDelete={handleClickDelete}
-          tblFooter="true"
-          footerItems={footerItems}
+          onClickRestore={handleClickRestore}
+          access={accessBuildings}
         />
       </div>
       <Dialog

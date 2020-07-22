@@ -279,7 +279,6 @@ export const EditUserStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 4, 3),
   },
   size: {
-    cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
       width: 214,
       height: 214,

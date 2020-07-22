@@ -53,6 +53,7 @@ const ForgotPassword = (props) => {
                 ToastsStore.error(response.data.message);
               } else {
                 ToastsStore.success(response.data.message);
+                history.push('/login');
               }
             },
             error => {

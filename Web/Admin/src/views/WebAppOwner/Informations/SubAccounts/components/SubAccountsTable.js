@@ -167,17 +167,16 @@ const useStyles = makeStyles({
 });
 
 export default function SubAccountsTable  (props)  {
-  const {onClickEdit, ...rest} = props;
   const classes = useStyles();
   const items = props.items;
   const handleClickViewDetails = ()=>{
-      alert("view");
+      props.onClickViewDetails();
   }
   const handleClickResend = ()=>{
-    alert("resend");
+    props.onClickResend();
   }
   return ( 
-      <Grid container direction="column" spacing={2} xs={12} sm={8} md={8} lg={8} xl={6}>
+      <Grid item container direction="column" spacing={2} xs={12} sm={8} md={8} lg={8} xl={6}>
         <Table className={classes.root}>
             <TableHead>
               <TableRow >

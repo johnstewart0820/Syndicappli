@@ -89,7 +89,7 @@ export default function CustomizedSelects(props) {
           value={value}
           onChange={handleChange}
           input={<BootstrapInput />}
-          disabled={props.disabled === 'disabled'? true : null}
+          disabled={props.disabled === true? true : null}
         >
           {
             items.map((item, i) =>

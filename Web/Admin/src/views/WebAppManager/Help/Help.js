@@ -11,6 +11,7 @@ import {withRouter} from 'react-router-dom';
 import AdminService from '../../../services/api.js';
 import authService from '../../../services/authService.js';
 import CircularProgress  from '@material-ui/core/CircularProgress';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -228,16 +229,23 @@ const Help = (props) => {
     .then(      
       response => {        
         setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          
-        } else {
-          localStorage.setItem("token", JSON.stringify(response.data.data.token));
-          const profile = response.data.data.profile;
-          setLastName(profile.lastname);
-          setFirstName(profile.firstname);
-          setEmail(profile.email);
-          setPhone(profile.phone);
-          setAvatarUrl((AdminService.getProfileAvatar() + profile.photo_url));
+        switch(response.data.code){
+          case 200:
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            const profile = response.data.data.profile;
+            setLastName(profile.lastname);
+            setFirstName(profile.firstname);
+            setEmail(profile.email);
+            setPhone(profile.phone);
+            setAvatarUrl((AdminService.getProfileAvatar() + profile.photo_url));
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
         }
       },
       error => {
@@ -279,14 +287,20 @@ const Help = (props) => {
     AdminService.updateProfile(formdata)
     .then(      
       response => {        
-        console.log(response.data);
          setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          console.log('error');
-          setErrorsOldPassword('The current password is not correct');
-        } else {
-           setErrorsOldPassword('');
-           localStorage.setItem("token", JSON.stringify(response.data.data.token));
+         switch(response.data.code){
+          case 200:
+            setErrorsOldPassword('');
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+            setErrorsOldPassword('The current password is not correct');
         }
       },
       error => {     
@@ -466,6 +480,7 @@ const Help = (props) => {
           </Grid>
       </div>
     </div>
+    <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

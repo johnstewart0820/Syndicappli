@@ -36,7 +36,7 @@ const Dashboard = (props) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-      <Grid container spacing={2} direction="row-reverse" >
+      {/* <Grid container spacing={2} direction="row-reverse" >
         <Grid item>
           <MySelect 
             color="gray" 
@@ -65,7 +65,7 @@ const Dashboard = (props) => {
             data={cellList}
           />
         </Grid>
-      </Grid>
+      </Grid> */}
       </div> 
       <div className={classes.body}>
         <Grid item container spacing={6}>

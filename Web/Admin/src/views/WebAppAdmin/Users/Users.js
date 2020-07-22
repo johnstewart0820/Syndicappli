@@ -58,21 +58,31 @@ const Users = (props) => {
       'page_num': page_num - 1,
       'row_count': row_count,
       'sort_column': sort_column,
-      'sort_method': sort_method
+      'sort_method': sort_method,
+      'status': 'active'
     }
     setVisibleIndicator(true);
     AdminService.getUserList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);  
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-
-            setTotalPage(data.totalpage);
-            setDataList(data.userlist);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if(data.totalpage)
+                setTotalPage(data.totalpage);
+              else
+                setTotalPage(1);
+              setDataList(data.userlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -103,28 +113,34 @@ const Users = (props) => {
     history.push('/admin/users/edit/' + id);
   };
   const handleClickDelete = (id) => {
-    if (accessUsers === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
-    } else {
-      setOpenDialog(true);
-    }
   };
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    AdminService.deleteUser(deleteId)
+    let data={
+      'status':'trash'
+    }
+    AdminService.deleteUser(deleteId,data)
       .then(
         response => {
           setVisibleIndicator(false);  
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            ToastsStore.success("Deleted Successfully!");
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            getUsers();
+          switch(response.data.code){
+            case 200:
+              ToastsStore.success("Deleted Successfully!");
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              getUsers();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -155,6 +171,7 @@ const Users = (props) => {
           cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
+          access={accessUsers}
         />
       </div>
       <Dialog
@@ -168,8 +185,7 @@ const Users = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Are you sure to delete this administrator?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

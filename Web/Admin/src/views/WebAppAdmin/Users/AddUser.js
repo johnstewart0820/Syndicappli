@@ -10,9 +10,12 @@ import AdminService from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
+import authService from 'services/authService';
+import {withRouter} from 'react-router-dom';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddUser = (props) => {
+    const {history} = props;
     const classes = useStyles();
     const [globalState, globalActions] = useGlobal();
     const permissionList = ['Voir', 'Editer', 'Refusé'];
@@ -132,19 +135,26 @@ const AddUser = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        let companies = [];
-                        data.companylist.map((item, i) => (
-                            companies[i] = { label: item.name, value: item.companyID }
-                        )
-                        );
-                        setCompanyList(data.companylist);
-                        globalActions.setMultiSuggestions(companies);
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            let companies = [];
+                            data.companylist.map((item, i) => (
+                                companies[i] = { label: item.name, value: item.companyID }
+                            )
+                            );
+                            setCompanyList(data.companylist);
+                            globalActions.setMultiSuggestions(companies);
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -201,14 +211,21 @@ const AddUser = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        props.onAdd();
-                        handleClose();
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            props.onAdd();
+                            handleClose();
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -395,4 +412,4 @@ const AddUser = (props) => {
     );
 };
 
-export default AddUser;
+export default withRouter(AddUser);

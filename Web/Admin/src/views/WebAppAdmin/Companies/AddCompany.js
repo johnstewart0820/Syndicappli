@@ -7,9 +7,13 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { AddCompanyStyles as useStyles } from './useStyles';
 import { Checkbox } from '@material-ui/core';
 import AdminService from '../../../services/api.js';
+import authService from 'services/authService';
+import {withRouter} from 'react-router-dom';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddCompany = (props) => {
+    const {history} = props;
     const classes = useStyles();
 
     const [avatarurl, setAvatarUrl] = React.useState("");
@@ -151,16 +155,22 @@ const AddCompany = (props) => {
         AdminService.addCompany(formdata)
             .then(
                 response => {
-                    console.log(response.data);
-                    setVisibleIndicator(false);  
-                    if (response.data.code !== 200) {
-                        console.log('error');
-                    } else {
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        props.onAdd();
-                        handleClose();
-                    }
+                    setVisibleIndicator(false); 
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            props.onAdd();
+                            handleClose();
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      } 
                 },
                 error => {
                     console.log('fail');
@@ -174,7 +184,7 @@ const AddCompany = (props) => {
                 visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
             }
             <div className={classes.paper} >
-                <Grid container spacing={4} xs={12}>
+                <Grid container spacing={4}>
                     <Grid item container alignItems="center" spacing={2}>
                         <Grid item><p className={classes.title}>Nom</p></Grid>
                         <Grid xs item container alignItems="stretch">
@@ -386,8 +396,9 @@ const AddCompany = (props) => {
                     </Grid>
                 </div>
             </div>
+            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>
     );
 };
 
-export default AddCompany;
+export default withRouter(AddCompany);

@@ -9,14 +9,13 @@ import { AddBuildingStyles as useStyles } from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import {ManagerService as Service} from '../../../services/api.js';
+import { withRouter } from 'react-router-dom';
+import authService from 'services/authService';
 const ManagerService = new Service();
-
 const AddBuilding = (props) => {
   const classes = useStyles();
+  const {history} = props;
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  let company = [];
-  const [companies, setCompanies] = React.useState('');
-  const [companyList, setCompanyList] = React.useState([]);
   const [state, setState] = React.useState(false);
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');
@@ -29,12 +28,7 @@ const AddBuilding = (props) => {
 
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsCompanies, setErrorsCompanies] = React.useState('');
 
-  const handleChangeCompanies = (val) => {
-    setCompanies(val);
-    setCompanyID(companyList[val].companyID);
-  };
   const handleChangeName = (event) => {
     setName(event.target.value);
   };
@@ -76,34 +70,35 @@ const AddBuilding = (props) => {
     else setErrorsName('');
     if (address.length === 0) { setErrorsAddress('please enter your first name'); cnt++; }
     else setErrorsAddress('');
-    if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
-    else setErrorsCompanies('');
     if (cnt === 0) {
       createBuilding();
     }
   };
   useEffect(() => {
     getCompanies();
-  }, [companies]);
+  }, []);
   const getCompanies = () => {
     setVisibleIndicator(true);
     ManagerService.getCompanyListByUser()
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList(data.companylist);
-            setCompanyID(data.companylist[0].companyID);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                setCompanyID(item.companyID)
+              )
+              );
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -127,13 +122,20 @@ const AddBuilding = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            props.onAdd();
-            handleClose();
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              props.onAdd();
+              handleClose();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -148,21 +150,7 @@ const AddBuilding = (props) => {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
       <div className={classes.paper} >
-        <Grid container spacing={4} xs={12}>
-          <Grid item container alignItems="center" spacing={2}>
-            <Grid item><p className={classes.title}>Cabinet</p></Grid>
-            <Grid xs item container alignItems="stretch" direction="column">
-              <MySelect
-                color="gray"
-                data={company}
-                onChangeSelect={handleChangeCompanies}
-                value={companies}
-                width="50%"
-              />
-              {errorsCompanies.length > 0 &&
-                <span className={classes.error}>{errorsCompanies}</span>}
-            </Grid>
-          </Grid>
+        <Grid container spacing={4}>
           <Grid item container spacing={2}>
             <Grid item><p className={classes.title}>Nom</p></Grid>
             <Grid xs item container alignItems="stretch">
@@ -289,4 +277,4 @@ const AddBuilding = (props) => {
   );
 };
 
-export default AddBuilding;
+export default withRouter(AddBuilding);

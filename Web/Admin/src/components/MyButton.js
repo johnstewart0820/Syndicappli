@@ -66,7 +66,7 @@ export default function MyButton(props) {
   };
   return (
       <Button onClick={btnClick} className={props.color ? classes.button1 : classes.button2} 
-        disabled={props.disabled === 'disabled'? true : false}
+        disabled={props.disabled === true? true : false}
         style={props.style}
         >
           {props.name}

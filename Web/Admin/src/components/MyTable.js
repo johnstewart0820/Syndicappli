@@ -370,7 +370,11 @@ export default function ProductTable(props) {
                   cells.map((cell,j) => {
                     const value = item[cell.key];
                     return (
-                      <TableCell key={j} onClick={() => handleClickEdit(i)}>
+                      <TableCell 
+                        key={j} 
+                        onClick={() => handleClickEdit(i)}
+                        disabled={(props.access === 'see' ? true : false)}
+                      >
                         {
                           Value(value)
                         }
@@ -379,9 +383,17 @@ export default function ProductTable(props) {
                   })
                 }
                 <TableCell align="right">
-                  <EditIcon className={classes.editItem} onClick={() => handleClickEdit(i)} />
+                  <EditIcon 
+                    className={classes.editItem} 
+                    onClick={() => handleClickEdit(i)} 
+                    disabled={(props.access === 'see' ? true : false)}
+                  />
                       &nbsp;&nbsp;
-                  <DeleteIcon className={classes.editItem} onClick={() => handleClickDelete(i)}></DeleteIcon>
+                  <DeleteIcon 
+                    className={classes.editItem} 
+                    onClick={() => handleClickDelete(i)}
+                    disabled={(props.access === 'see' ? true : false)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

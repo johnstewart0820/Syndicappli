@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTable from '../../../components/MyTable';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import AddCompany from './AddCompany';
-import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
@@ -82,6 +77,35 @@ const Companies = (props) => {
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
+    setVisibleIndicator(true);
+    let data={
+      'status':'trash'
+    }
+    AdminService.deleteCompany(deleteId,data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getCompanies();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
   const getCompanies = () => {
     const requestData = {
@@ -90,24 +114,31 @@ const Companies = (props) => {
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
+      'status': 'active'
     }
     setVisibleIndicator(true);
     AdminService.getCompanyList(requestData)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.companylist);
+          switch(response.data.code){
+            case 200:
+              console.log('success');
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.companylist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -138,6 +169,7 @@ const Companies = (props) => {
           cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
+          access={accessCompanies}
         />
       </div>
       <Dialog
@@ -151,8 +183,7 @@ const Companies = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Are you sure to delete this company?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

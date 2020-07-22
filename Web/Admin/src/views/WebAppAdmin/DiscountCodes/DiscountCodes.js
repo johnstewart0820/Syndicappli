@@ -87,32 +87,22 @@ const DiscountCodes = (props) => {
     AdminService.getUserList(requestData)
     .then(      
       response => {        
-        console.log(response.data);
         // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
+        switch(response.data.code){
+          case 200:
 
-          setTotalPage(data.totalpage);
-          setDataList(data.userlist);
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            // ToastsStore.error(response.data.message);
         }
       },
       error => {
-        console.log('fail');        
         // setVisibleIndicator(false);
-        // const resMessage =
-        //     (error.response &&
-        //       error.response.data &&
-        //       error.response.data.message) ||
-        //     error.message ||
-        //     error.toString();
       }
     );
   }
@@ -155,24 +145,21 @@ const DiscountCodes = (props) => {
     AdminService.deleteUser(deleteId)
     .then(      
       response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          // if(response.data.status === 'Token is Expired') {
-          //   authService.logout();
-          //   history.push('/');
-          // }
-          console.log('error');
-        } else {
-          console.log('success');
-          alert('Deleted successful');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          getDatas();
+        // setVisibleIndicator(false);
+        switch(response.data.code){
+          case 200:
+
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            // ToastsStore.error(response.data.message);
         }
       },
       error => {
-        console.log('fail');        
         // setVisibleIndicator(false);
       }
     );
@@ -222,6 +209,7 @@ const DiscountCodes = (props) => {
           cells={cellList} 
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
+          access={accessDiscountCodes}
         />
       </div>
       <Dialog

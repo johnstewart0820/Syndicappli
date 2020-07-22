@@ -230,31 +230,31 @@ const Sidebar = props => {
       title: 'Messagerie',
       href: '/owner/chat',
       icon: <TextFieldsIcon className={classes.icon}/>,
-      status: accessCompanies
+      status: accessChat
     },
     {
       title: 'Incidents',
       href: '/owner/incidents',
       icon: <AccountBoxIcon className={classes.icon}/>,
-      status: accessManagers
+      status: accessIncidents
     },
     {
       title: 'Assemblées',
       href: '/owner/assemblies',
       icon: <PeopleIcon className={classes.icon}/>,
-      status: accessBuildings
+      status: accessAssemblies
     },
     {
       title: 'Événements',
       href: '/owner/events',
       icon: <SettingsIcon className={classes.icon}/>,
-      status: accessOwners
+      status: accessEvents
     },
     {
       title: 'Modules',
       href: '/owner/addons',
       icon: <SettingsIcon className={classes.icon}/>,
-      status: accessOrders
+      status: accessAddons
     },
   ];
   return (

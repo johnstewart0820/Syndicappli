@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import MyDialog from '../../../components/MyDialog';
-import CloseIcon from '@material-ui/icons/Close';
-import AddBuilding from './AddBuilding';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -86,17 +82,24 @@ const Buildings = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            company.push('Tout');
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              company.push('Tout');
+              data.companylist.map((item) => (
+                company.push(item.name)
+              )
+              );
+              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -112,27 +115,35 @@ const Buildings = (props) => {
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
-      'companyID': companyID
+      'companyID': companyID,
+      'status':'active'
     }
     setVisibleIndicator(true);
     AdminService.getBuildingList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.buildinglist);
-            let amount = 0;
-
-            const items = ['Total', data.totalcount, amount];
-            setFooterItems(items);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.buildinglist);
+              let amount = 0;
+  
+              const items = ['Total', data.totalcount, amount];
+              setFooterItems(items);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -142,12 +153,8 @@ const Buildings = (props) => {
       );
   }
   const handleClickDelete = (id) => {
-    if (accessBuildings === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
-    } else {
-      setOpenDialog(true);
-    }
   };
   useEffect(() => {
     if (accessBuildings === 'denied') {
@@ -166,22 +173,31 @@ const Buildings = (props) => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    AdminService.deleteUser(deleteId)
+    let data={
+      'status':'trash'
+    }
+    AdminService.deleteBuilding(deleteId,data)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            alert('Deleted successful');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getBuildings();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -225,6 +241,7 @@ const Buildings = (props) => {
           onClickDelete={handleClickDelete}
           tblFooter="true"
           footerItems={footerItems}
+          access={accessBuildings}
         />
       </div>
       <Dialog
@@ -238,8 +255,7 @@ const Buildings = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Are you sure to delete this building?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

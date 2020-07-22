@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import MyTable from '../../../components/MyTable';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import AddCompany from './AddCompany';
-import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TrashTable from 'components/TrashTable';
 
 const TrashCompanies = (props) => {
   const { history } = props;
@@ -45,19 +40,46 @@ const TrashCompanies = (props) => {
     { key: 'manager_count', field: 'Gestionnaires' },
     { key: 'apartment_count', field: 'Lots' },
     { key: 'status', field: 'Statut' },
+    { key: '', field:''}
   ];
 
   const columns = [];
-  for (let i = 0; i < cellList.length; i++)
+  for (let i = 0; i < 7; i++)
     columns[i] = 'asc';
 
-  const handleClickEdit = (id) => {
-    console.log(id);
-    history.push('/admin/companies/edit/' + id);
+  const handleClickRestore = (id) => {
+      let data={
+          'status': 'active'
+      }
+    AdminService.deleteCompany(id,data)
+    .then(
+      response => {
+        setVisibleIndicator(false);
+        switch(response.data.code){
+          case 200:
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            ToastsStore.success("Restored successfully!");
+            getTrashCompanies();
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+        }
+      },
+      error => {
+        ToastsStore.error("Can't connect to the server!");
+        setVisibleIndicator(false);
+      }
+    );
   }
   useEffect(() => {
     if (accessCompanies !== 'denied')
-      getCompanies();
+      getTrashCompanies();
   }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   const handleChangeSelect = (value) => {
@@ -83,31 +105,38 @@ const TrashCompanies = (props) => {
     handleCloseDelete();
     setDeleteId(-1);
   }
-  const getCompanies = () => {
+  const getTrashCompanies = () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
+      'status': 'trash'
     }
     setVisibleIndicator(true);
     AdminService.getCompanyList(requestData)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.companylist);
+          switch(response.data.code){
+            case 200:
+                console.log('success');
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                if (!data.totalpage)
+                  setTotalPage(1);
+                else
+                  setTotalPage(data.totalpage);
+                setDataList(data.companylist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -127,7 +156,7 @@ const TrashCompanies = (props) => {
       <div className={classes.tool}>
       </div>
       <div className={classes.body}>
-        <MyTable
+        <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -136,8 +165,8 @@ const TrashCompanies = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickEdit={handleClickEdit}
-          onClickDelete={handleClickDelete}
+          onClickRestore={handleClickRestore}
+          access={accessCompanies}
         />
       </div>
       <Dialog

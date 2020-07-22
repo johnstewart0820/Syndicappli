@@ -9,10 +9,10 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../../components/MyButton';
 import { withRouter } from 'react-router-dom';
-import AdminService from '../../../../services/api.js';
+import { ManagerService as Service} from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import useGlobal from 'Global/global';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -220,6 +220,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }));
+const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const MyAccount = (props) => {
   const { history } = props;
@@ -230,6 +231,7 @@ const MyAccount = (props) => {
   //   window.location.reload();
   // }
   const classes = useStyles();
+  const [globalState, globalActions] = useGlobal();
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -284,20 +286,27 @@ const MyAccount = (props) => {
   useEffect(() => {
 
     setVisibleIndicator(true);
-    AdminService.getProfile()
+    ManagerService.getProfile()
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-
-          } else {
-            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-            const profile = response.data.data.profile;
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhone(profile.phone);
-            setAvatarUrl(profile.photo_url);
+          switch(response.data.code){
+            case 200:
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              const profile = response.data.data.profile;
+              setLastName(profile.lastname);
+              setFirstName(profile.firstname);
+              setEmail(profile.email);
+              setPhone(profile.phone);
+              setAvatarUrl(profile.photo_url);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -336,17 +345,27 @@ const MyAccount = (props) => {
     formdata.set('new_password', new_password);
     formdata.set('avatar', avatar === null ? '' : avatar);
     setVisibleIndicator(true);
-    AdminService.updateProfile(formdata)
+    ManagerService.updateProfile(formdata)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            setErrorsOldPassword('The current password is not correct');
-          } else {
-            ToastsStore.success("Updated successfully!");
-            setErrorsOldPassword('');
-            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+          switch(response.data.code){
+            case 200:
+              ToastsStore.success("Updated successfully!");
+              setErrorsOldPassword('');
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              globalActions.setFirstName(firstname);
+              globalActions.setLastName(lastname);
+              globalActions.setAvatarUrl(avatarurl);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+              setErrorsOldPassword('The current password is not correct');
           }
         },
         error => {

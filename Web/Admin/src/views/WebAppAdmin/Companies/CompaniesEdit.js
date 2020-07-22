@@ -20,6 +20,11 @@ import AddBuilding from './AddBuilding';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from '../../../services/authService.js';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const CompaniesEdit = (props) => {
@@ -32,6 +37,8 @@ const CompaniesEdit = (props) => {
   //   window.location.reload();
   // }
   const accessCompanies = authService.getAccess('role_companies');
+  const accessManagers = authService.getAccess('role_managers');
+  const accessBuildings = authService.getAccess('role_buildings');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
   const [openAddManager, setOpenAddManager] = React.useState(false);
@@ -66,6 +73,7 @@ const CompaniesEdit = (props) => {
   const [manager_page_num, setManagerPageNum] = useState(1);
   const managerSelectList = [20, 50, 100, 200, -1];
   const [managerDeleteId, setManagerDeleteId] = useState(-1);
+  const [managerOpenDelete,setManagerOpenDelete] = useState(false);
   const managerCellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -85,6 +93,7 @@ const CompaniesEdit = (props) => {
   const [building_sort_method, setBuildingSortMethod] = useState('asc');
   const [building_page_num, setBuildingPageNum] = useState(1);
   const [buildingDeleteId, setBuildingDeleteId] = useState(-1);
+  const [buildingOpenDelete,setBuildingOpenDelete] = useState(false);
   const buildingSelectList = [20, 50, 100, 200, -1];
 
   const [errorsName, setErrorsName] = React.useState('');
@@ -247,11 +256,6 @@ const CompaniesEdit = (props) => {
   const handleChangeManagerSelect = (value) => {
     setManagerRowCount(managerSelectList[value]);
   }
-  const handleClickManagerDelete = (id) => {
-    // setOpenDelete(true);
-    setManagerDeleteId(id);
-  };
-
   const handleChangeBuildingPagination = (value) => {
     setBuildingPageNum(value);
   }
@@ -266,10 +270,6 @@ const CompaniesEdit = (props) => {
   const handleChangeBuildingSelect = (value) => {
     setBuildingRowCount(buildingSelectList[value]);
   }
-  const handleClickBuildingDelete = (id) => {
-    // setOpenDelete(true);
-    setBuildingDeleteId(id);
-  };
 
   useEffect(() => {
     console.log('b');
@@ -293,32 +293,39 @@ const CompaniesEdit = (props) => {
         .then(
           response => {
             setVisibleIndicator(false);
-            if (response.data.code !== 200) {
-              ToastsStore.error(response.data.message);
-            } else {
-              const data = response.data.data.company;
-              localStorage.setItem("token", JSON.stringify(response.data.data.token));
-              setName(data.name);
-              setAddress(data.address);
-              setEmail(data.email);
-              setPhone(data.phone);
-              setSiret(data.SIRET);
-              setVat(data.VAT);
-              setAccountName(data.account_holdername);
-              setAccountAddress(data.account_address);
-              setIBAN(data.account_IBAN);
-              setAvatarUrl(data.logo_url);
-              setAssemblies360(data.access_360cam === 'true' ? true : false);
-              setAssembliesWebcam(data.access_webcam === 'true' ? true : false);
-              setAssembliesAudio(data.access_audio === 'true' ? true : false);
-              if (data.status === 'active') {
-                setStatusActive(true);
-                setStatusInActive(false);
-              }
-              else if (data.status === 'inactive') {
-                setStatusActive(false);
-                setStatusInActive(true);
-              }
+            switch(response.data.code){
+              case 200:
+                const data = response.data.data.company;
+                localStorage.setItem("token", JSON.stringify(response.data.data.token));
+                setName(data.name);
+                setAddress(data.address);
+                setEmail(data.email);
+                setPhone(data.phone);
+                setSiret(data.SIRET);
+                setVat(data.VAT);
+                setAccountName(data.account_holdername);
+                setAccountAddress(data.account_address);
+                setIBAN(data.account_IBAN);
+                setAvatarUrl(data.logo_url);
+                setAssemblies360(data.access_360cam === 'true' ? true : false);
+                setAssembliesWebcam(data.access_webcam === 'true' ? true : false);
+                setAssembliesAudio(data.access_audio === 'true' ? true : false);
+                if (data.status === 'active') {
+                  setStatusActive(true);
+                  setStatusInActive(false);
+                }
+                else if (data.status === 'inactive') {
+                  setStatusActive(false);
+                  setStatusInActive(true);
+                }
+                break;
+              case 401:
+                authService.logout();
+                history.push('/login');
+                window.location.reload();
+                break;
+              default:
+                ToastsStore.error(response.data.message);
             }
           },
           error => {
@@ -350,12 +357,19 @@ const CompaniesEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            ToastsStore.error(response.data.message);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success(response.data.message);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -372,21 +386,31 @@ const CompaniesEdit = (props) => {
       'sort_column': manager_sort_column,
       'sort_method': manager_sort_method,
       'buildingID': -1,
-      'companyID': props.match.params.id
+      'companyID': props.match.params.id,
+      'status': 'active'
     }
     setVisibleIndicator(true);
     AdminService.getManagerList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-
-            setManagerTotalPage(data.totalpage);
-            setManagerDataList(data.managerlist);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if(data.totalpage)
+                setManagerTotalPage(data.totalpage);
+              else 
+                setManagerTotalPage(1);  
+              setManagerDataList(data.managerlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -402,23 +426,111 @@ const CompaniesEdit = (props) => {
       'row_count': building_row_count,
       'sort_column': building_sort_column,
       'sort_method': building_sort_method,
-      'companyID': props.match.params.id
+      'companyID': props.match.params.id,
+      'status': 'active'
     }
     setVisibleIndicator(true);
     AdminService.getBuildingList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setBuildingTotalPage(1);
-            else
-              setBuildingTotalPage(data.totalpage);
-            setBuildingDataList(data.buildinglist);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setBuildingTotalPage(1);
+              else
+                setBuildingTotalPage(data.totalpage);
+              setBuildingDataList(data.buildinglist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const handleClickBuildingDelete = (id) => {
+    setBuildingOpenDelete(true);
+    setBuildingDeleteId(id);
+  };
+  const handleBuildingCloseDelete = () => {
+    setBuildingOpenDelete(false);
+  };
+  const handleBuildingDelete = () => {
+    handleBuildingCloseDelete();
+    setBuildingDeleteId(-1);
+    setVisibleIndicator(true);
+    let data={
+      'status':'trash'
+    }
+    AdminService.deleteBuilding(buildingDeleteId,data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getBuildings();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const handleClickManagerDelete = (id) => {
+    setManagerOpenDelete(true);
+    setManagerDeleteId(id);
+  };
+  const handleManagerCloseDelete = () => {
+    setManagerOpenDelete(false);
+  };
+  const handleManagerDelete = () => {
+    handleManagerCloseDelete();
+    setManagerDeleteId(-1);
+    setVisibleIndicator(true);
+    let data={
+      'status':'trash'
+    }
+    AdminService.deleteManager(managerDeleteId,data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getManagers();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -670,6 +782,7 @@ const CompaniesEdit = (props) => {
             onClickDelete={handleClickManagerDelete}
             leftBtn="Ajouter un  gestionnaire"
             onClick={handleClickAddManager}
+            access={accessManagers}
           />
         </div>
         <div>
@@ -691,6 +804,7 @@ const CompaniesEdit = (props) => {
             onClickDelete={handleClickBuildingDelete}
             leftBtn="Ajouter un  immeuble"
             onClick={handleClickAddBuilding}
+            access={accessBuildings}
           />
         </div>
         <Grid item container>
@@ -792,6 +906,52 @@ const CompaniesEdit = (props) => {
           <Grid xs={12} item ><p className={classes.sepaTitle}><b>Nouvel immmeuble</b></p></Grid>
         </Grid>
         <AddBuilding onCancel={handleCloseAddBuilding} onAdd={handleAddBuilding} />
+      </Dialog>
+      <Dialog
+        open={buildingOpenDelete}
+        onClose={handleBuildingCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure to delete this building?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleBuildingCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleBuildingDelete} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={managerOpenDelete}
+        onClose={handleManagerCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure to delete this manager?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleManagerCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleManagerDelete} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>

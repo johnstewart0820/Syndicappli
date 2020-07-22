@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../../components/MySelect';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import MyDialog from '../../../components/MyDialog';
-import AdminService from '../../../services/api.js';
+import {ManagerService as Service} from '../../../services/api.js';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -15,27 +14,24 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-
-const Managers = (props) => {
+import TrashTable from 'components/TrashTable';
+const ManagerService = new Service();
+const TrashTeamMembers = (props) => {
   const { history } = props;
   //const token = authService.getToken();    
   // if (!token) {
   //   history.push("/admin/login");
   //   window.location.reload();
   // }
-  const accessManagers = authService.getAccess('role_managers');
+  const accessTeam = authService.getAccess('role_team');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [footerItems, setFooterItems] = useState([]);
   const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
-  const [company, setCompany] = useState([]);
-  const [companies, setCompanies] = useState(0);
-  const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
   const [building, setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState(0);
+  const [buildings, setBuildings] = useState('');
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
@@ -47,12 +43,7 @@ const Managers = (props) => {
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
 
-  const handleChangeCompanies = (val) => {
-    setCompanies(val);
-    setCompanyID(companyList[val].companyID);
-  };
   const handleChangeBuildings = (val) => {
-    console.log('val;'+val)
     setBuildings(val);
     setBuildingID(buildingList[val].buildingID);
   };
@@ -73,50 +64,37 @@ const Managers = (props) => {
     setSortMethod(direct);
   }
   useEffect(() => {
-    if (accessManagers === 'denied') {
+    if (accessTeam === 'denied') {
       setOpenDialog(true);
     } else {
       getCompanies();
     }
-  }, [accessManagers]);
+  }, [accessTeam]);
   useEffect(() => {
     getBuildings();
-    getManagers();
   }, [companyID]);
   useEffect(() => {
-    if (accessManagers === 'denied') {
+    if (accessTeam === 'denied') {
       setOpenDialog(true);
     }
-    if (accessManagers !== 'denied')
-      getManagers();
-  }, [page_num, row_count, sort_column, sort_method, buildingID, props.refresh]);
+    if (accessTeam !== 'denied')
+      getTrashManagers();
+  }, [page_num, row_count, sort_column, sort_method, buildingID]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
     { key: 'email', field: 'Email' },
-    { key: 'connection', field: 'Connexions/mois' },
-    { key: 'dailytime', field: 'Temps connexion/jour' },
-    { key: 'count', field: 'Lots' }
+    { key: 'phone', field: 'Téléphone' },
+    { key: '', field: ''}
   ];
   const columns = [];
-  for (let i = 0; i < 6; i++)
+  for (let i = 0; i < 4; i++)
     columns[i] = 'asc';
-  const handleClickEdit = (id) => {
-    history.push('/admin/managers/edit/' + id);
-  };
-
-  const handleClickDelete = (id) => {
-    setOpenDelete(true);
-    setDeleteId(id);
-  };
-  const handleDelete = () => {
-    handleCloseDelete();
-    setDeleteId(-1);
-    setVisibleIndicator(true);
-    let data = {
-      'status': 'trash'
-    }
-    AdminService.deleteManager(deleteId,data)
+    const handleClickRestore = (id) => {
+        let data={
+            'status': 'active'
+        }
+      ManagerService.deleteTeamMember(id,data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -124,8 +102,8 @@ const Managers = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              ToastsStore.success("Deleted successfully!");
-              getManagers();
+              ToastsStore.success("Restored successfully!");
+              getTrashManagers();
               break;
             case 401:
               authService.logout();
@@ -138,28 +116,57 @@ const Managers = (props) => {
         },
         error => {
           ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+    }
+
+  const handleDelete = () => {
+    handleCloseDelete();
+    setDeleteId(-1);
+    setVisibleIndicator(true);
+    let data={
+        'status':'active'
+    }
+    ManagerService.deleteTeamMember(deleteId,data)
+      .then(
+        response => {
+          console.log(response.data);
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            // if(response.data.status === 'Token is Expired') {
+            //   authService.logout();
+            //   history.push('/');
+            // }
+            console.log('error');
+          } else {
+            console.log('success');
+            alert('Deleted successful');
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            // getDatas();
+          }
+        },
+        error => {
+          console.log('fail');
           setVisibleIndicator(false);
         }
       );
   }
   const getCompanies = () => {
     setVisibleIndicator(true);
-    AdminService.getCompanyListByUser()
+    ManagerService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
           switch(response.data.code){
             case 200:
-              company.splice(0,company.length);
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              company.push('Tout');
               data.companylist.map((item) => (
-                company.push(item.name)
+                setCompanyID(item.companyID)
               )
               );
-              setCompany(company);
-              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
               break;
             case 401:
               authService.logout();
@@ -176,13 +183,12 @@ const Managers = (props) => {
         }
       );
   }
-
   const getBuildings = () => {
     const requestData = {
       'companyID': companyID
     }
     setVisibleIndicator(true);
-    AdminService.getBuildingListByCompany(requestData)
+    ManagerService.getBuildingListByCompany(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -217,8 +223,7 @@ const Managers = (props) => {
         }
       );
   }
-
-  const getManagers = () => {
+  const getTrashManagers = () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
@@ -226,26 +231,23 @@ const Managers = (props) => {
       'sort_column': sort_column,
       'sort_method': sort_method,
       'buildingID': buildingID,
-      'companyID' : companyID,
-      'status' : 'active'
+      'companyID': companyID,
+      'status' : 'trash'
     }
     setVisibleIndicator(true);
-    AdminService.getManagerList(requestData)
+    ManagerService.getTeamMemberList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
           switch(response.data.code){
             case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              if(data.totalpage)
-                setTotalPage(data.totalpage);
-              else
-                setTotalPage(1)
-              setDataList(data.managerlist);
-              let amount_connection = 0;
-              const items = ['Total', '', data.totalcount, amount_connection, amount_connection, data.sum];
-              setFooterItems(items);
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                if(data.totalpage)
+                    setTotalPage(data.totalpage);
+                else
+                    setTotalPage(1);
+                setDataList(data.managerlist);
               break;
             case 401:
               authService.logout();
@@ -273,19 +275,6 @@ const Managers = (props) => {
       <div className={classes.tool}>
         <Grid container spacing={2} direction="column">
           <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
-            <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
-            <Grid xs item container direction="row-reverse">
-              <Grid item container direction="column" alignItems="stretch">
-                <MySelect
-                  color="gray"
-                  data={company}
-                  onChangeSelect={handleChangeCompanies}
-                  value={companies}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid xs={10} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
             <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
@@ -301,8 +290,8 @@ const Managers = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessManagers} onClose={handleCloseDialog} />
-        <MyTable
+        <MyDialog open={openDialog} role={accessTeam} onClose={handleCloseDialog} />
+        <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -311,11 +300,8 @@ const Managers = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickEdit={handleClickEdit}
-          onClickDelete={handleClickDelete}
-          tblFooter="true"
-          footerItems={footerItems}
-          access={accessManagers}
+          onClickRestore={handleClickRestore}
+          access={accessTeam}
         />
       </div>
       <Dialog
@@ -329,7 +315,8 @@ const Managers = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this company?
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -346,4 +333,4 @@ const Managers = (props) => {
   );
 };
 
-export default withRouter(Managers);
+export default withRouter(TrashTeamMembers);

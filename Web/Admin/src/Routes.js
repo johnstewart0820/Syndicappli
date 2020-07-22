@@ -329,7 +329,7 @@ const Routes = () => {
         component={ManagerOwnerEdit}
         exact
         layout={MainLayout}
-        path="/manager/owners/edit/:id"
+        path="/manager/owners/edit"
       />
       <RouteWithLayout
         component={DashboardView}

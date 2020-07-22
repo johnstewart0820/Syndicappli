@@ -29,8 +29,6 @@ const Owners = (props) => {
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
   const [company, setCompany] = useState([]);
-  const [companies, setCompanies] = useState('');
-  const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
   const [building,setBuilding] = useState([]);
@@ -53,10 +51,7 @@ const Owners = (props) => {
   const selectList = [20, 50, 100, 200, -1];
   const roleList = ['Tout', 'Copropriétaire', 'Sous-compte', 'member of the council'];
   const owner_role = ['all', 'owner', 'subaccount', 'member'];
-  const handleChangeCompanies = (val) => {
-    setCompanies(val);
-    setCompanyID(companyList[val].companyID);
-  };
+
   const handleChangeBuildings = (val) => {
     setBuildings(val);
     setBuildingID(buildingList[val].buildingID);
@@ -112,15 +107,11 @@ const Owners = (props) => {
   for (let i = 0; i < 6; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id, buildingid) => {
-    history.push('/admin/owners/edit?id=' + id + '&&buildingID=' + buildingid);
+    history.push('/manager/owners/edit?id=' + id + '&&buildingID=' + buildingid);
   };
-  const handleClickDelete = (id) => {
-    if (accessOwners === 'edit') {
+  const handleClickDelete = (id,buildingID) => {
       setOpenDelete(true);
       setDeleteId(id);
-    } else {
-      setOpenDialog(true);
-    }
   };
   const handleClickAllSelect = ()=>{
   }
@@ -134,22 +125,31 @@ const Owners = (props) => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    ManagerService.deleteUser(deleteId)
+    let data = {
+      'status': 'trash'
+    }
+    ManagerService.deleteOwner(deleteId,data)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            alert('Deleted successful');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getOwners();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
       );
@@ -161,19 +161,22 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            company.splice(0,company.length);
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            company.push('Tout');
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompany(company);
-            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                setCompanyID(item.companyID)
+              )
+              );
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -184,31 +187,35 @@ const Owners = (props) => {
   }
   const getBuildings = () => {
     const requestData = {
-      'search_key': '',
-      'page_num': 0,
-      'row_count': 20,
-      'sort_column': -1,
-      'sort_method': 'asc',
       'companyID': companyID
     }
     setVisibleIndicator(true);
-    ManagerService.getBuildingList(requestData)
+    ManagerService.getBuildingListByCompany(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            building.splice(0,building.length);
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-              building.push('Tout');
-            data.buildinglist.map((item) => (
-              building.push(item.name)
-            )
-            );
-            setBuilding(building);
-            setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+          switch(response.data.code){
+            case 200:
+              building.splice(0,building.length);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+                building.push('Tout');
+              data.buildinglist.map((item) => (
+                building.push(item.name)
+              )
+              );
+              setBuilding(building);
+              setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+              setBuildings(0);
+              setBuildingID(-1);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -226,23 +233,31 @@ const Owners = (props) => {
       'sort_method': sort_method,
       'role': owner_role[role],
       'buildingID': buildingID,
-      'companyID' : companyID
+      'companyID' : companyID,
+      'status': 'active'
     }
     setVisibleIndicator(true);
     ManagerService.getOwnerList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.ownerlist);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.ownerlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -260,19 +275,6 @@ const Owners = (props) => {
       </div>
       <div className={classes.tool}>
         <Grid container spacing={2} direction="column">
-          <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
-            <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
-            <Grid xs item container direction="row-reverse">
-              <Grid item container direction="column" alignItems="stretch">
-                <MySelect
-                  color="gray"
-                  data={company}
-                  onChangeSelect={handleChangeCompanies}
-                  value={companies}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
           <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
             <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
             <Grid xs item container direction="row-reverse">
@@ -311,10 +313,11 @@ const Owners = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickedit={handleClickEdit}
+          onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
           onImport={handleClickImport}
           onExport={handleClickExport}
+          access={accessOwners}
           type="owner"
         />
       </div>
@@ -329,8 +332,7 @@ const Owners = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Are you sure to delete this owner?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

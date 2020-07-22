@@ -9,9 +9,12 @@ import { AddBuildingStyles as useStyles } from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import AdminService from '../../../services/api.js';
+import { withRouter } from 'react-router-dom';
+import authService from 'services/authService';
 
 const AddBuilding = (props) => {
   const classes = useStyles();
+  const {history} = props;
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   let company = [];
   const [companies, setCompanies] = React.useState('');
@@ -89,20 +92,28 @@ const AddBuilding = (props) => {
     AdminService.getCompanyListByUser()
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            console.log('success');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList(data.companylist);
-            setCompanyID(data.companylist[0].companyID);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                company.push(item.name)
+              )
+              );
+              setCompanyList(data.companylist);
+              if(data.companyList)
+                setCompanyID(data.companylist[0].companyID);
+              else 
+                setCompanyID(-1);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -126,13 +137,20 @@ const AddBuilding = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            props.onAdd();
-            handleClose();
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              props.onAdd();
+              handleClose();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -288,4 +306,4 @@ const AddBuilding = (props) => {
   );
 };
 
-export default AddBuilding;
+export default withRouter(AddBuilding);

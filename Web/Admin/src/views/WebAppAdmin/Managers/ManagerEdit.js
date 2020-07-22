@@ -16,6 +16,12 @@ import AdminService from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const ManagerEdit = (props) => {
@@ -33,7 +39,9 @@ const ManagerEdit = (props) => {
   const permissionList = ['Voir', 'Editer', 'Refusé'];
   const role_permission = ['see', 'edit', 'denied'];
   const [globalState, globalActions] = useGlobal();
-
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const [deleteId, setDeleteId] = React.useState(-1);
+  const [suspendState, setSuspendState] = React.useState('Suspendre le compte');
   const [avatarurl, setAvatarUrl] = React.useState("");
   const [avatar, setAvatar] = React.useState(null);
   const [lastname, setLastName] = React.useState('');
@@ -68,50 +76,32 @@ const ManagerEdit = (props) => {
 
   const [buildingList, setBuildingList] = React.useState([]);
   let buildingID = [];
-  useEffect(() => {
-    getBuildings();
-  }, [companies]);
   useEffect(()=>{
-    for(let i = 0; i < companyList.length; i++)
-    if(companyID === companyList[i].companyID){
-      setCompanies(i);
-      break;
-    }
-  },[companyList]);
-
-  const getBuildings = () => {
-    const requestData = {
-      'search_key': '',
-      'page_num': 0,
-      'row_count': 20,
-      'sort_column': -1,
-      'sort_method': 'asc',
-      'companyID': companyID
-    }
+    getCompanies();
+  },[accessManagers]);
+  const getCompanies = () => {
     setVisibleIndicator(true);
-    AdminService.getBuildingList(requestData)
+    AdminService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            company.push('');
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
-
-            let buildings1 = [];
-            data.buildinglist.map((item, i) => (
-              buildings1[i] = { label: item.name, value: item.buildingID }
-            )
-            );
-            setBuildingList(data.buildinglist);
-            globalActions.setMultiSuggestions(buildings1);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              company.push('');
+              data.companylist.map((item) => (
+                company.push(item.name)
+              )
+              );
+              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -120,18 +110,51 @@ const ManagerEdit = (props) => {
         }
       );
   }
-  useEffect(()=>{
-    setBuildingList(buildingList);
-    console.log('companylist:',buildingList)
+  const getBuildings = () => {
+    const requestData = {
+      'companyID': companyID
+    }
     setVisibleIndicator(true);
-
-    AdminService.getManager(props.match.params.id)
+    AdminService.getBuildingListByCompany(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              let buildings1 = [];
+              data.buildinglist.map((item, i) => (
+                buildings1[i] = { label: item.name, value: item.buildingID }
+              )
+              );
+              setBuildingList(data.buildinglist);
+              globalActions.setMultiSuggestions(buildings1);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getManager = ()=>{
+    setVisibleIndicator(true);
+
+    AdminService.getManager(props.match.params.id)
+    .then(
+      response => {
+        setVisibleIndicator(false);
+        switch(response.data.code){
+          case 200:
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             const profile = data.manager;
@@ -155,6 +178,10 @@ const ManagerEdit = (props) => {
             setTeamPermission(role_permission.indexOf(profile.role_team));
             setCompanyID(profile.companyID);
             setApartNumber(profile.count);
+            if(profile.status === 'active')
+              setSuspendState('Suspendre le compte');
+            else if(profile.status === 'inactive')
+              setSuspendState('Restaurer le compte');
             let buildingID = [];
             data.buildinglist.map((item, i) => (
               buildingID[i] = item.relationID
@@ -169,14 +196,44 @@ const ManagerEdit = (props) => {
                 }
             globalActions.setMultiTags(buildings);
             globalActions.setMultiID(buildingID);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+            globalActions.setMultiTags([]);
+            globalActions.setMultiID([]);
         }
-      );
+      },
+      error => {
+        globalActions.setMultiTags([]);
+        globalActions.setMultiID([]);
+        ToastsStore.error("Can't connect to the server!");
+        setVisibleIndicator(false);
+      }
+    );
+  }
+  useEffect(()=>{
+    setBuildingList(buildingList);
+
+    
   },[buildingList])
+  useEffect(()=>{
+    getBuildings()
+  },[companies]);
+  useEffect(()=>{
+    getManager()
+
+    for(let i = 0; i < companyList.length; i++)
+    if(companyID === companyList[i].companyID){
+      setCompanies(i);
+      break;
+    }
+    
+  },[companyID]);
   const handleClick = () => {
     history.goBack();
   };
@@ -283,6 +340,109 @@ const ManagerEdit = (props) => {
   const handleChangePaymentMethodsPermission = (val) => {
     setPaymentMethodsPermission(val);
   }
+  const handleClickSuspendRestore = ()=>{
+    let data={
+      'status': suspendState === 'Restaurer le compte' ? 'active':'inactive'
+    };
+    setVisibleIndicator(true);
+    AdminService.setSuspendManager(props.match.params.id,data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if(suspendState === 'Restaurer le compte')
+                setSuspendState('Suspendre le compte');
+              else if(suspendState === 'Suspendre le compte')
+                setSuspendState('Restaurer le compte');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleClickLoginAsManager = () => {
+    window.open('http://localhost:3000');
+  }
+  const handleClickResetPassword = ()=>{
+    var data = {};
+    data['email'] = email;
+    setVisibleIndicator(true);
+    AdminService.forgotPassword(data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              ToastsStore.success(response.data.message);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          setVisibleIndicator(false);
+          ToastsStore.error("Can't connect to the Server!");
+        }
+      ); 
+  }
+  const handleClickDeleteManager = ()=>{
+    setOpenDelete(true);
+    setDeleteId(props.match.params.id);
+  }
+  const handleDelete = () => {
+    handleCloseDelete();
+    setDeleteId(-1);
+    setVisibleIndicator(true);
+    let data={
+      'status': 'trash'
+    }
+    AdminService.deleteManager(deleteId,data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              history.goBack();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   const updateManager = () => {
     let permissionInfos = [
       {
@@ -352,12 +512,19 @@ const ManagerEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            ToastsStore.success('Updated manager successfully!');
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success('Updated manager successfully!');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -428,16 +595,16 @@ const ManagerEdit = (props) => {
                 <p className={classes.itemTitle}>Lots : {apartNumber}</p>
               </Grid>
               <Grid item container direction="row-reverse">
-                <MyButton name={"Se connecter en tant que"} color={"1"} onClick={onClickSave} disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')} />
+                <MyButton name={"Se connecter en tant que"} color={"1"} onClick={handleClickLoginAsManager} disabled={(accessManagers === 'see' ? true : false)} />
               </Grid>
               <Grid item container direction="row-reverse">
-                <MyButton name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')} />
+                <MyButton name={"Réinitialiser le mot de passe"} bgColor={"#00C9FF"} onClick={handleClickResetPassword} disabled={(accessManagers === 'see' ? true : false)} />
               </Grid>
               <Grid item container direction="row-reverse">
-                <MyButton name={"Suspendre le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')} />
+                <MyButton name={suspendState} bgColor={"#00C9FF"} onClick={handleClickSuspendRestore} disabled={(accessManagers === 'see' ? true : false)} />
               </Grid>
               <Grid item container direction="row-reverse">
-                <MyButton name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={onClickSave} disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')} />
+                <MyButton name={"Supprimer le compte"} bgColor={"#00C9FF"} onClick={handleClickDeleteManager} disabled={(accessManagers === 'see' ? true : false)} />
               </Grid>
             </Grid>
             <Grid xs item container direction="column" spacing={5}>
@@ -452,7 +619,7 @@ const ManagerEdit = (props) => {
                       variant="outlined"
                       value={lastname}
                       onChange={handleChangeLastName}
-                      disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessManagers === 'see' ? true : false)}
                       fullWidth
                     />
                   </Grid>
@@ -469,7 +636,7 @@ const ManagerEdit = (props) => {
                       variant="outlined"
                       value={firstname}
                       onChange={handleChangeFirstName}
-                      disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessManagers === 'see' ? true : false)}
                       fullWidth
                     />
                   </Grid>
@@ -486,7 +653,7 @@ const ManagerEdit = (props) => {
                       variant="outlined"
                       value={email}
                       onChange={handleChangeEmail}
-                      disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessManagers === 'see' ? true : false)}
                       fullWidth
                     />
                   </Grid>
@@ -503,7 +670,7 @@ const ManagerEdit = (props) => {
                       variant="outlined"
                       value={phonenumber}
                       onChange={handleChangePhoneNumber}
-                      disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessManagers === 'see' ? true : false)}
                       fullWidth
                     />
                   </Grid>
@@ -520,7 +687,7 @@ const ManagerEdit = (props) => {
                     onChangeSelect={handleChangeCompanies}
                     value={companies}
                     width="100%"
-                    disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessManagers === 'see' ? true : false)}
                   />
                   {errorsCompanies.length > 0 &&
                     <span className={classes.error}>{errorsCompanies}</span>}
@@ -534,7 +701,7 @@ const ManagerEdit = (props) => {
                     no={'No buildings found'}
                     all={globalState.multi_suggestions}
                     onSelected={handleChangeBuildings}
-                    disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')}
+                    disabled={(accessManagers === 'see' ? true : false)}
                     width="100%"
                   />
                   {errorsBuildings.length > 0 &&
@@ -669,10 +836,33 @@ const ManagerEdit = (props) => {
           </Grid>
           <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
             <MyDialog open={openDialog} role={accessManagers} onClose={handleCloseDialog} />
-            <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessManagers === 'see' ? 'disabled' : !'disabled')} />
+            <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessManagers === 'see' ? true : false)} />
           </Grid>
         </div>
       </Grid>
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Delete
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure to delete this company?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );

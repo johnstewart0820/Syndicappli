@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import MyTable from '../../../components/MyTable';
-import Dialog from '@material-ui/core/Dialog';
 import AdminService from '../../../services/api.js';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import authService from '../../../services/authService.js';
 import MyDialog from '../../../components/MyDialog';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsStore } from 'react-toasts';
+import TrashTable from 'components/TrashTable';
 
 const TrashUsers = (props) => {
   const { history } = props;
@@ -25,9 +19,6 @@ const TrashUsers = (props) => {
   const accessUsers = authService.getAccess('role_users');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [openDelete, setOpenDelete] = React.useState(false);
-
-  const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
@@ -36,9 +27,7 @@ const TrashUsers = (props) => {
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
+
   const handleCloseDialog = (val) => {
     setOpenDialog(val);
   };
@@ -52,27 +41,37 @@ const TrashUsers = (props) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  const getUsers = () => {
+  const getTrashUsers = () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
       'row_count': row_count,
       'sort_column': sort_column,
-      'sort_method': sort_method
+      'sort_method': sort_method,
+      'status' : 'trash'
     }
     setVisibleIndicator(true);
     AdminService.getUserList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);  
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-
-            setTotalPage(data.totalpage);
-            setDataList(data.userlist);
+          switch(response.data.code){
+            case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                if(data.totalpage)
+                    setTotalPage(data.totalpage);
+                else
+                    setTotalPage(1);
+                setDataList(data.userlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -88,43 +87,35 @@ const TrashUsers = (props) => {
   });
   useEffect(() => {
     if (accessUsers !== 'denied')
-      getUsers();
+      getTrashUsers();
   }, [page_num, row_count, sort_column, sort_method]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
     { key: 'email', field: 'Email' },
-    { key: 'phone', field: 'Téléphone' }
+    { key: 'phone', field: 'Téléphone' },
+    { key: '', field: ''}
   ];
   const columns = [];
   for (let i = 0; i < 4; i++)
     columns[i] = 'asc';
-  const handleClickEdit = (id) => {
-    history.push('/admin/users/edit/' + id);
-  };
-  const handleClickDelete = (id) => {
-    if (accessUsers === 'edit') {
-      setOpenDelete(true);
-      setDeleteId(id);
-    } else {
-      setOpenDialog(true);
-    }
-  };
-  const handleDelete = () => {
-    handleCloseDelete();
-    setDeleteId(-1);
+
+  const handleClickRestore = (id) => {
     setVisibleIndicator(true);
-    AdminService.deleteUser(deleteId)
+    let data={
+        'status': 'active'
+    }
+    AdminService.deleteUser(id,data)
       .then(
         response => {
           setVisibleIndicator(false);  
           if (response.data.code !== 200) {
             ToastsStore.error(response.data.message);
           } else {
-            ToastsStore.success("Deleted Successfully!");
+            ToastsStore.success("Restored Successfully!");
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
-            getUsers();
+            getTrashUsers();
           }
         },
         error => {
@@ -144,7 +135,7 @@ const TrashUsers = (props) => {
       </div>
       <div className={classes.body}>
         <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog} />
-        <MyTable
+        <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -153,34 +144,10 @@ const TrashUsers = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickEdit={handleClickEdit}
-          onClickDelete={handleClickDelete}
+          onClickRestore={handleClickRestore}
+          access={accessUsers}
         />
       </div>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Delete
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };

@@ -261,19 +261,26 @@ const MyAccount = (props) => {
     .then(      
       response => {        
         setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-
-        } else {
-          localStorage.setItem("token", JSON.stringify(response.data.data.token));
-          const profile = response.data.data.profile;
-          setLastName(profile.lastname);
-          setFirstName(profile.firstname);
-          setEmail(profile.email);
-          setPhone(profile.phone);
-          setAvatarUrl(profile.photo_url);
-          globalActions.setFirstName(profile.firstname);
-          globalActions.setLastName(profile.lastname);
-          globalActions.setAvatarUrl(profile.photo_url);
+        switch(response.data.code){
+          case 200:
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            const profile = response.data.data.profile;
+            setLastName(profile.lastname);
+            setFirstName(profile.firstname);
+            setEmail(profile.email);
+            setPhone(profile.phone);
+            setAvatarUrl(profile.photo_url);
+            globalActions.setFirstName(profile.firstname);
+            globalActions.setLastName(profile.lastname);
+            globalActions.setAvatarUrl(profile.photo_url);
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
         }
       },
       error => {
@@ -322,17 +329,23 @@ const MyAccount = (props) => {
     AdminService.updateProfile(formdata)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            setErrorsOldPassword('The current password is not correct');
-          } else {
-            ToastsStore.success("Updated successfully!");
-            setErrorsOldPassword('');
-            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-            globalActions.setFirstName(firstname);
-            globalActions.setLastName(lastname);
-            globalActions.setAvatarUrl(avatarurl);
+          switch(response.data.code){
+            case 200:
+              ToastsStore.success("Updated successfully!");
+              setErrorsOldPassword('');
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              globalActions.setFirstName(firstname);
+              globalActions.setLastName(lastname);
+              globalActions.setAvatarUrl(avatarurl);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {

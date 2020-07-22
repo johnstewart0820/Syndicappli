@@ -16,7 +16,7 @@ const Multiselect = (props)=> {
           value={props.selected}
           components={animatedComponents} 
           onChange={handleChange}
-          isDisabled={props.disabled === 'disabled'? true : null}
+          isDisabled={props.disabled === true? true : null}
           isMulti />
       </div>
     );

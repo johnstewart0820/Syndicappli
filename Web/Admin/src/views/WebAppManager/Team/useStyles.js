@@ -82,7 +82,20 @@ const useStyles = makeStyles(theme => ({
   },
   close: {
     color: 'gray'
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 
 export const AddTeamMemberStyles = makeStyles(theme => ({
@@ -181,7 +194,20 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 export const EditTeamMemberStyles = makeStyles(theme => ({
   root: {
@@ -265,7 +291,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     },
   },
   size: {
-    cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
       width: 214,
       height: 214,
@@ -364,7 +389,6 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     },
   },
   img: {
-    cursor: 'pointer',
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',
@@ -390,6 +414,7 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     },
   },
   editAvatar:{
+    cursor:'pointer',
     [theme.breakpoints.up('xl')]: {
       width: 54,
       height: 54,

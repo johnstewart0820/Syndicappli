@@ -90,7 +90,12 @@ const Main = (props) => {
             <Grid>
               {
                 value === 0 ?
-                  <MyButton name={"Nouveau copropriétaire"} color={"1"} onClick={handleClickAdd} />
+                  <MyButton 
+                    name={"Nouveau copropriétaire"} 
+                    color={"1"} 
+                    onClick={handleClickAdd} 
+                    style={{ visibility: accessOwners === 'edit' ? 'visible' : 'hidden' }}
+                  />
                   : <MyButton name={"Nouveau copropriétaire"} style={{visibility:'hidden'}}/>
               }
               <Dialog

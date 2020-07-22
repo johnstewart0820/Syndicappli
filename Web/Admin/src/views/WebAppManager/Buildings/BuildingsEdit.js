@@ -18,7 +18,7 @@ const BuildingsEdit = (props) => {
   const { history } = props;
   // const token = authService.getToken();    
   // if (!token) {
-  //   history.push("/login");
+  //   history.push("/admin/login");
   //   window.location.reload();
   // }
   const accessBuildings = authService.getAccess('role_buildings');
@@ -115,12 +115,19 @@ const BuildingsEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            ToastsStore.success("Updated successfully!");
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Updated successfully!");
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -135,20 +142,27 @@ const BuildingsEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList(data.companylist);
-            setCompany(company);
-            for (let i = 0; i < company.length; i++)
-              if (data.companylist[i].companyID === id)
-                setCompanies(i);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                company.push(item.name)
+              )
+              );
+              setCompanyList(data.companylist);
+              setCompany(company);
+              for (let i = 0; i < company.length; i++)
+                if (data.companylist[i].companyID === id)
+                  setCompanies(i);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -168,25 +182,31 @@ const BuildingsEdit = (props) => {
         .then(
           response => {
             setVisibleIndicator(false);
-            if (response.data.code !== 200) {
-              ToastsStore.error(response.data.message);
-            } else {
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              const building = data.building[0];
-              const vote_list = data.vote_list;
-              vote_list.map((vote) =>
-                clefList.push(vote)
-              )
-              getCompanyList(building.companyID);
-              setName(building.name);
-              setAddress(building.address);
-              setAccountHolder(building.account_holdername);
-              setAccountAddress(building.account_address);
-              setAccountIban(building.account_IBAN);
-              setCompanyID(building.companyID);
-              setClefList(clefList);
-
+            switch(response.data.code){
+              case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                const building = data.building[0];
+                const vote_list = data.vote_list;
+                vote_list.map((vote) =>
+                  clefList.push(vote)
+                )
+                getCompanyList(building.companyID);
+                setName(building.name);
+                setAddress(building.address);
+                setAccountHolder(building.account_holdername);
+                setAccountAddress(building.account_address);
+                setAccountIban(building.account_IBAN);
+                setCompanyID(building.companyID);
+                setClefList(clefList);
+                break;
+              case 401:
+                authService.logout();
+                history.push('/login');
+                window.location.reload();
+                break;
+              default:
+                ToastsStore.error(response.data.message);
             }
           },
           error => {
@@ -230,7 +250,7 @@ const BuildingsEdit = (props) => {
                   value={name}
                   fullWidth
                   onChange={handleChangeName}
-                  disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings === 'see' ? true : false)}
                 />
                 {errorsName.length > 0 &&
                   <span className={classes.error}>{errorsName}</span>}
@@ -245,7 +265,7 @@ const BuildingsEdit = (props) => {
                   onChangeSelect={handleChangeCompanies}
                   value={companies}
                   width="100%"
-                  disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings === 'see' ? true : false)}
                 />
                 {errorsCompanies.length > 0 &&
                   <span className={classes.error}>{errorsCompanies}</span>}
@@ -259,7 +279,7 @@ const BuildingsEdit = (props) => {
                   variant="outlined"
                   value={address}
                   onChange={handleChangeAddress}
-                  disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
+                  disabled={(accessBuildings === 'see' ? true : false)}
                 />
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
@@ -273,7 +293,7 @@ const BuildingsEdit = (props) => {
                 <Grid item container direction="column">
                   {
                     clefList.map((clef, i) => (
-                      <Grid container spacing={5}>
+                      <Grid key={i} container spacing={5}>
 
                         <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
                           <Grid item>
@@ -308,7 +328,7 @@ const BuildingsEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')} />
+              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings === 'see' ? true : false)} />
             </Grid>
           </Grid>
         </div>
@@ -326,7 +346,7 @@ const BuildingsEdit = (props) => {
                       variant="outlined"
                       value={accountHolder}
                       onChange={handleChangeAccountHolder}
-                      disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -341,7 +361,7 @@ const BuildingsEdit = (props) => {
                       variant="outlined"
                       value={accountAddress}
                       onChange={handleChangeAccountAddress}
-                      disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -354,15 +374,15 @@ const BuildingsEdit = (props) => {
                       variant="outlined"
                       value={accountIban}
                       onChange={handleChangeAccountIban}
-                      disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')}
+                      disabled={(accessBuildings === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')} /></Grid>
-              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessBuildings === 'see' ? 'disabled' : !'disabled')} />  </Grid>
+              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessBuildings === 'see' ? true : false)} /></Grid>
+              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessBuildings === 'see' ? true : false)} />  </Grid>
             </Grid>
             <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog} />
           </Grid>

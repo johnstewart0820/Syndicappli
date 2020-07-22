@@ -10,9 +10,12 @@ import AdminService from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
+import authService from 'services/authService';
+import {withRouter} from 'react-router-dom';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddManager = (props) => {
+    const {history} = props;
     const classes = useStyles();
     const [globalState, globalActions] = useGlobal();
     const permissionList = ['Voir', 'Editer', 'Refusé'];
@@ -166,18 +169,25 @@ const AddManager = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        company.push('');
-                        data.companylist.map((item) => (
-                            company.push(item.name)
-                        )
-                        );
-                        setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            company.push('');
+                            data.companylist.map((item) => (
+                                company.push(item.name)
+                            )
+                            );
+                            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -187,31 +197,33 @@ const AddManager = (props) => {
     }
     const getBuildings = () => {
         const requestData = {
-            'search_key': '',
-            'page_num': 0,
-            'row_count': 20,
-            'sort_column': -1,
-            'sort_method': 'asc',
             'companyID': companyID
         }
         setVisibleIndicator(true);
-        AdminService.getBuildingList(requestData)
+        AdminService.getBuildingListByCompany(requestData)
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        let buildings1 = [];
-                        data.buildinglist.map((item, i) => (
-                            buildings1[i] = { label: item.name, value: item.buildingID }
-                        )
-                        );
-                        setBuildingList(data.buildinglist);
-                        globalActions.setMultiSuggestions(buildings1);
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            let buildings1 = [];
+                            data.buildinglist.map((item, i) => (
+                                buildings1[i] = { label: item.name, value: item.buildingID }
+                            )
+                            );
+                            setBuildingList(data.buildinglist);
+                            globalActions.setMultiSuggestions(buildings1);
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -290,14 +302,21 @@ const AddManager = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    if (response.data.code !== 200) {
-                        ToastsStore.error(response.data.message);
-                    } else {
-                        const data = response.data.data;
-                        localStorage.setItem("token", JSON.stringify(data.token));
-                        props.onAdd();
-                        handleClose();
-                    }
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            props.onAdd();
+                            handleClose();
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -546,4 +565,4 @@ const AddManager = (props) => {
     );
 };
 
-export default AddManager;
+export default withRouter(AddManager);

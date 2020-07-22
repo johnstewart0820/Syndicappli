@@ -137,7 +137,7 @@ const handleChangeRenewal = (event) => {
                         no={'No companies found'}
                         all={companiesList} 
                         onSelected={handleChangeCategorie}
-                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? true : false)}
                     />
                     {errorsCategorie.length > 0 && 
                     <span className={classes.error}>{errorsCategorie}</span>}
@@ -151,7 +151,7 @@ const handleChangeRenewal = (event) => {
                         no={'No buildings found'}
                         all={buildingsList} 
                         onSelected={handleChangeBillingCycle}
-                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? true : false)}
                     />
                     {errorsBillingCycle.length > 0 && 
                     <span className={classes.error}>{errorsBillingCycle}</span>}
@@ -163,7 +163,7 @@ const handleChangeRenewal = (event) => {
                     <Checkbox 
                         checked={renewal}
                         onChange={handleChangeRenewal} 
-                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? true : false)}
                     />
                     {errorsRenewal.length > 0 && 
                     <span className={classes.error}>{errorsRenewal}</span>}
@@ -178,7 +178,7 @@ const handleChangeRenewal = (event) => {
                         variant="outlined"
                         value={productName}
                         onChange={handleChangeProductName} 
-                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? true : false)}
                     />
                     {errorsProductName.length > 0 && 
                     <span className={classes.error}>{errorsProductName}</span>}
@@ -195,7 +195,7 @@ const handleChangeRenewal = (event) => {
                         onChange={handleChangeProductDescription} 
                         multiline
                         rows={5}
-                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? true : false)}
                     />
                     {errorsProductDescription.length > 0 && 
                     <span className={classes.error}>{errorsProductDescription}</span>}
@@ -210,7 +210,7 @@ const handleChangeRenewal = (event) => {
                         onChangeSelect={handleChangePriceType}
                         value={priceType}
                         width="80%"
-                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? true : false)}
                     />
                     {errorsPriceType.length > 0 && 
                     <span className={classes.error}>{errorsPriceType}</span>}
@@ -225,14 +225,14 @@ const handleChangeRenewal = (event) => {
                         variant="outlined" 
                         value={price}
                         onChange={handleChangePrice} 
-                        disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}
+                        disabled={(accessProducts ==='see'? true : false)}
                     />
                     {errorsPrice.length > 0 && 
                     <span className={classes.error}>{errorsPrice}</span>}
                 </Grid>
             </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts ==='see'? 'disabled' : !'disabled')}/>
+              <MyButton name = {"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts ==='see'? true : false)}/>
             </Grid>
           </Grid>
         </div>

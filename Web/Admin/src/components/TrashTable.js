@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
@@ -8,7 +8,6 @@ import theme from 'theme';
 import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
 import MyButton from './MyButton';
-import { Checkbox } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
@@ -258,54 +257,26 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SelectTable(props) {
-  const { onClickEdit, ...rest } = props;
-
+export default function TrashTable(props) {
   const classes = useStyles();
   const [direction, setDirection] = useState(props.columns);
   const tempDirection = props.columns;
   let tempDirect = [];
-  // let selectList = [];
-  const [selectList, setSelectList] = useState([]);
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
       tempDirect[i] = '⯆';
   }
-  const allData = 3;
-  const [cells, setCells] = useState(props.cells);
-  const [items, setItems] = useState([]);
+  const [cells] = useState(props.cells);
+  const items = props.products;
   const footer = props.footerItems ? props.footerItems : [];
   const [direct, setDirect] = React.useState(tempDirect);
+
   const dataList = [20, 50, 100, 200, "all"];
 
   const [value, setValue] = React.useState(0);
-  useEffect(() => {
-    setItems(props.products)
-  });
   const handleChange = (event) => {
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
-  };
-  const handleChangeSelect = (event, id) => {
-    let mItems = [...items];
-    if(selectList.length === allData){
-      selectList.splice(0,allData);
-      selectList.push(-1);
-    }else{
-        if(selectList.length === 1 && selectList[0] === -1)
-          selectList.splice(0,1);
-        if (event.target.checked === true) {
-          selectList.push(mItems[id].userID);
-        }
-        else {
-          console.log('s:'+event.target.checked)
-          selectList.splice(selectList.indexOf(mItems[id].userID), 1);
-        }
-    }
-    setSelectList(selectList);
-    mItems[id].isChecked = event.target.checked;
-    setItems(mItems);
-    console.log(selectList)
   };
   const handleChangePage = (event, page) => {
     props.onChangePage(page);
@@ -326,30 +297,8 @@ export default function SelectTable(props) {
 
     props.onSelectSort(index, direction[index]);
   }
-  const handleClickAllSelect = () => {
-    let mItems = [...items];
-    if (selectList.length === 1 && selectList[0] === -1) {
-      selectList.splice(0, selectList.length);
-      for (let i = 0; i < mItems.length; i++) {
-        mItems[i].isChecked = false;
-      }
-    }
-    else if (selectList.length !== allData) {
-      selectList.splice(0,selectList.length);
-      selectList[0] = -1;
-      for (let i = 0; i < mItems.length; i++) {
-        mItems[i].isChecked = true;
-      }
-    }
-    setItems(mItems);
-    setSelectList(selectList);
-    console.log(selectList)
-  }
-  const handleClickImport = () => {
-    props.onImport();
-  }
-  const handleClickExport = () => {
-    props.onExport(selectList);
+  const handleClick = () => {
+    props.onClick();
   }
   const Value = (val)=>{
     switch(val){
@@ -361,33 +310,15 @@ export default function SelectTable(props) {
       default: return val; 
     }
   }
-  const handleClickEdit = (id) => {
+  const handleClickRestore = (id) => {
     if(props.type === 'owner'){
-      props.onClickEdit(items[id].ID,items[id].buildingID);
+      props.onClickRestore(items[id].ID,items[id].buildingID);
     }else{
-      props.onClickEdit(items[id].ID);
-    }
-  }
-  const handleClickDelete = (id) => {
-    if(props.type === 'owner'){
-      props.onClickDelete(items[id].ID,items[id].buildingID);
-    }else{
-      props.onClickDelete(items[id].ID);
+      props.onClickRestore(items[id].ID);
     }
   }
   return (
     <Grid container direction="column" spacing={2}>
-      <Grid item container spacing={2} direction="row">
-        <Grid item>
-          <MyButton name={"Tout sélectionner/déselectionner"} bgColor={"#00C9FF"} onClick={handleClickAllSelect} />
-        </Grid>
-        <Grid item>
-          <MyButton name={"Importer"} bgColor={"#00C9FF"} onClick={handleClickImport} />
-        </Grid>
-        <Grid item>
-          <MyButton name={"Exporter"} bgColor={"#00C9FF"} onClick={handleClickExport} />
-        </Grid>
-      </Grid>
       <Grid item container direction="row-reverse">
         <div>
           <FormControl className={classes.margin}>
@@ -409,9 +340,6 @@ export default function SelectTable(props) {
           <TableHead>
             <TableRow >
               {
-                <TableCell align="center"></TableCell>
-              }
-              {
                 cells.map((cell, i) => (
                   <TableCell key={i}>
                     <button
@@ -432,41 +360,28 @@ export default function SelectTable(props) {
             {items.map((item, i) => (
               <TableRow key={i}>
                 {
-                  <TableCell key={i}>
-                    <Checkbox
-                      checked={item.isChecked}
-                      onChange={(event) => handleChangeSelect(event, i)}
-                    />
-                  </TableCell>
-                }
-                {
-                  cells.map((cell) => {
+                  cells.map((cell,j) => {
                     const value = item[cell.key];
                     return (
                       <TableCell 
-                        key={cell.key} 
-                        onClick={() => handleClickEdit(i)} 
+                        key={j} 
                         disabled={(props.access === 'see' ? true : false)}
                       >
-
                         {
                           Value(value)
                         }
-                      </TableCell>);
+                      </TableCell>
+                    );
                   })
                 }
                 <TableCell align="right">
-                  <EditIcon 
+                  <p 
                     className={classes.editItem} 
-                    onClick={() => handleClickEdit(i)} 
+                    onClick={() => handleClickRestore(i)} 
                     disabled={(props.access === 'see' ? true : false)}
-                  />
-                      &nbsp;&nbsp;
-                  <DeleteIcon 
-                    className={classes.editItem} 
-                    onClick={() => handleClickDelete(i)}
-                    disabled={(props.access === 'see' ? true : false)}
-                  />
+                  >
+                      restaurer
+                   </p>   
                 </TableCell>
               </TableRow>
             ))}
@@ -494,7 +409,10 @@ export default function SelectTable(props) {
         </Table>
       </Grid>
       <Grid item container className={classes.body} alignItems="center">
-        <Grid xs={12} item container direction="row-reverse">
+        <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
+          <MyButton name={props.leftBtn} color={"1"} onClick={handleClick} />
+        </Grid>
+        <Grid xs={12} sm={6} item container direction="row-reverse">
           <Pagination
             count={props.totalpage}
             color="primary"

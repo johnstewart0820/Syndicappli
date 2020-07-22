@@ -30,10 +30,6 @@ const Buildings = (props) => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = useState(-1);
-  const [footerItems, setFooterItems] = useState([]);
-  let company = [];
-  const [companies, setCompanies] = useState('');
-  const [companyList, setCompanyList] = useState([]);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
@@ -68,10 +64,7 @@ const Buildings = (props) => {
     // setPageNum();
     console.log(data);
   }
-  const handleChangeCompanies = (val) => {
-    setCompanies(val);
-    setCompanyID(companyList[val].companyID);
-  };
+
   const handleChangePagination = (value) => {
     setPageNum(value);
   }
@@ -91,17 +84,22 @@ const Buildings = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            company.push('Tout');
-            data.companylist.map((item) => (
-              company.push(item.name)
-            )
-            );
-            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                setCompanyID(item.companyID)
+              )
+              );
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -117,27 +115,31 @@ const Buildings = (props) => {
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
-      'companyID': companyID
+      'companyID': companyID,
+      'status': 'active'
     }
     setVisibleIndicator(true);
     ManagerService.getBuildingList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            ToastsStore.error(response.data.message);
-          } else {
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            if (!data.totalpage)
-              setTotalPage(1);
-            else
-              setTotalPage(data.totalpage);
-            setDataList(data.buildinglist);
-            let amount = 0;
-
-            const items = ['Total', data.totalcount, amount];
-            setFooterItems(items);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.buildinglist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -146,13 +148,9 @@ const Buildings = (props) => {
         }
       );
   }
-  const handleClickDelete = (id) => {
-    if (accessBuildings === 'edit') {
+  const handleClickDelete = (id,buildingID) => {
       setOpenDelete(true);
       setDeleteId(id);
-    } else {
-      setOpenDialog(true);
-    }
   };
   useEffect(() => {
     if (accessBuildings === 'denied') {
@@ -164,25 +162,33 @@ const Buildings = (props) => {
   useEffect(() => {
     if (accessBuildings !== 'denied')
       getBuildings();
-    console.log(companyID)
   }, [page_num, row_count, sort_column, sort_method, companyID, props.refresh]);
 
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    ManagerService.deleteUser(deleteId)
+    let data={
+      'status':'trash'
+    }
+    ManagerService.deleteBuilding(deleteId,data)
       .then(
         response => {
-          console.log(response.data);
           setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            alert('Deleted successful');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success('Deleted successfully!');
+              getBuildings();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
@@ -199,21 +205,6 @@ const Buildings = (props) => {
       <div className={classes.title}>
       </div>
       <div className={classes.tool}>
-        <Grid container spacing={2} direction="column">
-          <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
-            <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
-            <Grid xs item container direction="row-reverse">
-              <Grid item container direction="column" alignItems="stretch">
-                <MySelect
-                  color="gray"
-                  data={company}
-                  onChangeSelect={handleChangeCompanies}
-                  value={companies}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
       </div>
       <div className={classes.body}>
         <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog} />
@@ -230,6 +221,7 @@ const Buildings = (props) => {
           onClickDelete={handleClickDelete}
           onImport={handleClickImport}
           onExport={handleClickExport}
+          access={accessBuildings}
         />
       </div>
       <Dialog
@@ -243,8 +235,7 @@ const Buildings = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Are you sure to delete this building?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

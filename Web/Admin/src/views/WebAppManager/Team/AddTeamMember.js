@@ -1,499 +1,546 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../../components/MyButton';
-import ScrollBar from 'react-perfect-scrollbar';
+import Multiselect from '../../../components/Multiselect.js';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import {COUNTRIES} from '../../../components/countries';
-import Multiselect from '../../../components/Multiselect.js';
-import {AddTeamMemberStyles as useStyles} from './useStyles';
-import AdminService from '../../../services/api.js';
+import { AddTeamMemberStyles as useStyles } from './useStyles';
+import {ManagerService as Service} from '../../../services/api.js';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import useGlobal from 'Global/global';
+import authService from 'services/authService';
+import {withRouter} from 'react-router-dom';
+const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddTeamMember = (props) => {
-  const classes = useStyles();
-  
-  const permissionList = ['','Editer', 'Voir', 'Refusé'];
-  const selected = [
-    { label: "Albania",value: "Albania"},
-    { label: "Argentina",value: "Argentina"},
-    { label: "Austria",value: "Austria"},
-    { label: "Cocos Islands",value: "Cocos Islands"},
-    { label: "Kuwait",value: "Kuwait"},
-    { label: "Sweden",value: "Sweden"},
-    { label: "Venezuela",value: "Venezuela"}
-  ];
-//   const [companies, setCompanies] = React.useState(selected);
-  const [buildings, setBuildings] = React.useState(selected);
-  const companiesList = COUNTRIES.map((country,id) => {
-    return {
-      label: country
-    }
-  })
-  const buildingsList = companiesList;
-  const [avatarurl, setAvatarUrl] = React.useState("");
-  const [avatar, setAvatar] = React.useState(null);
-  const [lastname, setLastName] = React.useState('');
-  const [firstname, setFirstName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [phonenumber, setPhoneNumber] = React.useState('');
+    const {history} = props;
+    const classes = useStyles();
+    const [globalState, globalActions] = useGlobal();
+    const permissionList = ['Voir', 'Editer', 'Refusé'];
+    const role_permission = ['see', 'edit', 'denied'];
+    const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+    const [avatarurl, setAvatarUrl] = React.useState("");
+    const [avatar, setAvatar] = React.useState(null);
+    const [lastname, setLastName] = React.useState('');
+    const [firstname, setFirstName] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [phonenumber, setPhoneNumber] = React.useState('');
 
-  let company = [];
-  const [companies, setCompanies] = React.useState('');
-  const [companyList, setCompanyList] = React.useState([]);
-  const [companyID, setCompanyID] = React.useState(-1);
+    const [companyID, setCompanyID] = React.useState(-1);
+    const [buildingList, setBuildingList] = React.useState([]);
+    let buildingID1 = [];
+    const [buildingsPermission, setBuildingsPermission] = React.useState(0);
+    const [chatPermission, setChatPermission] = React.useState(0);
+    const [ownersPermission, setOwnersPermission] = React.useState(0);
+    const [incidentsPermission, setIncidentsPermission] = React.useState(0);
+    const [assembliesPermission, setAssembliesPermission] = React.useState(0);
+    const [eventsPermission, setEventsPermission] = React.useState(0);
+    const [teamPermission, setTeamPermission] = React.useState(0);
+    const [providersPermission, setProvidersPermission] = React.useState(0);
+    const [announcementsPermission, setAnnouncementsPermission] = React.useState(0);
+    const [companyPermission, setCompanyPermission] = React.useState(0);
+    const [addonsPermission, setAddonsPermission] = React.useState(0);
+    const [invoicesPermission, setInvoicesPermission] = React.useState(0);
+    const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
 
-  const [buildingsPermission, setBuildingsPermission] = React.useState('');
-  const [chatPermission, setChatPermission] = React.useState('');
-  const [ownersPermission, setOwnersPermission] = React.useState('');
-  const [incidentsPermission, setIncidentsPermission] = React.useState('');
-  const [assembliesPermission, setAssembliesPermission] = React.useState('');
-  const [eventsPermission, setEventsPermission] = React.useState('');
-  const [teamPermission, setTeamPermission] = React.useState('');
-  const [providersPermission, setProvidersPermission] = React.useState('');
-  const [announcementsPermission, setAnnouncementsPermission] = React.useState('');
-  const [companyPermission, setCompanyPermission] = React.useState('');
-  const [addonsPermission, setAddonsPermission] = React.useState('');
-  const [invoicesPermission, setInvoicesPermission] = React.useState('');
-  const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState('');
-  
-  const [errorsCompanies, setErrorsCompanies] = React.useState('');
-  const [errorsBuildings, setErrorsBuildings] = React.useState('');
-  const [errorsLastname, setErrorsLastname] = React.useState('');
-  const [errorsFirstname, setErrorsFirstname] = React.useState('');
-  const [errorsEmail, setErrorsEmail] = React.useState('');
-  const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
-  const [errorsBuildingsPermission, setErrorsBuildingsPermission] = React.useState('');
-  const [errorsIncidentsPermission, setErrorsIncidentsPermission] = React.useState('');
-  const [errorsOwnersPermission, setErrorsOwnersPermission] = React.useState('');
-  const [errorsChatPermission, setErrorsChatPermission] = React.useState('');
-  const [errorsAssembliesPermission, setErrorsAssembliesPermission] = React.useState('');
-  const [errorsEventsPermission, setErrorsEventsPermission] = React.useState('');
-  const [errorsTeamPermission, setErrorsTeamPermission] = React.useState('');
-  const [errorsProvidersPermission, setErrorsProvidersPermission] = React.useState('');
-  const [errorsAnnouncementsPermission, setErrorsAnnouncementsPermission] = React.useState('');
-  const [errorsCompanyPermission, setErrorsCompanyPermission] = React.useState('');
-  const [errorsAddonsPermission, setErrorsAddonsPermission] = React.useState('');
-  const [errorsInvoicesPermission, setErrorsInvoicesPermission] = React.useState('');
-  const [errorsPaymentMethodsPermission, setErrorsPaymentMethodsPermission] = React.useState('');
-
-  const handleClose = ()=>{
-    props.onCancel();
-  };
-  const handleCreate = ()=>{
-    let cnt = 0;
-    if(lastname.length === 0) {setErrorsLastname('please enter your last name'); cnt++;}
-    else setErrorsLastname('');
-    if(firstname.length === 0) {setErrorsFirstname('please enter your first name'); cnt++;}
-    else setErrorsFirstname('');
-    // if(companies.length === 0) {setErrorsCompanies('please select companies'); cnt++;}
-    // else setErrorsCompanies('');
-    if(buildings.length === 0) {setErrorsBuildings('please select buildings'); cnt++;}
-    else setErrorsBuildings('');
-    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
-    else setErrorsEmail('');
-    if(phonenumber.length === 0) {setErrorsPhonenumber('please enter your phone number'); cnt++;}
-    else setErrorsPhonenumber('');
-    if(buildingsPermission.length === 0) {setErrorsBuildingsPermission('please select permission to buildings'); cnt++;}
-    else setErrorsBuildingsPermission('');
-    if(ownersPermission.length === 0) {setErrorsOwnersPermission('please select permission to owners'); cnt++;}
-    else setErrorsOwnersPermission('');
-    if(chatPermission.length === 0) {setErrorsChatPermission('please select permission to chat'); cnt++;}
-    else setErrorsChatPermission('');
-    if(incidentsPermission.length === 0) {setErrorsIncidentsPermission('please select permission to incidents'); cnt++;}
-    else setErrorsIncidentsPermission('');
-    if(assembliesPermission.length === 0) {setErrorsAssembliesPermission('please select permission to assemblies'); cnt++;}
-    else setErrorsAssembliesPermission('');
-    if(eventsPermission.length === 0) {setErrorsEventsPermission('please select permission to events'); cnt++;}
-    else setErrorsEventsPermission('');
-    if(teamPermission.length === 0) {setErrorsTeamPermission('please select permission to team'); cnt++;}
-    else setErrorsTeamPermission('');
-    if(providersPermission.length === 0) {setErrorsProvidersPermission('please select permission to providers'); cnt++;}
-    else setErrorsProvidersPermission('');
-    if(announcementsPermission.length === 0) {setErrorsAnnouncementsPermission('please select permission to announcements'); cnt++;}
-    else setErrorsAnnouncementsPermission('');
-    if(companyPermission.length === 0) {setErrorsCompanyPermission('please select permission to company'); cnt++;}
-    else setErrorsCompanyPermission('');
-    if(addonsPermission.length === 0) {setErrorsAddonsPermission('please select permission to addons'); cnt++;}
-    else setErrorsAddonsPermission('');
-    if(invoicesPermission.length === 0) {setErrorsInvoicesPermission('please select permission to invoices'); cnt++;}
-    else setErrorsInvoicesPermission('');
-    if(paymentMethodsPermission.length === 0) {setErrorsPaymentMethodsPermission('please select permission to payment methods'); cnt++;}
-    else setErrorsPaymentMethodsPermission('');
-
-    if(cnt ===0){
-
-        handleClose();
-    }
-  }
-  const handleLoadFront = (event) => {
-    setAvatar(event.target.files[0]);
-    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
-  }
-
-  const handleChangeLastName = (event) => {
-      setLastName(event.target.value);
-  }
-const handleChangeFirstName = (event) => {
-    setFirstName(event.target.value);
-}
-const handleChangeEmail = (event) => {
-    event.preventDefault();
-    let errorsMail = 
-          validEmailRegex.test(event.target.value)
-            ? ''
-            : 'Email is not valid!';
-          setEmail(event.target.value);
-          setErrorsEmail(errorsMail);
-}
-const handleChangePhoneNumber = (event) => {
-    setPhoneNumber(event.target.value);
-}
-const handleChangeCompanies = (val) =>{
-    setCompanies(val);
-    if(val < companyList.length)
-      setCompanyID(companyList[val].companyID);
-    else
-      setCompanyID(-1);
-  };
-const handleChangeBuildings = (val) => {
-    setBuildings(val);
-}
-const handleChangeBuildingsPermission = (val) => {
-    setBuildingsPermission(val);
-}
-const handleChangeOwnersPermission = (val) => {
-    setOwnersPermission(val);
-}
-const handleChangeChatPermission = (val) => {
-    setChatPermission(val);
-}
-const handleChangeIncidentsPermission = (val) => {
-    setIncidentsPermission(val);
-}
-const handleChangeAssembliesPermission = (val) => {
-    setAssembliesPermission(val);
-}
-const handleChangeEventsPermission = (val) => {
-    setEventsPermission(val);
-}
-const handleChangeTeamPermission = (val) => {
-    setTeamPermission(val);
-}
-const handleChangeProvidersPermission = (val) => {
-    setProvidersPermission(val);
-}
-const handleChangeAnnouncementsPermission = (val) => {
-    setAnnouncementsPermission(val);
-}
-const handleChangeCompanyPermission = (val) => {
-    setCompanyPermission(val);
-}
-const handleChangeAddonsPermission = (val) => {
-    setAddonsPermission(val);
-}
-const handleChangeInvoicesPermission = (val) => {
-    setInvoicesPermission(val);
-}
-const handleChangePaymentMethodsPermission = (val) => {
-    setPaymentMethodsPermission(val);
-}
-useEffect(()=>{
-    getCompanies();
-},[companies]);
-const getCompanies = ()=>{
-    AdminService.getCompanyListByUser()
-    .then(      
-      response => {        
-        console.log(response.data);
-        // setVisibleIndicator(false);  
-        if(response.data.code !== 200){
-          console.log('error');
-        } else {
-          console.log('success');
-          const data = response.data.data;
-          localStorage.setItem("token", JSON.stringify(data.token));
-          data.companylist.map((item)=>(
-            company.push(item.name)
-          )
-          );
-          setCompanyList(data.companylist);
-          setCompanyID(data.companylist[0].companyID);
-          company.push('all');
-        //   getBuildings();
+    const [errorsBuildings, setErrorsBuildings] = React.useState('');
+    const [errorsLastname, setErrorsLastname] = React.useState('');
+    const [errorsFirstname, setErrorsFirstname] = React.useState('');
+    const [errorsEmail, setErrorsEmail] = React.useState('');
+    const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
+    const handleClose = () => {
+        props.onCancel();
+    };
+    const handleCreate = () => {
+        let cnt = 0;
+        if (lastname.length === 0) { setErrorsLastname('please enter your last name'); cnt++; }
+        else setErrorsLastname('');
+        if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
+        else setErrorsFirstname('');
+        if (globalState.multi_ID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+        else setErrorsBuildings('');
+        if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
+        else setErrorsEmail('');
+        if (phonenumber.length === 0) { setErrorsPhonenumber('please enter your phone number'); cnt++; }
+        else setErrorsPhonenumber('');
+        if (cnt === 0) {
+            createManager();
         }
-      },
-      error => {
-        console.log('fail');        
-        // setVisibleIndicator(false);
-      }
-    );
-  }
-  return (
-    <div className={classes.root}>
-        <div className={classes.paper} sm={12}>
-            <Grid container spacing={2} >
-                {/* <Grid item container justify="center" alignItems="center">
-                    <Grid xs={3} item container><p className={classes.title}>Carbinet</p></Grid>
-                    <Grid xs={9} item container>
-                        <MySelect 
-                            color="gray" 
-                            data={company} 
-                            onChangeSelect={handleChangeCompanies}
-                            value={companies}
-                            width="80%"
+    }
+    const handleLoadFront = (event) => {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    }
+
+    const handleChangeLastName = (event) => {
+        setLastName(event.target.value);
+    }
+    const handleChangeFirstName = (event) => {
+        setFirstName(event.target.value);
+    }
+    const handleChangeEmail = (event) => {
+        event.preventDefault();
+        let errorsMail =
+            validEmailRegex.test(event.target.value)
+                ? ''
+                : 'Email is not valid!';
+        setEmail(event.target.value);
+        setErrorsEmail(errorsMail);
+    }
+    const handleChangePhoneNumber = (event) => {
+        setPhoneNumber(event.target.value);
+    }
+    const handleChangeBuildings = async (val) => {
+        if (val !== null) {
+            await globalActions.setMultiTags(val);
+            buildingID1.splice(0, buildingID1.length)
+            for (let i = 0; i < val.length; i++)
+                for (let j = 0; j < buildingList.length; j++)
+                    if (val[i].label == buildingList[j].name) {
+                        buildingID1.push(buildingList[j].buildingID);
+                    }
+            globalActions.setMultiID(buildingID1);
+        }
+        else {
+            await globalActions.setMultiTags([]);
+            globalActions.setMultiID([]);
+        }
+    };
+    const handleChangeBuildingsPermission = (val) => {
+        setBuildingsPermission(val);
+    }
+    const handleChangeOwnersPermission = (val) => {
+        setOwnersPermission(val);
+    }
+    const handleChangeChatPermission = (val) => {
+        setChatPermission(val);
+    }
+    const handleChangeIncidentsPermission = (val) => {
+        setIncidentsPermission(val);
+    }
+    const handleChangeAssembliesPermission = (val) => {
+        setAssembliesPermission(val);
+    }
+    const handleChangeEventsPermission = (val) => {
+        setEventsPermission(val);
+    }
+    const handleChangeTeamPermission = (val) => {
+        setTeamPermission(val);
+    }
+    const handleChangeProvidersPermission = (val) => {
+        setProvidersPermission(val);
+    }
+    const handleChangeAnnouncementsPermission = (val) => {
+        setAnnouncementsPermission(val);
+    }
+    const handleChangeCompanyPermission = (val) => {
+        setCompanyPermission(val);
+    }
+    const handleChangeAddonsPermission = (val) => {
+        setAddonsPermission(val);
+    }
+    const handleChangeInvoicesPermission = (val) => {
+        setInvoicesPermission(val);
+    }
+    const handleChangePaymentMethodsPermission = (val) => {
+        setPaymentMethodsPermission(val);
+    }
+    useEffect(()=>{
+        getCompanies();
+    },[])
+    useEffect(() => {
+        handleChangeBuildings([])
+        getBuildings();
+    }, [companyID])
+    const getCompanies = () => {
+        ManagerService.getCompanyListByUser()
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            data.companylist.map((item) => (
+                              setCompanyID(item.companyID)
+                            )
+                            );
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
+    const getBuildings = () => {
+        const requestData = {
+            'companyID': companyID
+        }
+        setVisibleIndicator(true);
+        ManagerService.getBuildingListByCompany(requestData)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            let buildings1 = [];
+                            data.buildinglist.map((item, i) => (
+                                buildings1[i] = { label: item.name, value: item.buildingID }
+                            )
+                            );
+                            setBuildingList(data.buildinglist);
+                            globalActions.setMultiSuggestions(buildings1);
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
+    const createManager = () => {
+        let permissionInfos = [
+            {
+                'role_name': 'role_buildings',
+                'permission': role_permission[buildingsPermission]
+            },
+            {
+                'role_name': 'role_owners',
+                'permission': role_permission[ownersPermission]
+            },
+            {
+                'role_name': 'role_chat',
+                'permission': role_permission[chatPermission]
+            },
+            {
+                'role_name': 'role_incidents',
+                'permission': role_permission[incidentsPermission]
+            },
+            {
+                'role_name': 'role_assemblies',
+                'permission': role_permission[assembliesPermission]
+            },
+            {
+                'role_name': 'role_events',
+                'permission': role_permission[eventsPermission]
+            },
+            {
+                'role_name': 'role_team',
+                'permission': role_permission[teamPermission]
+            },
+            {
+                'role_name': 'role_providers',
+                'permission': role_permission[providersPermission]
+            },
+            {
+                'role_name': 'role_advertisement',
+                'permission': role_permission[announcementsPermission]
+            },
+            {
+                'role_name': 'role_company',
+                'permission': role_permission[companyPermission]
+            },
+            {
+                'role_name': 'role_addons',
+                'permission': role_permission[addonsPermission]
+            },
+            {
+                'role_name': 'role_invoices',
+                'permission': role_permission[invoicesPermission]
+            },
+            {
+                'role_name': 'role_payments',
+                'permission': role_permission[paymentMethodsPermission]
+            },
+        ]
+        let formdata = new FormData();
+        formdata.set('companyID', companyID);
+        formdata.set('buildingID', JSON.stringify(globalState.multi_ID));
+        formdata.set('firstname', firstname);
+        formdata.set('lastname', lastname);
+        formdata.set('email', email);
+        formdata.set('phone', phonenumber);
+        formdata.set('logo', avatar === null ? '' : avatar);
+        formdata.set('permission_info', JSON.stringify(permissionInfos));
+
+
+        setVisibleIndicator(true);
+        ManagerService.createTeamMember(formdata)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    switch(response.data.code){
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            props.onAdd();
+                            handleClose();
+                          break;
+                        case 401:
+                          authService.logout();
+                          history.push('/login');
+                          window.location.reload();
+                          break;
+                        default:
+                          ToastsStore.error(response.data.message);
+                      }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
+    return (
+        <div className={classes.root}>
+            {
+                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+            }
+            <div className={classes.paper} sm={12}>
+                <Grid container spacing={2} >
+                    <Grid item container alignItems="center">
+                        <Grid item xs={3}><p className={classes.title}>Immeubles</p></Grid>
+                        <Grid xs={9} item container alignItems="stretch">
+                            <Multiselect
+                                selected={globalState.multi_tags}
+                                no={'No buildings found'}
+                                all={globalState.multi_suggestions}
+                                onSelected={handleChangeBuildings}
+                                width="80%"
+                            />
+                            {errorsBuildings.length > 0 &&
+                                <span className={classes.error}>{errorsBuildings}</span>}
+                        </Grid>
+                    </Grid>
+                    <Grid item container justify="space-between" alignItems="center">
+                        <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
+                        <Grid xs={6} item container>
+                            <TextField
+                                className={classes.text}
+                                variant="outlined"
+                                value={lastname}
+                                onChange={handleChangeLastName}
+                                fullWidth
+                            />
+                            {errorsLastname.length > 0 &&
+                                <span className={classes.error}>{errorsLastname}</span>}
+                        </Grid>
+                        <Grid xs={3} item></Grid>
+                    </Grid>
+                    <Grid item container justify="space-between" alignItems="center">
+                        <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
+                        <Grid xs={6} item container>
+                            <TextField
+                                className={classes.text}
+                                variant="outlined"
+                                value={firstname}
+                                onChange={handleChangeFirstName}
+                                fullWidth
+                            />
+                            {errorsFirstname.length > 0 &&
+                                <span className={classes.error}>{errorsFirstname}</span>}
+                        </Grid>
+                        <Grid xs={3} item></Grid>
+                    </Grid>
+                    <Grid item container justify="space-between" alignItems="center">
+                        <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
+                        <Grid xs={6} item container>
+                            <TextField
+                                className={classes.text}
+                                variant="outlined"
+                                value={email}
+                                onChange={handleChangeEmail}
+                                fullWidth
+                            />
+                            {errorsEmail.length > 0 &&
+                                <span className={classes.error}>{errorsEmail}</span>}
+                        </Grid>
+                        <Grid xs={3} item></Grid>
+                    </Grid>
+                    <Grid item container justify="space-between" alignItems="center">
+                        <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
+                        <Grid xs={6} item container>
+                            <TextField
+                                className={classes.text}
+                                variant="outlined"
+                                value={phonenumber}
+                                onChange={handleChangePhoneNumber}
+                                fullWidth
+                            />
+                            {errorsPhonenumber.length > 0 &&
+                                <span className={classes.error}>{errorsPhonenumber}</span>}
+                        </Grid>
+                        <Grid xs={3} item></Grid>
+                    </Grid>
+                    <Grid xs={12} item container direction="column" >
+                        <p className={classes.title}>Photo</p>
+                        <Grid item container justify="flex-start">
+                            <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                            <label htmlFor="img_front">
+                                {
+                                    avatarurl === '' ?
+                                        <div className={classes.img}>
+                                            <AddCircleOutlineIcon className={classes.plus} />
+                                        </div> :
+                                        <img className={classes.img} src={avatarurl} alt="" />
+                                }
+                            </label>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <br />
+                <p className={classes.title}><b>Permissions</b></p>
+                <br />
+                <Grid container spacing={2}>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Immeubles</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeBuildingsPermission}
+                            value={buildingsPermission}
                         />
-                        {errorsCompanies.length > 0 && 
-                        <span className={classes.error}>{errorsCompanies}</span>}
                     </Grid>
-                </Grid> */}
-                <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p className={classes.title}>Immeubles</p></Grid>
-                    <Grid xs={9} item container>
-                         <Multiselect
-                            selected={buildings}
-                            no={'No buildings found'}
-                            all={buildingsList} 
-                            onSelected={handleChangeBuildings}
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Copropriétaires</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeOwnersPermission}
+                            value={ownersPermission}
                         />
-                        {errorsBuildings.length > 0 && 
-                        <span className={classes.error}>{errorsBuildings}</span>}
                     </Grid>
-                </Grid>
-                <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
-                    <Grid xs={6} item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined"
-                            value={lastname}
-                            onChange={handleChangeLastName} 
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Messagerie</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeChatPermission}
+                            value={chatPermission}
                         />
-                        {errorsLastname.length > 0 && 
-                        <span className={classes.error}>{errorsLastname}</span>}
                     </Grid>
-                    <Grid xs={3}></Grid>
-                </Grid>
-                <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
-                    <Grid xs={6} item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined" 
-                            value={firstname}
-                            onChange={handleChangeFirstName} 
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Incidents</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeIncidentsPermission}
+                            value={incidentsPermission}
                         />
-                        {errorsFirstname.length > 0 && 
-                        <span className={classes.error}>{errorsFirstname}</span>}
                     </Grid>
-                    <Grid xs={3}></Grid>
-                </Grid>
-                <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
-                    <Grid xs={6} item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined"
-                            value={email}
-                            onChange={handleChangeEmail} 
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Assemblées</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeAssembliesPermission}
+                            value={assembliesPermission}
                         />
-                        {errorsEmail.length > 0 && 
-                        <span className={classes.error}>{errorsEmail}</span>}
                     </Grid>
-                    <Grid xs={3}></Grid>
-                </Grid>
-                <Grid item container justify="space-between" alignItems="center">
-                    <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
-                    <Grid xs={6} item container>
-                        <TextField 
-                            id="outlined-basic" 
-                            className={classes.text} 
-                            variant="outlined" 
-                            value={phonenumber}
-                            onChange={handleChangePhoneNumber} 
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Événements</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeEventsPermission}
+                            value={eventsPermission}
                         />
-                        {errorsPhonenumber.length > 0 && 
-                        <span className={classes.error}>{errorsPhonenumber}</span>}
                     </Grid>
-                    <Grid xs={3}></Grid>
-                </Grid>
-                <Grid xs={12} item container direction="column" >
-                    <p className={classes.title}>Photo</p>
-                    <Grid item container justify="flex-start">
-                    <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
-                    <label htmlFor="img_front">
-                        {
-                            avatarurl === '' ?
-                             <div className={classes.img}>
-                                <AddCircleOutlineIcon className={classes.plus}/>
-                             </div> :
-                             <img className={classes.img} src={avatarurl} alt=""/>
-                        }
-                    </label>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Équipe</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeTeamPermission}
+                            value={teamPermission}
+                        />
+                    </Grid>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Prestataires</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeProvidersPermission}
+                            value={providersPermission}
+                        />
+                    </Grid>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Annonces</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeAnnouncementsPermission}
+                            value={announcementsPermission}
+                        />
+                    </Grid>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Cabinet</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeCompanyPermission}
+                            value={companyPermission}
+                        />
+                    </Grid>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Modules</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeAddonsPermission}
+                            value={addonsPermission}
+                        />
+                    </Grid>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Factures</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangeInvoicesPermission}
+                            value={invoicesPermission}
+                        />
+                    </Grid>
+                    <Grid xs={6} item container direction="column">
+                        <p className={classes.title}>Moyens de paiement</p>
+                        <MySelect
+                            color="gray"
+                            data={permissionList}
+                            onChangeSelect={handleChangePaymentMethodsPermission}
+                            value={paymentMethodsPermission}
+                        />
                     </Grid>
                 </Grid>
-            </Grid>
-            <br/>
-            <p className={classes.title}><b>Permissions</b></p>
-            <br />
-            <Grid container spacing={2}>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Immeubles</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeBuildingsPermission}
-                        value={buildingsPermission}
-                    />
-                    {errorsBuildingsPermission.length > 0 && 
-                        <span className={classes.error}>{errorsBuildingsPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Copropriétaires</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeOwnersPermission}
-                        value={ownersPermission}
-                    />
-                    {errorsOwnersPermission.length > 0 && 
-                        <span className={classes.error}>{errorsOwnersPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Messagerie</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeChatPermission}
-                        value={chatPermission}
-                    />
-                    {errorsChatPermission.length > 0 && 
-                        <span className={classes.error}>{errorsChatPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Incidents</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeIncidentsPermission}
-                        value={incidentsPermission}
-                    />
-                    {errorsIncidentsPermission.length > 0 && 
-                        <span className={classes.error}>{errorsIncidentsPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Assemblées</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeAssembliesPermission}
-                        value={assembliesPermission}
-                    />
-                    {errorsAssembliesPermission.length > 0 && 
-                        <span className={classes.error}>{errorsAssembliesPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Événements</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeEventsPermission}
-                        value={eventsPermission}
-                    />
-                    {errorsEventsPermission.length > 0 && 
-                        <span className={classes.error}>{errorsEventsPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Équipe</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeTeamPermission}
-                        value={teamPermission}
-                    />
-                    {errorsTeamPermission.length > 0 && 
-                        <span className={classes.error}>{errorsTeamPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Prestataires</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeProvidersPermission}
-                        value={providersPermission}
-                    />
-                    {errorsProvidersPermission.length > 0 && 
-                        <span className={classes.error}>{errorsProvidersPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Annonces</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeAnnouncementsPermission}
-                        value={announcementsPermission}
-                    />
-                    {errorsAnnouncementsPermission.length > 0 && 
-                        <span className={classes.error}>{errorsAnnouncementsPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Cabinet</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeCompanyPermission}
-                        value={companyPermission}
-                    />
-                    {errorsCompanyPermission.length > 0 && 
-                        <span className={classes.error}>{errorsCompanyPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Modules</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeAddonsPermission}
-                        value={addonsPermission}
-                    />
-                    {errorsAddonsPermission.length > 0 && 
-                        <span className={classes.error}>{errorsAddonsPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Factures</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangeInvoicesPermission}
-                        value={invoicesPermission}
-                    />
-                    {errorsInvoicesPermission.length > 0 && 
-                        <span className={classes.error}>{errorsInvoicesPermission}</span>}
-                </Grid>
-                <Grid xs={6} item container direction="column">
-                    <p className={classes.title}>Moyens de paiement</p>
-                    <MySelect 
-                        color="gray" 
-                        data={permissionList} 
-                        onChangeSelect={handleChangePaymentMethodsPermission}
-                        value={paymentMethodsPermission}
-                    />
-                    {errorsPaymentMethodsPermission.length > 0 && 
-                        <span className={classes.error}>{errorsPaymentMethodsPermission}</span>}
-                </Grid>
-            </Grid>
-            <div className={classes.footer}>
-                <Grid container justify="space-between">
-                    <MyButton name = {"Creer"} color={"1"} onClick={handleCreate}/>
-                    <MyButton name = {"Annuler"} bgColor="grey" onClick={handleClose}/>
-                </Grid>
+                <div className={classes.footer}>
+                    <Grid container justify="space-between">
+                        <MyButton name={"Creer"} color={"1"} onClick={handleCreate} />
+                        <MyButton name={"Annuler"} bgColor="grey" onClick={handleClose} />
+                    </Grid>
+                </div>
             </div>
+            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>
-        <ScrollBar/>
-    </div>
-  );
+    );
 };
 
-export default AddTeamMember;
+export default withRouter(AddTeamMember);
