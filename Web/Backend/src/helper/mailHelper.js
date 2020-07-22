@@ -12,8 +12,9 @@
 const dotenv = require('dotenv')
 dotenv.config()
 const Mailer = require('nodemailer');
+const emailType = require('../constants/mail')
 
-function sendMail(title, email, type, token) {
+function sendMail(title, email, type, token, randomToken) {
     return new Promise( async (resolve, reject) => {
         var emailContent = require(`../emailTemplate/${type}`)
 
@@ -26,14 +27,23 @@ function sendMail(title, email, type, token) {
                 pass: process.env.EMAIL_PWD
             }
         });
-
-        const data = {
-            from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
-            to: email,
-            subject: title,
-            html: `${emailContent.body}` + `${token}` + `${emailContent.body1}`
-        };
-
+        const data = {}
+        if(type == emailType.TYPE_FORGOT_PASSWORD){
+            data = {
+                from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
+                to: email,
+                subject: title,
+                html: `${emailContent.body}` + `${token}` + `${emailContent.body1}`
+            }
+        } else if (type == emailType.TYPE_SUBACCOUNT_INVITE){
+            data = {
+                from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
+                to: email,
+                subject: title,
+                html: `${emailContent.body}` + `${emailContent.url}` + `${emailContent.body1}` + `${randomToken}` + `${emailContent.body2}`
+            }
+        }
+        
         await transporter.sendMail(data, function (err, info) {
             if(err){
                 reject({message: err})

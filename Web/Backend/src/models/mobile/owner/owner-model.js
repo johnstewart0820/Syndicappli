@@ -91,7 +91,7 @@ function createOwner_info(uid, data) {
                                                     }
                                                 })                                                 
                                             }
-                                            sendMail(mail.TITLE_FORGOT_PASSWORD, data.email, mail.TYPE_FORGOT_PASSWORD, randomPassword)
+                                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, data.email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword)
                                             .then((response) => {
                                                 resolve({ code: code.OK, message: message.EMAIL_RESET_LINK_SENT_SUCCESSFULLY, data: {}})
                                             })

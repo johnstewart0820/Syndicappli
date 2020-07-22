@@ -25,7 +25,8 @@ var ownerModel = {
     getOwnerList: getOwnerList,
     createOwner_info: createOwner_info,
     getOwner: getOwner,
-    deleteOwner: deleteOwner
+    deleteOwner: deleteOwner,
+    acceptInvitation: acceptInvitation
 }
 
 /**
@@ -65,9 +66,10 @@ function createOwner_info(uid, data) {
             } else {
                 if (result.length == 0) {
                     let randomPassword = randtoken.generate(15);
+                    let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
-                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, status, invitation_status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    db.query(query, ["owner", data.type, "subaccount", data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, "active", "invited", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], function (error, rows, fields)  {
+                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, status, invitation_status, permission, created_by, created_at, updated_at, token) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                    db.query(query, ["owner", data.type, "subaccount", data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, "active", "invited", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), randomToken], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
@@ -91,7 +93,7 @@ function createOwner_info(uid, data) {
                                                     }
                                                 })                                                 
                                             }
-                                            sendMail(mail.TITLE_FORGOT_PASSWORD, data.email, mail.TYPE_FORGOT_PASSWORD, randomPassword)
+                                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, data.email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword, randomToken)
                                             .then((response) => {
                                                 resolve({ code: code.OK, message: message.EMAIL_RESET_LINK_SENT_SUCCESSFULLY, data: {}})
                                             })
@@ -173,6 +175,37 @@ function deleteOwner(uid, id) {
                 })
             }
         })
+    })
+  }
+
+  /**
+ * Accept Invitation
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function acceptInvitation(token) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE token = ?'
+        db.query(query, [token], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    let update_query = 'UPDATE ' + table.USERS + ' SET invitation_status = ? WHERE token = ?'
+                    db.query(update_query, ["accepted",token], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            resolve("OK")
+                        }
+                    })
+                } else {
+                    reject({ message: message.ACCOUNT_NOT_EXIST })
+                }
+            }
+        })        
     })
   }
 module.exports = ownerModel

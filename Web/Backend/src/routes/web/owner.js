@@ -35,6 +35,7 @@ router.post('/subAccountList', authMiddleware.checkToken, getOwnerList)
 router.post('/subAccount', authMiddleware.checkToken, createOwner)
 router.post('/subAccount/:id', authMiddleware.checkToken, getOwner)
 router.delete('/subAccount/:id', authMiddleware.checkToken, deleteOwner)
+router.post('/invitation', acceptInvitation)
 
 
 ///////////////////////////////////Profile/////////////////////////////
@@ -159,6 +160,23 @@ function deleteOwner(req, res) {
     let userdata = req.decoded.userdata
     let id = req.params.id
     ownerService.deleteOwner(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function acceptInvitation(req, res) {
+    let data = req.body
+    ownerService.acceptInvitation(data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
