@@ -137,7 +137,7 @@ function managerCreateBuilding(uid, data) {
                 if(rows.length > 0){
                     query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)'
                     let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-                    db.query(query, [ rows[0].companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime() ],  (error, rows, fields) => {
+                    db.query(query, [ data.companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime() ],  (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
@@ -221,7 +221,7 @@ function managerUpdateBuilding(uid, id, data) {
             } else {
                 if(rows.length > 0){
                     query = 'UPDATE ' + table.BUILDINGS + ' SET companyID = ?, name = ?, address = ?, updated_by = ?, updated_at = ? WHERE buildingID = ?'
-                    db.query(query, [ rows[0].companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), id ],   (error, rows, fields) => {
+                    db.query(query, [ data.companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), id ],   (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
