@@ -17,7 +17,7 @@ var router = express.Router()
 
 const authMiddleware = require('../../middleware/auth-middleware')
 const ownerService = require('../../services/web/owner/owner-service')
-const adminService = require('../../services/web/owner/admin-service')
+const adminService = require('../../services/web/owner/account-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })

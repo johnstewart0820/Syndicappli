@@ -9,12 +9,16 @@
  * @link      https://turing.ly/api/auth
  */
 
+const dotenv = require('dotenv')
+dotenv.config()
+
 var express = require('express')
 var router = express.Router()
 
 const authMiddleware = require('../../middleware/auth-middleware')
-const ownerMobileService = require('../../services/mobile/owner/account-service')
 const ownerService = require('../../services/mobile/owner/owner-service')
+const adminService = require('../../services/mobile/owner/account-service')
+
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
 
@@ -31,6 +35,10 @@ router.post('/subAccountList', authMiddleware.checkToken, getOwnerList)
 router.post('/subAccount', authMiddleware.checkToken, createOwner)
 router.post('/subAccount/:id', authMiddleware.checkToken, getOwner)
 router.delete('/subAccount/:id', authMiddleware.checkToken, deleteOwner)
+router.post('/invitation', acceptInvitation)
+
+
+///////////////////////////////////Profile/////////////////////////////
 
 /**
  * Function that get profile data
@@ -43,7 +51,7 @@ router.delete('/subAccount/:id', authMiddleware.checkToken, deleteOwner)
 function getProfile(req, res) {
     let userId = req.decoded.uid
 
-    ownerMobileService.getProfile(userId).then((result) => {
+    adminService.getProfile(userId).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -66,7 +74,7 @@ function updateProfile(req, res) {
     let userdata = req.decoded.userdata
     let files = req.files
     let data = req.body
-    ownerMobileService.updateProfile(userId, data, files, userdata).then((result)=>{
+    adminService.updateProfile(userId, data, files, userdata).then((result)=>{
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -152,6 +160,24 @@ function deleteOwner(req, res) {
     let userdata = req.decoded.userdata
     let id = req.params.id
     ownerService.deleteOwner(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function acceptInvitation(req, res) {
+    let data = req.body
+    console.log("data:", data)
+    ownerService.acceptInvitation(data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

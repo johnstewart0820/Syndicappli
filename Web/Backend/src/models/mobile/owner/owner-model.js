@@ -25,7 +25,8 @@ var ownerModel = {
     getOwnerList: getOwnerList,
     createOwner_info: createOwner_info,
     getOwner: getOwner,
-    deleteOwner: deleteOwner
+    deleteOwner: deleteOwner,
+    acceptInvitation: acceptInvitation
 }
 
 /**
@@ -65,14 +66,17 @@ function createOwner_info(uid, data) {
             } else {
                 if (result.length == 0) {
                     let randomPassword = randtoken.generate(15);
+                    let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
-                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, status, invitation_status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    db.query(query, ["owner", data.type, "subaccount", data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, "active", "invited", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], function (error, rows, fields)  {
+                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, status, invitation_status, permission, created_by, created_at, updated_at, token) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                    db.query(query, ["owner", data.type, "subaccount", data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, "active", "invited", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), randomToken], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            let query = `select * from users u left join user_relationship r on u.userID = r.userID and r.type="building" left join buildings b on r.relationID = b.buildingID where u.userID = ? and b.permission = "active" group by b.buildingID `
+                            let query = `select b.buildingID from users u left join user_relationship r on u.userID = r.userID and r.type="building" left join buildings b on r.relationID = b.buildingID where u.userID = ? and b.permission = "active" group by b.buildingID `
                             db.query(query, [uid], (error, rows, fields) => {
+                                console.log('err: ', error)
+                                console.log('rows: ', rows)
                                 if (error) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR });
                                 } else {
@@ -83,26 +87,27 @@ function createOwner_info(uid, data) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR });
                                         } else {
                                             let saID = rows[0].userID
-                                            for (let i in buildings) {
-                                                let query = `Insert into user_relationship r (userID, type, relationID)`
-                                                await db.query(query, [saID, "building", buildings[i].buildingID], (error, result, fields) => {
-                                                    if (error) {
-                                                        reject({ message: message.INTERNAL_SERVER_ERROR });
-                                                    }
-                                                })                                                 
+                                            if (buildings && buildings.length > 0) {
+                                                for (let i in buildings) {
+                                                    let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
+                                                    await db.query(query, [saID, "building", buildings[i].buildingID], (error, result, fields) => {
+                                                        if (error) {
+                                                            reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                        }
+                                                    })                                                 
+                                                }
                                             }
-                                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, data.email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword)
+                                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, data.email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword, randomToken)
                                             .then((response) => {
-                                                resolve({ code: code.OK, message: message.EMAIL_RESET_LINK_SENT_SUCCESSFULLY, data: {}})
+                                                resolve("OK")
                                             })
                                             .catch((err) => {
                                                 if(err.message.statusCode == code.BAD_REQUEST){
-                                                    reject({ code: code.INTERNAL_SERVER_ERROR, message: message.EMIL_IS_NOT_EXIST, data: {} })
+                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
                                                 } else {
-                                                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                                                    reject({ message: err.message })
                                                 }
                                             })
-                                            resolve("ok")
                                         }
                                     })
                                 }
@@ -111,7 +116,7 @@ function createOwner_info(uid, data) {
                         }
                     })
                 } else {
-                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                    reject({ message: message.COMPANY_ALREADY_EXIST });
                 }
             }
         })
@@ -173,6 +178,37 @@ function deleteOwner(uid, id) {
                 })
             }
         })
+    })
+  }
+
+  /**
+ * Accept Invitation
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function acceptInvitation(token) {
+    return new Promise((resolve, reject) => {
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE token = ?'
+        db.query(query, [token], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if(rows.length > 0){
+                    let update_query = 'UPDATE ' + table.USERS + ' SET invitation_status = ? WHERE token = ?'
+                    db.query(update_query, ["accepted",token], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            resolve("OK")
+                        }
+                    })
+                } else {
+                    reject({ message: message.ACCOUNT_NOT_EXIST })
+                }
+            }
+        })        
     })
   }
 module.exports = ownerModel
