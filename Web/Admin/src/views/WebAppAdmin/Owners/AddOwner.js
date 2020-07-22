@@ -36,7 +36,7 @@ const AddOwner = (props) => {
     const [avatar, setAvatar] = React.useState(null);
     const [idcardurls, setIdcardUrls] = React.useState([]);
     const [idcards, setIdcards] = React.useState([]);
-    const [ownerTitle, setOwnerTitle] = React.useState('');
+    const [ownerTitle, setOwnerTitle] = React.useState(0);
     const [lastname, setLastName] = React.useState('');
     const [firstname, setFirstName] = React.useState('');
     const [email, setEmail] = React.useState('');
@@ -74,9 +74,9 @@ const AddOwner = (props) => {
     }, [companyID]);
     const handleCreate = () => {
         let cnt = 0;
-        if (ownerTitle.length === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
+        if (ownerTitle === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
         else setErrorsOwnerTitle('');
-        if (ownerTitle === '4') {
+        if (ownerTitle === 4) {
             if (companyName.length === 0) { setErrorsCompanyName('please enter company name'); cnt++; }
             else setErrorsCompanyName('');
         }
@@ -103,18 +103,20 @@ const AddOwner = (props) => {
         }
     }
     const handleLoadFront = (event) => {
-        if (event.target.files[0] !== null) {
+        if(event.target.files[0] !== undefined) {
             setAvatar(event.target.files[0]);
             setAvatarUrl(URL.createObjectURL(event.target.files[0]));
         }
     }
 
     const handleLoadIdcard = (event) => {
-        idcardurls.push(URL.createObjectURL(event.target.files[0]));
-        idcards.push(event.target.files[0])
-        setIdcards(idcards);
-        setIdcardUrls(idcardurls);
-        setState(!state);
+        if(event.target.files[0] !== undefined){
+            idcardurls.push(URL.createObjectURL(event.target.files[0]));
+            idcards.push(event.target.files[0])
+            setIdcards(idcards);
+            setIdcardUrls(idcardurls);
+            setState(!state);
+        }
     }
     const handleClickCloseIdcard = (num) => {
         delete idcardurls[num];
@@ -150,7 +152,7 @@ const AddOwner = (props) => {
             setIsSubAccount(isMemberCouncil);
     }
     const handleChangeOwnerTitle = (val) => {
-        setOwnerTitle(val);
+        setOwnerTitle(Number(val));
     }
     const handleChangeLastName = (event) => {
         setLastName(event.target.value);
@@ -413,7 +415,7 @@ const AddOwner = (props) => {
                         </Grid>
                     </Grid>
                     {
-                        ownerTitle === '4' ?
+                        ownerTitle === 4 ?
                             <Grid xs={12} item container alignItems="center" spacing={1}>
                                 <Grid item><p className={classes.title}>Carbinet Nom</p></Grid>
                                 <Grid xs item container direction="column">

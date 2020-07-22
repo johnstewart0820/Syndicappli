@@ -57,7 +57,7 @@ const OwnerEdit = (props) => {
   const [avatar, setAvatar] = React.useState(null);
   const [idcardurls, setIdcardUrls] = React.useState([]);
   const [idcards, setIdcards] = React.useState([]);
-  const [ownerTitle, setOwnerTitle] = React.useState('');
+  const [ownerTitle, setOwnerTitle] = React.useState(0);
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -86,9 +86,9 @@ const OwnerEdit = (props) => {
   };
   const handleClickSave = () => {
     let cnt = 0;
-    if (ownerTitle.length === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
+    if (ownerTitle === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
     else setErrorsOwnerTitle('');
-    if (ownerTitle === '4') {
+    if (ownerTitle === 4) {
       if (companyName.length === 0) { setErrorsCompanyName('please enter company name'); cnt++; }
       else setErrorsCompanyName('');
     }
@@ -116,15 +116,19 @@ const OwnerEdit = (props) => {
   };
 
   const handleLoadFront = (event) => {
-    setAvatar(event.target.files[0]);
-    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if(event.target.files[0] !== undefined){
+      setAvatar(event.target.files[0]);
+      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    }
   }
   const handleLoadIdcard = (event) => {
-    idcardurls.push(URL.createObjectURL(event.target.files[0]));
-    idcards.push(event.target.files[0])
-    setIdcards(idcards);
-    setIdcardUrls(idcardurls);
-    setState(!state);
+    if(event.target.files[0] !== undefined){
+      idcardurls.push(URL.createObjectURL(event.target.files[0]));
+      idcards.push(event.target.files[0])
+      setIdcards(idcards);
+      setIdcardUrls(idcardurls);
+      setState(!state);
+    }
   }
   const handleClickCloseIdcard = (num) => {
     delete idcardurls[num];
@@ -160,7 +164,7 @@ const OwnerEdit = (props) => {
       setIsSubAccount(isMemberCouncil);
   }
   const handleChangeOwnerTitle = (val) => {
-    setOwnerTitle(val);
+    setOwnerTitle(Number(val));
   }
   const handleChangeLastName = (event) => {
     setLastName(event.target.value);
@@ -401,8 +405,13 @@ const OwnerEdit = (props) => {
               const apartmentInfo = data.owner.apartment_info;
               const amountInfo = data.owner.amount_info;
               setOwnerTitle(titleList.indexOf(ownerInfo.usertype));
-              setFirstName(ownerInfo.firstname);
-              setLastName(ownerInfo.lastname);
+              if(ownerInfo.usertype === 'Company'){
+                setCompanyName(ownerInfo.owner_company_name);
+              }
+              else{
+                setFirstName(ownerInfo.firstname);
+                setLastName(ownerInfo.lastname);
+              }
               setEmail(ownerInfo.email);
               setPhoneNumber(ownerInfo.phone);
               setAddress(ownerInfo.address);
@@ -417,6 +426,8 @@ const OwnerEdit = (props) => {
                 setIsSubAccount(false);
               }
               setAvatarUrl(ownerInfo.photo_url);
+              if(ownerInfo.status === 'active') setSuspendState('Suspendre le compte');
+              else if(ownerInfo.status === 'inactive') setSuspendState('Restaurer le compte');
               let urls = [];
               let apartment = [...apartNumber];
               let apartmentId = [];
@@ -665,7 +676,7 @@ const OwnerEdit = (props) => {
                   </Grid>
                 </Grid>
                 {
-                  ownerTitle === '4' ?
+                  ownerTitle === 4 ?
                     <Grid item container alignItems="center" spacing={1}>
                       <Grid item><p className={classes.itemTitle}>Carbinet Nom</p></Grid>
                       <Grid xs item container direction="column">

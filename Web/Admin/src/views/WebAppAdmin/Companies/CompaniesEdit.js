@@ -184,9 +184,10 @@ const CompaniesEdit = (props) => {
   }
 
   const handleLoadFront = (event) => {
-    console.log(URL.createObjectURL(event.target.files[0]));
-    setAvatar(event.target.files[0]);
-    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if(event.target.files[0] !== undefined){
+      setAvatar(event.target.files[0]);
+      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    }
   }
   const handleClickAddManager = () => {
     setOpenAddManager(true);

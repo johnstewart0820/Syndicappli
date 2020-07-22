@@ -298,8 +298,10 @@ const ManagerEdit = (props) => {
     }
   };
   const handleLoadFront = (event) => {
-    setAvatar(event.target.files[0]);
-    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if(event.target.files[0] !== undefined){
+      setAvatar(event.target.files[0]);
+      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    }
   }
   const handleChangeBuildingsPermission = (val) => {
     setBuildingsPermission(val);

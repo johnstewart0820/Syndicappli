@@ -159,15 +159,19 @@ const SubAccountEdit = (props) => {
   };
 
   const handleLoadFront = (event) => {
-    setAvatar(event.target.files[0]);
-    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if(event.target.files[0] !== undefined){
+      setAvatar(event.target.files[0]);
+      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    }
   }
   const handleLoadIdcard = (event) => {
-    idcardurls.push(URL.createObjectURL(event.target.files[0]));
-    idcards.push(event.target.files[0])
-    setIdcards(idcards);
-    setIdcardUrls(idcardurls);
-    setState(!state);
+    if(event.target.files[0] !== undefined){
+      idcardurls.push(URL.createObjectURL(event.target.files[0]));
+      idcards.push(event.target.files[0])
+      setIdcards(idcards);
+      setIdcardUrls(idcardurls);
+      setState(!state);
+    }
   }
   const handleClickCloseIdcard = (num) => {
     delete idcardurls[num];
