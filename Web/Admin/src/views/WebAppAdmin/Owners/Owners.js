@@ -114,7 +114,7 @@ const Owners = (props) => {
   for (let i = 0; i < 6; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id, buildingid) => {
-    history.push('/manager/owners/edit?id=' + id + '&&buildingID=' + buildingid);
+    history.push('/admin/owners/edit?id=' + id + '&&buildingID=' + buildingid);
   };
   const handleClickDelete = (id, buildingid) => {
       setOpenDelete(true);

@@ -25,6 +25,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import useGlobal from 'Global/global';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const CompaniesEdit = (props) => {
@@ -39,6 +40,7 @@ const CompaniesEdit = (props) => {
   const accessCompanies = authService.getAccess('role_companies');
   const accessManagers = authService.getAccess('role_managers');
   const accessBuildings = authService.getAccess('role_buildings');
+  const [globalState, globalActions] = useGlobal()
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
   const [openAddManager, setOpenAddManager] = React.useState(false);
@@ -127,6 +129,8 @@ const CompaniesEdit = (props) => {
   };
 
   const handleCloseAddManager = () => {
+    globalActions.setMultiTags([]);
+    globalActions.setMultiID([])
     setOpenAddManager(false);
   };
   const handleCloseAddBuilding = () => {
@@ -196,7 +200,7 @@ const CompaniesEdit = (props) => {
   const handleAddManager = () => {
     ToastsStore.success("Added New Manager successfully!");
     setManagerRefresh(!manager_refresh);
-  };
+  };    
   const handleAddBuilding = () => {
     ToastsStore.success("Added New Building successfully!");
     setBuildingRefresh(!building_refresh);
@@ -893,7 +897,7 @@ const CompaniesEdit = (props) => {
           <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseAddManager} className={classes.close} /></Grid>
           <Grid item><p className={classes.sepaTitle}><b>Nouveau Gestionnaire</b></p></Grid>
         </Grid>
-        <AddManager onCancel={handleCloseAddManager} onAdd={handleAddManager} />
+        <AddManager onCancel={handleCloseAddManager} onAdd={handleAddManager} companyID={props.match.params.id}/>
       </Dialog>
       <Dialog
         open={openAddBuilding}
@@ -905,7 +909,7 @@ const CompaniesEdit = (props) => {
           <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleCloseAddBuilding} className={classes.close} /></Grid>
           <Grid xs={12} item ><p className={classes.sepaTitle}><b>Nouvel immmeuble</b></p></Grid>
         </Grid>
-        <AddBuilding onCancel={handleCloseAddBuilding} onAdd={handleAddBuilding} />
+        <AddBuilding onCancel={handleCloseAddBuilding} onAdd={handleAddBuilding} companyID={props.match.params.id}/>
       </Dialog>
       <Dialog
         open={buildingOpenDelete}

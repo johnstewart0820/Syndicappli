@@ -17,7 +17,6 @@ import { EditOwnerStyles as useStyles } from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { ManagerService as Service } from '../../../services/api.js';
-import AdminService from 'services/api';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -81,49 +80,7 @@ const OwnerEdit = (props) => {
   const [buildingVote, setBuildingVote] = React.useState([]);
   const [voteAmount, setVoteAmount] = React.useState(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
   let voteLists = [];
-  useEffect(() => {
-    if (accessOwners === 'denied') {
-      setOpenDialog(true);
-    }
-    if (accessOwners !== 'denied') {
-      getCompanies();
-    }
-  }, [accessOwners]);
-  useEffect(() => {
-    let params = new URLSearchParams(window.location.search);
-    setVisibleIndicator(true);
-    ManagerService.getBuilding(params.get('buildingID'))
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch (response.data.code) {
-            case 200:
-              buildingVote.splice(0, buildingVote.length)
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              const vote_list = data.vote_list;
-              vote_list.map((vote, i) =>
-                buildingVote.push(vote)
-              )
-              setBuildingVote(buildingVote);
-              // setCompanyID(data.building[0].companyID)
-              getOwner();
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }, []);
+
   const handleClick = () => {
     history.goBack();
   };
@@ -239,11 +196,16 @@ const OwnerEdit = (props) => {
     setStateLots(!stateLots);
   }
   useEffect(() => {
-    getBuildings()
-  }, [companyID])
-  useEffect(() => {
-    setBuildingList(buildingList)
-  }, [buildingList])
+    if (accessOwners === 'denied') {
+      setOpenDialog(true);
+    }
+    if (accessOwners !== 'denied') {
+      getCompanies();
+    }
+  }, [accessOwners]);
+
+
+
   const getCompanies = () => {
     setVisibleIndicator(true);
     ManagerService.getCompanyListByUser()
@@ -274,6 +236,10 @@ const OwnerEdit = (props) => {
         }
       );
   }
+  useEffect(() => {
+    getBuildings();
+    console.log('companyID:',companyID);
+  }, [companyID])
   const getBuildings = () => {
     let params = new URLSearchParams(window.location.search);
     const requestData = {
@@ -292,13 +258,14 @@ const OwnerEdit = (props) => {
                 building.push(item.name)
               )
               );
-              setBuildingList(...data.buildinglist);
               setBuilding(building);
               setBuildingID(params.get('buildingID'));
               for (let i = 0; i < data.buildinglist.length; i++)
                 if (data.buildinglist[i].buildingID == params.get('buildingID')) {
                   setBuildings(i);
                 }
+              setBuildingList(...data.buildinglist);
+
               break;
             case 401:
               authService.logout();
@@ -315,7 +282,47 @@ const OwnerEdit = (props) => {
         }
       );
   }
-
+  useEffect(()=>{
+    getBuilding();
+    console.log('buildingList:',buildingList);
+  },[buildingList]);
+  const getBuilding = ()=> {
+    let params = new URLSearchParams(window.location.search);
+    setVisibleIndicator(true);
+    ManagerService.getBuilding(params.get('buildingID'))
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              buildingVote.splice(0, buildingVote.length)
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              const vote_list = data.vote_list;
+              vote_list.map((vote, i) =>
+                buildingVote.push(vote)
+              )
+              setBuildingVote(buildingVote);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  };
+  useEffect(() => {
+    getOwner()
+    console.log('buildingVote:',buildingVote);
+  }, [buildingVote])
   const getVoteList = () => {
     for (let i = 0; i < apartNumber.length; i++) {
       let votes = [];
@@ -422,6 +429,7 @@ const OwnerEdit = (props) => {
                 apartment.push(apartmentInfo[i].apartment_number);
                 apartmentId.push(apartmentInfo[i].apartmentID);
               }
+              lotsList.splice(0,lotsList.length);
               for (let i = 0; i < apartmentId.length; i++) {
                 for (let j = 0; j < amountInfo.length; j++)
                   if (amountInfo[j].apartmentID === apartmentId[i]) {
@@ -429,8 +437,9 @@ const OwnerEdit = (props) => {
                   }
                 setVoteAmount(voteAmount);
                 setApartNumber(apartment);
-                lotsList.push([...buildingVote]);
+                lotsList.push(buildingVote);
               }
+              console.log('lotslist:',lotsList)
               setLotsList(lotsList);
               setStateLots(!stateLots);
               break;
@@ -456,7 +465,7 @@ const OwnerEdit = (props) => {
     var data = {};
     data['email'] = email;
     setVisibleIndicator(true);
-    AdminService.forgotPassword(data)
+    ManagerService.forgotPassword(data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -485,7 +494,7 @@ const OwnerEdit = (props) => {
     };
     let params = new URLSearchParams(window.location.search);
     setVisibleIndicator(true);
-    AdminService.setSuspendOwner(params.get('id'), data)
+    ManagerService.setSuspendOwner(params.get('id'), data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -527,7 +536,7 @@ const OwnerEdit = (props) => {
     let data = {
       'status': 'trash'
     }
-    AdminService.deleteOwner(params.get('id'), data)
+    ManagerService.deleteOwner(params.get('id'), data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -766,8 +775,7 @@ const OwnerEdit = (props) => {
                   data={building}
                   onChangeSelect={handleChangeBuildings}
                   value={buildings}
-                  disabled={"disabled"}
-                  // disabled={(accessOwners === 'see' ? true : false)}
+                  disabled={true}
                   width="50%"
                 />
                 {errorsBuildings.length > 0 &&

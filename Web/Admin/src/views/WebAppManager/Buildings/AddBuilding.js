@@ -8,13 +8,13 @@ import MySelect from '../../../components/MySelect.js';
 import { AddBuildingStyles as useStyles } from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import {ManagerService as Service} from '../../../services/api.js';
+import { ManagerService as Service } from '../../../services/api.js';
 import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
 const ManagerService = new Service();
 const AddBuilding = (props) => {
   const classes = useStyles();
-  const {history} = props;
+  const { history } = props;
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [state, setState] = React.useState(false);
   const [name, setName] = React.useState('');
@@ -28,7 +28,8 @@ const AddBuilding = (props) => {
 
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
-
+  const [errorsVote, setErrorsVote] = React.useState('');
+  const [count, setCount] = React.useState(0);
   const handleChangeName = (event) => {
     setName(event.target.value);
   };
@@ -49,12 +50,14 @@ const AddBuilding = (props) => {
   };
   const handleClickAddClef = (event) => {
     if (addClefs !== '') {
+      setCount(count + 1);
       clefList.push({ "name": addClefs });
       setAddClefs('');
       setClefList(clefList);
     }
   };
   const handleClickRemoveClef = (num) => {
+    setCount(count - 1);
     delete clefList[num];
     clefList.splice(num, 1);
     setClefList(clefList);
@@ -70,6 +73,8 @@ const AddBuilding = (props) => {
     else setErrorsName('');
     if (address.length === 0) { setErrorsAddress('please enter your first name'); cnt++; }
     else setErrorsAddress('');
+    if (count === 0) { setErrorsVote('please add a vote branch'); cnt++; }
+    else setErrorsVote('');
     if (cnt === 0) {
       createBuilding();
     }
@@ -83,7 +88,7 @@ const AddBuilding = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -122,7 +127,7 @@ const AddBuilding = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -208,20 +213,24 @@ const AddBuilding = (props) => {
               </Grid>
               : null
           }
-          <Grid xs={6} item container alignItems="center" justify="space-between" direction="row-reverse">
-            <Grid item>
-              <AddCircleOutlineIcon
-                className={classes.plus}
-                onClick={handleClickAddClef}
-              />
+          <Grid xs={6} item container direction="column">
+            <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
+              <Grid item>
+                <AddCircleOutlineIcon
+                  className={classes.plus}
+                  onClick={handleClickAddClef}
+                />
+              </Grid>
+              <Grid xs item >
+                <TextField
+                  variant="outlined"
+                  value={addClefs}
+                  onChange={handleChangeAddClefs}
+                />
+              </Grid>
             </Grid>
-            <Grid xs item >
-              <TextField
-                variant="outlined"
-                value={addClefs}
-                onChange={handleChangeAddClefs}
-              />
-            </Grid>
+            {errorsVote.length > 0 &&
+              <span className={classes.error}>{errorsVote}</span>}
           </Grid>
           <Grid item container alignItems="center" spacing={2}>
             <Grid item><p className={classes.title}>Compte Bancaire - Prélèvement SEPA</p></Grid>

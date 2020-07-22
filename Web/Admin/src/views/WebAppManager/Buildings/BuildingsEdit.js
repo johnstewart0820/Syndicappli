@@ -40,6 +40,8 @@ const BuildingsEdit = (props) => {
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
+  const [errorsVote, setErrorsVote] = React.useState('');
+  const [count, setCount] = React.useState(0);
 
   const [companies, setCompanies] = React.useState('');
   const [company, setCompany] = React.useState([]);
@@ -77,12 +79,14 @@ const BuildingsEdit = (props) => {
   };
   const handleClickAddClef = (event) => {
     if (addClefs !== '') {
+      setCount(count+1);
       clefList.push({ "vote_branch_name": addClefs });
       setAddClefs('');
       setClefList(clefList);
     }
   };
   const handleClickRemoveClef = (num) => {
+    setCount(count-1);
     delete clefList[num];
     clefList.splice(num, 1);
     setClefList(clefList);
@@ -96,6 +100,8 @@ const BuildingsEdit = (props) => {
     else setErrorsAddress('');
     if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
     else setErrorsCompanies('');
+    if (count === 0) { setErrorsVote('please add a vote branch'); cnt++; }
+    else setErrorsVote('');
     if (cnt === 0) {
       updateBuilding();
     }
@@ -199,6 +205,7 @@ const BuildingsEdit = (props) => {
                 setAccountIban(building.account_IBAN);
                 setCompanyID(building.companyID);
                 setClefList(clefList);
+                setCount(vote_list.length);
                 break;
               case 401:
                 authService.logout();
@@ -296,10 +303,10 @@ const BuildingsEdit = (props) => {
                       <Grid key={i} container spacing={5}>
 
                         <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
-                          <Grid item>
+                          <Grid item >
                             <RemoveCircleOutlineIcon
                               className={classes.plus}
-                              onClick={() => handleClickRemoveClef(i)}
+                              onClick={accessBuildings === 'see'? null:() => handleClickRemoveClef(i)}
                             />
                           </Grid>
                           <Grid item xs={6} >
@@ -312,20 +319,25 @@ const BuildingsEdit = (props) => {
                 </Grid>
                 : null
             }
-            <Grid xs={6} item container alignItems="center" justify="space-between" direction="row-reverse" alignItems="center">
+          <Grid xs={6} item container direction="column">
+            <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
               <Grid item>
                 <AddCircleOutlineIcon
                   className={classes.plus}
-                  onClick={handleClickAddClef}
+                  onClick={accessBuildings === 'see'? null:handleClickAddClef}
                 />
               </Grid>
-              <Grid item >
+              <Grid xs item >
                 <TextField
                   variant="outlined"
                   value={addClefs}
                   onChange={handleChangeAddClefs}
+                  disabled={(accessBuildings === 'see' ? true : false)}
                 />
               </Grid>
+            </Grid>
+              {errorsVote.length > 0 &&
+            <span className={classes.error}>{errorsVote}</span>}
             </Grid>
             <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
               <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings === 'see' ? true : false)} />

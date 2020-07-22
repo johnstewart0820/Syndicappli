@@ -11,6 +11,7 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import AdminService from '../../../services/api.js';
 import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
+import UserEdit from '../Users/UserEdit';
 
 const AddBuilding = (props) => {
   const classes = useStyles();
@@ -32,7 +33,9 @@ const AddBuilding = (props) => {
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
-
+  const [errorsVote, setErrorsVote] = React.useState('');
+  const [count, setCount] = React.useState(0);
+  
   const handleChangeCompanies = (val) => {
     setCompanies(val);
     setCompanyID(companyList[val].companyID);
@@ -57,12 +60,14 @@ const AddBuilding = (props) => {
   };
   const handleClickAddClef = (event) => {
     if (addClefs !== '') {
+      setCount(count+1);
       clefList.push({ "name": addClefs });
       setAddClefs('');
       setClefList(clefList);
     }
   };
   const handleClickRemoveClef = (num) => {
+    setCount(count-1);
     delete clefList[num];
     clefList.splice(num, 1);
     setClefList(clefList);
@@ -74,19 +79,21 @@ const AddBuilding = (props) => {
   };
   const handleClickAdd = () => {
     let cnt = 0;
-    if (name.length === 0) { setErrorsName('please enter your name'); cnt++; }
+    if (name.length === 0) { setErrorsName('please enter your new building name'); cnt++; }
     else setErrorsName('');
-    if (address.length === 0) { setErrorsAddress('please enter your first name'); cnt++; }
+    if (address.length === 0) { setErrorsAddress('please enter your building address'); cnt++; }
     else setErrorsAddress('');
     if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
     else setErrorsCompanies('');
+    if (count === 0) { setErrorsVote('please add a vote branch'); cnt++; }
+    else setErrorsVote('');
     if (cnt === 0) {
       createBuilding();
     }
   };
   useEffect(() => {
     getCompanies();
-  }, [companies]);
+  }, []);
   const getCompanies = () => {
     setVisibleIndicator(true);
     AdminService.getCompanyListByUser()
@@ -102,10 +109,8 @@ const AddBuilding = (props) => {
               )
               );
               setCompanyList(data.companylist);
-              if(data.companyList)
+              if(data.companylist.length !== 0)
                 setCompanyID(data.companylist[0].companyID);
-              else 
-                setCompanyID(-1);
               break;
             case 401:
               authService.logout();
@@ -122,6 +127,9 @@ const AddBuilding = (props) => {
         }
       );
   }
+  useEffect(()=>{
+    setCompanyList(companyList);
+  },[companyList])
   const createBuilding = () => {
     const requestData = {
       'companyID': companyID,
@@ -165,7 +173,7 @@ const AddBuilding = (props) => {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
       <div className={classes.paper} >
-        <Grid container spacing={4} xs={12}>
+        <Grid container spacing={4} xs={12} item>
           <Grid item container alignItems="center" spacing={2}>
             <Grid item><p className={classes.title}>Cabinet</p></Grid>
             <Grid xs item container alignItems="stretch" direction="column">
@@ -237,20 +245,24 @@ const AddBuilding = (props) => {
               </Grid>
               : null
           }
-          <Grid xs={6} item container alignItems="center" justify="space-between" direction="row-reverse">
-            <Grid item>
-              <AddCircleOutlineIcon
-                className={classes.plus}
-                onClick={handleClickAddClef}
-              />
+          <Grid xs={6} item container direction="column">
+            <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
+              <Grid item>
+                <AddCircleOutlineIcon
+                  className={classes.plus}
+                  onClick={handleClickAddClef}
+                />
+              </Grid>
+              <Grid xs item >
+                <TextField
+                  variant="outlined"
+                  value={addClefs}
+                  onChange={handleChangeAddClefs}
+                />
+              </Grid>
             </Grid>
-            <Grid xs item >
-              <TextField
-                variant="outlined"
-                value={addClefs}
-                onChange={handleChangeAddClefs}
-              />
-            </Grid>
+            {errorsVote.length > 0 &&
+            <span className={classes.error}>{errorsVote}</span>}
           </Grid>
           <Grid item container alignItems="center" spacing={2}>
             <Grid item><p className={classes.title}>Compte Bancaire - Prélèvement SEPA</p></Grid>

@@ -8,15 +8,15 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Checkbox } from '@material-ui/core';
 import IdCard from 'components/IdCard';
 import { AddOwnerStyles as useStyles } from './useStyles';
-import {ManagerService as Service} from '../../../services/api.js';
+import { ManagerService as Service } from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from 'services/authService';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddOwner = (props) => {
-    const {history} = props;
+    const { history } = props;
     const classes = useStyles();
     const [state, setState] = React.useState(false);
     const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
@@ -52,12 +52,15 @@ const AddOwner = (props) => {
     const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
     const [errorsAddress, setErrorsAddress] = React.useState('');
     const [errorsCompanyName, setErrorsCompanyName] = React.useState('');
+    const [errorsVoteLists, setErrorsVoteLists] = React.useState('');
 
     const [lotsList, setLotsList] = React.useState([]);
     const [stateLots, setStateLots] = React.useState(false);
     const [buildingVote, setBuildingVote] = React.useState([]);
-    const [voteAmount, setVoteAmount] = React.useState(Array.from({length: 100},()=> Array.from({length: buildingVote.length}, () => null)));
+    const [voteAmount, setVoteAmount] = React.useState(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
     let voteLists = [];
+    let i = 0;
+    const [count, setCount] = React.useState(0);
     const handleClose = () => {
         props.onCancel();
     };
@@ -89,13 +92,14 @@ const AddOwner = (props) => {
         else setErrorsPhonenumber('');
         if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
         else setErrorsAddress('');
-
+        if (count === 0) { setErrorsVoteLists('please add a lot at least'); cnt++; }
+        else setErrorsVoteLists('');
         if (cnt === 0) {
             createOwner();
         }
     }
     const handleLoadFront = (event) => {
-        if(event.target.files[0] !== null){
+        if (event.target.files[0] !== null) {
             setAvatar(event.target.files[0]);
             setAvatarUrl(URL.createObjectURL(event.target.files[0]));
         }
@@ -120,7 +124,7 @@ const AddOwner = (props) => {
     const handleChangeApartNumber = (event, i) => {
         let apartment = [...apartNumber];
         apartment[i] = +event.target.value;
-         setApartNumber(apartment);
+        setApartNumber(apartment);
     }
     const handleChangeVoteAmount = (event, i, j) => {
         let voteamount = [...voteAmount];
@@ -173,6 +177,8 @@ const AddOwner = (props) => {
         setBuildingID(buildingList[val].buildingID);
     };
     const handleClickAddLots = (event) => {
+        i++;
+        setCount(i);
         lotsList.push(buildingVote);
         setLotsList(lotsList);
         setStateLots(!stateLots);
@@ -183,23 +189,23 @@ const AddOwner = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.companylist.map((item) => (
-                              setCompanyID(item.companyID)
+                                setCompanyID(item.companyID)
                             )
                             );
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error('Cant connect to the server!');
@@ -216,10 +222,10 @@ const AddOwner = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
-                            buildingList.splice(0,buildingList.length);
-                            building.splice(0,building.length);
+                            buildingList.splice(0, buildingList.length);
+                            building.splice(0, building.length);
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.buildinglist.map((item) => (
@@ -229,15 +235,15 @@ const AddOwner = (props) => {
                             setBuildingList(data.buildinglist);
                             setBuilding(building)
 
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -252,13 +258,13 @@ const AddOwner = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
-                            buildingVote.splice(0,buildingVote.length);
-                            lotsList.splice(0,lotsList.length);
+                            buildingVote.splice(0, buildingVote.length);
+                            lotsList.splice(0, lotsList.length);
                             setLotsList(lotsList);
                             setStateLots(!stateLots);
-    
+
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             const vote_list = data.vote_list;
@@ -266,15 +272,15 @@ const AddOwner = (props) => {
                                 buildingVote.push(vote)
                             )
                             setBuildingVote(buildingVote);
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -293,7 +299,7 @@ const AddOwner = (props) => {
                 votes.push(vote);
             }
             const voteList = {
-                'apartment_number': apartNumber[i], 
+                'apartment_number': apartNumber[i],
                 'vote': votes
             }
             voteLists.push(voteList);
@@ -303,38 +309,38 @@ const AddOwner = (props) => {
         getVoteList();
         let formdata = new FormData();
         formdata.set('type', titleList[ownerTitle]);
-        formdata.set('email',email);
-        formdata.set('owner_role', isSubAccount ? 'subaccount': isMemberCouncil? 'member': 'owner');
+        formdata.set('email', email);
+        formdata.set('owner_role', isSubAccount ? 'subaccount' : isMemberCouncil ? 'member' : 'owner');
         formdata.set('buildingID', buildingID);
         formdata.set('firstname', firstname);
         formdata.set('lastname', lastname);
         formdata.set('owner_company_name', companyName);
         formdata.set('address', address);
         formdata.set('phone', phonenumber);
-        formdata.set('photo_url',avatar === null ? '' : avatar)
-        formdata.set('id_card_front',idcards[0] === null ? '' : idcards[0])
-        formdata.set('id_card_back',idcards[1] === null ? '' : idcards[1])
+        formdata.set('photo_url', avatar === null ? '' : avatar)
+        formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0])
+        formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1])
         formdata.set('vote_value_list', JSON.stringify(voteLists));
         setVisibleIndicator(true);
         ManagerService.createOwner(formdata)
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             props.onAdd();
                             handleClose();
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -541,7 +547,7 @@ const AddOwner = (props) => {
                                                                                     value={voteAmount[i][j] || ""}
                                                                                     onChange={(event) => handleChangeVoteAmount(event, i, j)}
                                                                                     style={{ width: 100 }}
-                                                                                    
+
                                                                                 />
                                                                             </Grid>
                                                                             <Grid item><p className={classes.title}>tantièmes</p></Grid>
@@ -555,11 +561,15 @@ const AddOwner = (props) => {
                                             })
                                         }
                                     </Grid>
-                                : null
+                                    : null
                             }
                         </Grid>
                         <Grid item style={{ marginTop: 10, marginBottom: 10 }}>
-                            <MyButton name={"Ajouter un lot"} bgColor="grey" onClick={handleClickAddLots} />
+                            <Grid item container direction="column">
+                                <Grid><MyButton name={"Ajouter un lot"} bgColor="grey" onClick={handleClickAddLots} /></Grid>
+                                {errorsVoteLists.length > 0 &&
+                                    <span className={classes.error}>{errorsVoteLists}</span>}
+                            </Grid>
                         </Grid>
                     </Grid>
                     <Grid xs={12} item container direction="column" style={{ marginTop: 30 }}>

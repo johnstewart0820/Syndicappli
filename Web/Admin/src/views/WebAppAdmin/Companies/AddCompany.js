@@ -96,7 +96,7 @@ const AddCompany = (props) => {
         let cnt = 0;
         if (name.length === 0) { setErrorsName('please enter your new company name'); cnt++; }
         else setErrorsName('');
-        if (address.length === 0) { setErrorsAddress('please enter your address'); cnt++; }
+        if (address.length === 0) { setErrorsAddress('please enter contact information of this company'); cnt++; }
         else setErrorsAddress('');
         if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
         else setErrorsEmail('');

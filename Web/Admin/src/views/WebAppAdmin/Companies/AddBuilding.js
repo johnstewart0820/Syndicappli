@@ -4,21 +4,16 @@ import Grid from '@material-ui/core/Grid';
 import MyButton from '../../../components/MyButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
-import MySelect from '../../../components/MySelect.js';
 import { AddBuildingStyles as useStyles } from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import AdminService from '../../../services/api.js';
+import AdminService  from '../../../services/api.js';
+import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
-import {withRouter} from 'react-router-dom';
-
 const AddBuilding = (props) => {
-  const {history} = props;
   const classes = useStyles();
+  const {history} = props;
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  let company = [];
-  const [companies, setCompanies] = React.useState('');
-  const [companyList, setCompanyList] = React.useState([]);
   const [state, setState] = React.useState(false);
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');
@@ -27,16 +22,11 @@ const AddBuilding = (props) => {
   const [accountIban, setAccountIban] = React.useState('');
   const [addClefs, setAddClefs] = React.useState('');
   const [clefList, setClefList] = React.useState([]);
-  const [companyID, setCompanyID] = React.useState(-1);
 
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsCompanies, setErrorsCompanies] = React.useState('');
-
-  const handleChangeCompanies = (val) => {
-    setCompanies(val);
-    setCompanyID(companyList[val].companyID);
-  };
+  const [errorsVote, setErrorsVote] = React.useState('');
+  const [count, setCount] = React.useState(0);
   const handleChangeName = (event) => {
     setName(event.target.value);
   };
@@ -57,12 +47,14 @@ const AddBuilding = (props) => {
   };
   const handleClickAddClef = (event) => {
     if (addClefs !== '') {
+      setCount(count + 1);
       clefList.push({ "name": addClefs });
       setAddClefs('');
       setClefList(clefList);
     }
   };
   const handleClickRemoveClef = (num) => {
+    setCount(count - 1);
     delete clefList[num];
     clefList.splice(num, 1);
     setClefList(clefList);
@@ -78,51 +70,15 @@ const AddBuilding = (props) => {
     else setErrorsName('');
     if (address.length === 0) { setErrorsAddress('please enter your first name'); cnt++; }
     else setErrorsAddress('');
-    if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
-    else setErrorsCompanies('');
+    if (count === 0) { setErrorsVote('please add a vote branch'); cnt++; }
+    else setErrorsVote('');
     if (cnt === 0) {
       createBuilding();
     }
   };
-  useEffect(() => {
-    getCompanies();
-  }, [companies]);
-  const getCompanies = () => {
-    setVisibleIndicator(true);
-    AdminService.getCompanyListByUser()
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch(response.data.code){
-            case 200:
-              console.log('success');
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              data.companylist.map((item) => (
-                company.push(item.name)
-              )
-              );
-              setCompanyList(data.companylist);
-              setCompanyID(data.companylist[0].companyID);
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }
   const createBuilding = () => {
     const requestData = {
-      'companyID': companyID,
+      'companyID': props.companyID,
       'name': name,
       'address': address,
       'vote_branches': clefList,
@@ -163,21 +119,7 @@ const AddBuilding = (props) => {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
       <div className={classes.paper} >
-        <Grid container spacing={4} xs={12}>
-          <Grid item container alignItems="center" spacing={2}>
-            <Grid item><p className={classes.title}>Cabinet</p></Grid>
-            <Grid xs item container alignItems="stretch" direction="column">
-              <MySelect
-                color="gray"
-                data={company}
-                onChangeSelect={handleChangeCompanies}
-                value={companies}
-                width="50%"
-              />
-              {errorsCompanies.length > 0 &&
-                <span className={classes.error}>{errorsCompanies}</span>}
-            </Grid>
-          </Grid>
+        <Grid container spacing={4}>
           <Grid item container spacing={2}>
             <Grid item><p className={classes.title}>Nom</p></Grid>
             <Grid xs item container alignItems="stretch">
@@ -235,20 +177,24 @@ const AddBuilding = (props) => {
               </Grid>
               : null
           }
-          <Grid xs={6} item container alignItems="center" justify="space-between" direction="row-reverse">
-            <Grid item>
-              <AddCircleOutlineIcon
-                className={classes.plus}
-                onClick={handleClickAddClef}
-              />
+          <Grid xs={6} item container direction="column">
+            <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
+              <Grid item>
+                <AddCircleOutlineIcon
+                  className={classes.plus}
+                  onClick={handleClickAddClef}
+                />
+              </Grid>
+              <Grid xs item >
+                <TextField
+                  variant="outlined"
+                  value={addClefs}
+                  onChange={handleChangeAddClefs}
+                />
+              </Grid>
             </Grid>
-            <Grid xs item >
-              <TextField
-                variant="outlined"
-                value={addClefs}
-                onChange={handleChangeAddClefs}
-              />
-            </Grid>
+            {errorsVote.length > 0 &&
+              <span className={classes.error}>{errorsVote}</span>}
           </Grid>
           <Grid item container alignItems="center" spacing={2}>
             <Grid item><p className={classes.title}>Compte Bancaire - Prélèvement SEPA</p></Grid>
@@ -299,7 +245,7 @@ const AddBuilding = (props) => {
           </Grid>
         </div>
       </div>
-        <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

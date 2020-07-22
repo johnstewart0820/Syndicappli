@@ -109,7 +109,10 @@ const OwnerEdit = (props) => {
                 buildingVote.push(vote)
               )
               setBuildingVote(buildingVote);
-              setCompanyID(data.building[0].companyID)
+              if(data.building.length !== 0)
+                setCompanyID(data.building[0].companyID);
+              else 
+                setCompanyID(-1);  
               getOwner();
               break;
             case 401:
@@ -283,7 +286,7 @@ const OwnerEdit = (props) => {
   const getBuildings = () => {
     let params = new URLSearchParams(window.location.search);
     const requestData = {
-      'companyID': -1
+      'companyID': companyID
     }
     setVisibleIndicator(true);
     AdminService.getBuildingListByCompany(requestData)
@@ -775,8 +778,7 @@ const OwnerEdit = (props) => {
                   data={company}
                   onChangeSelect={handleChangeCompanies}
                   value={companies}
-                  disabled={"disabled"}
-                  // disabled={(accessOwners === 'see' ? true : false)}
+                  disabled={true}
                   width="50%"
                 />
                 {errorsCompanies.length > 0 &&
@@ -791,8 +793,7 @@ const OwnerEdit = (props) => {
                   data={building}
                   onChangeSelect={handleChangeBuildings}
                   value={buildings}
-                  disabled={"disabled"}
-                  // disabled={(accessOwners === 'see' ? true : false)}
+                  disabled={true}
                   width="50%"
                 />
                 {errorsBuildings.length > 0 &&

@@ -13,7 +13,6 @@ import Multiselect from '../../../components/Multiselect.js';
 import MyDialog from '../../../components/MyDialog.js';
 import { EditTeamMemberStyles as useStyles } from './useStyles';
 import {ManagerService as Service} from '../../../services/api.js';
-import AdminService from 'services/api';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
@@ -73,14 +72,9 @@ const TeamMemberEdit = (props) => {
 
   const [buildingList, setBuildingList] = React.useState([]);
   let buildingID = [];
+  const [buildings, setBuildings] = React.useState([]);
   useEffect(()=>{
     getCompanies();
-  },[accessTeam]);
-  useEffect(()=>{
-    setBuildingList(buildingList)
-    getManager()
-  },[buildingList])
-  useEffect(()=>{
     getBuildings()
   },[companyID]);
   const getCompanies = () => {
@@ -131,8 +125,9 @@ const TeamMemberEdit = (props) => {
                 buildings1[i] = { label: item.name, value: item.buildingID }
               )
               );
-              setBuildingList(data.buildinglist);
+              // setBuilding(buildings1);
               globalActions.setMultiSuggestions(buildings1);
+              setBuildingList(data.buildinglist);
               break;
             case 401:
               authService.logout();
@@ -149,10 +144,12 @@ const TeamMemberEdit = (props) => {
         }
       );
   }
+  useEffect(()=>{
+    getManager()
+  },[buildingList])
+
   const getManager = ()=>{
     setVisibleIndicator(true);
-    setBuildingList(buildingList);
-
     ManagerService.getTeamMember(props.match.params.id)
     .then(
       response => {
@@ -162,6 +159,25 @@ const TeamMemberEdit = (props) => {
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             const profile = data.manager;
+
+            if(profile.status === 'active')
+              setSuspendState('Suspendre le compte');
+            else if(profile.status === 'inactive')
+              setSuspendState('Restaurer le compte');
+            let buildingID = [];
+            data.buildinglist.map((item, i) => (
+              buildingID[i] = item.relationID
+            )
+            );
+            let buildings1 = [];
+            for(let i = 0 ; i < buildingID.length; i++)
+              for(let j = 0; j < buildingList.length; j++)
+                if(buildingID[i] === buildingList[j].buildingID){
+                  buildings1[i] = {label:buildingList[j].name,value:buildingList[j].buildingID};
+                  break;
+                }
+                setBuildings(buildings1);
+            globalActions.setMultiID(buildingID);
             setLastName(profile.lastname);
             setFirstName(profile.firstname);
             setEmail(profile.email);
@@ -181,27 +197,6 @@ const TeamMemberEdit = (props) => {
             setProvidersPermission(role_permission.indexOf(profile.role_providers));
             setTeamPermission(role_permission.indexOf(profile.role_team));
             setApartNumber(profile.count);
-            if(profile.status === 'active')
-              setSuspendState('Suspendre le compte');
-            else if(profile.status === 'inactive')
-              setSuspendState('Restaurer le compte');
-            let buildingID = [];
-            data.buildinglist.map((item, i) => (
-              buildingID[i] = item.relationID
-            )
-            );
-            console.log('id:',buildingID)
-            console.log('list:',buildingList)
-            let buildings = [];
-            for(let i = 0 ; i < buildingID.length; i++)
-              for(let j = 0; j < buildingList.length; j++)
-                if(buildingID[i] === buildingList[j].buildingID){
-                  buildings[i] = {label:buildingList[j].name,value:buildingList[j].buildingID};
-                  break;
-                }
-                console.log('buildings:',buildings)
-            globalActions.setMultiTags(buildings);
-            globalActions.setMultiID(buildingID);
             break;
           case 401:
             authService.logout();
@@ -222,7 +217,9 @@ const TeamMemberEdit = (props) => {
       }
     );
   }
-
+useEffect(()=>{
+  globalActions.setMultiTags(buildings);
+},[buildings])
   const handleClick = () => {
     history.goBack();
   };
@@ -266,7 +263,7 @@ const TeamMemberEdit = (props) => {
 
   const handleChangeBuildings = async (val) => {
     if (val !== null) {
-      await globalActions.setMultiTags(val);
+      await setBuildings(val);
       buildingID.splice(0, buildingID.length)
       for (let i = 0; i < val.length; i++)
         for (let j = 0; j < buildingList.length; j++)
@@ -276,6 +273,7 @@ const TeamMemberEdit = (props) => {
       globalActions.setMultiID(buildingID);
     }
     else {
+      console.log(val)
       await globalActions.setMultiTags([]);
       globalActions.setMultiID([]);
     }
@@ -363,7 +361,7 @@ const TeamMemberEdit = (props) => {
     var data = {};
     data['email'] = email;
     setVisibleIndicator(true);
-    AdminService.forgotPassword(data)
+    ManagerService.forgotPassword(data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -690,6 +688,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeBuildingsPermission}
                   value={buildingsPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -699,6 +698,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeOwnersPermission}
                   value={ownersPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -708,6 +708,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeChatPermission}
                   value={chatPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -717,6 +718,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeIncidentsPermission}
                   value={incidentsPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -726,6 +728,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAssembliesPermission}
                   value={assembliesPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -735,6 +738,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeEventsPermission}
                   value={eventsPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -744,6 +748,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeTeamPermission}
                   value={teamPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -753,6 +758,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeProvidersPermission}
                   value={providersPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -762,6 +768,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAnnouncementsPermission}
                   value={announcementsPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -771,6 +778,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeCompanyPermission}
                   value={companyPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -780,6 +788,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAddonsPermission}
                   value={addonsPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -789,6 +798,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeInvoicesPermission}
                   value={invoicesPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -798,6 +808,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangePaymentMethodsPermission}
                   value={paymentMethodsPermission}
+                  disabled={accessTeam === 'see'? true:false}
                 />
               </Grid>
             </Grid>

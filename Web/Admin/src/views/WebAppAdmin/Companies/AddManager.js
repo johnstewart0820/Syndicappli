@@ -12,7 +12,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
 import authService from 'services/authService';
 import {withRouter} from 'react-router-dom';
-
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const AddManager = (props) => {
     const {history} = props;
@@ -28,10 +27,6 @@ const AddManager = (props) => {
     const [email, setEmail] = React.useState('');
     const [phonenumber, setPhoneNumber] = React.useState('');
 
-    let company = [];
-    const [companies, setCompanies] = React.useState('');
-    const [companyList, setCompanyList] = React.useState([]);
-    const [companyID, setCompanyID] = React.useState(-1);
     const [buildingList, setBuildingList] = React.useState([]);
     let buildingID1 = [];
     const [buildingsPermission, setBuildingsPermission] = React.useState(0);
@@ -48,13 +43,13 @@ const AddManager = (props) => {
     const [invoicesPermission, setInvoicesPermission] = React.useState(0);
     const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
 
-    const [errorsCompanies, setErrorsCompanies] = React.useState('');
     const [errorsBuildings, setErrorsBuildings] = React.useState('');
     const [errorsLastname, setErrorsLastname] = React.useState('');
     const [errorsFirstname, setErrorsFirstname] = React.useState('');
     const [errorsEmail, setErrorsEmail] = React.useState('');
     const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
     const handleClose = () => {
+        console.log('close')
         props.onCancel();
     };
     const handleCreate = () => {
@@ -63,8 +58,6 @@ const AddManager = (props) => {
         else setErrorsLastname('');
         if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
         else setErrorsFirstname('');
-        if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
-        else setErrorsCompanies('');
         if (globalState.multi_ID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
         else setErrorsBuildings('');
         if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
@@ -98,11 +91,8 @@ const AddManager = (props) => {
     const handleChangePhoneNumber = (event) => {
         setPhoneNumber(event.target.value);
     }
-    const handleChangeCompanies = (val) => {
-        setCompanies(val);
-        setCompanyID(companyList[val].companyID);
-    };
     const handleChangeBuildings = async (val) => {
+        console.log('var',val)
         if (val !== null) {
             await globalActions.setMultiTags(val);
             buildingID1.splice(0, buildingID1.length)
@@ -112,10 +102,11 @@ const AddManager = (props) => {
                         buildingID1.push(buildingList[j].buildingID);
                     }
             globalActions.setMultiID(buildingID1);
+            console.log('buildingID:',buildingID1)
         }
         else {
-            await globalActions.setMultiTags([]);
-            globalActions.setMultiID([]);
+            await globalActions.setMultiTags(null);
+            globalActions.setMultiID(null);
         }
     };
     const handleChangeBuildingsPermission = (val) => {
@@ -158,46 +149,14 @@ const AddManager = (props) => {
         setPaymentMethodsPermission(val);
     }
     useEffect(() => {
-        getCompanies();
-    }, [companies]);
-    useEffect(() => {
-        handleChangeBuildings([])
+         globalActions.setMultiTags([]);
+        globalActions.setMultiID([]);
         getBuildings();
-    }, [companyID])
-    const getCompanies = () => {
-        AdminService.getCompanyListByUser()
-            .then(
-                response => {
-                    setVisibleIndicator(false);
-                    switch(response.data.code){
-                        case 200:
-                            const data = response.data.data;
-                            localStorage.setItem("token", JSON.stringify(data.token));
-                            company.push('');
-                            data.companylist.map((item) => (
-                                company.push(item.name)
-                            )
-                            );
-                            setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
-                          break;
-                        case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
-                        default:
-                          ToastsStore.error(response.data.message);
-                      }
-                },
-                error => {
-                    ToastsStore.error("Can't connect to the server!");
-                    setVisibleIndicator(false);
-                }
-            );
-    }
+    }, [])
+
     const getBuildings = () => {
         const requestData = {
-            'companyID': companyID
+            'companyID': props.companyID
         }
         setVisibleIndicator(true);
         AdminService.getBuildingListByCompany(requestData)
@@ -287,7 +246,7 @@ const AddManager = (props) => {
             },
         ]
         let formdata = new FormData();
-        formdata.set('companyID', companyID);
+        formdata.set('companyID', props.companyID);
         formdata.set('buildingID', JSON.stringify(globalState.multi_ID));
         formdata.set('firstname', firstname);
         formdata.set('lastname', lastname);
@@ -331,20 +290,6 @@ const AddManager = (props) => {
             }
             <div className={classes.paper} sm={12}>
                 <Grid container spacing={2} >
-                    <Grid item container justify="center" alignItems="center">
-                        <Grid xs={3} item container><p className={classes.title}>Carbinet</p></Grid>
-                        <Grid xs={9} item container>
-                            <MySelect
-                                color="gray"
-                                data={company}
-                                onChangeSelect={handleChangeCompanies}
-                                value={companies}
-                                width="80%"
-                            />
-                            {errorsCompanies.length > 0 &&
-                                <span className={classes.error}>{errorsCompanies}</span>}
-                        </Grid>
-                    </Grid>
                     <Grid item container alignItems="center">
                         <Grid item xs={3}><p className={classes.title}>Immeubles</p></Grid>
                         <Grid xs={9} item container alignItems="stretch">
@@ -367,6 +312,7 @@ const AddManager = (props) => {
                                 variant="outlined"
                                 value={lastname}
                                 onChange={handleChangeLastName}
+                                fullWidth
                             />
                             {errorsLastname.length > 0 &&
                                 <span className={classes.error}>{errorsLastname}</span>}
@@ -381,6 +327,7 @@ const AddManager = (props) => {
                                 variant="outlined"
                                 value={firstname}
                                 onChange={handleChangeFirstName}
+                                fullWidth
                             />
                             {errorsFirstname.length > 0 &&
                                 <span className={classes.error}>{errorsFirstname}</span>}
@@ -395,6 +342,7 @@ const AddManager = (props) => {
                                 variant="outlined"
                                 value={email}
                                 onChange={handleChangeEmail}
+                                fullWidth
                             />
                             {errorsEmail.length > 0 &&
                                 <span className={classes.error}>{errorsEmail}</span>}
@@ -409,6 +357,7 @@ const AddManager = (props) => {
                                 variant="outlined"
                                 value={phonenumber}
                                 onChange={handleChangePhoneNumber}
+                                fullWidth
                             />
                             {errorsPhonenumber.length > 0 &&
                                 <span className={classes.error}>{errorsPhonenumber}</span>}
@@ -418,8 +367,8 @@ const AddManager = (props) => {
                     <Grid xs={12} item container direction="column" >
                         <p className={classes.title}>Photo</p>
                         <Grid item container justify="flex-start">
-                            <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
-                            <label htmlFor="img_front">
+                            <input className={classes.input} type="file" id="img_front1" onChange={handleLoadFront} />
+                            <label htmlFor="img_front1">
                                 {
                                     avatarurl === '' ?
                                         <div className={classes.img}>

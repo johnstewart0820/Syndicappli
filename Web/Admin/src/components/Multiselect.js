@@ -11,12 +11,11 @@ const Multiselect = (props)=> {
     return (
       <div style={{width: props.width}}>
         <Select 
-          isClearable={true}
           options={props.all} 
           value={props.selected}
           components={animatedComponents} 
           onChange={handleChange}
-          isDisabled={props.disabled === true? true : null}
+          isDisabled={props.disabled === true? true : false}
           isMulti />
       </div>
     );
