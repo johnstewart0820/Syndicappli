@@ -86,7 +86,7 @@ function createOwner_info(uid, data) {
                                         } else {
                                             let saID = rows[0].userID
                                             for (let i in buildings) {
-                                                let query = `Insert into user_relationship r (userID, type, relationID) values(?, ?, ?)`
+                                                let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
                                                 await db.query(query, [saID, "building", buildings[i].buildingID], (error, result, fields) => {
                                                     if (error) {
                                                         reject({ message: message.INTERNAL_SERVER_ERROR });
