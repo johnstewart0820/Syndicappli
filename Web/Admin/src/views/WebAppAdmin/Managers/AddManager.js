@@ -34,6 +34,7 @@ const AddManager = (props) => {
     const [companyID, setCompanyID] = React.useState(-1);
     const [buildingList, setBuildingList] = React.useState([]);
     let buildingID1 = [];
+    const [buildings1, setBuildings1] = React.useState([])
     const [buildingsPermission, setBuildingsPermission] = React.useState(0);
     const [chatPermission, setChatPermission] = React.useState(0);
     const [ownersPermission, setOwnersPermission] = React.useState(0);
@@ -106,7 +107,7 @@ const AddManager = (props) => {
     };
     const handleChangeBuildings = async (val) => {
         if (val !== null) {
-            await globalActions.setMultiTags(val);
+            setBuildings1(val)
             buildingID1.splice(0, buildingID1.length)
             for (let i = 0; i < val.length; i++)
                 for (let j = 0; j < buildingList.length; j++)
@@ -163,7 +164,6 @@ const AddManager = (props) => {
         getCompanies();
     }, [companies]);
     useEffect(() => {
-        handleChangeBuildings([])
         getBuildings();
     }, [companyID])
     const getCompanies = () => {
@@ -351,7 +351,7 @@ const AddManager = (props) => {
                         <Grid item xs={3}><p className={classes.title}>Immeubles</p></Grid>
                         <Grid xs={9} item container alignItems="stretch">
                             <Multiselect
-                                selected={globalState.multi_tags}
+                                selected={buildings1}
                                 no={'No buildings found'}
                                 all={globalState.multi_suggestions}
                                 onSelected={handleChangeBuildings}
