@@ -60,34 +60,46 @@ function getProfile(uid) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function updateProfile(uid, data, file) {
+function updateProfile(uid, data, files) {
     return new Promise(async function(resolve, reject) {
-        var file_name = ""
-        if(file){
-            uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
-            file_name = uploadS3.Location
+        let photo_url = ""
+        let id_front = ""
+        let id_back = ""
+        if (files.avatar) {
+            uploadS3 = await s3Helper.uploadLogoS3(files.avatar[0], s3buckets.AVATAR)
+            photo_url = uploadS3.Location
+        }
+        if (files.id_card_front) {
+            uploadS3 = await s3Helper.uploadLogoS3(files.id_card_front[0], s3buckets.IDENTITY_IMAGE)
+            id_front = uploadS3.Location
+        }
+        if (files.id_card_back) {
+            uploadS3 = await s3Helper.uploadLogoS3(files.id_card_back[0], s3buckets.IDENTITY_IMAGE)
+            id_back = uploadS3.Location
         }
 
         if (data.new_password === "" || data.new_password === undefined) {
-            if (file_name === "") {
-                let query = 'UPDATE ' + table.USERS + ' SET lastname = ?, firstname = ?, email = ?, phone = ? WHERE userID = ?'
-                db.query(query, [ data.lastname, data.firstname, data.email, data.phone, uid], (error, rows, fields) => {
-                    if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR })
-                    } else {
-                        resolve(uid)
-                    }
-                })
-            } else {
-                let query = 'UPDATE ' + table.USERS + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, photo_url = ? WHERE userID = ?'
-                db.query(query, [ data.lastname, data.firstname, data.email, data.phone, file_name, uid], (error, rows, fields) => {
-                    if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR })
-                    } else {
-                        resolve(uid)
-                    }
-                })
-            }
+            getProfile(uid).then((profile) => {
+                if(profile){
+                    if (photo_url == "")
+                        photo_url = profile.photo_url
+                    if (id_front == "")
+                        id_front = profile.identity_card_front
+                    if (id_back == "")
+                        id_back = profile.identity_card_back
+
+                    let query = 'UPDATE ' + table.USERS + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, address = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ? WHERE userID = ?'
+                    db.query(query, [ data.lastname, data.firstname, data.email, data.phone, data.address, photo_url, id_front, id_back, uid], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            resolve(uid)
+                        }
+                    })
+                } else {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                }
+            })
         } else {
             getProfile(uid).then((profile) => {
                 if (profile) {
@@ -98,25 +110,22 @@ function updateProfile(uid, data, file) {
                             reject({ message: message.INVALID_PASSWORD })
                         } else {
                             if (result) {
-                                if (file_name === "") {
-                                    let query = 'UPDATE ' + table.USERS + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, password = ? WHERE userID = ?'
-                                    db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, uid ], (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                                        } else {
-                                            resolve(profile)
-                                        }
-                                    })
-                                } else {
-                                    let query = 'UPDATE ' + table.USERS + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, password = ?, photo_url = ? WHERE userID = ?'
-                                    db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, file_name, uid ], (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                                        } else {
-                                            resolve(profile)
-                                        }
-                                    })
-                                }
+                                if (photo_url == "")
+                                    photo_url = profile.photo_url
+                                if (id_front == "")
+                                    id_front = profile.identity_card_front
+                                if (id_back == "")
+                                    id_back = profile.identity_card_back
+
+                                let query = 'UPDATE ' + table.USERS + ' SET lastname = ?, firstname = ?, email = ?, phone = ?, password = ?, address = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ? WHERE userID = ?'
+                                db.query(query, [ data.lastname, data.firstname, data.email, data.phone, hash_new_password, data.address, photo_url, id_front, id_back, uid ], (error, rows, fields) => {
+                                    if (error) {
+                                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                                    } else {
+                                        resolve(profile)
+                                    }
+                                })
+
                             } else {
                                 reject({ message: message.INVALID_PASSWORD })
                             }

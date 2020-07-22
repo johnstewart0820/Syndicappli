@@ -21,7 +21,7 @@ var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
  * profile api
  */
 router.get('/profile', authMiddleware.checkToken, getProfile)
-router.post('/profile', authMiddleware.checkToken, upload.single('avatar'), updateProfile)
+router.post('/profile', authMiddleware.checkToken, upload.fields([{name: 'avatar', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateProfile)
 
 /**
  * Function that get profile data
@@ -52,11 +52,12 @@ function getProfile(req, res) {
 
 
 function updateProfile(req, res) {
+
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    let file = req.file
+    let files = req.files
     let data = req.body
-    ownerMobileService.updateProfile(userId, data, file, userdata).then((result)=>{
+    ownerMobileService.updateProfile(userId, data, files, userdata).then((result)=>{
         res.json(result)
     }).catch((err) => {
         res.json(err)

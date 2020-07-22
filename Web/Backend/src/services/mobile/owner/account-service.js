@@ -55,9 +55,9 @@ function getProfile(uid) {
  * @param   object authData
  * @return  json
  */
-function updateProfile(uid, data, file, userdata) {
+function updateProfile(uid, data, files, userdata) {
     return new Promise((resolve, reject) => {
-        ownerMobileModel.updateProfile(uid, data, file).then((data) => {
+        ownerMobileModel.updateProfile(uid, data, files).then((data) => {
             if (data) {
                 let token = jwt.sign({ uid: uid, userdata:userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
