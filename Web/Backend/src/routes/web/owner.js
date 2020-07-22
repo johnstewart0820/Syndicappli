@@ -27,7 +27,6 @@ var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
 router.post('/subAccountList', authMiddleware.checkToken, getOwnerList)
 router.post('/subAccount', authMiddleware.checkToken, createOwner)
 router.post('/subAccount/:id', authMiddleware.checkToken, getOwner)
-router.put('/subAccount/:id', authMiddleware.checkToken, updateOwner)
 router.delete('/subAccount/:id', authMiddleware.checkToken, deleteOwner)
 
 
@@ -96,27 +95,6 @@ function getOwner(req, res){
     })
 }
 
-/**
- * Function that update owner
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object req
- * @param   object res
- * @return  json
- */
-function updateOwner(req, res){
-
-    let userId = req.decoded.uid
-    let userdata = req.decoded.userdata
-    let data = req.body
-    let id = req.params.id;
-    let files = req.files
-    ownerService.updateOwner(userId, userdata, data, files, id).then((result) => {
-        res.json(result)
-    }).catch((err) => {
-        res.json(err)
-    })
-}
 
 /**
  * Function that delete owner

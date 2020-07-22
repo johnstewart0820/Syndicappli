@@ -21,7 +21,6 @@ var ownerService = {
     getOwnerList: getOwnerList,
     createOwner: createOwner,
     getOwner: getOwner,
-    updateOwner: updateOwner,
     deleteOwner: deleteOwner,
 }
 

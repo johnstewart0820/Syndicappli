@@ -15,8 +15,9 @@ dotenv.config()
  */
 const mail = {
     TYPE_FORGOT_PASSWORD: 1,
-
-    TITLE_FORGOT_PASSWORD: "Recovery your password"
+    TYPE_SUBACCOUNT_INVITE: 2,
+    TITLE_FORGOT_PASSWORD: "Recovery your password",
+    TITLE_SUBACCOUNT_INVITE: "You're invited as a subaccount"
 }
 
 module.exports = mail
