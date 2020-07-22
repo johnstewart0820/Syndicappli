@@ -68,7 +68,7 @@ const AddBuilding = (props) => {
     let cnt = 0;
     if (name.length === 0) { setErrorsName('please enter your name'); cnt++; }
     else setErrorsName('');
-    if (address.length === 0) { setErrorsAddress('please enter your first name'); cnt++; }
+    if (address.length === 0) { setErrorsAddress('please enter your address'); cnt++; }
     else setErrorsAddress('');
     if (count === 0) { setErrorsVote('please add a vote branch'); cnt++; }
     else setErrorsVote('');

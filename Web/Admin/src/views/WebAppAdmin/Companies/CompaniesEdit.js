@@ -256,7 +256,7 @@ const CompaniesEdit = (props) => {
   }
   const handleClickManagerEdit = (id) => {
     console.log(id);
-    history.push('/admin/buildings/edit/' + id);
+    history.push('/admin/companies/edit/' + id);
   }
   const handleChangeManagerSelect = (value) => {
     setManagerRowCount(managerSelectList[value]);

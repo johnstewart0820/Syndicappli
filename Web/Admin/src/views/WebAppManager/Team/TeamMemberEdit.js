@@ -75,8 +75,8 @@ const TeamMemberEdit = (props) => {
   const [buildings, setBuildings] = React.useState([]);
   useEffect(()=>{
     getCompanies();
-    getBuildings()
-  },[companyID]);
+  },[accessTeam]);
+
   const getCompanies = () => {
     setVisibleIndicator(true);
     ManagerService.getCompanyListByUser()
@@ -107,6 +107,9 @@ const TeamMemberEdit = (props) => {
         }
       );
   }
+  useEffect(()=>{
+    getBuildings()
+  },[companyID]);
   const getBuildings = () => {
     const requestData = {
       'companyID': companyID
@@ -126,8 +129,8 @@ const TeamMemberEdit = (props) => {
               )
               );
               // setBuilding(buildings1);
-              globalActions.setMultiSuggestions(buildings1);
               setBuildingList(data.buildinglist);
+              globalActions.setMultiSuggestions(buildings1);
               break;
             case 401:
               authService.logout();
@@ -144,10 +147,10 @@ const TeamMemberEdit = (props) => {
         }
       );
   }
+
   useEffect(()=>{
     getManager()
   },[buildingList])
-
   const getManager = ()=>{
     setVisibleIndicator(true);
     ManagerService.getTeamMember(props.match.params.id)
@@ -159,25 +162,6 @@ const TeamMemberEdit = (props) => {
             const data = response.data.data;
             localStorage.setItem("token", JSON.stringify(data.token));
             const profile = data.manager;
-
-            if(profile.status === 'active')
-              setSuspendState('Suspendre le compte');
-            else if(profile.status === 'inactive')
-              setSuspendState('Restaurer le compte');
-            let buildingID = [];
-            data.buildinglist.map((item, i) => (
-              buildingID[i] = item.relationID
-            )
-            );
-            let buildings1 = [];
-            for(let i = 0 ; i < buildingID.length; i++)
-              for(let j = 0; j < buildingList.length; j++)
-                if(buildingID[i] === buildingList[j].buildingID){
-                  buildings1[i] = {label:buildingList[j].name,value:buildingList[j].buildingID};
-                  break;
-                }
-                setBuildings(buildings1);
-            globalActions.setMultiID(buildingID);
             setLastName(profile.lastname);
             setFirstName(profile.firstname);
             setEmail(profile.email);
@@ -197,6 +181,24 @@ const TeamMemberEdit = (props) => {
             setProvidersPermission(role_permission.indexOf(profile.role_providers));
             setTeamPermission(role_permission.indexOf(profile.role_team));
             setApartNumber(profile.count);
+            if(profile.status === 'active')
+              setSuspendState('Suspendre le compte');
+            else if(profile.status === 'inactive')
+              setSuspendState('Restaurer le compte');
+            let buildingID = [];
+            data.buildinglist.map((item, i) => (
+              buildingID[i] = item.relationID
+            )
+            );
+            let buildings = [];
+            for(let i = 0 ; i < buildingID.length; i++)
+              for(let j = 0; j < buildingList.length; j++)
+                if(buildingID[i] === buildingList[j].buildingID){
+                  buildings[i] = {label:buildingList[j].name,value:buildingList[j].buildingID};
+                  break;
+                }
+            globalActions.setMultiTags(buildings);
+            globalActions.setMultiID(buildingID);
             break;
           case 401:
             authService.logout();
@@ -207,6 +209,7 @@ const TeamMemberEdit = (props) => {
             ToastsStore.error(response.data.message);
             globalActions.setMultiTags([]);
             globalActions.setMultiID([]);
+            
         }
       },
       error => {
@@ -217,9 +220,10 @@ const TeamMemberEdit = (props) => {
       }
     );
   }
-useEffect(()=>{
-  globalActions.setMultiTags(buildings);
-},[buildings])
+
+// useEffect(()=>{
+//   globalActions.setMultiTags(buildings);
+// },[buildings])
   const handleClick = () => {
     history.goBack();
   };
