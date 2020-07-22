@@ -266,7 +266,7 @@ function deleteBuilding(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    let data = req.params.data
+    let data = req.body
     buildingService.deleteBuilding(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
@@ -496,7 +496,7 @@ function deleteOwner(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    let data = req.params.data
+    let data = req.body
     ownerService.deleteOwner(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {

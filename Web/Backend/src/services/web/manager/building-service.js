@@ -66,15 +66,11 @@ function getBuildingList(uid, data, userdata) {
         authHelper.hasBuildingPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
             buildingModel.getManagerBuildingList(uid, data).then((buildingList) => {
                 if (buildingList) {
-                    buildingModel.getManagerCountBuildingList(uid, data).then((building_count) => {
-                        buildingModel.getManagerCompanyListByUser(uid).then((companyList) => {
-                            if (companyList) {
-                                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                                    expiresIn: timer.TOKEN_EXPIRATION
-                                })
-                                resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(building_count / Number(data.row_count)), 'buildinglist': buildingList, 'totalcount': building_count, 'companylist': companyList } })
-                            }
+                    buildingModel.getManagerCountBuildingList(uid, data).then((building_count) => {                        
+                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                            expiresIn: timer.TOKEN_EXPIRATION
                         })
+                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(building_count / Number(data.row_count)), 'buildinglist': buildingList, 'totalcount': building_count } })
                     })
                 }
             }).catch((err) => {

@@ -64,10 +64,8 @@ function getManagerBuildingList(uid, data) {
 
         query = `select b.*, 0 as total, b.buildingID as ID
                 from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                where c.permission = 'active' 
-                and b.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company') 
-                and b.permission = 'active' and (b.name like ?)`
+                where b.buildingID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'building') 
+                and b.permission = ? and (b.name like ?)`
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -81,12 +79,10 @@ function getManagerBuildingList(uid, data) {
             else if (sort_column === 1)
                 query += ' order by b.address ';
 
-            else if (sort_column === 2)
-                query += ' ';
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, [ uid, search_key ], (error, rows, fields) => {
+        db.query(query, [ uid, data.status, search_key ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -106,16 +102,14 @@ function getManagerBuildingList(uid, data) {
 function getManagerCountBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
         let query;
-        query = `select count(*) as count
-                from ` + table.BUILDINGS + ` b
-                left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
-                where c.permission = 'active' 
-                and b.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company') 
-                and b.permission = 'active' and (b.name like ?)`
+        query = `select count(*) count
+        from ` + table.BUILDINGS + ` b
+        where b.buildingID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'building') 
+        and b.permission = ? and (b.name like ?)`
 
         search_key = '%' + data.search_key + '%'
 
-        db.query(query, [ uid, search_key ], (error, rows, fields) => {
+        db.query(query, [ uid, data.status, search_key ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -197,7 +191,7 @@ function getManagerBuilding(uid, id) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                getCompanyListByUser(uid).then((result) => {
+                getManagerCompanyListByUser(uid).then((result) => {
                     db.query(vote_query, [id], (error, rows1, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR});

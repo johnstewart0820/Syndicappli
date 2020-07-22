@@ -45,14 +45,15 @@ function getOwnerList(uid, data) {
                     FROM users
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
+                    Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and companies.companyID = ? `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
         search_key = '%' + data.search_key + '%'
-        let params = [search_key];
+        let params = [search_key, data.status, data.companyID];
         if (data.role !== "all") {
             query += 'and users.owner_role = ? ';
             params.push(data.role)
@@ -61,6 +62,7 @@ function getOwnerList(uid, data) {
             query += ` and buildings.buildingID = ?`
             params.push(data.buildingID)
         }
+        
 
         if (sort_column === -1)
             query += ' order by users.userID desc';
@@ -107,9 +109,10 @@ function getCountOwnerList(uid, data) {
                     FROM users
                     LEFT JOIN user_relationship USING ( userID )
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
+                    Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = "active" `
-        let params = [search_key];
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and companies.companyID = ? `
+        let params = [search_key, data.status, data.companyID];
         if (data.role !== "all") {
             query += 'and users.owner_role = ? ';
             params.push(data.role)
@@ -119,7 +122,7 @@ function getCountOwnerList(uid, data) {
             query += ` and buildings.buildingID = ?`
             params.push(data.buildingID)
         }
-
+      
         search_key = '%' + data.search_key + '%'
 
         db.query(query, params, (error, rows, fields) => {
@@ -397,7 +400,7 @@ function delete_apartments(data, id) {
                         for (let i in apartments) {
                             let query = `Delete from ` + table.VOTE_AMOUNT_OF_PARTS + ` where apartmentID = ?`
                             db.query(query, [apartments[i].apartmentID], function (error, results, fields) {
-                                if (error ){
+                                if (error ){ 
                                     reject({ message: message.INTERNAL_SERVER_ERROR });
                                 }
                             })
@@ -464,27 +467,6 @@ function updateOwner(uid, data) {
 }
 
 /**
- * delete owner
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object authData
- * @return  object If success returns object else returns message
- */
-function deleteOwner(uid, id) {
-    return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.USERS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where userID = ?'
-  
-        db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
-            if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
-            } else {
-                resolve("ok")
-            }
-        })
-    })
-  }
-
-/**
  * update owner status
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
@@ -496,6 +478,27 @@ function updateOwnerStatus(id, data) {
         let query = 'UPDATE ' + table.USERS + ' SET  status = ? where userID = ?'
   
         db.query(query, [ data.status, id ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+  }
+
+/**
+ * delete owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteOwner(uid, id, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.USERS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where userID = ?'
+  
+        db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {

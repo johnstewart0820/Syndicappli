@@ -49,10 +49,10 @@ function getManagerList(uid, data) {
       LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
       WHERE
       u.firstname like ? and u.lastname like ? 
-      AND u.usertype = "manager" `
+      AND u.usertype = "manager" and c.companyID = ? `
       
       search_key = '%' + data.search_key + '%'
-      let params = [ data.status, search_key, search_key];
+      let params = [ data.status, search_key, search_key, data.companyID];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
@@ -109,10 +109,10 @@ function getCountManagerList(uid, data) {
       LEFT JOIN (select count(*) count, buildingID, permission from apartments where permission = "active" group by buildingID) a ON b.buildingID = a.buildingID 
       WHERE
       u.firstname like ? and u.lastname like ?
-      AND u.usertype = "manager" `
+      AND u.usertype = "manager" and c.companyID = ? `
       
       search_key = '%' + data.search_key + '%'
-      let params = [ data.status, search_key, search_key];
+      let params = [ data.status, search_key, search_key, data.companyID];
       if (data.buildingID != -1) {
         query += ` and b.buildingID = ?`
         params.push(data.buildingID)
