@@ -118,6 +118,8 @@ function updateProfile(req, res) {
 function getCompany(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
+    console.log('userdata:', userdata)
+    console.log('uid:', userId)
 
     adminService.getCompany(userId, userdata).then((result) => {
         res.json(result)
