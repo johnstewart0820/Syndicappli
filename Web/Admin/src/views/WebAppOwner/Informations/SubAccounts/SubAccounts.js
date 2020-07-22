@@ -152,28 +152,26 @@ const SubAccounts = (props) => {
   //   window.location.reload();
   // }
   const classes = useStyles();
-  const [ownerTitle, setOwnerTitle] = React.useState(0);
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
-  const [companyname, setCompanyName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [mobile, setMobile] = React.useState('');
 
-  const [errorsOwnerTitle, setErrorsOwnerTitle] = React.useState('');
   const [errorsLastName, setErrorsLastName] = React.useState('');
   const [errorsFirstName, setErrorsFirstName] = React.useState('');
-  const [errorsCompanyName, setErrorsCompanyName] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsMobile, setErrorsMobile] = React.useState('');
 
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const titleList = ['', 'Mr', 'Mrs', 'Company'];
 
   const [dataList, setDataList] = useState([]);
   const [openDelete, setOpenDelete] = React.useState(false);
 
   const [deleteId, setDeleteId] = useState(-1);
 
+  useEffect(() => {
+    getOwners();
+  }, [])
   const handleChangeLastName = (event) => {
     setLastName(event.target.value);
   }
@@ -192,17 +190,118 @@ const SubAccounts = (props) => {
   const handleChangeMobile = (event) => {
     setMobile(event.target.value);
   }
-  const handleChangeCompanyName = (event) => {
-    setCompanyName(event.target.value);
+  const handleClickViewDetails = (id) => {
+    setVisibleIndicator(true);
+    OwnerService.getOwner(id, {})
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (data.owner.lastname)
+                setLastName(data.owner.lastname);
+              else
+                setLastName('');
+              if (data.owner.firstname)
+                setFirstName(data.owner.firstname);
+              else
+                setFirstName('');
+              if (data.owner.email)
+                setEmail(data.owner.email);
+              else
+                setEmail('');
+              if (data.owner.phone)
+                setMobile(data.owner.phone);
+              else
+                setMobile('');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
-  const handleChangeOwnerTitle = (value) => {
-    setOwnerTitle(value);
+  const handleClickResend = (id) => {
+    let requestdata = {};
+    OwnerService.getOwner(id, {})
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (data.owner.lastname)
+                requestdata['lastname'] = data.owner.lastname;
+              else
+                requestdata['lastname'] = '';
+              if (data.owner.firstname)
+                requestdata['email'] = data.owner.firstname;
+              else
+                requestdata['firstname'] = '';
+              if (data.owner.email)
+                requestdata['email'] = data.owner.email;
+              else
+                requestdata['email'] = '';
+              if (data.owner.phone)
+                requestdata['phone'] = data.owner.phone;
+              else
+                requestdata['phone'] = '';
+              resendInvite(id,requestdata);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
-  const handleClickViewDetails = () => {
-
-  }
-  const handleClickResend = () => {
-
+  const resendInvite = (id,requestdata) => {
+    setVisibleIndicator(true);
+    OwnerService.reinviteOwner(id,requestdata)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Invited New Owner successfully!");
+              getOwners();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
   const handleClickDelete = (id) => {
     setOpenDelete(true);
@@ -243,14 +342,10 @@ const SubAccounts = (props) => {
   };
   const onClickInvite = () => {
     let cnt = 0;
-    if (ownerTitle.length === 0) { setErrorsOwnerTitle('please enter select your owner title'); cnt++; }
-    else setErrorsOwnerTitle('');
     if (lastname.length === 0) { setErrorsLastName('please enter your last name'); cnt++; }
     else setErrorsLastName('');
     if (firstname.length === 0) { setErrorsFirstName('please enter your first name'); cnt++; }
     else setErrorsFirstName('');
-    if (ownerTitle === 3 && companyname.length === 0) { setErrorsCompanyName('please enter your company name'); cnt++; }
-    else setErrorsCompanyName('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
     if (mobile.length === 0) { setErrorsMobile('please enter your mobile number'); cnt++; }
@@ -261,9 +356,8 @@ const SubAccounts = (props) => {
     let data = {
       'firstname': firstname,
       'lastname': lastname,
-      'ownertype': titleList[ownerTitle],
       'email': email,
-      'mobile': mobile
+      'phone': mobile
     }
     setVisibleIndicator(true);
     OwnerService.createOwner(data)
@@ -274,7 +368,7 @@ const SubAccounts = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              ToastsStore.success("Invited New Owner successfully!");
+              ToastsStore.success("Resent Invite successfully!");
               getOwners();
               break;
             case 401:
@@ -341,17 +435,9 @@ const SubAccounts = (props) => {
       }
       <div className={classes.root}>
         <div className={classes.title}>
-          <Grid item container justify="space-around">
-            <Grid item xs={6} container justify="flex-start" >
-              <Grid item>
-                <Typography variant="h2" className={classes.headerTitle}>
-                  <b>Sous comptes</b>
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid item xs={6} container justify="flex-end" >
-            </Grid>
-          </Grid>
+          <Typography variant="h2" className={classes.headerTitle}>
+            <b>Sous comptes</b>
+          </Typography>
         </div>
         <div className={classes.tool}>
           <Grid xs={12} sm={8} md={8} lg={8} xl={6} item container>
@@ -361,92 +447,55 @@ const SubAccounts = (props) => {
           </Grid>
         </div>
         <div className={classes.body}>
-          <Grid item container xs={12} sm={8} md={8} lg={8} xl={6} justify="flex-start" direction="column" spacing={4}>
+          <Grid item container xs={12} sm={6} md={6} lg={5} xl={4} justify="flex-start" direction="column" spacing={4}>
             <Grid item></Grid>
+
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.title}>Civilité</p></Grid>
-              <Grid xs item container direction="column">
-                <MySelect
-                  color="gray"
-                  data={titleList}
-                  onChangeSelect={handleChangeOwnerTitle}
-                  value={ownerTitle}
-                  width="50%"
+              <Grid xs={2} item><p className={classes.backTitle}>Nom</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={lastname}
+                  onChange={handleChangeLastName}
+                  fullWidth
                 />
-                {errorsOwnerTitle.length > 0 &&
-                  <span className={classes.error}>{errorsOwnerTitle}</span>}
-              </Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.backTitle}>Nom</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField
-                    variant="outlined"
-                    value={lastname}
-                    onChange={handleChangeLastName}
-                  />
-                </Grid>
                 {errorsLastName.length > 0 &&
                   <span className={classes.error}>{errorsLastName}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.backTitle}>Prénom</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField
-                    variant="outlined"
-                    value={firstname}
-                    onChange={handleChangeFirstName}
-                  />
-                </Grid>
+              <Grid xs={2} item><p className={classes.backTitle}>Prénom</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={firstname}
+                  onChange={handleChangeFirstName}
+                  fullWidth
+                />
                 {errorsFirstName.length > 0 &&
                   <span className={classes.error}>{errorsFirstName}</span>}
               </Grid>
             </Grid>
-            {
-              ownerTitle === '3' ?
-                <Grid item container alignItems="center" spacing={1} >
-                  <Grid item><p className={classes.backTitle}>Cabinet Nom</p></Grid>
-                  <Grid xs item container alignItems="stretch" direction="column">
-                    <Grid item>
-                      <TextField
-                        variant="outlined"
-                        value={companyname}
-                        onChange={handleChangeCompanyName}
-                      />
-                    </Grid>
-                    {errorsCompanyName.length > 0 &&
-                      <span className={classes.error}>{errorsCompanyName}</span>}
-                  </Grid>
-                </Grid>
-                : <div />
-            }
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.backTitle}>Email</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField
-                    variant="outlined"
-                    value={email}
-                    onChange={handleChangeEmail}
-                  />
-                </Grid>
+              <Grid xs={2} item><p className={classes.backTitle}>Email</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={email}
+                  onChange={handleChangeEmail}
+                />
                 {errorsEmail.length > 0 &&
                   <span className={classes.error}>{errorsEmail}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.backTitle}>Mobile</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField
-                    variant="outlined"
-                    value={mobile}
-                    onChange={handleChangeMobile}
-                  />
-                </Grid>
+              <Grid xs={2} item><p className={classes.backTitle}>Mobile</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={mobile}
+                  onChange={handleChangeMobile}
+                />
                 {errorsMobile.length > 0 &&
                   <span className={classes.error}>{errorsMobile}</span>}
               </Grid>
@@ -457,7 +506,7 @@ const SubAccounts = (props) => {
           </Grid>
           <SubAccountsTable
             items={dataList}
-            onClikDelete={handleClickDelete}
+            onClickDelete={handleClickDelete}
             onClickViewDetails={handleClickViewDetails}
             onClickResend={handleClickResend}
           />

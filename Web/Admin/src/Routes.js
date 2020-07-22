@@ -59,6 +59,7 @@ import OwnerMyAccount from './views/WebAppOwner/Informations/MyAccount';
 import OwnerSubAccounts from './views/WebAppOwner/Informations/SubAccounts';
 import OwnerHelp from 'views/WebAppOwner/Help';
 import OwnerAddonsPayment from './views/WebAppOwner/Addons/ModulePayment';
+import AcceptInvitation from 'views/WebAppOwner/Informations/SubAccounts/AcceptInvitation';
 const Routes = () => {
   return (
     <Switch>
@@ -284,7 +285,12 @@ const Routes = () => {
         layout={MainLayout}
         path="/owner/help"
       />
-
+      <RouteWithLayout
+        component={AcceptInvitation}
+        exact
+        layout={NormalLayout}
+        path="/invitation"
+      />
 
 {/** 
  * MANAGER PART

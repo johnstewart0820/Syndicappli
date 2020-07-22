@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
-// const API_URL = "http://192.168.105.38:3001/api/";
+// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
+const API_URL = "http://192.168.105.41:3001/api/";
 class AdminService {
   //Login
   login(data) {
@@ -187,6 +187,12 @@ export class OwnerService {
   deleteOwner(id) {
     return axios.delete(API_URL + 'web/owner/subAccount/' + id, { headers: authHeader() });
   }
+  reinviteOwner(id,data){
+    return axios.post(API_URL + 'web/owner/subAccount/' + id + '/reinvite', data, { headers: authHeader() });
+  }
+  acceptInvitation(data) {
+    return axios.post(API_URL + 'web/owner/invitation', data, {});
+  }
 }
 
 export class ManagerService {
@@ -246,6 +252,10 @@ export class ManagerService {
   }
   getOwner(id, data) {
     return axios.post(API_URL + 'web/manager/owner/' + id, data, { headers: authHeader() });
+  }
+  setSuspendOwner(id, data) {
+    return axios.put(API_URL + 'web/manager/owner/' + id + '/status', data,
+      { headers: authHeader() });
   }
   deleteOwner(id, status) {
     return axios.post(API_URL + 'web/manager/owner/' + id + '/delete', status, { headers: authHeader() });
