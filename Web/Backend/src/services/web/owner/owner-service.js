@@ -138,7 +138,7 @@ function deleteOwner(uid, id, userdata) {
  */
 function acceptInvitation(data) {
     return new Promise((resolve, reject) => {
-            ownerModel.acceptInvitation(data).then((result) => {
+            ownerModel.acceptInvitation(data.token).then((result) => {
                 resolve({ code: code.OK, message: message.SUBACCOUNT_HAS_BEEN_UPDATED_STATUS, data: {} })
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)

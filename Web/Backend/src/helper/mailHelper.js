@@ -27,7 +27,7 @@ function sendMail(title, email, type, token, randomToken) {
                 pass: process.env.EMAIL_PWD
             }
         });
-        const data = {}
+        let data = {}
         if(type == emailType.TYPE_FORGOT_PASSWORD){
             data = {
                 from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
@@ -40,7 +40,7 @@ function sendMail(title, email, type, token, randomToken) {
                 from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
                 to: email,
                 subject: title,
-                html: `${emailContent.body}` + `${emailContent.url}` + `${emailContent.body1}` + `${randomToken}` + `${emailContent.body2}`
+                html: `${emailContent.body}` + `${emailContent.url}` + `${randomToken}` + `${emailContent.body1}` + `${token}` + `${emailContent.body2}`
             }
         }
         

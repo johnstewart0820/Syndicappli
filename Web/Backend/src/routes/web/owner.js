@@ -176,6 +176,7 @@ function deleteOwner(req, res) {
  */
 function acceptInvitation(req, res) {
     let data = req.body
+    console.log("data:", data)
     ownerService.acceptInvitation(data).then((result) => {
         res.json(result)
     }).catch((err) => {
