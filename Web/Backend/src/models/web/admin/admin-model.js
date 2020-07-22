@@ -44,17 +44,21 @@ function getProfile(uid) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                db.query(query_role, [ uid ], (error, rows_role, fields) => {
-                    if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR })
-                    } else {
-                        let response = rows[0]
-                        for (var i = 0 ; i < rows_role.length ; i++ ) {
-                            response[rows_role[i].role_name] = rows_role[i].permission
+                if (rows.length == 0) {
+                    reject({ message: message.USER_DELETED })
+                } else {
+                    db.query(query_role, [ uid ], (error, rows_role, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            let response = rows[0]
+                            for (var i = 0 ; i < rows_role.length ; i++ ) {
+                                response[rows_role[i].role_name] = rows_role[i].permission
+                            }
+                            resolve(response)
                         }
-                        resolve(response)
-                    }
-                })
+                    })
+                }
             }
         })
     })

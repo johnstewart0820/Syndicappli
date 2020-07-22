@@ -23,6 +23,7 @@ const messages = {
     EXPIRED_SMS_CODE: 'Your SMS Code is Expired, Please try again.',
     EXPIRED_TOKEN_CODE: 'Your Token is Expired, Please try again.',
     USER_EMAIL_DUPLICATED: 'Sorry, this user already exists.',
+    USER_DELETED: 'Sorry, this user is deleted.',
     EMIL_IS_NOT_EXIST: 'Your email Address is not exist or not authorized recipients.',
     INVALID_TOKEN: 'Invalid TOKEN to reset your password, Please try again.',
     ACCOUNT_NOT_EXIST: 'The account does not exist.',
