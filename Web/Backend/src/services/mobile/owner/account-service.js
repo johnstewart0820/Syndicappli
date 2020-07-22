@@ -9,7 +9,7 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var ownerMobileModel = require('../../../models/mobile/owner-model')
+var accountModel = require('../../../models/mobile/owner/account-model')
 var jwt = require('jsonwebtoken')
 var message = require('../../../constants/message')
 var code = require('../../../constants/code')
@@ -31,7 +31,7 @@ var webService = {
 
 function getProfile(uid) {
     return new Promise((resolve, reject) => {
-        ownerMobileModel.getProfile(uid).then((data) => {
+        accountModel.getProfile(uid).then((data) => {
             if (data) {
                 let token = jwt.sign({ uid: data.userID, userdata: data }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
@@ -57,7 +57,7 @@ function getProfile(uid) {
  */
 function updateProfile(uid, data, files, userdata) {
     return new Promise((resolve, reject) => {
-        ownerMobileModel.updateProfile(uid, data, files).then((data) => {
+        accountModel.updateProfile(uid, data, files).then((data) => {
             if (data) {
                 let token = jwt.sign({ uid: uid, userdata:userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
