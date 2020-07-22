@@ -26,7 +26,8 @@ var ownerModel = {
     createOwner_info: createOwner_info,
     getOwner: getOwner,
     deleteOwner: deleteOwner,
-    acceptInvitation: acceptInvitation
+    acceptInvitation: acceptInvitation,
+    reinviteOwner: reinviteOwner
 }
 
 /**
@@ -136,7 +137,7 @@ function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
         let query = 'Select * from users where userID = ?'
         
-        db.query(query, [ id, data.buildingID],   (error, rows, fields) => {
+        db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -211,4 +212,50 @@ function acceptInvitation(token) {
         })        
     })
   }
+
+/**
+ * resend email
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function reinviteOwner(id) {
+    return new Promise((resolve, reject) => {
+        let query = 'Select * from users where userID = ?'
+        
+        db.query(query, [ id ],   (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if (rows.length == 0) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                    let email = rows[0].email
+                    let randomPassword = randtoken.generate(15);
+                    let randomToken = randtoken.generate(50);
+                    let password = bcrypt.hashSync(randomPassword)
+                    let query = `Update ` + table.USERS + ` Set password = ?, updated_at = ?, token = ? where email = ?`
+                    db.query(query, [password, timeHelper.getCurrentTime(), randomToken, email], function (error, rows, fields)  {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword, randomToken)
+                            .then((response) => {
+                                resolve("OK")
+                            })
+                            .catch((err) => {
+                                if(err.message.statusCode == code.BAD_REQUEST){
+                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                } else {
+                                    reject({ message: err.message })
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        })
+    })
+}
 module.exports = ownerModel
