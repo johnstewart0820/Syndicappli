@@ -158,8 +158,7 @@ function deleteOwner(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    let data = req.body
-    ownerService.deleteOwner(userId, id, userdata, data).then((result) => {
+    ownerService.deleteOwner(userId, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

@@ -105,7 +105,7 @@ function getOwner(uid, userdata ,data, id) {
  * @param   object authData
  * @return  json
  */
-function deleteOwner(uid, id, userdata, data) {
+function deleteOwner(uid, id, userdata) {
     return new Promise((resolve, reject) => {
         ownerModel.deleteOwner(uid, id).then((result) => {
             if (result) {
