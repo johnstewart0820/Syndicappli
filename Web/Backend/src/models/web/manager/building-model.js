@@ -148,7 +148,7 @@ function managerCreateBuilding(uid, data) {
                                     if(rows.length > 0){
                                         let buildingID = rows[0] .buildingID
                                         let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) values (?, ?, ?)`
-                                        db.query(query, [rows[0].userID, "building", buildingID], (error, rows, fields) => {
+                                        db.query(query, [uid, "building", buildingID], (error, rows, fields) => {
                                             if (error) {
                                                 reject({ message: message.INTERNAL_SERVER_ERROR });
                                             } else {
