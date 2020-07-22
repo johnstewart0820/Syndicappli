@@ -57,13 +57,11 @@ function getOwnerList(uid, userdata ,data) {
  */
 function createOwner(uid, userdata ,data) {
     return new Promise((resolve, reject) => {
-        ownerModel.createOwner_info(uid, data).then((response) => {
-            ownerModel.createBuildingRelationShip(data).then((response) => {
-                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                    expiresIn: timer.TOKEN_EXPIRATION
-                })
-                resolve({ code: code.OK, message: '', data: { 'token': token} })
+        ownerModel.createOwner_info(uid, data).then((response) => {            
+            let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                expiresIn: timer.TOKEN_EXPIRATION
             })
+            resolve({ code: code.OK, message: '', data: { 'token': token} })
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)
                 reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
@@ -82,57 +80,24 @@ function createOwner(uid, userdata ,data) {
  */
 function getOwner(uid, userdata ,data, id) {
     return new Promise((resolve, reject) => {
-        authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
-            ownerModel.getOwner(uid, data, id).then((owner) => {
-                if (owner) {
-                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                            expiresIn: timer.TOKEN_EXPIRATION
-                        })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'owner': owner} })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        ownerModel.getOwner(uid, data, id).then((owner) => {
+            if (owner) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+                    resolve({ code: code.OK, message: '', data: { 'token': token, 'owner': owner} })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
         })
+        
     })
 }
 
-/**
- * Function that update owner
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object authData
- * @return  json
- */
-function updateOwner(uid, userdata ,data, files, id) {
-    return new Promise((resolve, reject) => {
-        authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            ownerModel.updateOwner_info(id, data, files).then((response) => {
-                ownerModel.delete_apartments(data, id).then((response) => {
-                    ownerModel.createOwner(uid, data, id).then((response) => {
-                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                            expiresIn: timer.TOKEN_EXPIRATION
-                        })
-                        resolve({ code: code.OK, message: '', data: { 'token': token} })
-                    })
-                })
-                
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
-        })
-    })
-}
+
 
 /**
  * Function that delete Owner data
@@ -143,24 +108,21 @@ function updateOwner(uid, userdata ,data, files, id) {
  */
 function deleteOwner(uid, id, userdata, data) {
     return new Promise((resolve, reject) => {
-        authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            ownerModel.deleteOwner(uid, id).then((result) => {
-                if (result) {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
+        ownerModel.deleteOwner(uid, id).then((result) => {
+            if (result) {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
 
-                    resolve({ code: code.OK, message: '', data: { 'token': token } })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+                resolve({ code: code.OK, message: '', data: { 'token': token } })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
         })
+        
     })
 }
 module.exports = ownerService

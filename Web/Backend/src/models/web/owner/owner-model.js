@@ -226,10 +226,8 @@ function createOwner(uid, data, ownerID) {
  */
 function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select *, users.type usertype, users.email email, users.phone phone, users.address address from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
-        let ownerInfo;
-        let vote_amount_info;
-        let apartment_info;
+        let query = 'Select * from users where userID = ?'
+        
         db.query(query, [ id, data.buildingID],   (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -237,24 +235,7 @@ function getOwner(uid, data, id) {
                 if (rows.length == 0) {
                     reject({ message: message.INTERNAL_SERVER_ERROR })
                 } else {
-                    ownerInfo = rows[0];
-                    let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) where b.buildingID = ? and a.userID = ?'
-                    db.query(query, [data.buildingID, id], (error, rows, fields) => {
-                        if (error) {
-                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                        } else {
-                            apartment_info = rows;
-                            let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) left join ' + table.VOTE_AMOUNT_OF_PARTS + ' va using (apartmentID) left join ' + table.VOTE_BUILDING_BRANCH + ' vb using(voteID) where b.buildingID = ? and a.userID = ? and vb.buildingID = ?'
-                            db.query(query, [data.buildingID, id, data.buildingID],  (error, rows, fields) => {
-                                if (error) {
-                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                } else {
-                                    vote_amount_info = rows;
-                                    resolve({ownerInfo: ownerInfo, amount_info: vote_amount_info, apartment_info: apartment_info});
-                                }
-                            })
-                        }
-                    })
+                    resolve(rows[0]);
                 }
             }
         })
@@ -417,9 +398,9 @@ function updateOwner(uid, data) {
  */
 function deleteOwner(uid, id) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.USERS + ' SET  permission = "trash", deleted_by = ?, deleted_at = ? where userID = ?'
+        let query = 'Delete from ' + table.USERS + ' where userID = ?'
   
-        db.query(query, [ uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+        db.query(query, [ id ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
