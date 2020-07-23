@@ -242,7 +242,7 @@ const Topbar = props => {
       <div className={classes.row}>
         <SearchInput
           className={classes.searchInput}
-          placeholder="Search product"
+          placeholder="Rechercher..."
         />
       </div>
         <IconButton color="inherit" >
