@@ -166,7 +166,7 @@ function createCompany(uid, data, file) {
 function updateCompany(companyID, uid, data, file) {
     return new Promise((resolve, reject) => {
         let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ? and companyID != ?';
-        let query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, account_holdername = ?, account_address = ?, account_IBAN = ?, logo_url = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
+        
         db.query(confirm_query, [data.email, companyID], async function (error, rows, fields) {
             if(error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})
@@ -179,8 +179,16 @@ function updateCompany(companyID, uid, data, file) {
                         uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.COMPANY_LOGO)
                         file_name = uploadS3.Location
                     }
-
-                    db.query(query, [data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), companyID], (error, rows, fields) => {
+                    let query
+                    let params = []
+                    if (file_name == "") {
+                        query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, account_holdername = ?, account_address = ?, account_IBAN = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
+                        params = [data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), companyID]
+                    } else {
+                        query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, account_holdername = ?, account_address = ?, account_IBAN = ?, logo_url = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
+                        params = [data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), companyID]
+                    }
+                    db.query(query, params, (error, rows, fields) => {
                         if (error) {
                             reject({message: message.INTERNAL_SERVER_ERROR})
                         } else {
