@@ -45,7 +45,10 @@ function getManagerCompanyListByUser(uid) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows);
+                if (rows.length > 0)
+                    resolve(rows[0])
+                else
+                    resolve(rows);
             }
         })
     })
@@ -150,6 +153,7 @@ function managerCreateBuilding(uid, data) {
                                         let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) values (?, ?, ?)`
                                         db.query(query, [uid, "building", buildingID], (error, rows, fields) => {
                                             if (error) {
+                                                console.log(error)
                                                 reject({ message: message.INTERNAL_SERVER_ERROR });
                                             } else {
                                                 query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
