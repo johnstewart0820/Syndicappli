@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { AppBar, Toolbar, Badge, Hidden, IconButton, Button, Avatar, ListItemIcon, ListItemText } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
-import SearchBar from 'material-ui-search-bar'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
@@ -15,10 +13,11 @@ import Divider from '@material-ui/core/Divider';
 import authService from 'services/authService';
 import useGlobal from 'Global/global';
 import AdminService from 'services/api.js';
-
+import { SearchInput } from 'components';
 const useStyles = makeStyles(theme => ({
   root: {
     boxShadow: 'none',
+    display:'flex',
     [theme.breakpoints.up('lg')]: {
       width: 'calc(100% - 233px)',
       height: '146px'
@@ -43,55 +42,6 @@ const useStyles = makeStyles(theme => ({
         fontSize: 10
       },
     },
-    '& .MuiInputBase-input':{
-      textAlign:'left'
-    },  
-    '& .MuiIconButton-root':{
-      padding : 0,
-      // margin:0
-
-    },
-    '& .SearchBar-searchIconButton-18':{
-      [theme.breakpoints.up('xl')]: {
-        marginRight: -18
-      },
-      [theme.breakpoints.down('lg')]: {
-        marginRight: -13
-      },
-      [theme.breakpoints.down('md')]: {
-        marginRight: -9
-      },
-    },
-    '& .SearchBar-icon-19':{
-      [theme.breakpoints.up('xl')]: {
-        width: 34,
-        height: 34,
-      },
-      [theme.breakpoints.down('lg')]: {
-        width: 24,
-        height: 24,
-      },
-      [theme.breakpoints.down('md')]: {
-        width: 17,
-        height: 17,
-      },
-    },
-    '& .SearchBar-searchContainer-21':{
-        display:'flex',
-        width: '100%',
-        [theme.breakpoints.up('xl')]: {
-          marginLeft: 18,
-          marginRight: 18
-        },
-        [theme.breakpoints.down('lg')]: {
-          marginLeft: 13,
-          marginRight: 13
-        },
-        [theme.breakpoints.down('md')]: {
-          marginLeft: 9,
-          marginRight: 9
-        },
-    },
   },
   paper: {
     '& .MuiInputBase-root': {
@@ -115,25 +65,6 @@ const useStyles = makeStyles(theme => ({
   },
   alertButton: {
     color: 'lightgrey',
-  },
-  searchBar: {
-    [theme.breakpoints.up('xl')]: {
-      borderRadius: 50,
-      height: 50,
-      width: 308,
-    },
-    [theme.breakpoints.down('lg')]: {
-      borderRadius: 35,
-      height: 35,
-      width: 215,
-    },
-    [theme.breakpoints.down('md')]: {
-      borderRadius: 25,
-      height: 25,
-      width: 151,
-    },
-    marginRight: theme.spacing(2),
-    boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
   },
   avatar: {
 
@@ -209,7 +140,31 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       marginTop:45,
     },
-  }
+  },
+  searchInput: {
+    [theme.breakpoints.up('xl')]: {
+      borderRadius: 50,
+      height: 50,
+      width: 308,
+    },
+    [theme.breakpoints.down('lg')]: {
+      borderRadius: 35,
+      height: 35,
+      width: 215,
+    },
+    [theme.breakpoints.down('md')]: {
+      borderRadius: 25,
+      height: 25,
+      width: 151,
+    },
+    marginRight: theme.spacing(2),
+    boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
+  },
+  row: {
+    height: '42px',
+    display: 'flex',
+    alignItems: 'center',
+  },
 }));
 
 const Topbar = props => {
@@ -277,13 +232,19 @@ const Topbar = props => {
           </IconButton>
         </Hidden>
         <div className={classes.flexGrow} />
-        <SearchBar
+        {/* <SearchBar
           className={classes.searchBar}
           onChange={handleChange}
           value={value}
           placeholder="Rechercher..."
           onRequestSearch={() => console.log('onRequestSearch')}
+        /> */}
+      <div className={classes.row}>
+        <SearchInput
+          className={classes.searchInput}
+          placeholder="Search product"
         />
+      </div>
         <IconButton color="inherit" >
           <Badge
             className={classes.alertButton}

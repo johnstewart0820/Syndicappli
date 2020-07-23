@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   },
   icon: {
     marginRight: theme.spacing(1),
-    color: theme.palette.text.secondary
+    color: '#b9b9b9'
   },
   input: {
     flexGrow: 1,
