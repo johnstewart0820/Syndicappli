@@ -16,6 +16,10 @@ var table  = require('../../../constants/table')
 const s3Helper = require('../../../helper/s3helper')
 const s3buckets = require('../../../constants/s3buckets')
 const timeHelper = require('../../../helper/timeHelper')
+const {sendMail} = require('../../../helper/mailHelper')
+var mail = require('../../../constants/mail')
+var randtoken = require('rand-token');
+var code = require('../../../constants/code')
 
 var ownerModel = {
     getOwnerList: getOwnerList,
@@ -174,13 +178,25 @@ function createOwner_info(uid, data, files) {
                     }
                   
 
-                    let password = bcrypt.hashSync("123456")
+                    let randomPassword = randtoken.generate(15);
+                    let randomToken = randtoken.generate(50);
+                    let password = bcrypt.hashSync(randomPassword)
                     let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
                     db.query(query, ["owner", data.type, data.owner_role, data.firstname, data.lastname, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            resolve("ok")
+                            sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
+                            .then((response) => {
+                                resolve("OK")
+                            })
+                            .catch((err) => {
+                                if(err.message.statusCode == code.BAD_REQUEST){
+                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                } else {
+                                    reject({ message: err.message })
+                                }
+                            })
                         }
                     })
                 } else {

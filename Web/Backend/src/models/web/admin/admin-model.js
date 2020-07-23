@@ -16,6 +16,10 @@ var table  = require('../../../constants/table')
 const s3Helper = require('../../../helper/s3helper')
 const s3buckets = require('../../../constants/s3buckets')
 const timeHelper = require('../../../helper/timeHelper')
+const {sendMail} = require('../../../helper/mailHelper')
+var mail = require('../../../constants/mail')
+var randtoken = require('rand-token');
+var code = require('../../../constants/code')
 
 var adminModel = {
     getProfile: getProfile,
@@ -249,7 +253,9 @@ function createUserInfo(uid, data, file) {
             file_name = uploadS3.Location
         }
     
-        let password = bcrypt.hashSync("123456")
+        let randomPassword = randtoken.generate(15);
+        let randomToken = randtoken.generate(50);
+        let password = bcrypt.hashSync(randomPassword)
         let query
         let params = []
         if (file_name == "") {
@@ -289,7 +295,17 @@ function createUserInfo(uid, data, file) {
                                     if (error) {
                                         reject({ message: message.INTERNAL_SERVER_ERROR })
                                     } else {
-                                        resolve("ok");
+                                        sendMail(mail.TITLE_ADMIN_CREATE, data.email, mail.TYPE_ADMIN_CREATE, randomPassword, randomToken)
+                                            .then((response) => {
+                                                resolve("OK")
+                                            })
+                                            .catch((err) => {
+                                                if(err.message.statusCode == code.BAD_REQUEST){
+                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                                } else {
+                                                    reject({ message: err.message })
+                                                }
+                                            })
                                     }
                                 })
                             }
