@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
 import authService from '../../../../../../services/authService';
 import { withRouter } from 'react-router-dom';
 
@@ -47,16 +46,16 @@ const useStyles = makeStyles(theme => ({
   media: {
     color: 'white',
     [theme.breakpoints.up('xl')]: {
-      height: 30,
-      width: 30
+      height: 23,
+      width: 23
     },
     [theme.breakpoints.between('lg','lg')]: {
-      height: 21,
-      width: 21,
+      height: 16,
+      width: 16,
     },
     [theme.breakpoints.down('md')]: {
-      height: 15,
-      width: 15,
+      height: 11,
+      width: 11,
     },
     textAlign: 'flex-start',
     '& > img': {
@@ -104,7 +103,7 @@ const UpgradePlan = props => {
       className={clsx(classes.root, className)}
     >
       <div className={classes.medias}>
-        <SentimentSatisfiedIcon className={classes.media} />
+        <img className={classes.media} src='/images/smile.png'/>
       </div>
       <div className={classes.content}>
 

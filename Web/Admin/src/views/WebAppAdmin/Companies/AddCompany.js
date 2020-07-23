@@ -315,7 +315,7 @@ const AddCompany = (props) => {
                     <Grid xs={12} item container direction="column" spacing={2}>
                         <Grid item><p className={classes.title}>Logo</p></Grid>
                         <Grid item container justify="flex-start">
-                            <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                            <input className={classes.input} type="file" id="img_front" accept="image/*" onChange={handleLoadFront} />
                             <label htmlFor="img_front">
                                 {
                                     avatarurl === '' ?

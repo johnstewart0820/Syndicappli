@@ -94,7 +94,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   paper: {
-    backgroundColor: 'red',
     '& .MuiInputBase-root': {
       [theme.breakpoints.up('xl')]: {
         fontSize: 20
@@ -118,7 +117,6 @@ const useStyles = makeStyles(theme => ({
     color: 'lightgrey',
   },
   searchBar: {
-    direction:'rtl',
     [theme.breakpoints.up('xl')]: {
       borderRadius: 50,
       height: 50,
@@ -194,6 +192,23 @@ const useStyles = makeStyles(theme => ({
     },
 
     justifyContent: 'center',
+  },
+  menuProps:{
+    textAlign: 'center',
+    borderColor: '#707070',
+    paddingBottom: 0,
+    borderRadius: 8,
+    boxShadow:'5px 5px 19px #b6acf8',
+    maxWidth:270,
+    [theme.breakpoints.up('xl')]: {
+      marginTop:90,
+    },
+    [theme.breakpoints.down('lg')]: {
+      marginTop:80,
+    },
+    [theme.breakpoints.down('md')]: {
+      marginTop:45,
+    },
   }
 }));
 
@@ -266,9 +281,8 @@ const Topbar = props => {
           className={classes.searchBar}
           onChange={handleChange}
           value={value}
-          placeholder="...Rechercher"
+          placeholder="Rechercher..."
           onRequestSearch={() => console.log('onRequestSearch')}
-          
         />
         <IconButton color="inherit" >
           <Badge
@@ -277,7 +291,7 @@ const Topbar = props => {
             color="primary"
             variant="dot"
           >
-            <NotificationsIcon className={classes.avatar}/>
+            <Avatar className={classes.avatar} src='/images/alarm.png'/>
           </Badge>
         </IconButton>
         <IconButton
@@ -301,13 +315,7 @@ const Topbar = props => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
               PaperProps={{
-                style:{
-                    textAlign: 'center',
-                    borderColor: '#707070',
-                    paddingBottom: 0,
-                      borderRadius: 8,
-                      boxShadow:'5px 5px 19px #b6acf8'
-                }
+                className:classes.menuProps
               }}
             >
               {

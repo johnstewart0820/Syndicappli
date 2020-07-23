@@ -33,6 +33,10 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     backgroundColor:'white'
+  },
+  body:{
+    backgroundColor:'transparent',
+    borderTopRightRadius: 15
   }
 }));
 
@@ -69,6 +73,7 @@ const Main = props => {
         onClose={handleSidebarClose}
         open={shouldOpenSidebar}
         variant={isDesktop ? 'persistent' : 'temporary'}
+        className={classes.body}
       />
       <main className={classes.content}>
         {children}

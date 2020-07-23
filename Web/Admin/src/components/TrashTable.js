@@ -364,14 +364,8 @@ export default function TrashTable(props) {
                     );
                   })
                 }
-                <TableCell align="right">
-                  <p 
-                    className={classes.editItem} 
-                    onClick={() => handleClickRestore(i)} 
-                    disabled={(props.access === 'see' ? true : false)}
-                  >
+                <TableCell align="right" disabled={(props.access === 'see' ? true : false)} className={classes.editItem} onClick={() => handleClickRestore(i)}>
                       restaurer
-                   </p>   
                 </TableCell>
               </TableRow>
             ))}

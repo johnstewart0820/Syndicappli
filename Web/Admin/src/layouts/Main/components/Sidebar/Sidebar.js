@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     height: '100%',
     overflowX: 'hidden',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   divider: {
     margin: theme.spacing(2, 0)

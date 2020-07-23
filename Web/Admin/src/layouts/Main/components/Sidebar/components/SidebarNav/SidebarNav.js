@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { List, ListItem, Button} from '@material-ui/core';
+import { controllers } from 'chart.js';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,24 +31,27 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up('xl')]: {
       fontSize: 20,
       height: 67,
-      borderRadius: 15,
-      padding: '10px 8px 8px 24px',
+      borderTopLeftRadius:15,
+      borderBottomLeftRadius:15,
+      padding: '10px 0px 8px 24px',
     },
     [theme.breakpoints.between('lg','lg')]: {
       fontSize: 14,
       height: 47,
-      borderRadius: 11,
-      padding: '7px 6px 6px 17px',
+      borderTopLeftRadius:11,
+      borderBottomLeftRadius:11,
+      padding: '7px 0px 6px 17px',
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 10,
       height: 33,
-      borderRadius: 8,
-      padding: '5px 4px 4px 12px',
+      borderTopLeftRadius:8,
+      borderBottomLeftRadius:8,
+      padding: '5px 0px 4px 12px',
     },
     color: 'white',
     '&:hover': {
-      backgroundColor: 'rgb(255,255,255,80%)',
+      backgroundColor: 'rgb(255,255,255)',
       color:'#00bf82',
     },
     justifyContent: 'flex-start',
@@ -85,6 +89,53 @@ const useStyles = makeStyles(theme => ({
     // fontWeight: theme.typography.fontWeightMedium,
     '& $icon': {
       color: '#00bf82'
+    },
+    '&::before':{
+      [theme.breakpoints.up('xl')]: {
+        width: 45,
+        height: 45,
+        top:-45,
+        right: 10,
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        width: 32,
+        height: 32,
+        top:-32,
+        right: 7,
+      },
+      [theme.breakpoints.down('md')]: {
+        width: 22,
+        height: 22,
+        top:-22,
+        right: 5,
+      },
+      display: 'block',
+      position: 'absolute',
+      content: 'url("/images/top.png")'
+    },
+    '&::after':{
+      [theme.breakpoints.up('xl')]: {
+        width: 45,
+        height: 45,
+        bottom:-45,
+        right: 10,
+      },
+      [theme.breakpoints.between('lg','lg')]: {
+        width: 32,
+        height: 32,
+        bottom:-32,
+        right: 7,
+      },
+      [theme.breakpoints.down('md')]: {
+        width: 22,
+        height: 22,
+        bottom:-22,
+        right: 5,
+      },
+      display: 'block',
+      position: 'absolute',
+      right: 0,
+      content: 'url("/images/bottom.png")'
     }
   }
 }));
