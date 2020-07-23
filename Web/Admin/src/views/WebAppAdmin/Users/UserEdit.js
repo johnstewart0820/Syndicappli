@@ -6,18 +6,15 @@ import TextField from '@material-ui/core/TextField';
 import { Avatar } from '@material-ui/core';
 import MySelect from '../../../components/MySelect';
 import MyButton from 'components/MyButton';
-import theme from 'theme';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import AdminService from '../../../services/api.js';
 import authService from '../../../services/authService.js';
-import { COUNTRIES } from '../../../components/countries';
 import Multiselect from '../../../components/Multiselect.js';
 import MyDialog from '../../../components/MyDialog.js';
 import { EditUserStyles as useStyles } from './useStyles';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import useGlobal from 'Global/global';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const UserEdit = (props) => {
@@ -29,8 +26,6 @@ const UserEdit = (props) => {
   //   window.location.reload();
   // }
   const accessUsers = authService.getAccess('role_users');
-  const [globalState, globalActions] = useGlobal();
-  const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
   const permissionList = ['Voir', 'Editer', 'Refusé'];
   const role_permission = ['see','edit','denied'];
@@ -58,8 +53,11 @@ const UserEdit = (props) => {
 
   const [companyList, setCompanyList] = React.useState([]);
   let companyID = [];
+  const [multiID, setMultiID] = React.useState([]);
+  const [suggestions, setSuggestions] =React.useState([]);
+  const [companies, setCompanies] =React.useState([]);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-
+  const [openDialog, setOpenDialog] = React.useState(false);
   useEffect( () =>  {
     if (accessUsers === 'denied') {
       setOpenDialog(true);
@@ -80,7 +78,7 @@ const UserEdit = (props) => {
                 )
                 );
                  setCompanyList(data.companylist);
-                globalActions.setMultiSuggestions(companies);
+                setSuggestions(companies);
                 break;
               case 401:
                 authService.logout();
@@ -137,8 +135,8 @@ const UserEdit = (props) => {
                     companies[i] = {label:companyList[j].name,value:companyList[j].companyID};
                     break;
                   }
-              globalActions.setMultiTags(companies);
-              globalActions.setMultiID(companyID);
+              setCompanies(companies);
+              setMultiID(companyID);
               break;
             case 401:
               authService.logout();
@@ -147,13 +145,9 @@ const UserEdit = (props) => {
               break;
             default:
               ToastsStore.error(response.data.message);
-              globalActions.setMultiTags([]);
-              globalActions.setMultiID([]);
           }
         },
         error => {
-          globalActions.setMultiTags([]);
-          globalActions.setMultiID([]);
           ToastsStore.error("Can't connect to the server!");
           setVisibleIndicator(false);
         }
@@ -168,7 +162,7 @@ const UserEdit = (props) => {
     else setErrorsLastname('');
     if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
     else setErrorsFirstname('');
-    if (globalState.multi_ID.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
+    if (multiID.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
     else setErrorsCompanies('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
@@ -201,18 +195,18 @@ const UserEdit = (props) => {
   }
   const handleChangeCompanies = async (val) => {
     if(val !== null){
-      await globalActions.setMultiTags(val);
+      await setCompanies(val);
       companyID.splice(0, companyID.length)
       for (let i = 0; i < val.length; i++)
         for (let j = 0; j < companyList.length; j++)
           if (val[i].label == companyList[j].name) {
             companyID.push(companyList[j].companyID);
           }
-      globalActions.setMultiID(companyID);
+      setMultiID(companyID);
     }
     else{
-      await globalActions.setMultiTags([]);
-      globalActions.setMultiID([]);
+      await setCompanies([]);
+      setMultiID([]);
     }
   };
   const handleChangeCompaniesPermission = (val) => {
@@ -285,7 +279,7 @@ const UserEdit = (props) => {
     formdata.set('lastname', lastname);
     formdata.set('email', email);
     formdata.set('phone', phonenumber);
-    formdata.set('companyID', JSON.stringify(globalState.multi_ID));
+    formdata.set('companyID', JSON.stringify(multiID));
     formdata.set('logo', avatar === null ? '' : avatar);
     formdata.set('permission_info', JSON.stringify(permissionInfos));
 
@@ -377,9 +371,9 @@ const UserEdit = (props) => {
                   <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
                   <Grid xs item container alignItems="stretch">
                     <Multiselect
-                      selected={globalState.multi_tags}
+                      selected={companies}
                       no={'No companies found'}
-                      all={globalState.multi_suggestions}
+                      all={suggestions}
                       onSelected={handleChangeCompanies}
                       disabled={(accessUsers === 'see' ? true : false)}
                       width="80%"

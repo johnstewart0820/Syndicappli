@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
 import authService from '../../../../../../services/authService';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -89,10 +90,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const UpgradePlan = props => {
-  const { className, ...rest } = props;
-
+  const { className,  ...rest } = props;
+  const {history} = props;
   const classes = useStyles();
-  const webApp = authService.getAccess('web_app');  
+  const webApp = authService.getAccess('usertype'); 
+  const handleClickHelp = ()=>{
+    history.push(webApp === 'manager' ? "/manager/help" : webApp === 'owner' ? "/owner/help" : "/admin/help");
+    window.location.reload();
+  } 
   return (
     <div
       {...rest}
@@ -105,13 +110,13 @@ const UpgradePlan = props => {
 
       </div>
       <div className={classes.actions}>
-        <a
+        <div
           align="center"
           className={classes.fontsize}
-          href={webApp === 'manager' ? "/manager/help" : webApp === 'owner' ? "/owner/help" : "/admin/help"}
+          onClick={handleClickHelp}
         >
           J'ai besoin d'aide
-        </a>
+        </div>
       </div>
     </div>
   );
@@ -121,4 +126,4 @@ UpgradePlan.propTypes = {
   className: PropTypes.string
 };
 
-export default UpgradePlan;
+export default withRouter(UpgradePlan);

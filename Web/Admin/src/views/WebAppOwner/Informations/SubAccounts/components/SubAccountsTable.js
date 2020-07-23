@@ -207,17 +207,17 @@ export default function SubAccountsTable(props) {
               <TableCell align="center">
                 {
                   item.invitation_status === 'invited' ?
-                    <p className={classes.cell}>Actif</p>
-                    :
                     <p className={classes.cell}>Invitation envoyée</p>
+                    :
+                    <p className={classes.cell}>Actif</p>
                 }
               </TableCell>
               <TableCell align="center">
                 {
                   item.invitation_status === 'invited' ?
-                    <p className={classes.status} onClick={()=>handleClickViewDetails(item.userID)}>Voir les détails</p>
-                    :
                     <p className={classes.status} onClick={()=>handleClickResend(item.userID)}>Renvoyer l'invitation</p>
+                    :
+                    <p className={classes.status} onClick={()=>handleClickViewDetails(item.userID)}>Voir les détails</p>
                 }
               </TableCell>
               <TableCell align="right">

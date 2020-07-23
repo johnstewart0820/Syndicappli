@@ -65,7 +65,6 @@ const TrashOwners = (props) => {
   useEffect(() => {
     if (accessOwners !== 'denied') {
       getBuildings();
-      getTrashOwners();
     }
   }, [companyID]);
   useEffect(() => {
@@ -73,6 +72,9 @@ const TrashOwners = (props) => {
       getTrashOwners();
     }
   }, [page_num, row_count, sort_column, sort_method, buildingID, role,props.refresh]);
+  useEffect(()=>{
+    getTrashOwners();
+  },[buildingList]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },

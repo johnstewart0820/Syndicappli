@@ -280,7 +280,6 @@ export default function ProductTable(props) {
   };
   const handleChangePage = (event, page) => {
     props.onChangePage(page);
-    console.log(page);
   };
   const Sort = (index = 0) => {
     if (direction[index] === 'asc') {

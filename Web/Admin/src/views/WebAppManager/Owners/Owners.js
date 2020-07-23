@@ -87,7 +87,6 @@ const Owners = (props) => {
   useEffect(() => {
     if (accessOwners !== 'denied') {
       getBuildings();
-      getOwners();
     }
   }, [companyID]);
   useEffect(() => {
@@ -95,6 +94,9 @@ const Owners = (props) => {
       getOwners();
     }
   }, [page_num, row_count, sort_column, sort_method, buildingID, role,props.refresh]);
+  useEffect(()=>{
+    getOwners();
+  },[buildingList])
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },

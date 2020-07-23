@@ -9,7 +9,6 @@ import { AddTeamMemberStyles as useStyles } from './useStyles';
 import {ManagerService as Service} from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import useGlobal from 'Global/global';
 import authService from 'services/authService';
 import {withRouter} from 'react-router-dom';
 const ManagerService = new Service();
@@ -17,7 +16,6 @@ const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"
 const AddTeamMember = (props) => {
     const {history} = props;
     const classes = useStyles();
-    const [globalState, globalActions] = useGlobal();
     const permissionList = ['Voir', 'Editer', 'Refusé'];
     const role_permission = ['see', 'edit', 'denied'];
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
@@ -31,8 +29,9 @@ const AddTeamMember = (props) => {
     const [companyID, setCompanyID] = React.useState(-1);
     const [buildingList, setBuildingList] = React.useState([]);
     let buildingID1 = [];
-    // let buildings1 = [];
-    const [buildings1, setBuildings1] = React.useState([])
+    const [buildings1, setBuildings1] = React.useState([]);
+    const [multiID, setMultiID]=React.useState([]);
+    const [suggestions, setSuggestions] = React.useState([]);
     const [buildingsPermission, setBuildingsPermission] = React.useState(0);
     const [chatPermission, setChatPermission] = React.useState(0);
     const [ownersPermission, setOwnersPermission] = React.useState(0);
@@ -61,7 +60,7 @@ const AddTeamMember = (props) => {
         else setErrorsLastname('');
         if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
         else setErrorsFirstname('');
-        if (globalState.multi_ID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+        if (multiID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
         else setErrorsBuildings('');
         if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
         else setErrorsEmail('');
@@ -105,11 +104,11 @@ const AddTeamMember = (props) => {
                     if (val[i].label == buildingList[j].name) {
                         buildingID1.push(buildingList[j].buildingID);
                     }
-            globalActions.setMultiID(buildingID1);
+            setMultiID(buildingID1);
         }
         else {
-            await globalActions.setMultiTags([]);
-            globalActions.setMultiID([]);
+            await setBuildings1([]);
+            setMultiID([]);
         }
     };
     const handleChangeBuildingsPermission = (val) => {
@@ -206,7 +205,7 @@ const AddTeamMember = (props) => {
                             )
                             );
                             setBuildingList(data.buildinglist);
-                            globalActions.setMultiSuggestions(buildings);
+                            setSuggestions(buildings);
                           break;
                         case 401:
                           authService.logout();
@@ -280,7 +279,7 @@ const AddTeamMember = (props) => {
         ]
         let formdata = new FormData();
         formdata.set('companyID', companyID);
-        formdata.set('buildingID', JSON.stringify(globalState.multi_ID));
+        formdata.set('buildingID', JSON.stringify(multiID));
         formdata.set('firstname', firstname);
         formdata.set('lastname', lastname);
         formdata.set('email', email);
@@ -329,7 +328,7 @@ const AddTeamMember = (props) => {
                             <Multiselect
                                 selected={buildings1}
                                 no={'No buildings found'}
-                                all={globalState.multi_suggestions}
+                                all={suggestions}
                                 onSelected={handleChangeBuildings}
                                 width="80%"
                             />

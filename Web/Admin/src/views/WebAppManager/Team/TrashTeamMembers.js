@@ -80,6 +80,9 @@ const TrashTeamMembers = (props) => {
     if (accessTeam !== 'denied')
       getTrashManagers();
   }, [page_num, row_count, sort_column, sort_method, buildingID]);
+  useEffect(()=>{
+    getTrashManagers()
+  },[buildingList])
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },

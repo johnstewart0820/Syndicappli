@@ -300,7 +300,6 @@ export const EditOwnerStyles = makeStyles(theme => ({
     },
   },
   size: {
-    cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
       width: 214,
       height: 214,
@@ -403,6 +402,8 @@ export const EditOwnerStyles = makeStyles(theme => ({
     },
   },
   editAvatar:{
+    cursor: 'pointer',
+
     [theme.breakpoints.up('xl')]: {
       width: 54,
       height: 54,

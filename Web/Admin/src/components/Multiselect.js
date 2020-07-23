@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import useGlobal from 'Global/global';
 
 const animatedComponents = makeAnimated();
 const Multiselect = (props)=> {

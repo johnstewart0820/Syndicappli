@@ -9,7 +9,6 @@ import Multiselect from '../../../components/Multiselect.js';
 import AdminService from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import useGlobal from 'Global/global';
 import authService from 'services/authService';
 import {withRouter} from 'react-router-dom';
 
@@ -17,13 +16,14 @@ const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"
 const AddUser = (props) => {
     const {history} = props;
     const classes = useStyles();
-    const [globalState, globalActions] = useGlobal();
     const permissionList = ['Voir', 'Editer', 'Refusé'];
     const role_permission = ['see', 'edit', 'denied'];
     const [companyList, setCompanyList] = React.useState([]);
     let companyID = [];
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-
+    const [companies, setCompanies] = React.useState([]);
+    const [suggestions,setSuggestions] = React.useState([]);
+    const [multiID, setMultiID] = React.useState([]);
     const [avatarurl, setAvatarUrl] = React.useState("");
     const [avatar, setAvatar] = React.useState(null);
     const [lastname, setLastName] = React.useState('');
@@ -53,7 +53,7 @@ const AddUser = (props) => {
         else setErrorsLastname('');
         if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
         else setErrorsFirstname('');
-        if (globalState.multi_ID.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
+        if (multiID.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
         else setErrorsCompanies('');
         if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
         else setErrorsEmail('');
@@ -90,18 +90,18 @@ const AddUser = (props) => {
     }
     const handleChangeCompanies = async (val) => {
         if (val !== null) {
-            await globalActions.setMultiTags(val);
+            await setCompanies(val);
             companyID.splice(0, companyID.length)
             for (let i = 0; i < val.length; i++)
                 for (let j = 0; j < companyList.length; j++)
                     if (val[i].label == companyList[j].name) {
                         companyID.push(companyList[j].companyID);
                     }
-            globalActions.setMultiID(companyID);
+            setMultiID(companyID);
         }
         else {
-            await globalActions.setMultiTags([]);
-            globalActions.setMultiID([]);
+            await setCompanies([]);
+            setMultiID([]);
         }
     };
     const handleChangeCompaniesPermission = (val) => {
@@ -147,7 +147,7 @@ const AddUser = (props) => {
                             )
                             );
                             setCompanyList(data.companylist);
-                            globalActions.setMultiSuggestions(companies);
+                            setSuggestions(companies);
                           break;
                         case 401:
                           authService.logout();
@@ -204,7 +204,7 @@ const AddUser = (props) => {
         formdata.set('lastname', lastname);
         formdata.set('email', email);
         formdata.set('phone', phonenumber);
-        formdata.set('companyID', JSON.stringify(globalState.multi_ID));
+        formdata.set('companyID', JSON.stringify(multiID));
         formdata.set('logo', avatar === null ? '' : avatar);
         formdata.set('permission_info', JSON.stringify(permissionInfos));
 
@@ -246,9 +246,9 @@ const AddUser = (props) => {
                         <Grid xs={3} item container><p className={classes.title}>Carbinets</p></Grid>
                         <Grid xs={9} item container alignItems="stretch">
                             <Multiselect
-                                selected={globalState.multi_tags}
+                                selected={companies}
                                 no={'No companies found'}
-                                all={globalState.multi_suggestions}
+                                all={suggestions}
                                 onSelected={handleChangeCompanies}
                                 width="100%"
                             />

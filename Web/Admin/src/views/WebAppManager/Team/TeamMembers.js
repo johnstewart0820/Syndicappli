@@ -72,17 +72,91 @@ const TeamMembers = (props) => {
       getCompanies();
     }
   }, [accessTeam]);
+  const getCompanies = () => {
+    setVisibleIndicator(true);
+    ManagerService.getCompanyListByUser()
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                setCompanyID(item.companyID)
+              )
+              );
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+
   useEffect(() => {
     getBuildings();
-    getManagers();
+    // getManagers();
   }, [companyID]);
+  const getBuildings = () => {
+    const requestData = {
+      'companyID': companyID
+    }
+    setVisibleIndicator(true);
+    ManagerService.getBuildingListByCompany(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch(response.data.code){
+            case 200:
+              building.splice(0,building.length);
+              buildingList.splice(0,buildingList.length)
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              building.push('Tout');
+              data.buildinglist.map((item) => (
+                building.push(item.name)
+              )
+              );
+              setBuilding(building);
+              setBuildingList([{ buildingID: -1 }, ...data.buildinglist]);
+              setBuildings(0);
+              setBuildingID(-1)
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  useEffect(()=>{
+    getManagers()
+  },[buildingList])
   useEffect(() => {
     if (accessTeam === 'denied') {
       setOpenDialog(true);
     }
     if (accessTeam !== 'denied')
       getManagers();
-  }, [page_num, row_count, sort_column, sort_method, buildingID, props.refresh]);
+  }, [page_num, row_count, sort_column, sort_method, props.refresh, buildingID]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -117,77 +191,6 @@ const TeamMembers = (props) => {
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success("Deleted successfully!");
               getManagers();
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }
-  const getCompanies = () => {
-    setVisibleIndicator(true);
-    ManagerService.getCompanyListByUser()
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch(response.data.code){
-            case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              data.companylist.map((item) => (
-                setCompanyID(item.companyID)
-              )
-              );
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }
-
-  const getBuildings = () => {
-    const requestData = {
-      'companyID': companyID
-    }
-    setVisibleIndicator(true);
-    ManagerService.getBuildingListByCompany(requestData)
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch(response.data.code){
-            case 200:
-              building.splice(0,building.length);
-              buildingList.splice(0,buildingList.length)
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              building.push('Tout');
-              data.buildinglist.map((item) => (
-                building.push(item.name)
-              )
-              );
-              setBuilding(building);
-              setBuildingList([{ buildingID: -1 }, ...data.buildinglist]);
-              setBuildings(0);
-              setBuildingID(-1)
               break;
             case 401:
               authService.logout();

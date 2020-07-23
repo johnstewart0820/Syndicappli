@@ -32,7 +32,7 @@ const Owners = (props) => {
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  let building = [];
+  const [building,setBuilding] = useState([]);
   const [buildings, setBuildings] = useState('');
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
@@ -99,6 +99,9 @@ const Owners = (props) => {
       getTrashOwners();
     }
   }, [page_num, row_count, sort_column, sort_method, buildingID, role]);
+  useEffect(()=>{
+    getTrashOwners();
+  },[buildingList])
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -200,28 +203,27 @@ const Owners = (props) => {
   }
   const getBuildings = () => {
     const requestData = {
-      'search_key': '',
-      'page_num': 0,
-      'row_count': 20,
-      'sort_column': -1,
-      'sort_method': 'asc',
       'companyID': companyID
     }
     setVisibleIndicator(true);
-    AdminService.getBuildingList(requestData)
+    AdminService.getBuildingListByCompany(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
           switch(response.data.code){
             case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
+              building.splice(0,building.length);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
                 building.push('Tout');
-                data.buildinglist.map((item) => (
-                  building.push(item.name)
-                )
-                );
-                setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+              data.buildinglist.map((item) => (
+                building.push(item.name)
+              )
+              );
+              setBuilding(building);
+              setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
+              setBuildings(0);
+              setBuildingID(-1);
               break;
             case 401:
               authService.logout();

@@ -298,18 +298,15 @@ export default function SelectTable(props) {
           selectList.push(mItems[id].userID);
         }
         else {
-          console.log('s:'+event.target.checked)
           selectList.splice(selectList.indexOf(mItems[id].userID), 1);
         }
     }
     setSelectList(selectList);
     mItems[id].isChecked = event.target.checked;
     setItems(mItems);
-    console.log(selectList)
   };
   const handleChangePage = (event, page) => {
     props.onChangePage(page);
-    console.log(page);
   };
   const Sort = (index = 0) => {
     if (direction[index] === 'asc') {
@@ -343,7 +340,6 @@ export default function SelectTable(props) {
     }
     setItems(mItems);
     setSelectList(selectList);
-    console.log(selectList)
   }
   const handleClickImport = () => {
     props.onImport();

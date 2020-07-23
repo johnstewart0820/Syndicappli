@@ -285,8 +285,6 @@ const Sidebar = props => {
         </div>
         <UpgradePlan />
       </div>
-    {/* </Scrollbars> */}
-
     </Drawer>
   );
 };

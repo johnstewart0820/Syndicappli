@@ -314,16 +314,16 @@ const MyAccount = (props) => {
           case 200:
             localStorage.setItem("token", JSON.stringify(response.data.data.token));
             const profile = response.data.data.profile;
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhone(profile.phone);
-            setAvatarUrl(profile.photo_url);
-            setAddress(profile.address);
+            setLastName(profile.lastname?profile.lastname:'');
+            setFirstName(profile.firstname?profile.firstname:'');
+            setEmail(profile.email?profile.email:'');
+            setPhone(profile.phone? profile.phone:'');
+            setAvatarUrl(profile.photo_url? profile.photo_url:'');
+            setAddress(profile.address? profile.address:'');
             let urls = [];
-              if (profile.identity_card_front.length !== 0)
+              if (profile.identity_card_front)
                 urls.push(profile.identity_card_front);
-              if (profile.identity_card_back.length !== 0)
+              if (profile.identity_card_back)
                 urls.push(profile.identity_card_back);
               setIdcardUrls(urls);
             break;

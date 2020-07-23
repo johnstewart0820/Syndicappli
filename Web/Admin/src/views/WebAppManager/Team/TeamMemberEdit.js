@@ -15,7 +15,6 @@ import { EditTeamMemberStyles as useStyles } from './useStyles';
 import {ManagerService as Service} from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import useGlobal from 'Global/global';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -38,7 +37,6 @@ const TeamMemberEdit = (props) => {
   const classes = useStyles();
   const permissionList = ['Voir', 'Editer', 'Refusé'];
   const role_permission = ['see', 'edit', 'denied'];
-  const [globalState, globalActions] = useGlobal();
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState(-1);
   const [suspendState, setSuspendState] = React.useState('Suspendre le compte');
@@ -73,6 +71,8 @@ const TeamMemberEdit = (props) => {
   const [buildingList, setBuildingList] = React.useState([]);
   let buildingID = [];
   const [buildings, setBuildings] = React.useState([]);
+  const [multiID, setMultiID] =React.useState([]);
+  const [suggestions, setSuggestions] = React.useState([]);
   useEffect(()=>{
     getCompanies();
   },[accessTeam]);
@@ -130,7 +130,7 @@ const TeamMemberEdit = (props) => {
               );
               // setBuilding(buildings1);
               setBuildingList(data.buildinglist);
-              globalActions.setMultiSuggestions(buildings1);
+              setSuggestions(buildings1);
               break;
             case 401:
               authService.logout();
@@ -197,8 +197,8 @@ const TeamMemberEdit = (props) => {
                   buildings[i] = {label:buildingList[j].name,value:buildingList[j].buildingID};
                   break;
                 }
-            globalActions.setMultiTags(buildings);
-            globalActions.setMultiID(buildingID);
+            setBuildings(buildings);
+            setMultiID(buildingID);
             break;
           case 401:
             authService.logout();
@@ -207,23 +207,16 @@ const TeamMemberEdit = (props) => {
             break;
           default:
             ToastsStore.error(response.data.message);
-            globalActions.setMultiTags([]);
-            globalActions.setMultiID([]);
             
         }
       },
       error => {
-        globalActions.setMultiTags([]);
-        globalActions.setMultiID([]);
         ToastsStore.error("Can't connect to the server!");
         setVisibleIndicator(false);
       }
     );
   }
 
-// useEffect(()=>{
-//   globalActions.setMultiTags(buildings);
-// },[buildings])
   const handleClick = () => {
     history.goBack();
   };
@@ -233,7 +226,7 @@ const TeamMemberEdit = (props) => {
     else setErrorsLastname('');
     if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
     else setErrorsFirstname('');
-    if (globalState.multi_ID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+    if (multiID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
     else setErrorsBuildings('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
@@ -274,12 +267,11 @@ const TeamMemberEdit = (props) => {
           if (val[i].label == buildingList[j].name) {
             buildingID.push(buildingList[j].buildingID);
           }
-      globalActions.setMultiID(buildingID);
+      setMultiID(buildingID);
     }
     else {
-      console.log(val)
-      await globalActions.setMultiTags([]);
-      globalActions.setMultiID([]);
+      await setBuildings([]);
+      setMultiID([]);
     }
   };
   const handleLoadFront = (event) => {
@@ -487,7 +479,7 @@ const TeamMemberEdit = (props) => {
     ]
     let formdata = new FormData();
     formdata.set('companyID', companyID);
-    formdata.set('buildingID', JSON.stringify(globalState.multi_ID));
+    formdata.set('buildingID', JSON.stringify(multiID));
     formdata.set('firstname', firstname);
     formdata.set('lastname', lastname);
     formdata.set('email', email);
@@ -669,9 +661,9 @@ const TeamMemberEdit = (props) => {
                 <Grid item><p className={classes.itemTitle}>Immeubles</p></Grid>
                 <Grid xs item container alignItems="stretch">
                   <Multiselect
-                    selected={globalState.multi_tags}
+                    selected={buildings}
                     no={'No buildings found'}
-                    all={globalState.multi_suggestions}
+                    all={suggestions}
                     onSelected={handleChangeBuildings}
                     disabled={(accessTeam === 'see' ? true : false)}
                     width="100%"

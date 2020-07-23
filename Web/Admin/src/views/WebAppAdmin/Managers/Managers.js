@@ -81,7 +81,6 @@ const Managers = (props) => {
   }, [accessManagers]);
   useEffect(() => {
     getBuildings();
-    getManagers();
   }, [companyID]);
   useEffect(() => {
     if (accessManagers === 'denied') {
@@ -90,6 +89,9 @@ const Managers = (props) => {
     if (accessManagers !== 'denied')
       getManagers();
   }, [page_num, row_count, sort_column, sort_method, buildingID, props.refresh]);
+  useEffect(()=>{
+    getManagers();
+  },[buildingList])
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
