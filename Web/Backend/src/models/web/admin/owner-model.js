@@ -290,7 +290,7 @@ function createOwner(uid, data, ownerID) {
  */
 function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select *, users.type usertype, users.email email, users.phone phone, users.address address from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
+        let query = 'Select *, users.type usertype, users.email email, users.phone phone, users.address address, users.status status from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
         let ownerInfo;
         let vote_amount_info;
         let apartment_info;
