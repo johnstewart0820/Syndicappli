@@ -63,7 +63,7 @@ function getCompanyList(uid, data) {
             else if (sort_column === 4)
                 query += ' order by manager_count ';
             else if (sort_column === 5)
-                query += ' order by apartmen_count ';
+                query += ' order by apartment_count ';
             else if (sort_column === 6)
                 query += ' order by c.status ';
             query += data.sort_method;
