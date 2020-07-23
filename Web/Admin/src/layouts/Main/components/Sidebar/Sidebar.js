@@ -25,6 +25,9 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       width: 163,
     },
+    background:'transparent',
+    borderTopRightRadius: 15,
+    borderRight: 'none'
     // [theme.breakpoints.between('sm','sm')]: {
     //   width: 114,
     // },
@@ -265,7 +268,6 @@ const Sidebar = props => {
       open={open}
       variant={variant}
     >
-    {/* <Scrollbars style={{ height: "100vh" }}> */}
 
       <div
         {...rest}
