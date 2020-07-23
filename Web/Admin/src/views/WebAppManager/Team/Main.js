@@ -13,7 +13,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
-import useGlobal from 'Global/global';
 import TrashTeamMembers from './TrashTeamMembers';
 import TeamMembers from './TeamMembers';
 
@@ -54,7 +53,6 @@ const Main = (props) => {
     if (!token) {
         window.location.replace("/login");
     }
-    const [globalState,globalActions] = useGlobal();
     const accessTeam = authService.getAccess('role_team');
     const [value, setValue] = React.useState(0);
     const classes = useStyles();
@@ -65,8 +63,6 @@ const Main = (props) => {
     };
     const handleClose = () => {
         setOpen(false);
-        globalActions.setMultiTags([]);
-        globalActions.setMultiSuggestions([]);
     };
     const handleAdd = () => {
         ToastsStore.success("Added New Team Member successfully!");

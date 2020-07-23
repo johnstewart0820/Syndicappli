@@ -15,7 +15,6 @@ import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import Managers from './Managers';
 import TrashManagers from './TrashManagers';
-import useGlobal from 'Global/global';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -54,7 +53,6 @@ const Main = (props) => {
     if (!token) {
         window.location.replace("/login");
     }
-    const [globalState,globalActions] = useGlobal();
     const accessManagers = authService.getAccess('role_managers');
     const [value, setValue] = React.useState(0);
     const classes = useStyles();
@@ -65,8 +63,6 @@ const Main = (props) => {
     };
     const handleClose = () => {
         setOpen(false);
-        globalActions.setMultiTags([]);
-        globalActions.setMultiSuggestions([]);
     };
     const handleAdd = () => {
         ToastsStore.success("Added New Manager successfully!");

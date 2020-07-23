@@ -6,7 +6,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import { Avatar } from '@material-ui/core';
-import MySelect from '../../../components/MySelect';
 import MyButton from 'components/MyButton';
 import { Checkbox } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
@@ -25,7 +24,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import useGlobal from 'Global/global';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const CompaniesEdit = (props) => {
@@ -39,7 +37,6 @@ const CompaniesEdit = (props) => {
   const accessCompanies = authService.getAccess('role_companies');
   const accessManagers = authService.getAccess('role_managers');
   const accessBuildings = authService.getAccess('role_buildings');
-  const [globalState, globalActions] = useGlobal()
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
   const [openAddManager, setOpenAddManager] = React.useState(false);
@@ -128,8 +125,6 @@ const CompaniesEdit = (props) => {
   };
 
   const handleCloseAddManager = () => {
-    globalActions.setMultiTags([]);
-    globalActions.setMultiID([])
     setOpenAddManager(false);
   };
   const handleCloseAddBuilding = () => {
