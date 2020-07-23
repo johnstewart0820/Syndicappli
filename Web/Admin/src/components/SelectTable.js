@@ -57,16 +57,7 @@ const BootstrapInput = withStyles((theme) => ({
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     // Use the system font instead of the default Roboto font.
     fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
+      'Poppins',
     ].join(','),
     '&:focus': {
       borderRadius: 4,
@@ -269,7 +260,7 @@ export default function SelectTable(props) {
   const [selectList, setSelectList] = useState([]);
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
-      tempDirect[i] = '⯆';
+      tempDirect[i] = ' ˅';
   }
   const allData = 3;
   const [cells, setCells] = useState(props.cells);
@@ -311,12 +302,12 @@ export default function SelectTable(props) {
   const Sort = (index = 0) => {
     if (direction[index] === 'asc') {
       tempDirection[index] = 'desc';
-      tempDirect[index] = '⯅';
+      tempDirect[index] = ' ˄';
       setDirect(tempDirect);
       setDirection(tempDirection);
     } else {
       tempDirection[index] = 'asc';
-      tempDirect[index] = '⯆';
+      tempDirect[index] = ' ˅';
       setDirect(tempDirect);
       setDirection(tempDirection);
     }

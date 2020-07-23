@@ -13,7 +13,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import authService from 'services/authService';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import useGlobal from 'Global/global';
 import AdminService from 'services/api.js';
 
@@ -44,6 +43,9 @@ const useStyles = makeStyles(theme => ({
         fontSize: 10
       },
     },
+    '& .MuiInputBase-input':{
+      textAlign:'left'
+    },  
     '& .MuiIconButton-root':{
       padding : 0,
       // margin:0
@@ -116,6 +118,7 @@ const useStyles = makeStyles(theme => ({
     color: 'lightgrey',
   },
   searchBar: {
+    direction:'rtl',
     [theme.breakpoints.up('xl')]: {
       borderRadius: 50,
       height: 50,
@@ -137,19 +140,36 @@ const useStyles = makeStyles(theme => ({
   avatar: {
 
     [theme.breakpoints.up('xl')]: {
+      fontSize: 21,
       width: 50,
       height: 50
     },
     [theme.breakpoints.down('lg')]: {
+      fontSize: 15,
       width: 35,
       height: 35
     },
     [theme.breakpoints.down('md')]: {
+      fontSize: 11,
       width: 25,
       height: 25
     },
   },
-  
+  down: {
+    color:'#707070',
+    [theme.breakpoints.up('xl')]: {
+      width: 35,
+      height: 20
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 25,
+      height: 14
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 18,
+      height: 10
+    },
+  },
   toolbar: {
     flex: 1,
   },
@@ -246,7 +266,9 @@ const Topbar = props => {
           className={classes.searchBar}
           onChange={handleChange}
           value={value}
+          placeholder="...Rechercher"
           onRequestSearch={() => console.log('onRequestSearch')}
+          
         />
         <IconButton color="inherit" >
           <Badge
@@ -390,7 +412,7 @@ const Topbar = props => {
           </Paper>
         <Button onClick={handleClick}>
             <p className={classes.menu_item}><b>{globalState.firstname + ' ' + globalState.lastname}</b></p>
-            <ArrowDropDownIcon className={classes.avatar}/>
+            <img src='/images/down.svg' className={classes.down}/>
         </Button>
       </Toolbar>
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
