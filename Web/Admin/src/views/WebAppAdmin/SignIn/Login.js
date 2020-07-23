@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
 import useStyles from './useStyles';
@@ -68,6 +68,28 @@ const Login = (props) => {
       else setErrorsEmail('Email is not valid!');
     }
   }
+  useEffect(()=>{
+    const usertype = authService.getAccess('usertype');  
+    const token = authService.getToken();
+    if(token){
+      switch(usertype){
+        case 'superadmin':
+          history.push('/admin/dashboard');
+          break;
+        case 'admin':
+          history.push('/admin/dashboard');
+          break;
+        case 'manager':
+          history.push('/manager/dashboard');
+          break;
+        case 'owner':
+          history.push('/owner/dashboard');
+          break;
+        default:
+          break;
+      }
+    }
+  });
   const login = () => {
     var data = {};
     data['email'] = email;
