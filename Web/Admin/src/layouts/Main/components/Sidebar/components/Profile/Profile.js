@@ -3,6 +3,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
+import authService from 'services/authService.js';
+import { withRouter } from 'react-router-dom';
+
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -23,6 +26,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center'
   },
   avatar: {
+    cursor:'pointer',
     [theme.breakpoints.up('xl')]: {
       width:199,
       height: 41,
@@ -41,13 +45,30 @@ const useStyles = makeStyles(theme => ({
 
 const Profile = props => {
   const { className, ...rest } = props;
-
+  const {history} = props;
   const classes = useStyles();
-
   const user = {
     avatar: '/images/Login.png',
   };
-
+  const handleClickToHome = ()=>{
+    const usertype = authService.getAccess('usertype');  
+      switch(usertype){
+        case 'superadmin':
+          history.push('/admin/dashboard');
+          break;
+        case 'admin':
+          history.push('/admin/dashboard');
+          break;
+        case 'manager':
+          history.push('/manager/dashboard');
+          break;
+        case 'owner':
+          history.push('/owner/dashboard');
+          break;
+        default:
+          break;
+      }
+  }
   return (
     <div
       {...rest}
@@ -58,7 +79,7 @@ const Profile = props => {
         className={classes.avatar}
         component={RouterLink}
         src={user.avatar}
-        to="/settings"
+        onClick={handleClickToHome}
       />
     </div>
   );
@@ -68,4 +89,4 @@ Profile.propTypes = {
   className: PropTypes.string
 };
 
-export default Profile;
+export default withRouter(Profile);
