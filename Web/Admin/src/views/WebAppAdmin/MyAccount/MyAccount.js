@@ -195,11 +195,10 @@ const validateForm = (errors) => {
   return valid;
 }
 const MyAccount = (props) => {
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const {history} = props;
   const [globalState, globalActions] = useGlobal();
   const classes = useStyles();

@@ -16,11 +16,10 @@ import TrashTable from 'components/TrashTable';
 const ManagerService = new Service();
 const TrashBuildings = (props) => {
   const { history } = props;
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessBuildings = authService.getAccess('role_buildings');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();

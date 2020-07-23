@@ -10,11 +10,10 @@ import ModuleTable from './components/ModuleTable';
 
 const Addons = (props) => {
   const {history}=props;
-  //const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/manager/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessTeam = authService.getAccess('role_managers');
 
   const classes = useStyles();

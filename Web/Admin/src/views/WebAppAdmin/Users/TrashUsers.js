@@ -11,11 +11,10 @@ import TrashTable from 'components/TrashTable';
 const TrashUsers = (props) => {
   const { history } = props;
 
-  //const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessUsers = authService.getAccess('role_users');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);

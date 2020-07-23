@@ -50,11 +50,10 @@ function a11yProps(index) {
 const Products = (props) => {
   const {history} = props;
 
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {

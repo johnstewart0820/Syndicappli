@@ -18,11 +18,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Buildings = (props) => {
   const { history } = props;
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessBuildings = authService.getAccess('role_buildings');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();

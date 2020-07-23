@@ -26,11 +26,10 @@ const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"
 const ManagerEdit = (props) => {
   const { history } = props;
 
-  //const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessManagers = authService.getAccess('role_managers');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);

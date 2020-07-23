@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -203,16 +204,22 @@ const Topbar = props => {
   useEffect(() => {
     AdminService.getProfile()
     .then(      
-      response => {        
-        if(response.data.code !== 200){
-
-        } else {
-          localStorage.setItem("token", JSON.stringify(response.data.data.token));
-          const profile = response.data.data.profile;
-          globalActions.setFirstName(profile.firstname);
-          globalActions.setLastName(profile.lastname);
-          globalActions.setAvatarUrl(profile.photo_url);
-        }
+      response => {   
+        switch(response.data.code){
+          case 200:
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            const profile = response.data.data.profile;
+            globalActions.setFirstName(profile.firstname);
+            globalActions.setLastName(profile.lastname);
+            globalActions.setAvatarUrl(profile.photo_url);
+            break;
+          case 401:
+            authService.logout();
+            window.location.replace("/login");
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+        }     
       },
       error => {
         console.log('fail');        
@@ -386,6 +393,7 @@ const Topbar = props => {
             <ArrowDropDownIcon className={classes.avatar}/>
         </Button>
       </Toolbar>
+            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </AppBar>
   );
 };

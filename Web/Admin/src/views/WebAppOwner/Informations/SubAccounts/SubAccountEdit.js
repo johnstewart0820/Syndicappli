@@ -30,11 +30,10 @@ const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"
 const SubAccountEdit = (props) => {
   const { history } = props;
 
-  //const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessOwners = authService.getAccess('role_owners');
   const [openDialog, setOpenDialog] = React.useState(false);
   const [state, setState] = React.useState(false);

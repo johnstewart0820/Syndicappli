@@ -16,11 +16,10 @@ const Dashboard = (props) => {
   const cellList = [20, 50, 100, 200];
   const incomeDirection = 2;
   const incomeColor = "#FC5555";//#2DCE9C
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   return (
     <div className={classes.root}>
       <div className={classes.title}>

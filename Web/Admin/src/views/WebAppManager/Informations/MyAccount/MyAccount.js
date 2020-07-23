@@ -225,11 +225,10 @@ const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"
 const MyAccount = (props) => {
   const { history } = props;
 
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/owner/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const classes = useStyles();
   const [globalState, globalActions] = useGlobal();
   const [lastname, setLastName] = React.useState('');

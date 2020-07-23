@@ -49,11 +49,10 @@ function a11yProps(index) {
 }
 const Main = (props) => {
     const { history } = props;
-    //const token = authService.getToken();    
-    // if (!token) {
-    //   history.push("/login");
-    //   window.location.reload();
-    // }
+    const token = authService.getToken();    
+    if (!token) {
+        window.location.replace("/login");
+    }
 
     const accessBuildings = authService.getAccess('role_buildings');
     const [value, setValue] = React.useState(0);

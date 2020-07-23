@@ -22,11 +22,10 @@ import CurveChart from '../components/CurveChart';
 const OrdersManager = (props) => {
   const { history } = props;
 
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessOrders = authService.getAccess('role_orders');
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);

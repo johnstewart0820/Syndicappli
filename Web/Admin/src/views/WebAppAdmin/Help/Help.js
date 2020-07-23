@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { withRouter } from 'react-router-dom';
-
+import authService from 'services/authService';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -89,11 +89,10 @@ const useStyles = makeStyles(theme => ({
 const Help = (props) => {
   const { history } = props;
 
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/owner/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const classes = useStyles();
 
   return (

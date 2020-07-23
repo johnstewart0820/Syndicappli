@@ -115,11 +115,10 @@ import {makeStyles} from '@material-ui/styles';
 }));
 const PaymentMethods = (props) => {
   const {history}=props;
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessBuildings = authService.getAccess('role_buildings');  
   const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);

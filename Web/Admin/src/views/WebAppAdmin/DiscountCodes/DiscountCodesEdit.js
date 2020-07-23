@@ -10,11 +10,10 @@ import {EditDiscountCodeStyles as useStyles} from './useStyles';
 
 const DiscountCodesEdit = (props) => {
   const {history}=props;
-  //const token = authService.getToken();  
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();  
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessDiscountCodes = authService.getAccess('role_discountcodes');  
   const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);

@@ -32,11 +32,10 @@ const CompaniesEdit = (props) => {
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const { history } = props;
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessCompanies = authService.getAccess('role_companies');
   const accessManagers = authService.getAccess('role_managers');
   const accessBuildings = authService.getAccess('role_buildings');

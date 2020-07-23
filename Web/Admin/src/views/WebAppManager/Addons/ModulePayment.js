@@ -10,11 +10,10 @@ import TextField from '@material-ui/core/TextField';
 
 const ModulePayment = (props) => {
   const { history } = props;
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/manager/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessBuildings = authService.getAccess('role_buildings');
   const classes = useStyles();
   const [accountname, setAccountName] = useState('');

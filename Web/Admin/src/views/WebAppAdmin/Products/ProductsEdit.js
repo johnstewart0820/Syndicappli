@@ -14,11 +14,10 @@ import {EditProductStyles as useStyles} from './useStyles';
 const ProductsEdit = (props) => {
   const {history}=props;
   const priceTypeList = ['','Editer', 'Voir', 'Refusé'];  
-  //const token = authService.getToken();  
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();  
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessProducts = authService.getAccess('role_products');  
   const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);

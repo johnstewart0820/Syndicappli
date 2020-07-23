@@ -15,11 +15,10 @@ import TrashTable from 'components/TrashTable';
 
 const TrashCompanies = (props) => {
   const { history } = props;
-  // const token = authService.getToken();    
-  // if (!token) {
-  //   history.push("/login");
-  //   window.location.reload();
-  // }
+  const token = authService.getToken();    
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessCompanies = authService.getAccess('role_companies');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
