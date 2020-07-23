@@ -92,50 +92,57 @@ const useStyles = makeStyles(theme => ({
     },
     '&::before':{
       [theme.breakpoints.up('xl')]: {
-        width: 45,
-        height: 45,
-        top:-45,
+        width: 15,
+        height: 15,
+        top: -15,
         right: 10,
       },
       [theme.breakpoints.between('lg','lg')]: {
-        width: 32,
-        height: 32,
-        top:-32,
+        width: 10,
+        height: 10,
+        top: -10,
         right: 7,
       },
       [theme.breakpoints.down('md')]: {
-        width: 22,
-        height: 22,
-        top:-22,
+        width: 10,
+        height: 10,
+        top: -10,
         right: 5,
       },
       display: 'block',
       position: 'absolute',
-      content: 'url("/images/top.png")'
+      content: 'url("/images/none.png")',
+      backgroundImage: 'url("/images/top.png")',
+      backgroundPosition: 'center',
+      backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat'
     },
     '&::after':{
       [theme.breakpoints.up('xl')]: {
-        width: 45,
-        height: 45,
-        bottom:-45,
+        width: 15,
+        height: 15,
+        bottom:-15,
         right: 10,
       },
       [theme.breakpoints.between('lg','lg')]: {
-        width: 32,
-        height: 32,
-        bottom:-32,
+        width: 10,
+        height: 10,
+        bottom:-10,
         right: 7,
       },
       [theme.breakpoints.down('md')]: {
-        width: 22,
-        height: 22,
-        bottom:-22,
+        width: 10,
+        height: 10,
+        bottom:-10,
         right: 5,
       },
       display: 'block',
       position: 'absolute',
-      right: 0,
-      content: 'url("/images/bottom.png")'
+      content: 'url("/images/none.png")',
+      backgroundImage: 'url("/images/bottom.png")',
+      backgroundPosition: 'center',
+      backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat'
     }
   }
 }));
