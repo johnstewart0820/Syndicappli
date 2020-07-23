@@ -46,7 +46,7 @@ function getManagerCompanyListByUser(uid) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 if (rows.length > 0)
-                    resolve(rows[0])
+                    resolve([rows[0]])
                 else
                     resolve(rows);
             }
