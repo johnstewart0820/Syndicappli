@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
-// const API_URL = "http://192.168.105.41:3001/api/";
+// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
+const API_URL = "http://192.168.105.38:3001/api/";
 class AdminService {
   //Login
   login(data) {

@@ -330,7 +330,7 @@ const Managers = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this company?
+            Are you sure to delete this manager?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
