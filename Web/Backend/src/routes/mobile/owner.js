@@ -20,7 +20,7 @@ const ownerService = require('../../services/mobile/owner/owner-service')
 const adminService = require('../../services/mobile/owner/account-service')
 
 var multer  = require('multer')
-var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/' })
+var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
 
 /**
  * profile api
