@@ -41,7 +41,7 @@ var authModel = {
  */
 function login(authData) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT * FROM ' + table.USERS + ' WHERE email = ?'
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE email = ? and permission = "active" and status = "active"'
 
         db.query(query, [authData.email], (error, rows, fields) => {
             if (error) {
@@ -76,7 +76,7 @@ function login(authData) {
  */
 function login_as(data) {
     return new Promise((resolve, reject) => {
-        let query = 'SELECT * FROM ' + table.USERS + ' WHERE userID = ?'
+        let query = 'SELECT * FROM ' + table.USERS + ' WHERE userID = ? and permission = "active" and status = "active"'
 
         db.query(query, [data.userID], (error, rows, fields) => {
             if (error) {

@@ -43,7 +43,7 @@ function getOwnerList(uid, data) {
         let query = `SELECT
                     *, users.userID ID, users.phone phone, users.email email
                     FROM users
-                    LEFT JOIN user_relationship USING ( userID )
+                    LEFT JOIN user_relationship USING ( userID ) 
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
