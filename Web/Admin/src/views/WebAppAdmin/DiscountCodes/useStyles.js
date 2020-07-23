@@ -70,6 +70,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   close: {
+    cursor: 'pointer',
     color: 'gray'
   }
 }));
