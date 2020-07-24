@@ -1,10 +1,9 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { List, ListItem, Button} from '@material-ui/core';
-import { controllers } from 'chart.js';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -160,13 +159,77 @@ const SidebarNav = props => {
   const { pages, className, ...rest } = props;
 
   const classes = useStyles();
-
+  let tmp = [];
+  for (let k = 0; k < 12; k++) {
+      tmp[k] = {  active: false, over: false };
+  }
+  let select = JSON.parse(localStorage.getItem('select'));
+  tmp[select] = {  active: true, over: true };
+  const [status, setStatus] = useState(tmp);
+  const handleMouseOver = (event,id,state) => {
+    if(state[id].active === false)
+    if(state[id].over === false) {      
+      setStatus(status.map(
+        (status, index) => 
+          index === id ?
+          {
+            ...status,
+            over: true
+          } :
+          status        
+      ))
+    }
+  }
+  const handleMouseLeave = (event, id,state) => {    
+    if(state[id].active === false)
+    if(state[id].over === true) {      
+      setStatus(status.map(
+        (status, index) => 
+          index === id ?
+          {
+            ...status,
+            over: false
+          } :
+          status        
+      ))
+    }
+  }
+  const handleMouseClick = (event,id, state) => {
+    localStorage.setItem("select", JSON.stringify(id));
+    if(state[id].active === false){
+      setStatus(status.map(
+        (status, index) => 
+          index === id ?
+          {
+            ...status,
+            over: true,
+            active: true
+          } :
+          {
+            ...status,
+            over: false,
+            active: false
+          }           
+      ))
+    }else{
+      setStatus(status.map(
+        (status, index) => 
+          index === id ?
+          {
+            ...status,
+            over: true,
+            active: true
+          } :
+          status
+      ))
+    }
+  }
   return (
     <List
       {...rest}
       className={clsx(classes.root, className)}
     >
-      {pages.map(page => (
+      {pages.map((page,i) => (
         page.status !== 'denied' ?
         <ListItem
           className={classes.item}
@@ -177,9 +240,12 @@ const SidebarNav = props => {
             activeClassName={classes.active}
             className={classes.button}
             component={CustomRouterLink}
+            onMouseOver={(event) => handleMouseOver(event, page.id, status)}
+            onMouseLeave={(event) => handleMouseLeave(event, page.id, status)}
+            onClick={(event) => handleMouseClick(event,page.id, status)}
             to={page.href}
           >
-            <div className={classes.icon}>{page.icon}</div>
+            <div className={classes.icon}>{status[page.id].over === true ? page.activeIcon : page.inactiveIcon}</div>
             {page.title}
           </Button>
         </ListItem>
