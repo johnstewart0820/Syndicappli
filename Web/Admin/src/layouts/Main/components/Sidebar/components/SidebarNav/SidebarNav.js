@@ -246,7 +246,7 @@ const SidebarNav = props => {
             to={page.href}
           >
             <div className={classes.icon}>{status[page.id].over === true ? page.activeIcon : page.inactiveIcon}</div>
-            {page.title}
+            <p style={{color:status[page.id].over === true ? '#00bf82':'white'}}>{page.title}</p>
           </Button>
         </ListItem>
         : null

@@ -94,6 +94,7 @@ const UpgradePlan = props => {
   const classes = useStyles();
   const webApp = authService.getAccess('usertype'); 
   const handleClickHelp = ()=>{
+    localStorage.setItem("select", JSON.stringify(-1));
     history.push(webApp === 'manager' ? "/manager/help" : webApp === 'owner' ? "/owner/help" : "/admin/help");
     window.location.reload();
   } 
