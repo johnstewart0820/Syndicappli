@@ -87,15 +87,15 @@ const useStyles = makeStyles(theme => ({
   down: {
     color:'#707070',
     [theme.breakpoints.up('xl')]: {
-      width: 35,
+      width: 55,
       height: 20
     },
     [theme.breakpoints.down('lg')]: {
-      width: 25,
+      width: 35,
       height: 14
     },
     [theme.breakpoints.down('md')]: {
-      width: 18,
+      width: 25,
       height: 10
     },
   },
@@ -381,7 +381,7 @@ const Topbar = props => {
           </Paper>
         <Button onClick={handleClick}>
             <p className={classes.menu_item}><b>{globalState.firstname + ' ' + globalState.lastname}</b></p>
-            <img src='/images/down.svg' className={classes.down}/>
+            <img src='/images/down.png' className={classes.down}/>
         </Button>
       </Toolbar>
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />

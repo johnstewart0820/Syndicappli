@@ -155,11 +155,13 @@ const SubAccounts = (props) => {
   const [firstname, setFirstName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [mobile, setMobile] = React.useState('');
+  const [address, setAddress] = React.useState('');
 
   const [errorsLastName, setErrorsLastName] = React.useState('');
   const [errorsFirstName, setErrorsFirstName] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsMobile, setErrorsMobile] = React.useState('');
+  const [errorsAddress, setErrorsAddress] = React.useState('');
 
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
@@ -176,6 +178,9 @@ const SubAccounts = (props) => {
   }
   const handleChangeFirstName = (event) => {
     setFirstName(event.target.value);
+  }
+  const handleChangeAddress = (event) => {
+    setAddress(event.target.value);
   }
   const handleChangeEmail = (event) => {
     event.preventDefault();
@@ -246,9 +251,13 @@ const SubAccounts = (props) => {
               else
                 requestdata['lastname'] = '';
               if (data.owner.firstname)
-                requestdata['email'] = data.owner.firstname;
+                requestdata['firstname'] = data.owner.firstname;
               else
                 requestdata['firstname'] = '';
+              if (data.owner.address)
+                requestdata['address'] = data.owner.address;
+              else
+                requestdata['address'] = '';
               if (data.owner.email)
                 requestdata['email'] = data.owner.email;
               else
@@ -341,13 +350,15 @@ const SubAccounts = (props) => {
   };
   const onClickInvite = () => {
     let cnt = 0;
-    if (lastname.length === 0) { setErrorsLastName('please enter your last name'); cnt++; }
+    if (lastname.length === 0) { setErrorsLastName('please enter owner last name'); cnt++; }
     else setErrorsLastName('');
-    if (firstname.length === 0) { setErrorsFirstName('please enter your first name'); cnt++; }
+    if (firstname.length === 0) { setErrorsFirstName('please enter owner first name'); cnt++; }
     else setErrorsFirstName('');
-    if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
+    if (address.length === 0) { setErrorsAddress('please enter owner address'); cnt++; }
+    else setErrorsAddress('');
+    if (email.length === 0) { setErrorsEmail('please enter owner email'); cnt++; }
     else setErrorsEmail('');
-    if (mobile.length === 0) { setErrorsMobile('please enter your mobile number'); cnt++; }
+    if (mobile.length === 0) { setErrorsMobile('please enter owner mobile number'); cnt++; }
     else setErrorsMobile('');
     if (cnt === 0) createOwner();
   }
@@ -473,6 +484,19 @@ const SubAccounts = (props) => {
                 />
                 {errorsFirstName.length > 0 &&
                   <span className={classes.error}>{errorsFirstName}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid xs={2} item><p className={classes.backTitle}>Adresse</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={address}
+                  onChange={handleChangeAddress}
+                  fullWidth
+                />
+                {errorsAddress.length > 0 &&
+                  <span className={classes.error}>{errorsAddress}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

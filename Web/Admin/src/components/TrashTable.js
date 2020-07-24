@@ -255,7 +255,7 @@ export default function TrashTable(props) {
   let tempDirect = [];
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
-      tempDirect[i] = ' ˅';
+      tempDirect[i] = '/images/sort_down.png';
   }
   const [cells] = useState(props.cells);
   const items = props.products;
@@ -275,12 +275,12 @@ export default function TrashTable(props) {
   const Sort = (index = 0) => {
     if (direction[index] === 'asc') {
       tempDirection[index] = 'desc';
-      tempDirect[index] = ' ˄';
+      tempDirect[index] = '/images/sort_up.png';
       setDirect(tempDirect);
       setDirection(tempDirection);
     } else {
       tempDirection[index] = 'asc';
-      tempDirect[index] = ' ˅';
+      tempDirect[index] = '/images/sort_down.png';
       setDirect(tempDirect);
       setDirection(tempDirection);
     }
@@ -290,20 +290,20 @@ export default function TrashTable(props) {
   const handleClick = () => {
     props.onClick();
   }
-  const Value = (val)=>{
-    switch(val){
-      case 'active' : return 'actif'; 
-      case 'inactive' : return 'inactif'; 
-      case 'owner' : return 'Copropriétaire'; 
-      case 'subaccount' : return 'Sous-compte'; 
-      case 'member' : return 'member of the council'; 
-      default: return val; 
+  const Value = (val) => {
+    switch (val) {
+      case 'active': return 'actif';
+      case 'inactive': return 'inactif';
+      case 'owner': return 'Copropriétaire';
+      case 'subaccount': return 'Sous-compte';
+      case 'member': return 'member of the council';
+      default: return val;
     }
   }
   const handleClickRestore = (id) => {
-    if(props.type === 'owner'){
-      props.onClickRestore(items[id].ID,items[id].buildingID);
-    }else{
+    if (props.type === 'owner') {
+      props.onClickRestore(items[id].ID, items[id].buildingID);
+    } else {
       props.onClickRestore(items[id].ID);
     }
   }
@@ -335,11 +335,11 @@ export default function TrashTable(props) {
                     <button
                       type="button"
                       onClick={() => Sort(i)}
+                      style={{ display: 'flex', alignItems: 'center' }}
                     >
                       {cell.field}
+                      <img style={{ width: "30px" }} src={direct[i]}></img>
                     </button>
-                    <i style={{ fontStyle: 'normal' }}>{direct[i]}</i>
-
                   </TableCell>
                 ))
               }
@@ -350,11 +350,11 @@ export default function TrashTable(props) {
             {items.map((item, i) => (
               <TableRow key={i}>
                 {
-                  cells.map((cell,j) => {
+                  cells.map((cell, j) => {
                     const value = item[cell.key];
                     return (
-                      <TableCell 
-                        key={j} 
+                      <TableCell
+                        key={j}
                         disabled={(props.access === 'see' ? true : false)}
                       >
                         {
@@ -365,7 +365,7 @@ export default function TrashTable(props) {
                   })
                 }
                 <TableCell align="right" disabled={(props.access === 'see' ? true : false)} className={classes.editItem} onClick={() => handleClickRestore(i)}>
-                      restaurer
+                  restaurer
                 </TableCell>
               </TableRow>
             ))}

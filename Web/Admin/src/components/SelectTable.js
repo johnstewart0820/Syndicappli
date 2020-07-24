@@ -256,11 +256,10 @@ export default function SelectTable(props) {
   const [direction, setDirection] = useState(props.columns);
   const tempDirection = props.columns;
   let tempDirect = [];
-  // let selectList = [];
   const [selectList, setSelectList] = useState([]);
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
-      tempDirect[i] = ' ˅';
+      tempDirect[i] = '/images/sort_down.png';
   }
   const allData = 3;
   const [cells, setCells] = useState(props.cells);
@@ -279,18 +278,18 @@ export default function SelectTable(props) {
   };
   const handleChangeSelect = (event, id) => {
     let mItems = [...items];
-    if(selectList.length === allData){
-      selectList.splice(0,allData);
+    if (selectList.length === allData) {
+      selectList.splice(0, allData);
       selectList.push(-1);
-    }else{
-        if(selectList.length === 1 && selectList[0] === -1)
-          selectList.splice(0,1);
-        if (event.target.checked === true) {
-          selectList.push(mItems[id].userID);
-        }
-        else {
-          selectList.splice(selectList.indexOf(mItems[id].userID), 1);
-        }
+    } else {
+      if (selectList.length === 1 && selectList[0] === -1)
+        selectList.splice(0, 1);
+      if (event.target.checked === true) {
+        selectList.push(mItems[id].userID);
+      }
+      else {
+        selectList.splice(selectList.indexOf(mItems[id].userID), 1);
+      }
     }
     setSelectList(selectList);
     mItems[id].isChecked = event.target.checked;
@@ -302,12 +301,12 @@ export default function SelectTable(props) {
   const Sort = (index = 0) => {
     if (direction[index] === 'asc') {
       tempDirection[index] = 'desc';
-      tempDirect[index] = ' ˄';
+      tempDirect[index] = '/images/sort_up.png';
       setDirect(tempDirect);
       setDirection(tempDirection);
     } else {
       tempDirection[index] = 'asc';
-      tempDirect[index] = ' ˅';
+      tempDirect[index] = '/images/sort_down.png';
       setDirect(tempDirect);
       setDirection(tempDirection);
     }
@@ -323,7 +322,7 @@ export default function SelectTable(props) {
       }
     }
     else if (selectList.length !== allData) {
-      selectList.splice(0,selectList.length);
+      selectList.splice(0, selectList.length);
       selectList[0] = -1;
       for (let i = 0; i < mItems.length; i++) {
         mItems[i].isChecked = true;
@@ -338,27 +337,27 @@ export default function SelectTable(props) {
   const handleClickExport = () => {
     props.onExport(selectList);
   }
-  const Value = (val)=>{
-    switch(val){
-      case 'active' : return 'actif'; 
-      case 'inactive' : return 'inactif'; 
-      case 'owner' : return 'Copropriétaire'; 
-      case 'subaccount' : return 'Sous-compte'; 
-      case 'member' : return 'member of the council'; 
-      default: return val; 
+  const Value = (val) => {
+    switch (val) {
+      case 'active': return 'actif';
+      case 'inactive': return 'inactif';
+      case 'owner': return 'Copropriétaire';
+      case 'subaccount': return 'Sous-compte';
+      case 'member': return 'member of the council';
+      default: return val;
     }
   }
   const handleClickEdit = (id) => {
-    if(props.type === 'owner'){
-      props.onClickEdit(items[id].ID,items[id].buildingID);
-    }else{
+    if (props.type === 'owner') {
+      props.onClickEdit(items[id].ID, items[id].buildingID);
+    } else {
       props.onClickEdit(items[id].ID);
     }
   }
   const handleClickDelete = (id) => {
-    if(props.type === 'owner'){
-      props.onClickDelete(items[id].ID,items[id].buildingID);
-    }else{
+    if (props.type === 'owner') {
+      props.onClickDelete(items[id].ID, items[id].buildingID);
+    } else {
       props.onClickDelete(items[id].ID);
     }
   }
@@ -404,11 +403,11 @@ export default function SelectTable(props) {
                     <button
                       type="button"
                       onClick={() => Sort(i)}
+                      style={{ display: 'flex', alignItems: 'center' }}
                     >
                       {cell.field}
+                      <img style={{ width: "30px" }} src={direct[i]}></img>
                     </button>
-                    <i style={{ fontStyle: 'normal' }}>{direct[i]}</i>
-
                   </TableCell>
                 ))
               }
@@ -430,9 +429,9 @@ export default function SelectTable(props) {
                   cells.map((cell) => {
                     const value = item[cell.key];
                     return (
-                      <TableCell 
-                        key={cell.key} 
-                        onClick={() => handleClickEdit(i)} 
+                      <TableCell
+                        key={cell.key}
+                        onClick={() => handleClickEdit(i)}
                         disabled={(props.access === 'see' ? true : false)}
                       >
 
@@ -443,14 +442,14 @@ export default function SelectTable(props) {
                   })
                 }
                 <TableCell align="right">
-                  <EditIcon 
-                    className={classes.editItem} 
-                    onClick={() => handleClickEdit(i)} 
+                  <EditIcon
+                    className={classes.editItem}
+                    onClick={() => handleClickEdit(i)}
                     disabled={(props.access === 'see' ? true : false)}
                   />
                       &nbsp;&nbsp;
-                  <DeleteIcon 
-                    className={classes.editItem} 
+                  <DeleteIcon
+                    className={classes.editItem}
                     onClick={() => handleClickDelete(i)}
                     disabled={(props.access === 'see' ? true : false)}
                   />

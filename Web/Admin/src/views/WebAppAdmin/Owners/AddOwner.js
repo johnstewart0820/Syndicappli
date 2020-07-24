@@ -55,6 +55,8 @@ const AddOwner = (props) => {
     const [ownerTitle, setOwnerTitle] = React.useState(0);
     const [lastname, setLastName] = React.useState('');
     const [firstname, setFirstName] = React.useState('');
+    const [lastname1, setLastName1] = React.useState('');
+    const [firstname1, setFirstName1] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [phonenumber, setPhoneNumber] = React.useState('');
     const [address, setAddress] = React.useState('');
@@ -66,6 +68,8 @@ const AddOwner = (props) => {
     const [errorsOwnerTitle, setErrorsOwnerTitle] = React.useState('');
     const [errorsLastname, setErrorsLastname] = React.useState('');
     const [errorsFirstname, setErrorsFirstname] = React.useState('');
+    const [errorsLastname1, setErrorsLastname1] = React.useState('');
+    const [errorsFirstname1, setErrorsFirstname1] = React.useState('');
     const [errorsEmail, setErrorsEmail] = React.useState('');
     const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
     const [errorsAddress, setErrorsAddress] = React.useState('');
@@ -95,6 +99,15 @@ const AddOwner = (props) => {
         if (ownerTitle === 4) {
             if (companyName.length === 0) { setErrorsCompanyName('please enter company name'); cnt++; }
             else setErrorsCompanyName('');
+        } else if (ownerTitle === 3 || ownerTitle === 6) {
+            if (lastname.length === 0) { setErrorsLastname('please enter owner last name'); cnt++; }
+            else setErrorsLastname('');
+            if (firstname.length === 0) { setErrorsFirstname('please enter owner first name'); cnt++; }
+            else setErrorsFirstname('');
+            if (lastname1.length === 0) { setErrorsLastname1('please enter owner last name'); cnt++; }
+            else setErrorsLastname1('');
+            if (firstname1.length === 0) { setErrorsFirstname1('please enter owner first name'); cnt++; }
+            else setErrorsFirstname1('');
         }
         else {
             if (lastname.length === 0) { setErrorsLastname('please enter owner last name'); cnt++; }
@@ -193,6 +206,12 @@ const AddOwner = (props) => {
     }
     const handleChangeFirstName = (event) => {
         setFirstName(event.target.value);
+    }
+    const handleChangeLastName1 = (event) => {
+        setLastName1(event.target.value);
+    }
+    const handleChangeFirstName1 = (event) => {
+        setFirstName1(event.target.value);
     }
     const handleChangeCompanyName = (event) => {
         setCompanyName(event.target.value);
@@ -365,6 +384,8 @@ const AddOwner = (props) => {
         formdata.set('buildingID', buildingID);
         formdata.set('firstname', firstname);
         formdata.set('lastname', lastname);
+        formdata.set('firstname_1', firstname1);
+        formdata.set('lastname_1', lastname1);
         formdata.set('owner_company_name', companyName);
         formdata.set('address', address);
         formdata.set('phone', phonenumber);
@@ -464,35 +485,91 @@ const AddOwner = (props) => {
                                 </Grid>
                             </Grid>
                             :
-                            <Grid item container spacing={1}>
-                                <Grid xs={6} item container alignItems="center" spacing={1}>
-                                    <Grid item><p className={classes.title}>Nom</p></Grid>
-                                    <Grid xs item container direction="column">
-                                        <TextField
-                                            className={classes.text}
-                                            variant="outlined"
-                                            value={lastname}
-                                            onChange={handleChangeLastName}
-                                        />
-                                        {errorsLastname.length > 0 &&
-                                            <span className={classes.error}>{errorsLastname}</span>}
+                            ownerTitle === 3 || ownerTitle === 6?
+                                <Grid item container spacing={1}>
+                                    <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item><p className={classes.title}>Nom</p></Grid>
+                                        <Grid xs item container direction="column">
+                                            <TextField
+                                                className={classes.text}
+                                                variant="outlined"
+                                                value={lastname}
+                                                onChange={handleChangeLastName}
+                                            />
+                                            {errorsLastname.length > 0 &&
+                                                <span className={classes.error}>{errorsLastname}</span>}
+                                        </Grid>
+                                    </Grid>
+                                    <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item><p className={classes.title}>Prénom</p></Grid>
+                                        <Grid xs item container direction="column">
+                                            <TextField
+                                                className={classes.text}
+                                                variant="outlined"
+                                                value={firstname}
+                                                onChange={handleChangeFirstName}
+                                            />
+                                            {errorsFirstname.length > 0 &&
+                                                <span className={classes.error}>{errorsFirstname}</span>}
+                                        </Grid>
+                                    </Grid>
+                                    <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item><p className={classes.title}>Nom</p></Grid>
+                                        <Grid xs item container direction="column">
+                                            <TextField
+                                                className={classes.text}
+                                                variant="outlined"
+                                                value={lastname1}
+                                                onChange={handleChangeLastName1}
+                                            />
+                                            {errorsLastname1.length > 0 &&
+                                                <span className={classes.error}>{errorsLastname1}</span>}
+                                        </Grid>
+                                    </Grid>
+                                    <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item><p className={classes.title}>Prénom</p></Grid>
+                                        <Grid xs item container direction="column">
+                                            <TextField
+                                                className={classes.text}
+                                                variant="outlined"
+                                                value={firstname1}
+                                                onChange={handleChangeFirstName1}
+                                            />
+                                            {errorsFirstname1.length > 0 &&
+                                                <span className={classes.error}>{errorsFirstname1}</span>}
+                                        </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid xs={6} item container alignItems="center" spacing={1}>
-                                    <Grid item><p className={classes.title}>Prénom</p></Grid>
-                                    <Grid xs item container direction="column">
-                                        <TextField
-                                            className={classes.text}
-                                            variant="outlined"
-                                            value={firstname}
-                                            onChange={handleChangeFirstName}
-                                        />
-                                        {errorsFirstname.length > 0 &&
-                                            <span className={classes.error}>{errorsFirstname}</span>}
+                                :
+                                <Grid item container spacing={1}>
+                                    <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item><p className={classes.title}>Nom</p></Grid>
+                                        <Grid xs item container direction="column">
+                                            <TextField
+                                                className={classes.text}
+                                                variant="outlined"
+                                                value={lastname}
+                                                onChange={handleChangeLastName}
+                                            />
+                                            {errorsLastname.length > 0 &&
+                                                <span className={classes.error}>{errorsLastname}</span>}
+                                        </Grid>
                                     </Grid>
-                                </Grid>
+                                    <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item><p className={classes.title}>Prénom</p></Grid>
+                                        <Grid xs item container direction="column">
+                                            <TextField
+                                                className={classes.text}
+                                                variant="outlined"
+                                                value={firstname}
+                                                onChange={handleChangeFirstName}
+                                            />
+                                            {errorsFirstname.length > 0 &&
+                                                <span className={classes.error}>{errorsFirstname}</span>}
+                                        </Grid>
+                                    </Grid>
 
-                            </Grid>
+                                </Grid>
                     }
 
                     <Grid item container spacing={1} direction="column">

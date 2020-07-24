@@ -255,7 +255,7 @@ export default function ProductTable(props) {
   let tempDirect = [];
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
-      tempDirect[i] = ' ˅';
+      tempDirect[i] = '/images/sort_down.png';
   }
   const [cells] = useState(props.cells);
   const items = props.products;
@@ -275,12 +275,12 @@ export default function ProductTable(props) {
   const Sort = (index = 0) => {
     if (direction[index] === 'asc') {
       tempDirection[index] = 'desc';
-      tempDirect[index] = ' ˄';
+      tempDirect[index] = '/images/sort_up.png';
       setDirect(tempDirect);
       setDirection(tempDirection);
     } else {
       tempDirection[index] = 'asc';
-      tempDirect[index] = ' ˅';
+      tempDirect[index] = '/images/sort_down.png';
       setDirect(tempDirect);
       setDirection(tempDirection);
     }
@@ -342,11 +342,12 @@ export default function ProductTable(props) {
                     <button
                       type="button"
                       onClick={() => Sort(i)}
+                      style={{display:'flex', alignItems:'center'}}
                     >
                       {cell.field}
+                    <img style={{width: "30px"}} src={direct[i]}></img>
                     </button>
-                    <i style={{ fontStyle: 'normal' }}>{direct[i]}</i>
-
+                    
                   </TableCell>
                 ))
               }
