@@ -45,8 +45,8 @@ const Login = (props) => {
   const handleChangePassword = (event) => {
     event.preventDefault();
     let errorsPass =
-      event.target.value.length < 4
-        ? 'Password must be 4 characters long!'
+      event.target.value.length === 0
+        ? ''
         : '';
     setPassword(event.target.value);
     setErrorsPassword(errorsPass);
@@ -57,7 +57,7 @@ const Login = (props) => {
     if (email.length === 0) { setErrorsEmail('please enter your eamil'); cnt++; }
     if (password.length === 0) { setErrorsPassword('please enter your password'); cnt++; }
     if (cnt === 0) {
-      if (validateForm(errorsEmail) && validateForm(errorsPassword)) {
+      if (validateForm(errorsEmail) ) {
         if (authService.getFirstLoginState() === "true") {
           firstLogin();
         }
@@ -68,28 +68,6 @@ const Login = (props) => {
       else setErrorsEmail('Email is not valid!');
     }
   }
-  useEffect(()=>{
-    const usertype = authService.getAccess('usertype');  
-    const token = authService.getToken();
-    if(token){
-      switch(usertype){
-        case 'superadmin':
-          history.push('/admin/dashboard');
-          break;
-        case 'admin':
-          history.push('/admin/dashboard');
-          break;
-        case 'manager':
-          history.push('/manager/dashboard');
-          break;
-        case 'owner':
-          history.push('/owner/dashboard');
-          break;
-        default:
-          break;
-      }
-    }
-  });
   const login = () => {
     var data = {};
     data['email'] = email;
