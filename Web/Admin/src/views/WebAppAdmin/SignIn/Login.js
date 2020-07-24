@@ -51,7 +51,28 @@ const Login = (props) => {
     setPassword(event.target.value);
     setErrorsPassword(errorsPass);
   }
-
+  useEffect(()=>{
+    const usertype = authService.getAccess('usertype');  
+    const token = authService.getToken();
+    if(token){
+      switch(usertype){
+        case 'superadmin':
+          history.push('/admin/dashboard');
+          break;
+        case 'admin':
+          history.push('/admin/dashboard');
+          break;
+        case 'manager':
+          history.push('/manager/dashboard');
+          break;
+        case 'owner':
+          history.push('/owner/dashboard');
+          break;
+        default:
+          break;
+      }
+    }
+  });
   const handleClickButton = () => {
     let cnt = 0;
     if (email.length === 0) { setErrorsEmail('please enter your eamil'); cnt++; }
@@ -102,6 +123,7 @@ const Login = (props) => {
                 localStorage.setItem("role_products", JSON.stringify('denied'));
                 localStorage.setItem("role_discountcodes", JSON.stringify('denied'));
                 localStorage.setItem("role_users", JSON.stringify(profile.role_users));
+                localStorage.setItem("select", JSON.stringify(0));
                 history.push('/admin/dashboard');
               }
               else if (profile.usertype === 'manager'){
@@ -122,6 +144,7 @@ const Login = (props) => {
                 localStorage.setItem("role_payments", JSON.stringify('denied'));
                 localStorage.setItem("role_providers", JSON.stringify('denied'));
                 localStorage.setItem("role_team", JSON.stringify(profile.role_team));
+                localStorage.setItem("select", JSON.stringify(0));
                 history.push("/manager/dashboard");
               }
               else if (profile.usertype === 'owner'){
@@ -134,6 +157,7 @@ const Login = (props) => {
                 localStorage.setItem("role_chat", JSON.stringify('denied'));
                 localStorage.setItem("role_events", JSON.stringify('denied'));
                 localStorage.setItem("role_incidents", JSON.stringify('denied'));
+                localStorage.setItem("select", JSON.stringify(0));
                 history.push("/owner/dashboard");
               }
               else
