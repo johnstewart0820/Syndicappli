@@ -16,7 +16,7 @@ import IdCard from 'components/IdCard';
 import { EditOwnerStyles as useStyles } from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import {ManagerService as Service} from '../../../services/api.js';
+import { ManagerService as Service } from '../../../services/api.js';
 import AdminService from 'services/api';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -27,10 +27,26 @@ import Dialog from '@material-ui/core/Dialog';
 
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const SubAccountEdit = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -95,7 +111,7 @@ const SubAccountEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               buildingVote.splice(0, buildingVote.length)
               const data = response.data.data;
@@ -158,18 +174,28 @@ const SubAccountEdit = (props) => {
   };
 
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleLoadIdcard = (event) => {
-    if(event.target.files[0] !== undefined){
-      idcardurls.push(URL.createObjectURL(event.target.files[0]));
-      idcards.push(event.target.files[0])
-      setIdcards(idcards);
-      setIdcardUrls(idcardurls);
-      setState(!state);
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        idcardurls.push(URL.createObjectURL(event.target.files[0]));
+        idcards.push(event.target.files[0])
+        setIdcards(idcards);
+        setIdcardUrls(idcardurls);
+        setState(!state);
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleClickCloseIdcard = (num) => {
@@ -241,19 +267,19 @@ const SubAccountEdit = (props) => {
     setLotsList(lotsList);
     setStateLots(!stateLots);
   }
-  useEffect(()=>{
+  useEffect(() => {
     getBuildings()
-  },[companyID])
-  useEffect(()=>{
+  }, [companyID])
+  useEffect(() => {
     setBuildingList(buildingList)
-  },[buildingList])
+  }, [buildingList])
   const getCompanies = () => {
     setVisibleIndicator(true);
     ManagerService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -287,7 +313,7 @@ const SubAccountEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -358,7 +384,7 @@ const SubAccountEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -389,7 +415,7 @@ const SubAccountEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -455,7 +481,7 @@ const SubAccountEdit = (props) => {
   const handleClickLoginAsOwner = () => {
     window.open('http://localhost:3000');
   }
-  const handleClickResetPassword = ()=>{
+  const handleClickResetPassword = () => {
     var data = {};
     data['email'] = email;
     setVisibleIndicator(true);
@@ -463,7 +489,7 @@ const SubAccountEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               ToastsStore.success(response.data.message);
               break;
@@ -480,25 +506,25 @@ const SubAccountEdit = (props) => {
           setVisibleIndicator(false);
           ToastsStore.error("Can't connect to the Server!");
         }
-      ); 
+      );
   }
-  const handleClickSuspendRestore = ()=>{
-    let data={
-      'status': suspendState === 'Restaurer le compte' ? 'active':'inactive'
+  const handleClickSuspendRestore = () => {
+    let data = {
+      'status': suspendState === 'Restaurer le compte' ? 'active' : 'inactive'
     };
     let params = new URLSearchParams(window.location.search);
     setVisibleIndicator(true);
-    AdminService.setSuspendOwner(params.get('id'),data)
+    AdminService.setSuspendOwner(params.get('id'), data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              if(suspendState === 'Restaurer le compte')
+              if (suspendState === 'Restaurer le compte')
                 setSuspendState('Suspendre le compte');
-              else if(suspendState === 'Suspendre le compte')
+              else if (suspendState === 'Suspendre le compte')
                 setSuspendState('Restaurer le compte');
               break;
             case 401:
@@ -519,7 +545,7 @@ const SubAccountEdit = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
-  const handleClickDeleteOwner = ()=>{
+  const handleClickDeleteOwner = () => {
     setOpenDelete(true);
   }
   const handleDelete = () => {
@@ -530,11 +556,11 @@ const SubAccountEdit = (props) => {
     let data = {
       'status': 'trash'
     }
-    AdminService.deleteOwner(params.get('id'),data)
+    AdminService.deleteOwner(params.get('id'), data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -598,7 +624,7 @@ const SubAccountEdit = (props) => {
                     }}
                     badgeContent={
                       <div>
-                        <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                        <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                         <label htmlFor="img_front">
                           <EditOutlinedIcon className={classes.editAvatar} />
                         </label>
@@ -878,7 +904,7 @@ const SubAccountEdit = (props) => {
                   badge="first"
                 />
 
-                <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners === 'see' ? true : false)} />
+                <input className={classes.input} accept="image/*" type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners === 'see' ? true : false)} />
                 <label htmlFor="img_idcard">
                   {
                     <div className={classes.img}>

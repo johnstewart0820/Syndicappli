@@ -26,11 +26,27 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const CompaniesEdit = (props) => {
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const { history } = props;
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -71,7 +87,7 @@ const CompaniesEdit = (props) => {
   const [manager_page_num, setManagerPageNum] = useState(1);
   const managerSelectList = [20, 50, 100, 200, -1];
   const [managerDeleteId, setManagerDeleteId] = useState(-1);
-  const [managerOpenDelete,setManagerOpenDelete] = useState(false);
+  const [managerOpenDelete, setManagerOpenDelete] = useState(false);
   const managerCellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -91,7 +107,7 @@ const CompaniesEdit = (props) => {
   const [building_sort_method, setBuildingSortMethod] = useState('asc');
   const [building_page_num, setBuildingPageNum] = useState(1);
   const [buildingDeleteId, setBuildingDeleteId] = useState(-1);
-  const [buildingOpenDelete,setBuildingOpenDelete] = useState(false);
+  const [buildingOpenDelete, setBuildingOpenDelete] = useState(false);
   const buildingSelectList = [20, 50, 100, 200, -1];
 
   const [errorsName, setErrorsName] = React.useState('');
@@ -178,9 +194,14 @@ const CompaniesEdit = (props) => {
   }
 
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleClickAddManager = () => {
@@ -195,7 +216,7 @@ const CompaniesEdit = (props) => {
   const handleAddManager = () => {
     ToastsStore.success("Added New Manager successfully!");
     setManagerRefresh(!manager_refresh);
-  };    
+  };
   const handleAddBuilding = () => {
     ToastsStore.success("Added New Building successfully!");
     setBuildingRefresh(!building_refresh);
@@ -292,7 +313,7 @@ const CompaniesEdit = (props) => {
         .then(
           response => {
             setVisibleIndicator(false);
-            switch(response.data.code){
+            switch (response.data.code) {
               case 200:
                 const data = response.data.data.company;
                 localStorage.setItem("token", JSON.stringify(response.data.data.token));
@@ -356,7 +377,7 @@ const CompaniesEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -393,14 +414,14 @@ const CompaniesEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              if(data.totalpage)
+              if (data.totalpage)
                 setManagerTotalPage(data.totalpage);
-              else 
-                setManagerTotalPage(1);  
+              else
+                setManagerTotalPage(1);
               setManagerDataList(data.managerlist);
               break;
             case 401:
@@ -433,7 +454,7 @@ const CompaniesEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -469,14 +490,14 @@ const CompaniesEdit = (props) => {
     handleBuildingCloseDelete();
     setBuildingDeleteId(-1);
     setVisibleIndicator(true);
-    let data={
-      'status':'trash'
+    let data = {
+      'status': 'trash'
     }
-    AdminService.deleteBuilding(buildingDeleteId,data)
+    AdminService.deleteBuilding(buildingDeleteId, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -509,14 +530,14 @@ const CompaniesEdit = (props) => {
     handleManagerCloseDelete();
     setManagerDeleteId(-1);
     setVisibleIndicator(true);
-    let data={
-      'status':'trash'
+    let data = {
+      'status': 'trash'
     }
-    AdminService.deleteManager(managerDeleteId,data)
+    AdminService.deleteManager(managerDeleteId, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -593,7 +614,7 @@ const CompaniesEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
@@ -892,7 +913,7 @@ const CompaniesEdit = (props) => {
           <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseAddManager} className={classes.close} /></Grid>
           <Grid item><p className={classes.sepaTitle}><b>Nouveau Gestionnaire</b></p></Grid>
         </Grid>
-        <AddManager onCancel={handleCloseAddManager} onAdd={handleAddManager} companyID={props.match.params.id}/>
+        <AddManager onCancel={handleCloseAddManager} onAdd={handleAddManager} companyID={props.match.params.id} />
       </Dialog>
       <Dialog
         open={openAddBuilding}
@@ -904,7 +925,7 @@ const CompaniesEdit = (props) => {
           <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleCloseAddBuilding} className={classes.close} /></Grid>
           <Grid xs={12} item ><p className={classes.sepaTitle}><b>Nouvel immmeuble</b></p></Grid>
         </Grid>
-        <AddBuilding onCancel={handleCloseAddBuilding} onAdd={handleAddBuilding} companyID={props.match.params.id}/>
+        <AddBuilding onCancel={handleCloseAddBuilding} onAdd={handleAddBuilding} companyID={props.match.params.id} />
       </Dialog>
       <Dialog
         open={buildingOpenDelete}

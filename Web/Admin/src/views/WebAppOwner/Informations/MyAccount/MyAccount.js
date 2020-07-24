@@ -1,5 +1,5 @@
-import React, {  useEffect } from 'react';
-import {ToastsContainer, ToastsContainerPosition, ToastsStore} from 'react-toasts';
+import React, { useEffect } from 'react';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { makeStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import Badge from '@material-ui/core/Badge';
@@ -8,10 +8,10 @@ import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../../components/MyButton';
-import {withRouter} from 'react-router-dom';
-import { OwnerService as Service} from '../../../../services/api.js';
+import { withRouter } from 'react-router-dom';
+import { OwnerService as Service } from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
-import CircularProgress  from '@material-ui/core/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import IdCard from 'components/IdCard';
 import useGlobal from 'Global/global';
@@ -31,23 +31,23 @@ const useStyles = makeStyles(theme => ({
       paddingRight: theme.spacing(2),
     },
     '& .MuiTextField-root': {
-        // width: '100%'
+      // width: '100%'
     },
-    '& .MuiOutlinedInput-input':{
-        [theme.breakpoints.up('xl')]: {
-          padding: '17px 25px',
-          fontSize: 22,
-        },
-        [theme.breakpoints.down('lg')]: {
-          padding: '12px 18px',
-          fontSize: 15,
-        },
-        [theme.breakpoints.down('md')]: {
-          padding: '8px 13px',
-          fontSize: 11,
-        },
+    '& .MuiOutlinedInput-input': {
+      [theme.breakpoints.up('xl')]: {
+        padding: '17px 25px',
+        fontSize: 22,
+      },
+      [theme.breakpoints.down('lg')]: {
+        padding: '12px 18px',
+        fontSize: 15,
+      },
+      [theme.breakpoints.down('md')]: {
+        padding: '8px 13px',
+        fontSize: 11,
+      },
     },
-    '& p':{
+    '& p': {
       marginBottom: 0
     }
   },
@@ -62,11 +62,11 @@ const useStyles = makeStyles(theme => ({
       minHeight: 33
     },
   },
-  title:{
+  title: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
   },
-  body:{
+  body: {
     [theme.breakpoints.up('xl')]: {
       marginTop: 64,
       padding: 40,
@@ -84,7 +84,7 @@ const useStyles = makeStyles(theme => ({
     },
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
   },
-  item:{
+  item: {
     marginTop: theme.spacing(5),
   },
   paper: {
@@ -110,7 +110,7 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     display: 'none',
-  }, 
+  },
   div_indicator: {
     width: '100%',
     height: '100%',
@@ -124,7 +124,7 @@ const useStyles = makeStyles(theme => ({
   indicator: {
     color: 'gray'
   },
-  backTitle:{
+  backTitle: {
     cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
@@ -136,7 +136,7 @@ const useStyles = makeStyles(theme => ({
       fontSize: 9,
     },
   },
-  itemTitle:{
+  itemTitle: {
     [theme.breakpoints.up('xl')]: {
       fontSize: 25,
     },
@@ -147,30 +147,30 @@ const useStyles = makeStyles(theme => ({
       fontSize: 13,
     },
   },
-  error:{
-      color: 'red',
-      [theme.breakpoints.up('xl')]: {
-        fontSize: 18,
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize: 13,
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize: 9,
-      },
+  error: {
+    color: 'red',
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 18,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 13,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 9,
+    },
   },
-  headerTitle:{
-      [theme.breakpoints.up('xl')]: {
-        fontSize :35
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize :25
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize :18
-      },
+  headerTitle: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 35
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 25
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 18
+    },
   },
-  editAvatar:{
+  editAvatar: {
     [theme.breakpoints.up('xl')]: {
       width: 54,
       height: 54,
@@ -183,9 +183,9 @@ const useStyles = makeStyles(theme => ({
       width: 27,
       height: 27,
     },
-      backgroundColor: 'white',
-      borderRadius: '50%',
-      color: 'gray'
+    backgroundColor: 'white',
+    borderRadius: '50%',
+    color: 'gray'
   },
   img: {
     cursor: 'pointer',
@@ -213,50 +213,66 @@ const useStyles = makeStyles(theme => ({
       marginRight: 15
     },
   },
-  plus:{
+  plus: {
     color: '#707070',
     [theme.breakpoints.up('xl')]: {
-      width:60 , 
+      width: 60,
       height: 60,
     },
     [theme.breakpoints.down('lg')]: {
-      width:42 , 
+      width: 42,
       height: 42,
     },
     [theme.breakpoints.down('md')]: {
-      width:29 , 
+      width: 29,
       height: 29,
     },
   },
 }));
 const OwnerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
-const MyAccount = (props) => {
-  const {history} = props;
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
 
-  const token = authService.getToken();    
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
+const MyAccount = (props) => {
+  const { history } = props;
+
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
   const classes = useStyles();
   const [globalState, globalActions] = useGlobal();
-  const [lastname , setLastName] = React.useState('');
-  const [firstname , setFirstName] = React.useState('');
-  const [address , setAddress] = React.useState('');
-  const [email , setEmail] = React.useState('');
-  const [phone , setPhone] = React.useState('');
-  const [old_password , setOldPassword] = React.useState('');
-  const [new_password , setNewPassword] = React.useState('');
-  const [confirm_password , setConfirmPassword] = React.useState('');
+  const [lastname, setLastName] = React.useState('');
+  const [firstname, setFirstName] = React.useState('');
+  const [address, setAddress] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [phone, setPhone] = React.useState('');
+  const [old_password, setOldPassword] = React.useState('');
+  const [new_password, setNewPassword] = React.useState('');
+  const [confirm_password, setConfirmPassword] = React.useState('');
 
-  const [errorsLastname , setErrorsLastName] = React.useState('');
-  const [errorsFirstname , setErrorsFirstName] = React.useState('');
-  const [errorsAddress , setErrorsAddress] = React.useState('');
-  const [errorsEmail , setErrorsEmail] = React.useState('');
-  const [errorsPhone , setErrorsPhone] = React.useState('');
-  const [errorsOldPassword , setErrorsOldPassword] = React.useState('');
-  const [errorsNewPassword , setErrorsNewPassword] = React.useState('');
-  const [errorsConfirmPassword , setErrorsConfirmPassword] = React.useState('');
+  const [errorsLastname, setErrorsLastName] = React.useState('');
+  const [errorsFirstname, setErrorsFirstName] = React.useState('');
+  const [errorsAddress, setErrorsAddress] = React.useState('');
+  const [errorsEmail, setErrorsEmail] = React.useState('');
+  const [errorsPhone, setErrorsPhone] = React.useState('');
+  const [errorsOldPassword, setErrorsOldPassword] = React.useState('');
+  const [errorsNewPassword, setErrorsNewPassword] = React.useState('');
+  const [errorsConfirmPassword, setErrorsConfirmPassword] = React.useState('');
 
   const [avatarurl, setAvatarUrl] = React.useState('');
   const [avatar, setAvatar] = React.useState(null);
@@ -265,153 +281,163 @@ const MyAccount = (props) => {
   const [idcards, setIdcards] = React.useState([]);
   const [state, setState] = React.useState(false);
 
-  const handleChangeLastName = (event)=>{
+  const handleChangeLastName = (event) => {
     setLastName(event.target.value);
   }
-  const handleChangeFirstName = (event)=>{
+  const handleChangeFirstName = (event) => {
     setFirstName(event.target.value);
   }
-  const handleChangeAddress = (event)=>{
+  const handleChangeAddress = (event) => {
     setAddress(event.target.value);
   }
-  const handleChangeEmail = (event)=>{
+  const handleChangeEmail = (event) => {
     event.preventDefault();
-    let errorsMail = 
-          validEmailRegex.test(event.target.value)
-            ? ''
-            : 'Email is not valid!';
-          setEmail(event.target.value);
-          setErrorsEmail(errorsMail);
+    let errorsMail =
+      validEmailRegex.test(event.target.value)
+        ? ''
+        : 'Email is not valid!';
+    setEmail(event.target.value);
+    setErrorsEmail(errorsMail);
   }
-  const handleChangePhone = (event)=>{
+  const handleChangePhone = (event) => {
     setPhone(event.target.value);
   }
-  const handleChangeOldPassword = (event)=>{
+  const handleChangeOldPassword = (event) => {
     setOldPassword(event.target.value);
   }
-  const handleChangeNewPassword = (event)=>{
+  const handleChangeNewPassword = (event) => {
     setNewPassword(event.target.value);
   }
-  const handleChangeConfirmPassword = (event)=>{
+  const handleChangeConfirmPassword = (event) => {
     setConfirmPassword(event.target.value);
   }
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
 
     setVisibleIndicator(true);
     OwnerService.getProfile()
-    .then(      
-      response => {        
-        setVisibleIndicator(false);  
-        switch(response.data.code){
-          case 200:
-            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-            const profile = response.data.data.profile;
-            setLastName(profile.lastname?profile.lastname:'');
-            setFirstName(profile.firstname?profile.firstname:'');
-            setEmail(profile.email?profile.email:'');
-            setPhone(profile.phone? profile.phone:'');
-            setAvatarUrl(profile.photo_url? profile.photo_url:'');
-            setAddress(profile.address? profile.address:'');
-            let urls = [];
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              const profile = response.data.data.profile;
+              setLastName(profile.lastname ? profile.lastname : '');
+              setFirstName(profile.firstname ? profile.firstname : '');
+              setEmail(profile.email ? profile.email : '');
+              setPhone(profile.phone ? profile.phone : '');
+              setAvatarUrl(profile.photo_url ? profile.photo_url : '');
+              setAddress(profile.address ? profile.address : '');
+              let urls = [];
               if (profile.identity_card_front)
                 urls.push(profile.identity_card_front);
               if (profile.identity_card_back)
                 urls.push(profile.identity_card_back);
               setIdcardUrls(urls);
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            ToastsStore.error(response.data.message);
-        }
-      },
-      error => {
-        console.log('fail');        
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          console.log('fail');
           setVisibleIndicator(false);
-      }
-    );   
+        }
+      );
   }, []);
 
-  const onClickSave = (event)=>{
+  const onClickSave = (event) => {
     let cnt = 0;
-    if(lastname.length === 0) {setErrorsLastName('please enter your last name'); cnt++;}
+    if (lastname.length === 0) { setErrorsLastName('please enter your last name'); cnt++; }
     else setErrorsLastName('');
-    if(firstname.length === 0) {setErrorsFirstName('please enter your first name'); cnt++;}
+    if (firstname.length === 0) { setErrorsFirstName('please enter your first name'); cnt++; }
     else setErrorsFirstName('');
-    if(address.length === 0) {setErrorsAddress('please enter your address'); cnt++;}
+    if (address.length === 0) { setErrorsAddress('please enter your address'); cnt++; }
     else setErrorsAddress('');
-    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
+    if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
-    if(phone.length === 0) {setErrorsPhone('please enter your phone number'); cnt++;}
+    if (phone.length === 0) { setErrorsPhone('please enter your phone number'); cnt++; }
     else setErrorsPhone('');
     // if(old_password.length === 0) {setErrorsOldPassword('please enter your current password'); }
-    if(new_password.length !== 0 && new_password.length < 5) {setErrorsNewPassword('Password must be 5 characters long!'); }
+    if (new_password.length !== 0 && new_password.length < 5) { setErrorsNewPassword('Password must be 5 characters long!'); }
     else setErrorsNewPassword('');
-     // if(confirm_password.length === 0) {setErrorsConfirmPassword('please enter your confirm password');}
-    if(new_password !== confirm_password) {setErrorsConfirmPassword('mismatch your new password'); cnt++}
+    // if(confirm_password.length === 0) {setErrorsConfirmPassword('please enter your confirm password');}
+    if (new_password !== confirm_password) { setErrorsConfirmPassword('mismatch your new password'); cnt++ }
     else setErrorsConfirmPassword('');
-    if(cnt === 0) setData();
+    if (cnt === 0) setData();
   }
-  const setData = ()=>{
+  const setData = () => {
     let formdata = new FormData();
 
     formdata.set('lastname', lastname);
     formdata.set('firstname', firstname);
     formdata.set('email', email);
     formdata.set('phone', phone);
-    formdata.set('address',address);
+    formdata.set('address', address);
     formdata.set('old_password', old_password);
     formdata.set('new_password', new_password);
-    formdata.set('avatar', avatar === null? '':avatar);
+    formdata.set('avatar', avatar === null ? '' : avatar);
     formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0]);
     formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1]);
     setVisibleIndicator(true);
     OwnerService.updateProfile(formdata)
-    .then(      
-      response => {        
-         setVisibleIndicator(false); 
-         switch(response.data.code){
-          case 200:
-            ToastsStore.success("Updated successfully!");
-           setErrorsOldPassword('');
-           localStorage.setItem("token", JSON.stringify(response.data.data.token));
-           globalActions.setFirstName(firstname);
-           globalActions.setLastName(lastname);
-           globalActions.setAvatarUrl(avatarurl);
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            ToastsStore.error(response.data.message);
-            setErrorsOldPassword('The current password is not correct');
-        } 
-      },
-      error => {
-        ToastsStore.error("Can't connect to the server!");     
-         setVisibleIndicator(false);
-      }
-    );  
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              ToastsStore.success("Updated successfully!");
+              setErrorsOldPassword('');
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              globalActions.setFirstName(firstname);
+              globalActions.setLastName(lastname);
+              globalActions.setAvatarUrl(avatarurl);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+              setErrorsOldPassword('The current password is not correct');
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
   const handleLoadIdcard = (event) => {
-    if(event.target.files[0] !== undefined){
-      idcardurls.push(URL.createObjectURL(event.target.files[0]));
-      idcards.push(event.target.files[0])
-      setIdcards(idcards);
-      setIdcardUrls(idcardurls);
-      setState(!state);
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        idcardurls.push(URL.createObjectURL(event.target.files[0]));
+        idcards.push(event.target.files[0])
+        setIdcards(idcards);
+        setIdcardUrls(idcardurls);
+        setState(!state);
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleClickCloseIdcard = (num) => {
@@ -425,51 +451,51 @@ const MyAccount = (props) => {
   }
   return (
     <div>
-    {
-      visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-    }
-    <div className={classes.root}>
-      <div className={classes.title}>
-        <Grid item container justify="space-around">
-          <Grid item xs={6} container justify="flex-start" >
-            <Grid item>
-              <Typography variant="h2" className={classes.headerTitle}>
-                <b>Mon Compte</b>
-              </Typography>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
+      <div className={classes.root}>
+        <div className={classes.title}>
+          <Grid item container justify="space-around">
+            <Grid item xs={6} container justify="flex-start" >
+              <Grid item>
+                <Typography variant="h2" className={classes.headerTitle}>
+                  <b>Mon Compte</b>
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid item xs={6} container justify="flex-end" >
             </Grid>
           </Grid>
-          <Grid item xs={6} container justify="flex-end" >
-          </Grid>
-        </Grid>
-      </div>
-      <div className={classes.tool}>
-      </div> 
-      <div className={classes.body}>
-      <Grid container direction="column" spacing={5}>
+        </div>
+        <div className={classes.tool}>
+        </div>
+        <div className={classes.body}>
+          <Grid container direction="column" spacing={5}>
             <Grid item container spacing={2} direction="row" justify="space-between">
               <Grid item container direction="column" justify="space-between" xs={5}>
                 <Grid item container><p className={classes.headerTitle}>{firstname} {lastname}</p></Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                    <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
-                    <Grid xs item container alignItems="stretch" direction="column">
-                      <Grid item>
-                        <TextField 
-                          id="outlined-basic" 
-                          variant="outlined"
-                          value={lastname}
-                          onChange={handleChangeLastName}
-                        />
-                      </Grid>
-                      {errorsLastname.length > 0 && 
-                      <span className={classes.error}>{errorsLastname}</span>}
+                  <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
+                  <Grid xs item container alignItems="stretch" direction="column">
+                    <Grid item>
+                      <TextField
+                        id="outlined-basic"
+                        variant="outlined"
+                        value={lastname}
+                        onChange={handleChangeLastName}
+                      />
                     </Grid>
+                    {errorsLastname.length > 0 &&
+                      <span className={classes.error}>{errorsLastname}</span>}
+                  </Grid>
                 </Grid>
               </Grid>
               <Grid item container xs={5} direction="row-reverse">
-                <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
+                <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                 <label htmlFor="img_front">
-                    {
-                      <Badge
+                  {
+                    <Badge
                       overlap="circle"
                       anchorOrigin={{
                         vertical: 'bottom',
@@ -480,12 +506,12 @@ const MyAccount = (props) => {
                         padding: '0 4px',
                       }}
                       badgeContent={
-                        <EditOutlinedIcon className={classes.editAvatar}/>
+                        <EditOutlinedIcon className={classes.editAvatar} />
                       }
                     >
                       <Avatar className={classes.size} alt={firstname + ' ' + lastname} src={avatarurl} />
                     </Badge>
-                    }
+                  }
                 </label>
               </Grid>
             </Grid>
@@ -493,108 +519,108 @@ const MyAccount = (props) => {
               <Grid item><p className={classes.itemTitle}>Prénom</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
+                    id="outlined-basic"
                     variant="outlined"
                     value={firstname}
                     onChange={handleChangeFirstName}
                   />
-                </Grid>  
-                {errorsFirstname.length > 0 && 
-                      <span className={classes.error}>{errorsFirstname}</span>}
+                </Grid>
+                {errorsFirstname.length > 0 &&
+                  <span className={classes.error}>{errorsFirstname}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
+                    id="outlined-basic"
                     variant="outlined"
                     value={address}
                     onChange={handleChangeAddress}
                   />
-                </Grid>  
-                {errorsAddress.length > 0 && 
-                      <span className={classes.error}>{errorsAddress}</span>}
+                </Grid>
+                {errorsAddress.length > 0 &&
+                  <span className={classes.error}>{errorsAddress}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Email</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
+                    id="outlined-basic"
                     variant="outlined"
                     value={email}
                     onChange={handleChangeEmail}
                   />
-                </Grid>  
-                {errorsEmail.length > 0 && 
-                      <span className={classes.error}>{errorsEmail}</span>}
+                </Grid>
+                {errorsEmail.length > 0 &&
+                  <span className={classes.error}>{errorsEmail}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Telephone</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
+                    id="outlined-basic"
                     variant="outlined"
                     value={phone}
                     onChange={handleChangePhone}
                   />
-                </Grid>  
-                {errorsPhone.length > 0 && 
-                      <span className={classes.error}>{errorsPhone}</span>}
+                </Grid>
+                {errorsPhone.length > 0 &&
+                  <span className={classes.error}>{errorsPhone}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Mot de passe actuel</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
+                    id="outlined-basic"
                     variant="outlined"
                     value={old_password}
                     type="password"
                     onChange={handleChangeOldPassword}
                   />
                 </Grid>
-                {errorsOldPassword.length > 0 && 
-                      <span className={classes.error}>{errorsOldPassword}</span>}
+                {errorsOldPassword.length > 0 &&
+                  <span className={classes.error}>{errorsOldPassword}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Nouveau mot de passe</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
+                    id="outlined-basic"
                     variant="outlined"
                     value={new_password}
                     type="password"
                     onChange={handleChangeNewPassword}
                   />
                 </Grid>
-                {errorsNewPassword.length > 0 && 
-                      <span className={classes.error}>{errorsNewPassword}</span>}
+                {errorsNewPassword.length > 0 &&
+                  <span className={classes.error}>{errorsNewPassword}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Confirmer le nouveau mot de passe</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
+                  <TextField
+                    id="outlined-basic"
                     variant="outlined"
                     value={confirm_password}
                     type="password"
                     onChange={handleChangeConfirmPassword}
                   />
                 </Grid>
-                {errorsConfirmPassword.length > 0 && 
-                      <span className={classes.error}>{errorsConfirmPassword}</span>}
+                {errorsConfirmPassword.length > 0 &&
+                  <span className={classes.error}>{errorsConfirmPassword}</span>}
               </Grid>
             </Grid>
             <Grid xs={12} item container direction="column" style={{ marginTop: 30 }}>
@@ -608,7 +634,7 @@ const MyAccount = (props) => {
                   badge="first"
                 />
 
-                <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} />
+                <input className={classes.input} accept="image/*" type="file" id="img_idcard" onChange={handleLoadIdcard} />
                 <label htmlFor="img_idcard">
                   {
                     <div className={classes.img}>
@@ -618,13 +644,13 @@ const MyAccount = (props) => {
                 </label>
               </Grid>
             </Grid>
-            <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-              <MyButton   name={"Sauvegarder"} color={"1"} onClick = {onClickSave}/>
+            <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
+              <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} />
             </Grid>
           </Grid>
+        </div>
       </div>
-    </div>
-    <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

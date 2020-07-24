@@ -6,15 +6,31 @@ import TextField from '@material-ui/core/TextField';
 import MySelect from '../../../components/MySelect';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { AddTeamMemberStyles as useStyles } from './useStyles';
-import {ManagerService as Service} from '../../../services/api.js';
+import { ManagerService as Service } from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from 'services/authService';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+    "image/apng",
+    "image/bmp",
+    "image/gif",
+    "image/jpeg",
+    "image/pjpeg",
+    "image/png",
+    "image/svg+xml",
+    "image/tiff",
+    "image/webp",
+    "image/x-icon"
+];
+
+function validFileType(file) {
+    return fileTypes.includes(file.type);
+}
 const AddTeamMember = (props) => {
-    const {history} = props;
+    const { history } = props;
     const classes = useStyles();
     const permissionList = ['Voir', 'Editer', 'Refusé'];
     const role_permission = ['see', 'edit', 'denied'];
@@ -30,7 +46,7 @@ const AddTeamMember = (props) => {
     const [buildingList, setBuildingList] = React.useState([]);
     let buildingID1 = [];
     const [buildings1, setBuildings1] = React.useState([]);
-    const [multiID, setMultiID]=React.useState([]);
+    const [multiID, setMultiID] = React.useState([]);
     const [suggestions, setSuggestions] = React.useState([]);
     const [buildingsPermission, setBuildingsPermission] = React.useState(0);
     const [chatPermission, setChatPermission] = React.useState(0);
@@ -71,9 +87,14 @@ const AddTeamMember = (props) => {
         }
     }
     const handleLoadFront = (event) => {
-        if(event.target.files[0] !== undefined){
-            setAvatar(event.target.files[0]);
-            setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+        if (validFileType(event.target.files[0])) {
+            if (event.target.files[0] !== undefined) {
+                setAvatar(event.target.files[0]);
+                setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+            }
+        }
+        else {
+            ToastsStore.warning('Image format is not correct.');
         }
     }
 
@@ -97,7 +118,7 @@ const AddTeamMember = (props) => {
     }
     const handleChangeBuildings = async (val) => {
         if (val !== null) {
-             setBuildings1(val)
+            setBuildings1(val)
             buildingID1.splice(0, buildingID1.length)
             for (let i = 0; i < val.length; i++)
                 for (let j = 0; j < buildingList.length; j++)
@@ -150,32 +171,32 @@ const AddTeamMember = (props) => {
     const handleChangePaymentMethodsPermission = (val) => {
         setPaymentMethodsPermission(val);
     }
-    useEffect(()=>{
+    useEffect(() => {
         getCompanies();
-    },[])
+    }, [])
 
     const getCompanies = () => {
         ManagerService.getCompanyListByUser()
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.companylist.map((item) => (
-                              setCompanyID(item.companyID)
+                                setCompanyID(item.companyID)
                             )
                             );
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -195,10 +216,10 @@ const AddTeamMember = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
-                            let buildings=[]
+                            let buildings = []
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.buildinglist.map((item, i) => (
                                 buildings[i] = { label: item.name, value: item.buildingID }
@@ -206,15 +227,15 @@ const AddTeamMember = (props) => {
                             );
                             setBuildingList(data.buildinglist);
                             setSuggestions(buildings);
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -293,21 +314,21 @@ const AddTeamMember = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             props.onAdd();
                             handleClose();
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -399,7 +420,7 @@ const AddTeamMember = (props) => {
                     <Grid xs={12} item container direction="column" >
                         <p className={classes.title}>Photo</p>
                         <Grid item container justify="flex-start">
-                            <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                            <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                             <label htmlFor="img_front">
                                 {
                                     avatarurl === '' ?

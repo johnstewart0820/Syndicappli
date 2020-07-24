@@ -10,10 +10,26 @@ import AdminService from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from 'services/authService';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+    "image/apng",
+    "image/bmp",
+    "image/gif",
+    "image/jpeg",
+    "image/pjpeg",
+    "image/png",
+    "image/svg+xml",
+    "image/tiff",
+    "image/webp",
+    "image/x-icon"
+];
+
+function validFileType(file) {
+    return fileTypes.includes(file.type);
+}
 const AddManager = (props) => {
-    const {history} = props;
+    const { history } = props;
     const classes = useStyles();
     const permissionList = ['Voir', 'Editer', 'Refusé'];
     const role_permission = ['see', 'edit', 'denied'];
@@ -29,7 +45,7 @@ const AddManager = (props) => {
     let buildingID1 = [];
     const [buildings, setBuildings] = React.useState([]);
     const [multiID, setMultiID] = React.useState([]);
-    const [suggestions,setSuggestions] = React.useState([]);
+    const [suggestions, setSuggestions] = React.useState([]);
     const [buildingsPermission, setBuildingsPermission] = React.useState(0);
     const [chatPermission, setChatPermission] = React.useState(0);
     const [ownersPermission, setOwnersPermission] = React.useState(0);
@@ -70,9 +86,14 @@ const AddManager = (props) => {
         }
     }
     const handleLoadFront = (event) => {
-        if(event.target.files[0] !== undefined){
-            setAvatar(event.target.files[0]);
-            setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+        if (validFileType(event.target.files[0])) {
+            if (event.target.files[0] !== undefined) {
+                setAvatar(event.target.files[0]);
+                setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+            }
+        }
+        else {
+            ToastsStore.warning('Image format is not coreect.');
         }
     }
 
@@ -95,7 +116,7 @@ const AddManager = (props) => {
         setPhoneNumber(event.target.value);
     }
     const handleChangeBuildings = async (val) => {
-        console.log('var',val)
+        console.log('var', val)
         if (val !== null) {
             await setBuildings(val);
             buildingID1.splice(0, buildingID1.length)
@@ -163,7 +184,7 @@ const AddManager = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
@@ -174,15 +195,15 @@ const AddManager = (props) => {
                             );
                             setBuildingList(data.buildinglist);
                             setSuggestions(buildings1);
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -261,21 +282,21 @@ const AddManager = (props) => {
             .then(
                 response => {
                     setVisibleIndicator(false);
-                    switch(response.data.code){
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             props.onAdd();
                             handleClose();
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      }
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     ToastsStore.error("Can't connect to the server!");
@@ -367,7 +388,7 @@ const AddManager = (props) => {
                     <Grid xs={12} item container direction="column" >
                         <p className={classes.title}>Photo</p>
                         <Grid item container justify="flex-start">
-                            <input className={classes.input} type="file" id="img_front1" onChange={handleLoadFront} />
+                            <input className={classes.input} accept="image/*" type="file" id="img_front1" onChange={handleLoadFront} />
                             <label htmlFor="img_front1">
                                 {
                                     avatarurl === '' ?

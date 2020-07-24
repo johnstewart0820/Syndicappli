@@ -12,7 +12,7 @@ import authService from '../../../services/authService.js';
 import Multiselect from '../../../components/Multiselect.js';
 import MyDialog from '../../../components/MyDialog.js';
 import { EditTeamMemberStyles as useStyles } from './useStyles';
-import {ManagerService as Service} from '../../../services/api.js';
+import { ManagerService as Service } from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -23,10 +23,26 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const TeamMemberEdit = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -58,7 +74,7 @@ const TeamMemberEdit = (props) => {
   const [addonsPermission, setAddonsPermission] = React.useState(0);
   const [invoicesPermission, setInvoicesPermission] = React.useState(0);
   const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
-  const [apartNumber, setApartNumber]  =React.useState('');
+  const [apartNumber, setApartNumber] = React.useState('');
 
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
   const [errorsLastname, setErrorsLastname] = React.useState('');
@@ -70,11 +86,11 @@ const TeamMemberEdit = (props) => {
   const [buildingList, setBuildingList] = React.useState([]);
   let buildingID = [];
   const [buildings, setBuildings] = React.useState([]);
-  const [multiID, setMultiID] =React.useState([]);
+  const [multiID, setMultiID] = React.useState([]);
   const [suggestions, setSuggestions] = React.useState([]);
-  useEffect(()=>{
+  useEffect(() => {
     getCompanies();
-  },[accessTeam]);
+  }, [accessTeam]);
 
   const getCompanies = () => {
     setVisibleIndicator(true);
@@ -82,7 +98,7 @@ const TeamMemberEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -106,9 +122,9 @@ const TeamMemberEdit = (props) => {
         }
       );
   }
-  useEffect(()=>{
+  useEffect(() => {
     getBuildings()
-  },[companyID]);
+  }, [companyID]);
   const getBuildings = () => {
     const requestData = {
       'companyID': companyID
@@ -118,7 +134,7 @@ const TeamMemberEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -147,73 +163,73 @@ const TeamMemberEdit = (props) => {
       );
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getManager()
-  },[buildingList])
-  const getManager = ()=>{
+  }, [buildingList])
+  const getManager = () => {
     setVisibleIndicator(true);
     ManagerService.getTeamMember(props.match.params.id)
-    .then(
-      response => {
-        setVisibleIndicator(false);
-        switch(response.data.code){
-          case 200:
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            const profile = data.manager;
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhoneNumber(profile.phone);
-            setAvatarUrl(profile.photo_url);
-            setAddonsPermission(role_permission.indexOf(profile.role_addons));
-            setAnnouncementsPermission(role_permission.indexOf(profile.role_advertisement));
-            setAssembliesPermission(role_permission.indexOf(profile.role_assemblies));
-            setBuildingsPermission(role_permission.indexOf(profile.role_buildings));
-            setChatPermission(role_permission.indexOf(profile.role_chat));
-            setCompanyPermission(role_permission.indexOf(profile.role_company));
-            setEventsPermission(role_permission.indexOf(profile.role_events));
-            setIncidentsPermission(role_permission.indexOf(profile.role_incidents));
-            setInvoicesPermission(role_permission.indexOf(profile.role_invoices));
-            setOwnersPermission(role_permission.indexOf(profile.role_owners));
-            setPaymentMethodsPermission(role_permission.indexOf(profile.role_payments));
-            setProvidersPermission(role_permission.indexOf(profile.role_providers));
-            setTeamPermission(role_permission.indexOf(profile.role_team));
-            setApartNumber(profile.count);
-            if(profile.status === 'active')
-              setSuspendState('Suspendre le compte');
-            else if(profile.status === 'inactive')
-              setSuspendState('Restaurer le compte');
-            let buildingID = [];
-            data.buildinglist.map((item, i) => (
-              buildingID[i] = item.relationID
-            )
-            );
-            let buildings = [];
-            for(let i = 0 ; i < buildingID.length; i++)
-              for(let j = 0; j < buildingList.length; j++)
-                if(buildingID[i] === buildingList[j].buildingID){
-                  buildings[i] = {label:buildingList[j].name,value:buildingList[j].buildingID};
-                  break;
-                }
-            setBuildings(buildings);
-            setMultiID(buildingID);
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            ToastsStore.error(response.data.message);
-            
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              const profile = data.manager;
+              setLastName(profile.lastname);
+              setFirstName(profile.firstname);
+              setEmail(profile.email);
+              setPhoneNumber(profile.phone);
+              setAvatarUrl(profile.photo_url);
+              setAddonsPermission(role_permission.indexOf(profile.role_addons));
+              setAnnouncementsPermission(role_permission.indexOf(profile.role_advertisement));
+              setAssembliesPermission(role_permission.indexOf(profile.role_assemblies));
+              setBuildingsPermission(role_permission.indexOf(profile.role_buildings));
+              setChatPermission(role_permission.indexOf(profile.role_chat));
+              setCompanyPermission(role_permission.indexOf(profile.role_company));
+              setEventsPermission(role_permission.indexOf(profile.role_events));
+              setIncidentsPermission(role_permission.indexOf(profile.role_incidents));
+              setInvoicesPermission(role_permission.indexOf(profile.role_invoices));
+              setOwnersPermission(role_permission.indexOf(profile.role_owners));
+              setPaymentMethodsPermission(role_permission.indexOf(profile.role_payments));
+              setProvidersPermission(role_permission.indexOf(profile.role_providers));
+              setTeamPermission(role_permission.indexOf(profile.role_team));
+              setApartNumber(profile.count);
+              if (profile.status === 'active')
+                setSuspendState('Suspendre le compte');
+              else if (profile.status === 'inactive')
+                setSuspendState('Restaurer le compte');
+              let buildingID = [];
+              data.buildinglist.map((item, i) => (
+                buildingID[i] = item.relationID
+              )
+              );
+              let buildings = [];
+              for (let i = 0; i < buildingID.length; i++)
+                for (let j = 0; j < buildingList.length; j++)
+                  if (buildingID[i] === buildingList[j].buildingID) {
+                    buildings[i] = { label: buildingList[j].name, value: buildingList[j].buildingID };
+                    break;
+                  }
+              setBuildings(buildings);
+              setMultiID(buildingID);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        ToastsStore.error("Can't connect to the server!");
-        setVisibleIndicator(false);
-      }
-    );
+      );
   }
 
   const handleClick = () => {
@@ -274,9 +290,14 @@ const TeamMemberEdit = (props) => {
     }
   };
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleChangeBuildingsPermission = (val) => {
@@ -318,22 +339,22 @@ const TeamMemberEdit = (props) => {
   const handleChangePaymentMethodsPermission = (val) => {
     setPaymentMethodsPermission(val);
   }
-  const handleClickSuspendRestore = ()=>{
-    let data={
-      'status': suspendState === 'Restaurer le compte' ? 'active':'inactive'
+  const handleClickSuspendRestore = () => {
+    let data = {
+      'status': suspendState === 'Restaurer le compte' ? 'active' : 'inactive'
     };
     setVisibleIndicator(true);
-    ManagerService.setSuspendTeamMember(props.match.params.id,data)
+    ManagerService.setSuspendTeamMember(props.match.params.id, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              if(suspendState === 'Restaurer le compte')
+              if (suspendState === 'Restaurer le compte')
                 setSuspendState('Suspendre le compte');
-              else if(suspendState === 'Suspendre le compte')
+              else if (suspendState === 'Suspendre le compte')
                 setSuspendState('Restaurer le compte');
               break;
             case 401:
@@ -354,7 +375,7 @@ const TeamMemberEdit = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
-  const handleClickResetPassword = ()=>{
+  const handleClickResetPassword = () => {
     var data = {};
     data['email'] = email;
     setVisibleIndicator(true);
@@ -362,7 +383,7 @@ const TeamMemberEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               ToastsStore.success(response.data.message);
               break;
@@ -379,12 +400,12 @@ const TeamMemberEdit = (props) => {
           setVisibleIndicator(false);
           ToastsStore.error("Can't connect to the Server!");
         }
-      ); 
+      );
   }
   const handleClickLoginAsManager = () => {
     window.open('http://localhost:3000');
   }
-  const handleClickDeleteManager = ()=>{
+  const handleClickDeleteManager = () => {
     setOpenDelete(true);
     setDeleteId(props.match.params.id);
   }
@@ -392,14 +413,14 @@ const TeamMemberEdit = (props) => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    let data={
+    let data = {
       'status': 'trash'
     }
-    ManagerService.deleteTeamMember(deleteId,data)
+    ManagerService.deleteTeamMember(deleteId, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -486,11 +507,11 @@ const TeamMemberEdit = (props) => {
     formdata.set('logo', avatar === null ? '' : avatar);
     formdata.set('permission_info', JSON.stringify(permissionInfos));
     setVisibleIndicator(true);
-    ManagerService.updateTeamMember(props.match.params.id,formdata)
+    ManagerService.updateTeamMember(props.match.params.id, formdata)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -553,7 +574,7 @@ const TeamMemberEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
@@ -685,7 +706,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeBuildingsPermission}
                   value={buildingsPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -695,7 +716,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeOwnersPermission}
                   value={ownersPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -705,7 +726,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeChatPermission}
                   value={chatPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -715,7 +736,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeIncidentsPermission}
                   value={incidentsPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -725,7 +746,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAssembliesPermission}
                   value={assembliesPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -735,7 +756,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeEventsPermission}
                   value={eventsPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -745,7 +766,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeTeamPermission}
                   value={teamPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -755,7 +776,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeProvidersPermission}
                   value={providersPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -765,7 +786,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAnnouncementsPermission}
                   value={announcementsPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -775,7 +796,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeCompanyPermission}
                   value={companyPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -785,7 +806,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAddonsPermission}
                   value={addonsPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -795,7 +816,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeInvoicesPermission}
                   value={invoicesPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -805,7 +826,7 @@ const TeamMemberEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangePaymentMethodsPermission}
                   value={paymentMethodsPermission}
-                  disabled={accessTeam === 'see'? true:false}
+                  disabled={accessTeam === 'see' ? true : false}
                 />
               </Grid>
             </Grid>

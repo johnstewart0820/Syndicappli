@@ -1,5 +1,5 @@
-import React, {  useEffect } from 'react';
-import {ToastsContainer, ToastsContainerPosition, ToastsStore} from 'react-toasts';
+import React, { useEffect } from 'react';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { makeStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import Badge from '@material-ui/core/Badge';
@@ -8,10 +8,10 @@ import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../../components/MyButton';
-import {withRouter} from 'react-router-dom';
-import {ManagerService as Service} from '../../../../services/api.js';
+import { withRouter } from 'react-router-dom';
+import { ManagerService as Service } from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
-import CircularProgress  from '@material-ui/core/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,24 +27,24 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    '& .MuiOutlinedInput-multiline':{
+    '& .MuiOutlinedInput-multiline': {
       padding: 0
     },
-    '& .MuiOutlinedInput-input':{
-        [theme.breakpoints.up('xl')]: {
-          padding: '17px 25px',
-          fontSize: 22,
-        },
-        [theme.breakpoints.down('lg')]: {
-          padding: '12px 18px',
-          fontSize: 15,
-        },
-        [theme.breakpoints.down('md')]: {
-          padding: '8px 13px',
-          fontSize: 11,
-        },
+    '& .MuiOutlinedInput-input': {
+      [theme.breakpoints.up('xl')]: {
+        padding: '17px 25px',
+        fontSize: 22,
+      },
+      [theme.breakpoints.down('lg')]: {
+        padding: '12px 18px',
+        fontSize: 15,
+      },
+      [theme.breakpoints.down('md')]: {
+        padding: '8px 13px',
+        fontSize: 11,
+      },
     },
-    '& p':{
+    '& p': {
       marginBottom: 0
     }
   },
@@ -59,11 +59,11 @@ const useStyles = makeStyles(theme => ({
       minHeight: 33
     },
   },
-  title:{
+  title: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
   },
-  body:{
+  body: {
     [theme.breakpoints.up('xl')]: {
       marginTop: 64,
       padding: 40,
@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
     },
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
   },
-  item:{
+  item: {
     marginTop: theme.spacing(5),
   },
   paper: {
@@ -107,7 +107,7 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     display: 'none',
-  }, 
+  },
   div_indicator: {
     width: '100%',
     height: '100%',
@@ -121,7 +121,7 @@ const useStyles = makeStyles(theme => ({
   indicator: {
     color: 'gray'
   },
-  backTitle:{
+  backTitle: {
     cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
@@ -133,7 +133,7 @@ const useStyles = makeStyles(theme => ({
       fontSize: 9,
     },
   },
-  itemTitle:{
+  itemTitle: {
     [theme.breakpoints.up('xl')]: {
       fontSize: 25,
     },
@@ -144,30 +144,30 @@ const useStyles = makeStyles(theme => ({
       fontSize: 13,
     },
   },
-  error:{
-      color: 'red',
-      [theme.breakpoints.up('xl')]: {
-        fontSize: 18,
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize: 13,
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize: 9,
-      },
+  error: {
+    color: 'red',
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 18,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 13,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 9,
+    },
   },
-  headerTitle:{
-      [theme.breakpoints.up('xl')]: {
-        fontSize :35
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize :25
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize :18
-      },
+  headerTitle: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 35
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 25
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 18
+    },
   },
-  editAvatar:{
+  editAvatar: {
     [theme.breakpoints.up('xl')]: {
       width: 54,
       height: 54,
@@ -180,9 +180,9 @@ const useStyles = makeStyles(theme => ({
       width: 27,
       height: 27,
     },
-      backgroundColor: 'white',
-      borderRadius: '50%',
-      color: 'gray'
+    backgroundColor: 'white',
+    borderRadius: '50%',
+    color: 'gray'
   },
   img: {
     cursor: 'pointer',
@@ -204,270 +204,291 @@ const useStyles = makeStyles(theme => ({
       height: 86,
     },
   },
-  plus:{
+  plus: {
     color: '#707070',
     [theme.breakpoints.up('xl')]: {
-      width:60 , 
+      width: 60,
       height: 60,
     },
     [theme.breakpoints.down('lg')]: {
-      width:42 , 
+      width: 42,
       height: 42,
     },
     [theme.breakpoints.down('md')]: {
-      width:29 , 
+      width: 29,
       height: 29,
     },
   },
 }));
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
-const MyCompany = (props) => {
-  const {history} = props;
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
 
-  const token = authService.getToken();    
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
+const MyCompany = (props) => {
+  const { history } = props;
+
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
   const classes = useStyles();
-  const [name , setName] = React.useState('');
-  const [address , setAddress] = React.useState('');
-  const [email , setEmail] = React.useState('');
-  const [phone , setPhone] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [address, setAddress] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [phone, setPhone] = React.useState('');
   const [companyID, setCompanyID] = React.useState(-1);
-  const [errorsName , setErrorsName] = React.useState('');
-  const [errorsAddress , setErrorsAddress] = React.useState('');
-  const [errorsEmail , setErrorsEmail] = React.useState('');
-  const [errorsPhone , setErrorsPhone] = React.useState('');
+  const [errorsName, setErrorsName] = React.useState('');
+  const [errorsAddress, setErrorsAddress] = React.useState('');
+  const [errorsEmail, setErrorsEmail] = React.useState('');
+  const [errorsPhone, setErrorsPhone] = React.useState('');
 
   const [avatarurl, setAvatarUrl] = React.useState('');
   const [avatar, setAvatar] = React.useState(null);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
-  const handleChangeName = (event)=>{
+  const handleChangeName = (event) => {
     setName(event.target.value);
   }
-  const handleChangeAddress = (event)=>{
+  const handleChangeAddress = (event) => {
     setAddress(event.target.value);
   }
-  const handleChangeEmail = (event)=>{
+  const handleChangeEmail = (event) => {
     event.preventDefault();
-    let errorsMail = 
-          validEmailRegex.test(event.target.value)
-            ? ''
-            : 'Email is not valid!';
-          setEmail(event.target.value);
-          setErrorsEmail(errorsMail);
+    let errorsMail =
+      validEmailRegex.test(event.target.value)
+        ? ''
+        : 'Email is not valid!';
+    setEmail(event.target.value);
+    setErrorsEmail(errorsMail);
   }
-  const handleChangePhone = (event)=>{
+  const handleChangePhone = (event) => {
     setPhone(event.target.value);
   }
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
 
     setVisibleIndicator(true);
     ManagerService.getMyCompany()
-    .then(      
-      response => {        
-        setVisibleIndicator(false);
-        switch(response.data.code){
-          case 200:
-            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-            const mycompany = response.data.data.profile;
-            setName(mycompany.name);
-            setAddress(mycompany.address);
-            setEmail(mycompany.email);
-            setPhone(mycompany.phone);
-            setAvatarUrl(mycompany.logo_url);
-            setCompanyID(mycompany.companyID);
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            ToastsStore.error(response.data.message);
-        }  
-      },
-      error => {
-        console.log('fail');        
+      .then(
+        response => {
           setVisibleIndicator(false);
-      }
-    );   
+          switch (response.data.code) {
+            case 200:
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              const mycompany = response.data.data.profile;
+              setName(mycompany.name);
+              setAddress(mycompany.address);
+              setEmail(mycompany.email);
+              setPhone(mycompany.phone);
+              setAvatarUrl(mycompany.logo_url);
+              setCompanyID(mycompany.companyID);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
+        }
+      );
   }, []);
 
-  const onClickSave = (event)=>{
+  const onClickSave = (event) => {
     let cnt = 0;
-    if(name.length === 0) {setErrorsName('please enter your last name'); cnt++;}
+    if (name.length === 0) { setErrorsName('please enter your last name'); cnt++; }
     else setErrorsName('');
-    if(address.length === 0) {setErrorsAddress('please enter your address'); cnt++;}
+    if (address.length === 0) { setErrorsAddress('please enter your address'); cnt++; }
     else setErrorsAddress('');
-    if(email.length === 0) {setErrorsEmail('please enter your email'); cnt++;}
+    if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
-    if(phone.length === 0) {setErrorsPhone('please enter your phone number'); cnt++;}
+    if (phone.length === 0) { setErrorsPhone('please enter your phone number'); cnt++; }
     else setErrorsPhone('');
-    if(cnt === 0) setData();
+    if (cnt === 0) setData();
   }
-  const setData = ()=>{
+  const setData = () => {
     let formdata = new FormData();
     formdata.set('companyID', companyID);
     formdata.set('name', name);
     formdata.set('address', address);
     formdata.set('email', email);
     formdata.set('phone', phone);
-    formdata.set('logo', avatar === null? '':avatar);
+    formdata.set('logo', avatar === null ? '' : avatar);
     setVisibleIndicator(true);
     ManagerService.updateMyCompany(formdata)
-    .then(      
-      response => {        
-         setVisibleIndicator(false); 
-         switch(response.data.code){
-          case 200:
-            ToastsStore.success("Updated successfully!");
-           localStorage.setItem("token", JSON.stringify(response.data.data.token));
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            ToastsStore.error(response.data.message);
-        } 
-      },
-      error => {
-        ToastsStore.error(error);     
-         setVisibleIndicator(false);
-      }
-    );  
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              ToastsStore.success("Updated successfully!");
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error(error);
+          setVisibleIndicator(false);
+        }
+      );
   }
 
   return (
     <div>
-    {
-      visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-    }
-    <div className={classes.root}>
-      <div className={classes.title}>
-        <Grid item container justify="space-around">
-          <Grid item xs={6} container justify="flex-start" >
-            <Grid item>
-              <Typography variant="h2" className={classes.headerTitle}>
-                <b>Mon Cabinet</b>
-              </Typography>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
+      <div className={classes.root}>
+        <div className={classes.title}>
+          <Grid item container justify="space-around">
+            <Grid item xs={6} container justify="flex-start" >
+              <Grid item>
+                <Typography variant="h2" className={classes.headerTitle}>
+                  <b>Mon Cabinet</b>
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid item xs={6} container justify="flex-end" >
             </Grid>
           </Grid>
-          <Grid item xs={6} container justify="flex-end" >
-          </Grid>
-        </Grid>
-      </div>
-      <div className={classes.tool}>
-      </div> 
-      <div className={classes.body}>
-        <Grid container direction="row-reverse" spacing={5}>
-          <Grid item container xs={12} sm={5} md={4} lg={4} xl={3} justify="flex-end">
-                <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront}/>
-                <label htmlFor="img_front">
-                    {
-                      <Badge
-                      overlap="circle"
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                        right: -20,
-                        top: 13,
-                        border: '2px solid gray',
-                        padding: '0 4px',
-                      }}
-                      badgeContent={
-                        <EditOutlinedIcon className={classes.editAvatar}/>
-                      }
-                    >
-                      <Avatar className={classes.size} alt={name} src={avatarurl} />
-                    </Badge>
+        </div>
+        <div className={classes.tool}>
+        </div>
+        <div className={classes.body}>
+          <Grid container direction="row-reverse" spacing={5}>
+            <Grid item container xs={12} sm={5} md={4} lg={4} xl={3} justify="flex-end">
+              <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
+              <label htmlFor="img_front">
+                {
+                  <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                      right: -20,
+                      top: 13,
+                      border: '2px solid gray',
+                      padding: '0 4px',
+                    }}
+                    badgeContent={
+                      <EditOutlinedIcon className={classes.editAvatar} />
                     }
-                </label>
-              </Grid>
-          <Grid item container xs={12} sm={7} md={8} lg={8} xl={9} justify="flex-start" direction="column" spacing={4}>
-            <Grid item></Grid>
-            <Grid item container alignItems="center" spacing={1}>
+                  >
+                    <Avatar className={classes.size} alt={name} src={avatarurl} />
+                  </Badge>
+                }
+              </label>
+            </Grid>
+            <Grid item container xs={12} sm={7} md={8} lg={8} xl={9} justify="flex-start" direction="column" spacing={4}>
+              <Grid item></Grid>
+              <Grid item container alignItems="center" spacing={1}>
                 <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
-                    <TextField 
-                      id="outlined-basic" 
+                    <TextField
+                      id="outlined-basic"
                       variant="outlined"
                       value={name}
                       onChange={handleChangeName}
                       fullWidth
                     />
                   </Grid>
-                  {errorsName.length > 0 && 
-                  <span className={classes.error}>{errorsName}</span>}
+                  {errorsName.length > 0 &&
+                    <span className={classes.error}>{errorsName}</span>}
                 </Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
-                    variant="outlined"
-                    value={address}
-                    onChange={handleChangeAddress}
-                    multiline
-                    rows={5}
-                    fullWidth
-                  />
-                </Grid>  
-                {errorsAddress.length > 0 && 
-                      <span className={classes.error}>{errorsAddress}</span>}
               </Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Email</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
-                    variant="outlined"
-                    value={email}
-                    onChange={handleChangeEmail}
-                  />
-                </Grid>  
-                {errorsEmail.length > 0 && 
-                      <span className={classes.error}>{errorsEmail}</span>}
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
+                <Grid xs item container alignItems="stretch" direction="column">
+                  <Grid item>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      value={address}
+                      onChange={handleChangeAddress}
+                      multiline
+                      rows={5}
+                      fullWidth
+                    />
+                  </Grid>
+                  {errorsAddress.length > 0 &&
+                    <span className={classes.error}>{errorsAddress}</span>}
+                </Grid>
               </Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Telephone</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField 
-                    id="outlined-basic" 
-                    variant="outlined"
-                    value={phone}
-                    onChange={handleChangePhone}
-                  />
-                </Grid>  
-                {errorsPhone.length > 0 && 
-                      <span className={classes.error}>{errorsPhone}</span>}
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p className={classes.itemTitle}>Email</p></Grid>
+                <Grid xs item container alignItems="stretch" direction="column">
+                  <Grid item>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      value={email}
+                      onChange={handleChangeEmail}
+                    />
+                  </Grid>
+                  {errorsEmail.length > 0 &&
+                    <span className={classes.error}>{errorsEmail}</span>}
+                </Grid>
+              </Grid>
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p className={classes.itemTitle}>Telephone</p></Grid>
+                <Grid xs item container alignItems="stretch" direction="column">
+                  <Grid item>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      value={phone}
+                      onChange={handleChangePhone}
+                    />
+                  </Grid>
+                  {errorsPhone.length > 0 &&
+                    <span className={classes.error}>{errorsPhone}</span>}
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>
-          <MyButton   name={"Sauvegarder"} color={"1"} onClick = {onClickSave}/>
-        </Grid>
+          <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
+            <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} />
+          </Grid>
+        </div>
       </div>
-    </div>
-    <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

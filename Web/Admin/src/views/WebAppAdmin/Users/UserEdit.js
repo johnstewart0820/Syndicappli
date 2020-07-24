@@ -17,6 +17,22 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const UserEdit = (props) => {
   const { history } = props;
 
@@ -28,7 +44,7 @@ const UserEdit = (props) => {
   const accessUsers = authService.getAccess('role_users');
   const classes = useStyles();
   const permissionList = ['Voir', 'Editer', 'Refusé'];
-  const role_permission = ['see','edit','denied'];
+  const role_permission = ['see', 'edit', 'denied'];
 
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
@@ -54,21 +70,21 @@ const UserEdit = (props) => {
   const [companyList, setCompanyList] = React.useState([]);
   let companyID = [];
   const [multiID, setMultiID] = React.useState([]);
-  const [suggestions, setSuggestions] =React.useState([]);
-  const [companies, setCompanies] =React.useState([]);
+  const [suggestions, setSuggestions] = React.useState([]);
+  const [companies, setCompanies] = React.useState([]);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
-  useEffect( () =>  {
+  useEffect(() => {
     if (accessUsers === 'denied') {
       setOpenDialog(true);
     }
     if (accessUsers !== 'denied') {
       setVisibleIndicator(true);
-       AdminService.getCompanyListByUser()
+      AdminService.getCompanyListByUser()
         .then(
-           response => {
+          response => {
             setVisibleIndicator(false);
-            switch(response.data.code){
+            switch (response.data.code) {
               case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
@@ -77,7 +93,7 @@ const UserEdit = (props) => {
                   companies[i] = { label: item.name, value: item.companyID }
                 )
                 );
-                 setCompanyList(data.companylist);
+                setCompanyList(data.companylist);
                 setSuggestions(companies);
                 break;
               case 401:
@@ -97,15 +113,15 @@ const UserEdit = (props) => {
 
     }
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     setCompanyList(companyList);
-    console.log('companylist:',companyList)
+    console.log('companylist:', companyList)
     setVisibleIndicator(true);
     AdminService.getUser(props.match.params.id)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -129,10 +145,10 @@ const UserEdit = (props) => {
               )
               );
               let companies = [];
-              for(let i = 0 ; i < companyID.length; i++)
-                for(let j = 0; j < companyList.length; j++)
-                  if(companyID[i] === companyList[j].companyID){
-                    companies[i] = {label:companyList[j].name,value:companyList[j].companyID};
+              for (let i = 0; i < companyID.length; i++)
+                for (let j = 0; j < companyList.length; j++)
+                  if (companyID[i] === companyList[j].companyID) {
+                    companies[i] = { label: companyList[j].name, value: companyList[j].companyID };
                     break;
                   }
               setCompanies(companies);
@@ -152,7 +168,7 @@ const UserEdit = (props) => {
           setVisibleIndicator(false);
         }
       );
-  },[companyList])
+  }, [companyList])
   const handleClick = () => {
     history.goBack();
   };
@@ -194,7 +210,7 @@ const UserEdit = (props) => {
     setPhoneNumber(event.target.value);
   }
   const handleChangeCompanies = async (val) => {
-    if(val !== null){
+    if (val !== null) {
       await setCompanies(val);
       companyID.splice(0, companyID.length)
       for (let i = 0; i < val.length; i++)
@@ -204,7 +220,7 @@ const UserEdit = (props) => {
           }
       setMultiID(companyID);
     }
-    else{
+    else {
       await setCompanies([]);
       setMultiID([]);
     }
@@ -234,45 +250,50 @@ const UserEdit = (props) => {
     setUsersPermission(val);
   }
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is nor correct.');
     }
   }
   const updateUser = () => {
     let permissionInfos = [
-        {
-            'role_name': 'role_companies',
-            'permission': role_permission[companiesPermission]
-        },
-        {
-            'role_name': 'role_managers',
-            'permission': role_permission[managersPermission]
-        },
-        {
-            'role_name': 'role_buildings',
-            'permission': role_permission[buildingsPermission]
-        },
-        {
-            'role_name': 'role_owners',
-            'permission': role_permission[ownersPermission]
-        },
-        {
-            'role_name': 'role_orders',
-            'permission': role_permission[ordersPermission]
-        },
-        {
-            'role_name': 'role_products',
-            'permission': role_permission[productsPermission]
-        },
-        {
-            'role_name': 'role_discountcodes',
-            'permission': role_permission[discountCodesPermission]
-        },
-        {
-            'role_name': 'role_users',
-            'permission': role_permission[usersPermission]
-        },
+      {
+        'role_name': 'role_companies',
+        'permission': role_permission[companiesPermission]
+      },
+      {
+        'role_name': 'role_managers',
+        'permission': role_permission[managersPermission]
+      },
+      {
+        'role_name': 'role_buildings',
+        'permission': role_permission[buildingsPermission]
+      },
+      {
+        'role_name': 'role_owners',
+        'permission': role_permission[ownersPermission]
+      },
+      {
+        'role_name': 'role_orders',
+        'permission': role_permission[ordersPermission]
+      },
+      {
+        'role_name': 'role_products',
+        'permission': role_permission[productsPermission]
+      },
+      {
+        'role_name': 'role_discountcodes',
+        'permission': role_permission[discountCodesPermission]
+      },
+      {
+        'role_name': 'role_users',
+        'permission': role_permission[usersPermission]
+      },
     ]
     let formdata = new FormData();
     formdata.set('firstname', firstname);
@@ -284,31 +305,31 @@ const UserEdit = (props) => {
     formdata.set('permission_info', JSON.stringify(permissionInfos));
 
     setVisibleIndicator(true);
-    AdminService.updateUser(props.match.params.id,formdata)
-        .then(
-            response => {
-                setVisibleIndicator(false);
-                switch(response.data.code){
-                  case 200:
-                    const data = response.data.data;
-                    localStorage.setItem("token", JSON.stringify(data.token));
-                    ToastsStore.success('Updated user successfully!');
-                    break;
-                  case 401:
-                    authService.logout();
-                    history.push('/login');
-                    window.location.reload();
-                    break;
-                  default:
-                    ToastsStore.error(response.data.message);
-                }
-            },
-            error => {
-                ToastsStore.error("Can't connect to the server!");
-                setVisibleIndicator(false);
-            }
-        );
-}
+    AdminService.updateUser(props.match.params.id, formdata)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success('Updated user successfully!');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   return (
     <div className={classes.root}>
       {
@@ -349,10 +370,11 @@ const UserEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input 
-                        className={classes.input} 
-                        type="file" id="img_front" 
-                        onChange={handleLoadFront} 
+                      <input
+                        accept="image/*"
+                        className={classes.input}
+                        type="file" id="img_front"
+                        onChange={handleLoadFront}
                         disabled={(accessUsers === 'see' ? true : false)}
                       />
                       <label htmlFor="img_front">

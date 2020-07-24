@@ -194,12 +194,28 @@ const validateForm = (errors) => {
   );
   return valid;
 }
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const MyAccount = (props) => {
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
-  const {history} = props;
+  const { history } = props;
   const [globalState, globalActions] = useGlobal();
   const classes = useStyles();
   const [lastname, setLastName] = React.useState('');
@@ -230,12 +246,12 @@ const MyAccount = (props) => {
   }
   const handleChangeEmail = (event) => {
     event.preventDefault();
-    let errorsMail = 
-          validEmailRegex.test(event.target.value)
-            ? ''
-            : 'Email is not valid!';
-          setEmail(event.target.value);
-          setErrorsEmail(errorsMail);
+    let errorsMail =
+      validEmailRegex.test(event.target.value)
+        ? ''
+        : 'Email is not valid!';
+    setEmail(event.target.value);
+    setErrorsEmail(errorsMail);
   }
   const handleChangeNewPassword = (event) => {
     setNewPassword(event.target.value);
@@ -251,70 +267,75 @@ const MyAccount = (props) => {
   }
 
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   useEffect(() => {
     setVisibleIndicator(true);
     AdminService.getProfile()
-    .then(      
-      response => {        
-        setVisibleIndicator(false);  
-        switch(response.data.code){
-          case 200:
-            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-            const profile = response.data.data.profile;
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhone(profile.phone);
-            setAvatarUrl(profile.photo_url);
-            globalActions.setFirstName(profile.firstname);
-            globalActions.setLastName(profile.lastname);
-            globalActions.setAvatarUrl(profile.photo_url);
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            ToastsStore.error(response.data.message);
-        }
-      },
-      error => {
-        console.log('fail');        
+      .then(
+        response => {
           setVisibleIndicator(false);
-      }
-    );   
+          switch (response.data.code) {
+            case 200:
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              const profile = response.data.data.profile;
+              setLastName(profile.lastname);
+              setFirstName(profile.firstname);
+              setEmail(profile.email);
+              setPhone(profile.phone);
+              setAvatarUrl(profile.photo_url);
+              globalActions.setFirstName(profile.firstname);
+              globalActions.setLastName(profile.lastname);
+              globalActions.setAvatarUrl(profile.photo_url);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          console.log('fail');
+          setVisibleIndicator(false);
+        }
+      );
   }, []);
 
   const onClickSave = (event) => {
-    if(validateForm(errorsEmail) ) {
-        let cnt = 0;
-        if (lastname.length === 0) { setErrorsLastName('please enter your last name'); cnt++; }
-        else setErrorsLastName('');
-        if (firstname.length === 0) { setErrorsFirstName('please enter your first name'); cnt++; }
-        else setErrorsFirstName('');
-        if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
-        else setErrorsEmail('');
-        if (phone.length === 0) { setErrorsPhone('please enter your phone number'); cnt++; }
-        else setErrorsPhone('');
-        if(old_password.length !== 0){
-          if( new_password.length === 0){setErrorsNewPassword('please enter your new password'); cnt++;}
+    if (validateForm(errorsEmail)) {
+      let cnt = 0;
+      if (lastname.length === 0) { setErrorsLastName('please enter your last name'); cnt++; }
+      else setErrorsLastName('');
+      if (firstname.length === 0) { setErrorsFirstName('please enter your first name'); cnt++; }
+      else setErrorsFirstName('');
+      if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
+      else setErrorsEmail('');
+      if (phone.length === 0) { setErrorsPhone('please enter your phone number'); cnt++; }
+      else setErrorsPhone('');
+      if (old_password.length !== 0) {
+        if (new_password.length === 0) { setErrorsNewPassword('please enter your new password'); cnt++; }
         // else setErrorsNewPassword('');
         else if (new_password.length !== 0 && new_password.length < 4) { setErrorsNewPassword('Password must be 4 characters long!'); }
         else setErrorsNewPassword('');
-        }
-        else{
-          if(new_password.length !== 0){setErrorsOldPassword('please enter your current password'); cnt++;}
-          else setErrorsOldPassword('');
-        }
-        if (new_password !== confirm_password) { setErrorsConfirmPassword('mismatch your new password'); cnt++ }
-        else setErrorsConfirmPassword('');
-        if (cnt === 0) setData();
+      }
+      else {
+        if (new_password.length !== 0) { setErrorsOldPassword('please enter your current password'); cnt++; }
+        else setErrorsOldPassword('');
+      }
+      if (new_password !== confirm_password) { setErrorsConfirmPassword('mismatch your new password'); cnt++ }
+      else setErrorsConfirmPassword('');
+      if (cnt === 0) setData();
     }
   }
   const setData = () => {
@@ -331,7 +352,7 @@ const MyAccount = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               ToastsStore.success("Updated successfully!");
               setErrorsOldPassword('');
@@ -410,7 +431,7 @@ const MyAccount = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>

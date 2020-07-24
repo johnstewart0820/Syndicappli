@@ -15,6 +15,22 @@ import { withRouter } from 'react-router-dom';
 
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+    "image/apng",
+    "image/bmp",
+    "image/gif",
+    "image/jpeg",
+    "image/pjpeg",
+    "image/png",
+    "image/svg+xml",
+    "image/tiff",
+    "image/webp",
+    "image/x-icon"
+];
+
+function validFileType(file) {
+    return fileTypes.includes(file.type);
+}
 const AddOwner = (props) => {
     const { history } = props;
     const classes = useStyles();
@@ -99,19 +115,29 @@ const AddOwner = (props) => {
         }
     }
     const handleLoadFront = (event) => {
-        if(event.target.files[0] !== undefined) {
-            setAvatar(event.target.files[0]);
-            setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+        if (validFileType(event.target.files[0])) {
+            if (event.target.files[0] !== undefined) {
+                setAvatar(event.target.files[0]);
+                setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+            }
+        }
+        else {
+            ToastsStore.warning('Image format is not correct.');
         }
     }
 
     const handleLoadIdcard = (event) => {
-        if(event.target.files[0] !== undefined){
-            idcardurls.push(URL.createObjectURL(event.target.files[0]));
-            idcards.push(event.target.files[0])
-            setIdcards(idcards);
-            setIdcardUrls(idcardurls);
-            setState(!state);
+        if (validFileType(event.target.files[0])) {
+            if (event.target.files[0] !== undefined) {
+                idcardurls.push(URL.createObjectURL(event.target.files[0]));
+                idcards.push(event.target.files[0])
+                setIdcards(idcards);
+                setIdcardUrls(idcardurls);
+                setState(!state);
+            }
+        }
+        else {
+            ToastsStore.warning('Image format is not correct.');
         }
     }
     const handleClickCloseIdcard = (num) => {
@@ -237,7 +263,7 @@ const AddOwner = (props) => {
                             setBuildingList(data.buildinglist);
                             setBuilding(building)
                             setBuildings(0);
-                            if(data.buildinglist.length !== 0)
+                            if (data.buildinglist.length !== 0)
                                 setBuildingID(data.buildinglist[0].buildingID);
                             break;
                         case 401:
@@ -503,7 +529,7 @@ const AddOwner = (props) => {
                     <Grid xs={12} item container direction="column" >
                         <p className={classes.title}>Photo de profil</p>
                         <Grid item container justify="flex-start">
-                            <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                            <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                             <label htmlFor="img_front">
                                 {
                                     avatarurl === '' ?
@@ -585,7 +611,7 @@ const AddOwner = (props) => {
                                 state={state}
                             />
 
-                            <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} />
+                            <input className={classes.input} accept="image/*" type="file" id="img_idcard" onChange={handleLoadIdcard} />
                             <label htmlFor="img_idcard">
                                 {
                                     <div className={classes.img}>

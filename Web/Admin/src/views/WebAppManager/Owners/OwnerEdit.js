@@ -26,10 +26,26 @@ import Dialog from '@material-ui/core/Dialog';
 
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const OwnerEdit = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -115,18 +131,28 @@ const OwnerEdit = (props) => {
   };
 
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleLoadIdcard = (event) => {
-    if(event.target.files[0] !== undefined){
-      idcardurls.push(URL.createObjectURL(event.target.files[0]));
-      idcards.push(event.target.files[0])
-      setIdcards(idcards);
-      setIdcardUrls(idcardurls);
-      setState(!state);
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        idcardurls.push(URL.createObjectURL(event.target.files[0]));
+        idcards.push(event.target.files[0])
+        setIdcards(idcards);
+        setIdcardUrls(idcardurls);
+        setState(!state);
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleClickCloseIdcard = (num) => {
@@ -241,7 +267,7 @@ const OwnerEdit = (props) => {
   }
   useEffect(() => {
     getBuildings();
-    console.log('companyID:',companyID);
+    console.log('companyID:', companyID);
   }, [companyID])
   const getBuildings = () => {
     let params = new URLSearchParams(window.location.search);
@@ -285,11 +311,11 @@ const OwnerEdit = (props) => {
         }
       );
   }
-  useEffect(()=>{
+  useEffect(() => {
     getBuilding();
-    console.log('buildingList:',buildingList);
-  },[buildingList]);
-  const getBuilding = ()=> {
+    console.log('buildingList:', buildingList);
+  }, [buildingList]);
+  const getBuilding = () => {
     let params = new URLSearchParams(window.location.search);
     setVisibleIndicator(true);
     ManagerService.getBuilding(params.get('buildingID'))
@@ -324,7 +350,7 @@ const OwnerEdit = (props) => {
   };
   useEffect(() => {
     getOwner()
-    console.log('buildingVote:',buildingVote);
+    console.log('buildingVote:', buildingVote);
   }, [buildingVote])
   const getVoteList = () => {
     for (let i = 0; i < apartNumber.length; i++) {
@@ -404,10 +430,10 @@ const OwnerEdit = (props) => {
               const apartmentInfo = data.owner.apartment_info;
               const amountInfo = data.owner.amount_info;
               setOwnerTitle(titleList.indexOf(ownerInfo.usertype));
-              if(ownerInfo.usertype === 'Company'){
+              if (ownerInfo.usertype === 'Company') {
                 setCompanyName(ownerInfo.owner_company_name);
               }
-              else{
+              else {
                 setFirstName(ownerInfo.firstname);
                 setLastName(ownerInfo.lastname);
               }
@@ -425,8 +451,8 @@ const OwnerEdit = (props) => {
                 setIsSubAccount(false);
               }
               setAvatarUrl(ownerInfo.photo_url);
-              if(ownerInfo.status === 'active') setSuspendState('Suspendre le compte');
-              else if(ownerInfo.status === 'inactive') setSuspendState('Restaurer le compte');
+              if (ownerInfo.status === 'active') setSuspendState('Suspendre le compte');
+              else if (ownerInfo.status === 'inactive') setSuspendState('Restaurer le compte');
               let urls = [];
               let apartment = [...apartNumber];
               let apartmentId = [];
@@ -439,7 +465,7 @@ const OwnerEdit = (props) => {
                 apartment.push(apartmentInfo[i].apartment_number);
                 apartmentId.push(apartmentInfo[i].apartmentID);
               }
-              lotsList.splice(0,lotsList.length);
+              lotsList.splice(0, lotsList.length);
               for (let i = 0; i < apartmentId.length; i++) {
                 for (let j = 0; j < amountInfo.length; j++)
                   if (amountInfo[j].apartmentID === apartmentId[i]) {
@@ -449,7 +475,7 @@ const OwnerEdit = (props) => {
                 setApartNumber(apartment);
                 lotsList.push(buildingVote);
               }
-              console.log('lotslist:',lotsList)
+              console.log('lotslist:', lotsList)
               setLotsList(lotsList);
               setStateLots(!stateLots);
               break;
@@ -614,7 +640,7 @@ const OwnerEdit = (props) => {
                     }}
                     badgeContent={
                       <div>
-                        <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                        <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                         <label htmlFor="img_front">
                           <EditOutlinedIcon className={classes.editAvatar} />
                         </label>
@@ -893,7 +919,7 @@ const OwnerEdit = (props) => {
                   badge="first"
                 />
 
-                <input className={classes.input} type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners === 'see' ? true : false)} />
+                <input className={classes.input} accept="image/*" type="file" id="img_idcard" onChange={handleLoadIdcard} disabled={(accessOwners === 'see' ? true : false)} />
                 <label htmlFor="img_idcard">
                   {
                     <div className={classes.img}>

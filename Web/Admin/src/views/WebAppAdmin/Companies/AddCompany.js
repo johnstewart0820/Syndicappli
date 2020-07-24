@@ -12,6 +12,22 @@ import {withRouter} from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+    "image/apng",
+    "image/bmp",
+    "image/gif",
+    "image/jpeg",
+    "image/pjpeg",
+    "image/png",
+    "image/svg+xml",
+    "image/tiff",
+    "image/webp",
+    "image/x-icon"
+  ];
+  
+  function validFileType(file) {
+    return fileTypes.includes(file.type);
+  }
 const AddCompany = (props) => {
     const {history} = props;
     const classes = useStyles();
@@ -46,9 +62,14 @@ const AddCompany = (props) => {
     };
 
     const handleLoadFront = (event) => {
-        if(event.target.files[0] !== undefined){
-            setAvatar(event.target.files[0]);
-            setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+        if(validFileType(event.target.files[0])){
+            if(event.target.files[0] !== undefined){
+                setAvatar(event.target.files[0]);
+                setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+            }
+        }
+        else{
+            ToastsStore.warning('Image format is not coreect.');
         }
     }
 

@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../../components/MyButton';
 import { withRouter } from 'react-router-dom';
-import { ManagerService as Service} from '../../../../services/api.js';
+import { ManagerService as Service } from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
@@ -222,10 +222,26 @@ const useStyles = makeStyles(theme => ({
 }));
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const MyAccount = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -279,9 +295,14 @@ const MyAccount = (props) => {
     setConfirmPassword(event.target.value);
   }
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   useEffect(() => {
@@ -291,7 +312,7 @@ const MyAccount = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               localStorage.setItem("token", JSON.stringify(response.data.data.token));
               const profile = response.data.data.profile;
@@ -350,7 +371,7 @@ const MyAccount = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               ToastsStore.success("Updated successfully!");
               setErrorsOldPassword('');
@@ -431,7 +452,7 @@ const MyAccount = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                      <input accept="image/*" className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>

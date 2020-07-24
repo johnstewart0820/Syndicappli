@@ -23,10 +23,26 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const fileTypes = [
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon"
+];
+
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 const ManagerEdit = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -58,7 +74,7 @@ const ManagerEdit = (props) => {
   const [addonsPermission, setAddonsPermission] = React.useState(0);
   const [invoicesPermission, setInvoicesPermission] = React.useState(0);
   const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
-  const [apartNumber, setApartNumber]  =React.useState('');
+  const [apartNumber, setApartNumber] = React.useState('');
 
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
@@ -73,19 +89,19 @@ const ManagerEdit = (props) => {
 
   const [buildingList, setBuildingList] = React.useState([]);
   let buildingID = [];
-  const [buildings, setBuildings]=React.useState([]);
+  const [buildings, setBuildings] = React.useState([]);
   const [mulitID, setMultiID] = React.useState([]);
   const [suggestions, setSuggestions] = React.useState([]);
-  useEffect(()=>{
+  useEffect(() => {
     getCompanies();
-  },[accessManagers]);
+  }, [accessManagers]);
   const getCompanies = () => {
     setVisibleIndicator(true);
     AdminService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               company.push('');
@@ -119,7 +135,7 @@ const ManagerEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -146,90 +162,90 @@ const ManagerEdit = (props) => {
         }
       );
   }
-  const getManager = ()=>{
+  const getManager = () => {
     setVisibleIndicator(true);
 
     AdminService.getManager(props.match.params.id)
-    .then(
-      response => {
-        setVisibleIndicator(false);
-        switch(response.data.code){
-          case 200:
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            const profile = data.manager;
-            setLastName(profile.lastname);
-            setFirstName(profile.firstname);
-            setEmail(profile.email);
-            setPhoneNumber(profile.phone);
-            setAvatarUrl(profile.photo_url);
-            setAddonsPermission(role_permission.indexOf(profile.role_addons));
-            setAnnouncementsPermission(role_permission.indexOf(profile.role_advertisement));
-            setAssembliesPermission(role_permission.indexOf(profile.role_assemblies));
-            setBuildingsPermission(role_permission.indexOf(profile.role_buildings));
-            setChatPermission(role_permission.indexOf(profile.role_chat));
-            setCompanyPermission(role_permission.indexOf(profile.role_company));
-            setEventsPermission(role_permission.indexOf(profile.role_events));
-            setIncidentsPermission(role_permission.indexOf(profile.role_incidents));
-            setInvoicesPermission(role_permission.indexOf(profile.role_invoices));
-            setOwnersPermission(role_permission.indexOf(profile.role_owners));
-            setPaymentMethodsPermission(role_permission.indexOf(profile.role_payments));
-            setProvidersPermission(role_permission.indexOf(profile.role_providers));
-            setTeamPermission(role_permission.indexOf(profile.role_team));
-            setCompanyID(profile.companyID);
-            setApartNumber(profile.count);
-            if(profile.status === 'active')
-              setSuspendState('Suspendre le compte');
-            else if(profile.status === 'inactive')
-              setSuspendState('Restaurer le compte');
-            let buildingID = [];
-            data.buildinglist.map((item, i) => (
-              buildingID[i] = item.relationID
-            )
-            );
-            let buildings = [];
-            for(let i = 0 ; i < buildingID.length; i++)
-              for(let j = 0; j < buildingList.length; j++)
-                if(buildingID[i] === buildingList[j].buildingID){
-                  buildings[i] = {label:buildingList[j].name,value:buildingList[j].buildingID};
-                  break;
-                }
-            setBuildings(buildings);
-            setMultiID(buildingID);
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            ToastsStore.error(response.data.message);
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              const profile = data.manager;
+              setLastName(profile.lastname);
+              setFirstName(profile.firstname);
+              setEmail(profile.email);
+              setPhoneNumber(profile.phone);
+              setAvatarUrl(profile.photo_url);
+              setAddonsPermission(role_permission.indexOf(profile.role_addons));
+              setAnnouncementsPermission(role_permission.indexOf(profile.role_advertisement));
+              setAssembliesPermission(role_permission.indexOf(profile.role_assemblies));
+              setBuildingsPermission(role_permission.indexOf(profile.role_buildings));
+              setChatPermission(role_permission.indexOf(profile.role_chat));
+              setCompanyPermission(role_permission.indexOf(profile.role_company));
+              setEventsPermission(role_permission.indexOf(profile.role_events));
+              setIncidentsPermission(role_permission.indexOf(profile.role_incidents));
+              setInvoicesPermission(role_permission.indexOf(profile.role_invoices));
+              setOwnersPermission(role_permission.indexOf(profile.role_owners));
+              setPaymentMethodsPermission(role_permission.indexOf(profile.role_payments));
+              setProvidersPermission(role_permission.indexOf(profile.role_providers));
+              setTeamPermission(role_permission.indexOf(profile.role_team));
+              setCompanyID(profile.companyID);
+              setApartNumber(profile.count);
+              if (profile.status === 'active')
+                setSuspendState('Suspendre le compte');
+              else if (profile.status === 'inactive')
+                setSuspendState('Restaurer le compte');
+              let buildingID = [];
+              data.buildinglist.map((item, i) => (
+                buildingID[i] = item.relationID
+              )
+              );
+              let buildings = [];
+              for (let i = 0; i < buildingID.length; i++)
+                for (let j = 0; j < buildingList.length; j++)
+                  if (buildingID[i] === buildingList[j].buildingID) {
+                    buildings[i] = { label: buildingList[j].name, value: buildingList[j].buildingID };
+                    break;
+                  }
+              setBuildings(buildings);
+              setMultiID(buildingID);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        ToastsStore.error("Can't connect to the server!");
-        setVisibleIndicator(false);
-      }
-    );
+      );
   }
-  useEffect(()=>{
+  useEffect(() => {
     setBuildingList(buildingList);
 
-    
-  },[buildingList])
-  useEffect(()=>{
+
+  }, [buildingList])
+  useEffect(() => {
     getBuildings()
-  },[companies]);
-  useEffect(()=>{
+  }, [companies]);
+  useEffect(() => {
     getManager()
 
-    for(let i = 0; i < companyList.length; i++)
-    if(companyID === companyList[i].companyID){
-      setCompanies(i);
-      break;
-    }
-    
-  },[companyID]);
+    for (let i = 0; i < companyList.length; i++)
+      if (companyID === companyList[i].companyID) {
+        setCompanies(i);
+        break;
+      }
+
+  }, [companyID]);
   const handleClick = () => {
     history.goBack();
   };
@@ -294,9 +310,14 @@ const ManagerEdit = (props) => {
     }
   };
   const handleLoadFront = (event) => {
-    if(event.target.files[0] !== undefined){
-      setAvatar(event.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+    if (validFileType(event.target.files[0])) {
+      if (event.target.files[0] !== undefined) {
+        setAvatar(event.target.files[0]);
+        setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+      }
+    }
+    else {
+      ToastsStore.warning('Image format is not correct.');
     }
   }
   const handleChangeBuildingsPermission = (val) => {
@@ -338,22 +359,22 @@ const ManagerEdit = (props) => {
   const handleChangePaymentMethodsPermission = (val) => {
     setPaymentMethodsPermission(val);
   }
-  const handleClickSuspendRestore = ()=>{
-    let data={
-      'status': suspendState === 'Restaurer le compte' ? 'active':'inactive'
+  const handleClickSuspendRestore = () => {
+    let data = {
+      'status': suspendState === 'Restaurer le compte' ? 'active' : 'inactive'
     };
     setVisibleIndicator(true);
-    AdminService.setSuspendManager(props.match.params.id,data)
+    AdminService.setSuspendManager(props.match.params.id, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              if(suspendState === 'Restaurer le compte')
+              if (suspendState === 'Restaurer le compte')
                 setSuspendState('Suspendre le compte');
-              else if(suspendState === 'Suspendre le compte')
+              else if (suspendState === 'Suspendre le compte')
                 setSuspendState('Restaurer le compte');
               break;
             case 401:
@@ -377,7 +398,7 @@ const ManagerEdit = (props) => {
   const handleClickLoginAsManager = () => {
     window.open('http://localhost:3000');
   }
-  const handleClickResetPassword = ()=>{
+  const handleClickResetPassword = () => {
     var data = {};
     data['email'] = email;
     setVisibleIndicator(true);
@@ -385,7 +406,7 @@ const ManagerEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               ToastsStore.success(response.data.message);
               break;
@@ -402,9 +423,9 @@ const ManagerEdit = (props) => {
           setVisibleIndicator(false);
           ToastsStore.error("Can't connect to the Server!");
         }
-      ); 
+      );
   }
-  const handleClickDeleteManager = ()=>{
+  const handleClickDeleteManager = () => {
     setOpenDelete(true);
     setDeleteId(props.match.params.id);
   }
@@ -412,14 +433,14 @@ const ManagerEdit = (props) => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    let data={
+    let data = {
       'status': 'trash'
     }
-    AdminService.deleteManager(deleteId,data)
+    AdminService.deleteManager(deleteId, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -506,11 +527,11 @@ const ManagerEdit = (props) => {
     formdata.set('logo', avatar === null ? '' : avatar);
     formdata.set('permission_info', JSON.stringify(permissionInfos));
     setVisibleIndicator(true);
-    AdminService.updateManager(props.match.params.id,formdata)
+    AdminService.updateManager(props.match.params.id, formdata)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -573,7 +594,7 @@ const ManagerEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} type="file" id="img_front" onChange={handleLoadFront} />
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
