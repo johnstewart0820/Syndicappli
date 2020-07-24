@@ -10,7 +10,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
-import HomeIcon from '@material-ui/icons/Home';
+import HomeIcon from '@material-ui/icons/Home'
 import authService from '../../../../services/authService.js';
 import { Profile, SidebarNav, UpgradePlan } from './components';
 
@@ -158,7 +158,7 @@ const Sidebar = props => {
     {
       title: 'Accueil',
       href: '/manager/dashboard',
-      icon: <HomeIcon className={classes.icon}/>,
+      icon: <HomeIcon color={classes.icon} />,
       status: 'visible'
     },
     {

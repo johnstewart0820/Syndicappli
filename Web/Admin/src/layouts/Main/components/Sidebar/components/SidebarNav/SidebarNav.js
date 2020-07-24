@@ -1,26 +1,26 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { List, ListItem, Button} from '@material-ui/core';
-import { controllers } from 'chart.js';
+import { List, ListItem, Button } from '@material-ui/core';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
-      marginLeft:'24px',
-      marginRight:'-10px',
+      marginLeft: '24px',
+      marginRight: '-10px',
     },
-    [theme.breakpoints.between('lg','lg')]: {
-      marginLeft:'17px',
-      marginRight:'-7px',
+    [theme.breakpoints.between('lg', 'lg')]: {
+      marginLeft: '17px',
+      marginRight: '-7px',
     },
     [theme.breakpoints.down('md')]: {
-      marginLeft:'12px',
-      marginRight:'-5px',
+      marginLeft: '12px',
+      marginRight: '-5px',
     },
-     paddingTop:'0'
+    paddingTop: '0'
   },
   item: {
     display: 'flex',
@@ -28,31 +28,32 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 0,
   },
   button: {
+    margin:5,
     [theme.breakpoints.up('xl')]: {
       fontSize: 20,
       height: 67,
-      borderTopLeftRadius:15,
-      borderBottomLeftRadius:15,
+      borderTopLeftRadius: 15,
+      borderBottomLeftRadius: 15,
       padding: '10px 0px 8px 24px',
     },
-    [theme.breakpoints.between('lg','lg')]: {
+    [theme.breakpoints.between('lg', 'lg')]: {
       fontSize: 14,
       height: 47,
-      borderTopLeftRadius:11,
-      borderBottomLeftRadius:11,
+      borderTopLeftRadius: 11,
+      borderBottomLeftRadius: 11,
       padding: '7px 0px 6px 17px',
     },
     [theme.breakpoints.down('md')]: {
       fontSize: 10,
       height: 33,
-      borderTopLeftRadius:8,
-      borderBottomLeftRadius:8,
+      borderTopLeftRadius: 8,
+      borderBottomLeftRadius: 8,
       padding: '5px 0px 4px 12px',
     },
     color: 'white',
     '&:hover': {
       backgroundColor: 'rgb(255,255,255)',
-      color:'#00bf82',
+      color: '#00bf82',
     },
     justifyContent: 'flex-start',
     textTransform: 'none',
@@ -63,14 +64,14 @@ const useStyles = makeStyles(theme => ({
   icon: {
     '&:hover,&:focus': {
       // backgroundColor: 'white',
-      color:'#00bf82',
+      color: '#00bf82',
     },
     [theme.breakpoints.up('xl')]: {
       width: 24,
       height: 24,
       marginRight: 16
     },
-    [theme.breakpoints.between('lg','lg')]: {
+    [theme.breakpoints.between('lg', 'lg')]: {
       width: 17,
       height: 17,
       marginRight: 11
@@ -86,50 +87,49 @@ const useStyles = makeStyles(theme => ({
   active: {
     backgroundColor: 'white',
     color: '#00bf82',
-    // fontWeight: theme.typography.fontWeightMedium,
     '& $icon': {
-      color: '#00bf82'
+      color: '#00bf82',
     },
-    '&::before':{
+    '&::before': {
       [theme.breakpoints.up('xl')]: {
         width: 45,
         height: 45,
-        top:-45,
+        top: -45,
         right: 10,
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.between('lg', 'lg')]: {
         width: 32,
         height: 32,
-        top:-32,
+        top: -32,
         right: 7,
       },
       [theme.breakpoints.down('md')]: {
         width: 22,
         height: 22,
-        top:-22,
+        top: -22,
         right: 5,
       },
       display: 'block',
       position: 'absolute',
       content: 'url("/images/top.png")'
     },
-    '&::after':{
+    '&::after': {
       [theme.breakpoints.up('xl')]: {
         width: 45,
         height: 45,
-        bottom:-45,
+        bottom: -45,
         right: 10,
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.between('lg', 'lg')]: {
         width: 32,
         height: 32,
-        bottom:-32,
+        bottom: -32,
         right: 7,
       },
       [theme.breakpoints.down('md')]: {
         width: 22,
         height: 22,
-        bottom:-22,
+        bottom: -22,
         right: 5,
       },
       display: 'block',
@@ -153,30 +153,105 @@ const SidebarNav = props => {
   const { pages, className, ...rest } = props;
 
   const classes = useStyles();
+  let tmp = [{ color: '#ffffff', active: false, over: false }];
+  for (let i = 1; i < 10; i++) {
+    tmp[i] = { color: '#ffffff', active: false, over: false };
+  }  
+  const [status, setStatus] = React.useState(tmp);
 
+
+  const handleMouseOver = (event,i,state) => {
+    if(state[i].active === false)
+    if(state[i].over === false) {      
+      setStatus(status.map(
+        (status, index) => 
+          index === i ?
+          {
+            ...status,
+            color: "#00bf82",
+            over: true
+          } :
+          status        
+      ))
+    }
+  }
+  const handleMouseLeave = (event, i,state) => {    
+    if(state[i].active === false)
+    if(state[i].over === true) {      
+      setStatus(status.map(
+        (status, index) => 
+          index === i ?
+          {
+            ...status,
+            color: "#ffffff",
+            over: false
+          } :
+          status        
+      ))
+    }
+  }
+  const handleMouseClick = (event, i, state) => {
+    if(state[i].active === false){
+      setStatus(status.map(
+        (status, index) => 
+          index === i ?
+          {
+            ...status,
+            color: "#00bf82",
+            over: true,
+            active: true
+          } :
+          {
+            ...status,
+            color: "#ffffff",
+            over: false,
+            active: false
+          }           
+      ))
+    }else{
+      setStatus(status.map(
+        (status, index) => 
+          index === i ?
+          {
+            ...status,
+            color: "#00bf82",
+            over: true,
+            active: true
+          } :
+          status
+      ))
+    }
+  }
   return (
     <List
       {...rest}
       className={clsx(classes.root, className)}
     >
-      {pages.map(page => (
+      {pages.map((page, i) => (
         page.status !== 'denied' ?
-        <ListItem
-          className={classes.item}
-          disableGutters
-          key={page.title}
-        >
-          <Button
-            activeClassName={classes.active}
-            className={classes.button}
-            component={CustomRouterLink}
-            to={page.href}
+          <ListItem
+            className={classes.item}
+            disableGutters
+            key={page.title}
           >
-            <div className={classes.icon}>{page.icon}</div>
-            {page.title}
-          </Button>
-        </ListItem>
-        : null
+            <Button
+              id="buttonbutton"
+              activeClassName={classes.active}
+              className={classes.button}
+              component={CustomRouterLink}
+              onMouseOver={(event) => handleMouseOver(event, i, status)}
+              onMouseLeave={(event) => handleMouseLeave(event, i, status)}
+              onClick={(event) => handleMouseClick(event, i, status)}
+              to={page.href}
+            >
+              <div className={classes.icon}>
+                {/* <HomeIcon color={status[i].color}/> */}
+                {page.icon}
+                </div>
+              {page.title}
+            </Button>
+          </ListItem>
+          : null
       ))}
     </List>
   );
