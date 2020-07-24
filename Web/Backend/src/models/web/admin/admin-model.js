@@ -259,7 +259,7 @@ function createUserInfo(uid, data, file) {
         let query
         let params = []
         if (file_name == "") {
-            query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone,  created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, )';
+            query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone,  created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )';
             params = ["admin", data.firstname, data.lastname, data.email, password, data.phone, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
         } else {
             query = 'Insert into ' + table.USERS + ' (usertype, firstname, lastname, email, password, phone, photo_url, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
