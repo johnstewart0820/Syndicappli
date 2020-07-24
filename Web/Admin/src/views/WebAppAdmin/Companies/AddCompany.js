@@ -8,7 +8,7 @@ import { AddCompanyStyles as useStyles } from './useStyles';
 import { Checkbox } from '@material-ui/core';
 import AdminService from '../../../services/api.js';
 import authService from 'services/authService';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
@@ -23,13 +23,13 @@ const fileTypes = [
     "image/tiff",
     "image/webp",
     "image/x-icon"
-  ];
-  
-  function validFileType(file) {
+];
+
+function validFileType(file) {
     return fileTypes.includes(file.type);
-  }
+}
 const AddCompany = (props) => {
-    const {history} = props;
+    const { history } = props;
     const classes = useStyles();
 
     const [avatarurl, setAvatarUrl] = React.useState("");
@@ -62,13 +62,17 @@ const AddCompany = (props) => {
     };
 
     const handleLoadFront = (event) => {
-        if(validFileType(event.target.files[0])){
-            if(event.target.files[0] !== undefined){
-                setAvatar(event.target.files[0]);
-                setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+        if (validFileType(event.target.files[0])) {
+            if (event.target.files[0] !== undefined) {
+                if (event.target.files[0].size > 5 * 1048576) {
+                    ToastsStore.warning('Image size should be low than 5 MB.');
+                } else {
+                    setAvatar(event.target.files[0]);
+                    setAvatarUrl(URL.createObjectURL(event.target.files[0]));
+                }
             }
         }
-        else{
+        else {
             ToastsStore.warning('Image format is not coreect.');
         }
     }
@@ -178,22 +182,22 @@ const AddCompany = (props) => {
         AdminService.addCompany(formdata)
             .then(
                 response => {
-                    setVisibleIndicator(false); 
-                    switch(response.data.code){
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             props.onAdd();
                             handleClose();
-                          break;
+                            break;
                         case 401:
-                          authService.logout();
-                          history.push('/login');
-                          window.location.reload();
-                          break;
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
                         default:
-                          ToastsStore.error(response.data.message);
-                      } 
+                            ToastsStore.error(response.data.message);
+                    }
                 },
                 error => {
                     console.log('fail');

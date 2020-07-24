@@ -3,14 +3,6 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import {  Drawer } from '@material-ui/core';
-import PeopleIcon from '@material-ui/icons/People';
-import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
-import TextFieldsIcon from '@material-ui/icons/TextFields';
-import ImageIcon from '@material-ui/icons/Image';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import SettingsIcon from '@material-ui/icons/Settings';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import HomeIcon from '@material-ui/icons/Home'
 import authService from '../../../../services/authService.js';
 import { Profile, SidebarNav, UpgradePlan } from './components';
 
@@ -101,55 +93,73 @@ const Sidebar = props => {
     {
       title: 'Accueil',
       href: '/admin/dashboard',
-      icon: <HomeIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_home_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_home_inactive.png' className={classes.icon}/>,
+      id:0,
       status: 'visible'
     },
     {
       title: 'Mes Cabinets',
       href: '/admin/companies',
-      icon: <TextFieldsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_company_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_company_inactive.png' className={classes.icon}/>,
+      id:1,
       status: accessCompanies
     },
     {
       title: 'Mes Gestionnaires',
       href: '/admin/managers',
-      icon: <AccountBoxIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_manager_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_manager_inactive.png' className={classes.icon}/>,
+      id:2,
       status: accessManagers
     },
     {
       title: 'Mes immeubles',
       href: '/admin/buildings',
-      icon: <PeopleIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_building_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_building_inactive.png' className={classes.icon}/>,
+      id:3,
       status: accessBuildings
     },
     {
       title: 'Mes Copropriétaires',
       href: '/admin/owners',
-      icon: <SettingsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_owner_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_owner_inactive.png' className={classes.icon}/>,
+      id:4,
       status: accessOwners
     },
     {
       title: 'Mes Commandes',
       href: '/admin/orders',
-      icon: <SettingsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_order_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_order_inactive.png' className={classes.icon}/>,
+      id:5,
       status: accessOrders
     },
     {
       title: 'Mes produits',
       href: '/admin/products',
-      icon: <LockOpenIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_product_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_product_inactive.png' className={classes.icon}/>,
+      id:6,
       status: accessProducts
     },
     {
       title: 'Mes Codes Promo',
       href: '/admin/discountcodes',
-      icon: <ImageIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_discountcode_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_discountcode_inactive.png' className={classes.icon}/>,
+      id:7,
       status: accessDiscountCodes
     },
     {
       title: 'Mes Utilisateurs',
       href: '/admin/users',
-      icon: <ShoppingBasketIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_user_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_user_inactive.png' className={classes.icon}/>,
+      id:8,
       status: accessUsers
     },
   ];
@@ -158,67 +168,89 @@ const Sidebar = props => {
     {
       title: 'Accueil',
       href: '/manager/dashboard',
-      icon: <HomeIcon color={classes.icon} />,
-      status: 'visible'
+      activeIcon: <img src='/images/ic_home_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_home_inactive.png' className={classes.icon}/>,
+      id:0,
+      status: 'visible',
     },
     {
       title: 'Mes immeubles',
       href: '/manager/buildings',
-      icon: <TextFieldsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_building_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_building_inactive.png' className={classes.icon}/>,
+      id:1,
       status: accessBuildings
     },
     {
       title: 'Mes Copropriétaires',
       href: '/manager/owners',
-      icon: <AccountBoxIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_owner_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_owner_inactive.png' className={classes.icon}/>,
+      id:2,
       status: accessOwners
     },
     {
       title: 'Messagerie',
       href: '/manager/chat',
-      icon: <PeopleIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_chat_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_chat_inactive.png' className={classes.icon}/>,
+      id:3,
       status: accessChat
     },
     {
       title: 'Incidents',
       href: '/manager/incidents',
-      icon: <SettingsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_incident_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_incident_inactive.png' className={classes.icon}/>,
+      id:4,
       status: accessIncidents
     },
     {
       title: 'Assemblées',
       href: '/manager/assemblies',
-      icon: <LockOpenIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_user_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_user_inactive.png' className={classes.icon}/>,
+      id:5,
       status: accessAssemblies
     },
     {
       title: 'Événements',
       href: '/manager/events',
-      icon: <ImageIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_event_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_event_inactive.png' className={classes.icon}/>,
+      id:6,
       status: accessEvents
     },
     {
       title: 'Mon équipe',
       href: '/manager/team',
-      icon: <ShoppingBasketIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_manager_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_manager_inactive.png' className={classes.icon}/>,
+      id:7,
       status: accessTeam
     },
     {
       title: 'Mes prestataires',
       href: '/manager/providers',
-      icon: <LockOpenIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_provider_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_provider_inactive.png' className={classes.icon}/>,
+      id:8,
       status: accessProviders
     },
     {
       title: 'Annonces',
       href: '/manager/announcements',
-      icon: <ImageIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_announce_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_announce_inactive.png' className={classes.icon}/>,
+      id:9,
       status: accessAdvertisement
     },
     {
       title: 'Modules',
       href: '/manager/addons',
-      icon: <ShoppingBasketIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_product_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_product_inactive.png' className={classes.icon}/>,
+      id:10,
       status: accessAddons
     },
   ];
@@ -226,37 +258,49 @@ const Sidebar = props => {
     {
       title: 'Accueil',
       href: '/owner/dashboard',
-      icon: <HomeIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_home_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_home_inactive.png' className={classes.icon}/>,
+      id:0,
       status: 'visible'
     },
     {
       title: 'Messagerie',
       href: '/owner/chat',
-      icon: <TextFieldsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_chat_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_chat_inactive.png' className={classes.icon}/>,
+      id:1,
       status: accessChat
     },
     {
       title: 'Incidents',
       href: '/owner/incidents',
-      icon: <AccountBoxIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_incident_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_incident_inactive.png' className={classes.icon}/>,
+      id:2,
       status: accessIncidents
     },
     {
       title: 'Assemblées',
       href: '/owner/assemblies',
-      icon: <PeopleIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_user_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_user_inactive.png' className={classes.icon}/>,
+      id:3,
       status: accessAssemblies
     },
     {
       title: 'Événements',
       href: '/owner/events',
-      icon: <SettingsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_event_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_event_inactive.png' className={classes.icon}/>,
+      id:4,
       status: accessEvents
     },
     {
       title: 'Modules',
       href: '/owner/addons',
-      icon: <SettingsIcon className={classes.icon}/>,
+      activeIcon: <img src='/images/ic_product_active.png' className={classes.icon}/>,
+      inactiveIcon:<img src='/images/ic_product_inactive.png' className={classes.icon}/>,
+      id:5,
       status: accessAddons
     },
   ];
