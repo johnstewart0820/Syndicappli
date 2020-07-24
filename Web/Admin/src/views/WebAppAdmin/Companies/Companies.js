@@ -12,6 +12,7 @@ import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
 
 const Companies = (props) => {
   const { history } = props;
@@ -30,6 +31,7 @@ const Companies = (props) => {
   const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
+  const [isDisableDelete, setIsDisableDelete] = useState(true);
   const selectList = [20, 50, 100, 200, -1];
   const cellList = [
     { key: 'name', field: 'Nom' },
@@ -147,6 +149,15 @@ const Companies = (props) => {
       );
   }
 
+  const inputTextChange = (event) => {
+    console.log(event.target.value);
+    if(event.target.value === "delete") {
+      setIsDisableDelete(false);
+    } else {
+      setIsDisableDelete(true);
+    }
+  }
+
   return (
     <div>
       {
@@ -178,18 +189,27 @@ const Companies = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this company?
         </DialogTitle>
-        <DialogContent>
+        <DialogContent>        
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this company?
+            Type <b style={{color: "red"}}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"            
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDelete} color="primary">
+          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
             Delete
           </Button>
         </DialogActions>

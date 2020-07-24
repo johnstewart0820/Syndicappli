@@ -14,6 +14,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useStyles from './useStyles';
+import TextField from '@material-ui/core/TextField';
 
 const ManagerService = new Service();
 const Owners = (props) => {
@@ -50,6 +51,7 @@ const Owners = (props) => {
   const selectList = [20, 50, 100, 200, -1];
   const roleList = ['Tout', 'Copropriétaire', 'Sous-compte', 'member of the council'];
   const owner_role = ['all', 'owner', 'subaccount', 'member'];
+  const [isDisableDelete, setIsDisableDelete] = useState(true);
 
   const handleChangeBuildings = (val) => {
     setBuildings(val);
@@ -267,6 +269,16 @@ const Owners = (props) => {
         }
       );
   }
+
+  const inputTextChange = (event) => {
+    console.log(event.target.value);
+    if(event.target.value === "delete") {
+      setIsDisableDelete(false);
+    } else {
+      setIsDisableDelete(true);
+    }
+  }
+  
   return (
     <>
       {
@@ -329,18 +341,27 @@ const Owners = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this owner?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this owner?
+            Type <b style={{color: "red"}}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"            
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDelete} color="primary">
+          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
             Delete
           </Button>
         </DialogActions>

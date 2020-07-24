@@ -15,6 +15,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import TextField from '@material-ui/core/TextField';
 
 const Managers = (props) => {
   const { history } = props;
@@ -45,6 +46,7 @@ const Managers = (props) => {
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
+  const [isDisableDelete, setIsDisableDelete] = useState(true);
 
   const handleChangeCompanies = (val) => {
     setCompanies(val);
@@ -264,6 +266,15 @@ const Managers = (props) => {
       );
   }
 
+  const inputTextChange = (event) => {
+    console.log(event.target.value);
+    if(event.target.value === "delete") {
+      setIsDisableDelete(false);
+    } else {
+      setIsDisableDelete(true);
+    }
+  }
+
   return (
     <>
       {
@@ -326,18 +337,27 @@ const Managers = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this manager?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this manager?
+            Type <b style={{color: "red"}}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"            
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDelete} color="primary">
+          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
             Delete
           </Button>
         </DialogActions>
