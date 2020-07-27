@@ -102,6 +102,7 @@ const Main = (props) => {
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                classes={{paper: classes.paper}}
               >
                 <Grid item container className={classes.padding} justify="space-between">
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
@@ -117,12 +118,12 @@ const Main = (props) => {
         <Tabs value={value} onChange={handleChange}
           TabIndicatorProps={{
             style: {
-              backgroundColor: "#363636"
+              width: 0
             }
           }}
         >
-          <Tab xs={12} sm={4} label="Copropriétaires" {...a11yProps(0)} className={classes.tabTitle} />
-          <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} />
+          <Tab xs={12} sm={4} label="Copropriétaires" {...a11yProps(0)} className={classes.tabTitle} disableRipple/>
+          <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} disableRipple/>
         </Tabs>
 
       </div>

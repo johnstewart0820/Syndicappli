@@ -12,6 +12,7 @@ import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from 'services/authService';
 import { withRouter } from 'react-router-dom';
+import { Scrollbars } from 'react-custom-scrollbars';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
     "image/apng",
@@ -35,13 +36,13 @@ const AddOwner = (props) => {
     const [state, setState] = React.useState(false);
     const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
 
-    const [company, setCompany] = React.useState([]);
-    const [companies, setCompanies] = React.useState('');
+    let company = [''];
+    const [companies, setCompanies] = React.useState(0);
     const [companyList, setCompanyList] = React.useState([]);
     const [companyID, setCompanyID] = React.useState(-1);
 
     const [building, setBuilding] = React.useState([]);
-    const [buildings, setBuildings] = React.useState('');
+    const [buildings, setBuildings] = React.useState(0);
     const [buildingList, setBuildingList] = React.useState([]);
     const [buildingID, setBuildingID] = React.useState(-1);
 
@@ -257,13 +258,14 @@ const AddOwner = (props) => {
                             company.splice(0, company.length);
                             console.log('success');
                             const data = response.data.data;
+                            company.splice(0, company.length)
                             company.push('Tout');
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.companylist.map((item) => (
                                 company.push(item.name)
                             )
                             );
-                            setCompany(company)
+                            // setCompany(company)
                             setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
                             break;
                         case 401:
@@ -302,9 +304,12 @@ const AddOwner = (props) => {
                             )
                             );
                             setBuildingList(data.buildinglist);
-                            setBuilding(building)
-                            setBuildings(0);
-                            setBuildingID(data.buildinglist[0].buildingID);
+
+                            if (data.buildinglist.length !== 0) {
+                                setBuildingID(data.buildinglist[0].buildingID);
+                                setBuilding(building)
+                                setBuildings(0);
+                            }
                             break;
                         case 401:
                             authService.logout();
@@ -421,329 +426,330 @@ const AddOwner = (props) => {
             );
     }
     return (
-        <div className={classes.root}>
-            {
-                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-            }
-            <div className={classes.paper} sm={12}>
-                <Grid container spacing={2} >
-                    <Grid item container alignItems="center" spacing={1}>
-                        <Grid item><p className={classes.title}>Carbinet</p></Grid>
-                        <Grid xs item container direction="column">
-                            <MySelect
-                                color="gray"
-                                data={company}
-                                onChangeSelect={handleChangeCompanies}
-                                value={companies}
-                                width="50%"
-                            />
-                            {errorsCompanies.length > 0 &&
-                                <span className={classes.error}>{errorsCompanies}</span>}
-                        </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={1}>
-                        <Grid item><p className={classes.title}>Immeuble</p></Grid>
-                        <Grid xs item container direction="column">
-                            <MySelect
-                                color="gray"
-                                data={building}
-                                onChangeSelect={handleChangeBuildings}
-                                value={buildings}
-                                width="50%"
-                            />
-                            {errorsBuildings.length > 0 &&
-                                <span className={classes.error}>{errorsBuildings}</span>}
-                        </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={1}>
-                        <Grid item><p className={classes.title}>Civilité</p></Grid>
-                        <Grid xs item container direction="column">
-                            <MySelect
-                                color="gray"
-                                data={titleList}
-                                onChangeSelect={handleChangeOwnerTitle}
-                                value={ownerTitle}
-                                width="50%"
-                            />
-                            {errorsOwnerTitle.length > 0 &&
-                                <span className={classes.error}>{errorsOwnerTitle}</span>}
-                        </Grid>
-                    </Grid>
-                    {
-                        ownerTitle === 4 ?
-                            <Grid xs={12} item container alignItems="center" spacing={1}>
-                                <Grid item><p className={classes.title}>Carbinet Nom</p></Grid>
-                                <Grid xs item container direction="column">
-                                    <TextField
-                                        className={classes.text}
-                                        variant="outlined"
-                                        value={companyName}
-                                        onChange={handleChangeCompanyName}
-                                    />
-                                    {errorsCompanyName.length > 0 &&
-                                        <span className={classes.error}>{errorsCompanyName}</span>}
-                                </Grid>
+        <Scrollbars style={{ height: '100vh' }}>
+            <div className={classes.root}>
+                {
+                    visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+                }
+                <div className={classes.paper} sm={12}>
+                    <Grid container spacing={2} >
+                        <Grid item container alignItems="center" spacing={1}>
+                            <Grid item><p className={classes.title}>Carbinet</p></Grid>
+                            <Grid xs item container direction="column">
+                                <MySelect
+                                    color="gray"
+                                    data={company}
+                                    onChangeSelect={handleChangeCompanies}
+                                    value={companies}
+                                    width="50%"
+                                />
+                                {errorsCompanies.length > 0 &&
+                                    <span className={classes.error}>{errorsCompanies}</span>}
                             </Grid>
-                            :
-                            ownerTitle === 3 || ownerTitle === 6?
-                                <Grid item container spacing={1}>
-                                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.title}>Nom</p></Grid>
-                                        <Grid xs item container direction="column">
-                                            <TextField
-                                                className={classes.text}
-                                                variant="outlined"
-                                                value={lastname}
-                                                onChange={handleChangeLastName}
-                                            />
-                                            {errorsLastname.length > 0 &&
-                                                <span className={classes.error}>{errorsLastname}</span>}
-                                        </Grid>
-                                    </Grid>
-                                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.title}>Prénom</p></Grid>
-                                        <Grid xs item container direction="column">
-                                            <TextField
-                                                className={classes.text}
-                                                variant="outlined"
-                                                value={firstname}
-                                                onChange={handleChangeFirstName}
-                                            />
-                                            {errorsFirstname.length > 0 &&
-                                                <span className={classes.error}>{errorsFirstname}</span>}
-                                        </Grid>
-                                    </Grid>
-                                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.title}>Nom</p></Grid>
-                                        <Grid xs item container direction="column">
-                                            <TextField
-                                                className={classes.text}
-                                                variant="outlined"
-                                                value={lastname1}
-                                                onChange={handleChangeLastName1}
-                                            />
-                                            {errorsLastname1.length > 0 &&
-                                                <span className={classes.error}>{errorsLastname1}</span>}
-                                        </Grid>
-                                    </Grid>
-                                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.title}>Prénom</p></Grid>
-                                        <Grid xs item container direction="column">
-                                            <TextField
-                                                className={classes.text}
-                                                variant="outlined"
-                                                value={firstname1}
-                                                onChange={handleChangeFirstName1}
-                                            />
-                                            {errorsFirstname1.length > 0 &&
-                                                <span className={classes.error}>{errorsFirstname1}</span>}
-                                        </Grid>
+                        </Grid>
+                        <Grid item container alignItems="center" spacing={1}>
+                            <Grid item><p className={classes.title}>Immeuble</p></Grid>
+                            <Grid xs item container direction="column">
+                                <MySelect
+                                    color="gray"
+                                    data={building}
+                                    onChangeSelect={handleChangeBuildings}
+                                    value={buildings}
+                                    width="50%"
+                                />
+                                {errorsBuildings.length > 0 &&
+                                    <span className={classes.error}>{errorsBuildings}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container alignItems="center" spacing={1}>
+                            <Grid item><p className={classes.title}>Civilité</p></Grid>
+                            <Grid xs item container direction="column">
+                                <MySelect
+                                    color="gray"
+                                    data={titleList}
+                                    onChangeSelect={handleChangeOwnerTitle}
+                                    value={ownerTitle}
+                                    width="50%"
+                                />
+                                {errorsOwnerTitle.length > 0 &&
+                                    <span className={classes.error}>{errorsOwnerTitle}</span>}
+                            </Grid>
+                        </Grid>
+                        {
+                            ownerTitle === 4 ?
+                                <Grid xs={12} item container alignItems="center" spacing={1}>
+                                    <Grid item><p className={classes.title}>Carbinet Nom</p></Grid>
+                                    <Grid xs item container direction="column">
+                                        <TextField
+                                            className={classes.text}
+                                            variant="outlined"
+                                            value={companyName}
+                                            onChange={handleChangeCompanyName}
+                                        />
+                                        {errorsCompanyName.length > 0 &&
+                                            <span className={classes.error}>{errorsCompanyName}</span>}
                                     </Grid>
                                 </Grid>
                                 :
-                                <Grid item container spacing={1}>
-                                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.title}>Nom</p></Grid>
-                                        <Grid xs item container direction="column">
-                                            <TextField
-                                                className={classes.text}
-                                                variant="outlined"
-                                                value={lastname}
-                                                onChange={handleChangeLastName}
-                                            />
-                                            {errorsLastname.length > 0 &&
-                                                <span className={classes.error}>{errorsLastname}</span>}
+                                ownerTitle === 3 || ownerTitle === 6 ?
+                                    <Grid item container spacing={1}>
+                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                            <Grid item><p className={classes.title}>Nom</p></Grid>
+                                            <Grid xs item container direction="column">
+                                                <TextField
+                                                    className={classes.text}
+                                                    variant="outlined"
+                                                    value={lastname}
+                                                    onChange={handleChangeLastName}
+                                                />
+                                                {errorsLastname.length > 0 &&
+                                                    <span className={classes.error}>{errorsLastname}</span>}
+                                            </Grid>
+                                        </Grid>
+                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                            <Grid item><p className={classes.title}>Prénom</p></Grid>
+                                            <Grid xs item container direction="column">
+                                                <TextField
+                                                    className={classes.text}
+                                                    variant="outlined"
+                                                    value={firstname}
+                                                    onChange={handleChangeFirstName}
+                                                />
+                                                {errorsFirstname.length > 0 &&
+                                                    <span className={classes.error}>{errorsFirstname}</span>}
+                                            </Grid>
+                                        </Grid>
+                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                            <Grid item><p className={classes.title}>Nom</p></Grid>
+                                            <Grid xs item container direction="column">
+                                                <TextField
+                                                    className={classes.text}
+                                                    variant="outlined"
+                                                    value={lastname1}
+                                                    onChange={handleChangeLastName1}
+                                                />
+                                                {errorsLastname1.length > 0 &&
+                                                    <span className={classes.error}>{errorsLastname1}</span>}
+                                            </Grid>
+                                        </Grid>
+                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                            <Grid item><p className={classes.title}>Prénom</p></Grid>
+                                            <Grid xs item container direction="column">
+                                                <TextField
+                                                    className={classes.text}
+                                                    variant="outlined"
+                                                    value={firstname1}
+                                                    onChange={handleChangeFirstName1}
+                                                />
+                                                {errorsFirstname1.length > 0 &&
+                                                    <span className={classes.error}>{errorsFirstname1}</span>}
+                                            </Grid>
                                         </Grid>
                                     </Grid>
-                                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.title}>Prénom</p></Grid>
-                                        <Grid xs item container direction="column">
-                                            <TextField
-                                                className={classes.text}
-                                                variant="outlined"
-                                                value={firstname}
-                                                onChange={handleChangeFirstName}
-                                            />
-                                            {errorsFirstname.length > 0 &&
-                                                <span className={classes.error}>{errorsFirstname}</span>}
+                                    :
+                                    <Grid item container spacing={1}>
+                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                            <Grid item><p className={classes.title}>Nom</p></Grid>
+                                            <Grid xs item container direction="column">
+                                                <TextField
+                                                    className={classes.text}
+                                                    variant="outlined"
+                                                    value={lastname}
+                                                    onChange={handleChangeLastName}
+                                                />
+                                                {errorsLastname.length > 0 &&
+                                                    <span className={classes.error}>{errorsLastname}</span>}
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
+                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                            <Grid item><p className={classes.title}>Prénom</p></Grid>
+                                            <Grid xs item container direction="column">
+                                                <TextField
+                                                    className={classes.text}
+                                                    variant="outlined"
+                                                    value={firstname}
+                                                    onChange={handleChangeFirstName}
+                                                />
+                                                {errorsFirstname.length > 0 &&
+                                                    <span className={classes.error}>{errorsFirstname}</span>}
+                                            </Grid>
+                                        </Grid>
 
+                                    </Grid>
+                        }
+
+                        <Grid item container spacing={1} direction="column">
+                            <Grid item><p className={classes.title}>Adresse</p></Grid>
+                            <Grid item container direction="column">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={address}
+                                    onChange={handleChangeAddress}
+                                    multiline
+                                    fullWidth
+                                    rows={5}
+                                />
+                                {errorsAddress.length > 0 &&
+                                    <span className={classes.error}>{errorsAddress}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                            <Grid item ><p className={classes.title}>Email</p></Grid>
+                            <Grid xs item container direction="column">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={email}
+                                    onChange={handleChangeEmail}
+                                />
+                                {errorsEmail.length > 0 &&
+                                    <span className={classes.error}>{errorsEmail}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                            <Grid item><p className={classes.title}>Téléphone</p></Grid>
+                            <Grid xs item container direction="column">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={phonenumber}
+                                    onChange={handleChangePhoneNumber}
+                                />
+                                {errorsPhonenumber.length > 0 &&
+                                    <span className={classes.error}>{errorsPhonenumber}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container justify="space-between" direction="row">
+                            <Grid item>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item ><p className={classes.title}>Locataire</p></Grid>
+                                    <Grid xs item container>
+                                        <Checkbox
+                                            checked={isSubAccount}
+                                            onChange={handleChangeIsSubAccount}
+                                        />
+                                    </Grid>
                                 </Grid>
-                    }
-
-                    <Grid item container spacing={1} direction="column">
-                        <Grid item><p className={classes.title}>Adresse</p></Grid>
-                        <Grid item container direction="column">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={address}
-                                onChange={handleChangeAddress}
-                                multiline
-                                fullWidth
-                                rows={5}
-                            />
-                            {errorsAddress.length > 0 &&
-                                <span className={classes.error}>{errorsAddress}</span>}
-                        </Grid>
-                    </Grid>
-                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                        <Grid item ><p className={classes.title}>Email</p></Grid>
-                        <Grid xs item container direction="column">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={email}
-                                onChange={handleChangeEmail}
-                            />
-                            {errorsEmail.length > 0 &&
-                                <span className={classes.error}>{errorsEmail}</span>}
-                        </Grid>
-                    </Grid>
-                    <Grid xs={6} item container alignItems="center" spacing={1}>
-                        <Grid item><p className={classes.title}>Téléphone</p></Grid>
-                        <Grid xs item container direction="column">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={phonenumber}
-                                onChange={handleChangePhoneNumber}
-                            />
-                            {errorsPhonenumber.length > 0 &&
-                                <span className={classes.error}>{errorsPhonenumber}</span>}
-                        </Grid>
-                    </Grid>
-                    <Grid item container justify="space-between" direction="row">
-                        <Grid item>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item ><p className={classes.title}>Locataire</p></Grid>
-                                <Grid xs item container>
-                                    <Checkbox
-                                        checked={isSubAccount}
-                                        onChange={handleChangeIsSubAccount}
-                                    />
+                            </Grid>
+                            <Grid item>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item><p className={classes.title}>Membre du Conseil Syndical</p></Grid>
+                                    <Grid xs item container>
+                                        <Checkbox
+                                            checked={isMemberCouncil}
+                                            onChange={handleChangeIsMemberCouncil}
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item><p className={classes.title}>Membre du Conseil Syndical</p></Grid>
-                                <Grid xs item container>
-                                    <Checkbox
-                                        checked={isMemberCouncil}
-                                        onChange={handleChangeIsMemberCouncil}
-                                    />
-                                </Grid>
+                        <Grid xs={12} item container direction="column" >
+                            <p className={classes.title}>Photo de profil</p>
+                            <Grid item container justify="flex-start">
+                                <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
+                                <label htmlFor="img_front">
+                                    {
+                                        avatarurl === '' ?
+                                            <div className={classes.img}>
+                                                <AddCircleOutlineIcon className={classes.plus} />
+                                            </div> :
+                                            <img className={classes.img} src={avatarurl} alt="" />
+                                    }
+                                </label>
                             </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid xs={12} item container direction="column" >
-                        <p className={classes.title}>Photo de profil</p>
-                        <Grid item container justify="flex-start">
-                            <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
-                            <label htmlFor="img_front">
+                        <Grid item container direction="column" spacing={2}>
+                            <Grid item>
                                 {
-                                    avatarurl === '' ?
-                                        <div className={classes.img}>
-                                            <AddCircleOutlineIcon className={classes.plus} />
-                                        </div> :
-                                        <img className={classes.img} src={avatarurl} alt="" />
-                                }
-                            </label>
-                        </Grid>
-                    </Grid>
-                    <Grid item container direction="column" spacing={2}>
-                        <Grid item>
-                            {
-                                stateLots !== null ?
-                                    <Grid item container direction="column" spacing={5}>
-                                        {
-                                            lotsList.map((lot, i) => {
-                                                return (
-                                                    <Grid key={i} item container direction="column" spacing={1}>
-                                                        <Grid item container alignItems="center" spacing={1}>
-                                                            <Grid item><p className={classes.title}>Lot</p></Grid>
-                                                            <Grid xs item container>
-                                                                <TextField
-                                                                    className={classes.text}
-                                                                    variant="outlined"
-                                                                    value={apartNumber[i] || ""}
-                                                                    onChange={(event) => handleChangeApartNumber(event, i)}
-                                                                    style={{ width: 100 }}
-                                                                />
+                                    stateLots !== null ?
+                                        <Grid item container direction="column" spacing={5}>
+                                            {
+                                                lotsList.map((lot, i) => {
+                                                    return (
+                                                        <Grid key={i} item container direction="column" spacing={3}>
+                                                            <Grid item container alignItems="center" spacing={2}>
+                                                                <Grid item><p className={classes.title}>Lot</p></Grid>
+                                                                <Grid xs item container>
+                                                                    <TextField
+                                                                        className={classes.text}
+                                                                        variant="outlined"
+                                                                        value={apartNumber[i] || ""}
+                                                                        onChange={(event) => handleChangeApartNumber(event, i)}
+                                                                        style={{ width: 100 }}
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                            <Grid item><p className={classes.title}>Clefs de répartition du lot</p></Grid>
+
+                                                            <Grid item container direction="column" spacing={2} >
+                                                                {
+                                                                    lot.map((vote1, j) => {
+                                                                        return (
+                                                                            <Grid key={j} item container alignItems="center" spacing={2}>
+                                                                                <Grid item><p className={classes.title}>{vote1.vote_branch_name}</p></Grid>
+                                                                                <Grid item >
+                                                                                    <TextField
+                                                                                        className={classes.text}
+                                                                                        variant="outlined"
+                                                                                        value={voteAmount[i][j] || ""}
+                                                                                        onChange={(event) => handleChangeVoteAmount(event, i, j)}
+                                                                                        style={{ width: 100 }}
+
+                                                                                    />
+                                                                                </Grid>
+                                                                                <Grid item><p className={classes.title}>tantièmes</p></Grid>
+                                                                            </Grid>
+                                                                        )
+                                                                    })
+                                                                }
                                                             </Grid>
                                                         </Grid>
-                                                        <Grid item><p className={classes.title}>Clefs de répartition du lot</p></Grid>
-
-                                                        <Grid item container direction="column" spacing={1} >
-                                                            {
-                                                                lot.map((vote1, j) => {
-                                                                    return (
-                                                                        <Grid key={j} item container alignItems="center" spacing={1}>
-                                                                            <Grid item><p className={classes.title}>{vote1.vote_branch_name}</p></Grid>
-                                                                            <Grid item >
-                                                                                <TextField
-                                                                                    className={classes.text}
-                                                                                    variant="outlined"
-                                                                                    value={voteAmount[i][j] || ""}
-                                                                                    onChange={(event) => handleChangeVoteAmount(event, i, j)}
-                                                                                    style={{ width: 100 }}
-
-                                                                                />
-                                                                            </Grid>
-                                                                            <Grid item><p className={classes.title}>tantièmes</p></Grid>
-                                                                        </Grid>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </Grid>
-                                                    </Grid>
-                                                )
-                                            })
-                                        }
-                                    </Grid>
-                                    : null
-                            }
+                                                    )
+                                                })
+                                            }
+                                        </Grid>
+                                        : null
+                                }
+                            </Grid>
+                            <Grid item style={{ marginTop: 10, marginBottom: 10 }}>
+                                <Grid item container direction="column">
+                                    <Grid><MyButton name={"Ajouter un lot"} bgColor="grey" onClick={handleClickAddLots} /></Grid>
+                                    {errorsVoteLists.length > 0 &&
+                                        <span className={classes.error}>{errorsVoteLists}</span>}
+                                </Grid>
+                            </Grid>
                         </Grid>
-                        <Grid item style={{ marginTop: 10, marginBottom: 10 }}>
-                            <Grid item container direction="column">
-                                <Grid><MyButton name={"Ajouter un lot"} bgColor="grey" onClick={handleClickAddLots} /></Grid>
-                                {errorsVoteLists.length > 0 &&
-                                    <span className={classes.error}>{errorsVoteLists}</span>}
+                        <Grid xs={12} item container direction="column" style={{ marginTop: 30 }}>
+                            <p className={classes.title}>Pièce d'identité</p>
+                            <Grid item container justify="flex-start">
+                                <IdCard
+                                    onClose={handleClickCloseIdcard}
+                                    idcardurls={idcardurls}
+                                    state={state}
+                                />
+
+                                <input className={classes.input} accept="image/*" type="file" id="img_idcard" onChange={handleLoadIdcard} />
+                                <label htmlFor="img_idcard">
+                                    {
+                                        <div className={classes.img}>
+                                            <AddCircleOutlineIcon className={classes.plus} />
+                                        </div>
+                                    }
+                                </label>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid xs={12} item container direction="column" style={{ marginTop: 30 }}>
-                        <p className={classes.title}>Pièce d'identité</p>
-                        <Grid item container justify="flex-start">
-                            <IdCard
-                                onClose={handleClickCloseIdcard}
-                                idcardurls={idcardurls}
-                                state={state}
-                            />
-
-                            <input className={classes.input} accept="image/*" type="file" id="img_idcard" onChange={handleLoadIdcard} />
-                            <label htmlFor="img_idcard">
-                                {
-                                    <div className={classes.img}>
-                                        <AddCircleOutlineIcon className={classes.plus} />
-                                    </div>
-                                }
-                            </label>
+                    <div className={classes.footer}>
+                        <Grid container justify="space-between">
+                            <MyButton name={"Créer"} color={"1"} onClick={handleCreate} />
+                            <MyButton name={"Annuler"} bgColor="grey" onClick={handleClose} />
                         </Grid>
-                    </Grid>
-                </Grid>
-                <div className={classes.footer}>
-                    <Grid container justify="space-between">
-                        <MyButton name={"Créer"} color={"1"} onClick={handleCreate} />
-                        <MyButton name={"Annuler"} bgColor="grey" onClick={handleClose} />
-                    </Grid>
+                    </div>
                 </div>
+                <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
             </div>
-            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
-        </div>
-
+        </Scrollbars>
     );
 };
 

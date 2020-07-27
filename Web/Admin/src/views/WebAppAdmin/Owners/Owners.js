@@ -30,13 +30,14 @@ const Owners = (props) => {
   const accessOwners = authService.getAccess('role_owners');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
-  const [company, setCompany] = useState([]);
-  const [companies, setCompanies] = useState('');
+  // const [company, setCompany] = useState(['']);
+  let company = ['']
+  const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  const [building,setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState('');
+  const [building,setBuilding] = useState(['']);
+  const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
@@ -168,12 +169,13 @@ const Owners = (props) => {
               company.splice(0,company.length);
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              // company.splice(0,company.length)
               company.push('Tout');
               data.companylist.map((item) => (
                 company.push(item.name)
               )
               );
-              setCompany(company);
+              // setCompany(company);
               setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
               break;
             case 401:

@@ -3,54 +3,30 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
-const BootstrapInput = withStyles((theme) => ({
+const CustomAutocomplete = withStyles((theme) => ({
   root: {
-    'label + &': {
+    '& .MuiInputBase-root.MuiOutlinedInput-root.MuiAutocomplete-inputRoot.MuiInputBase-fullWidth.MuiInputBase-formControl': {
       [theme.breakpoints.up('xl')]: {
-        marginTop: 24,
+        height: 30,
+        paddingTop: "8px"
       },
       [theme.breakpoints.between('lg','lg')]: {
-        marginTop: 17,
+        height: 30,
+        paddingTop: "8px"
       },
       [theme.breakpoints.down('md')]: {
-        marginTop: 12,
-      },
+        height: 30,
+        paddingTop: "8px"
+      }
     },
-  },
-  input: {
-    [theme.breakpoints.up('xl')]: {
-      padding: '17px 25px',
-      fontSize: 22,
-    },
-    [theme.breakpoints.down('lg')]: {
-      padding: '12px 18px',
-      fontSize: 15,
-    },
-    [theme.breakpoints.down('md')]: {
-      padding: '8px 13px',
-      fontSize: 11,
-    },
-    borderRadius: 4,
-    position: 'relative',
-    backgroundColor: theme.palette.background.paper,
-    border: '1px solid #ced4da',
-    // padding: '2px 26px 2px 12px',
-    display: 'flex',
-    alignItems: 'center',
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
-    // Use the system font instead of the default Roboto font.
-    color:'#707070',
-    fontFamily: [
-      'Poppins',
-    ].join(','),
-    '&:focus': {
-      borderRadius: 4,
-      borderColor: '#80bdff',
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-    },
-  },
-}))(InputBase);
+    '& .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input':{
+      padding: "0px"
+    }
+  }
+}))(Autocomplete);
 
 const useStyles = makeStyles((theme, props) => ({
   margin: {
@@ -59,35 +35,42 @@ const useStyles = makeStyles((theme, props) => ({
       borderColor: props => props.color
     },
     '& .MuiSelect-icon': {
-      color: props => props.color
+      color: 'gray'
     },
   },
 }));
 
 export default function CustomizedSelects(props) {
   const classes = useStyles(props);
-  const [items] = React.useState(props.data);
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event) => {
-    props.onChangeSelect(event.target.value);
-    setValue(event.target.value);
+  const [items, setItems] = React.useState(props.data);
+  // const items = props.data;
+  const [value, setValue] = React.useState(props.value);
+  const handleChange = (event, values) => {
+    let result = 0;
+    for (let i in items) {
+      if (items[i] === values)
+        result = i;
+    }
+    console.log('select:',values)
+    props.onChangeSelect(result);
+    
   };
-  useEffect(()=>{
-    setValue(props.value);
-  },[props.value]);
+  // useEffect(()=>{
+  //   if(props.value)
+  //     setValue(props.value)
+  // }, [props.value]);
+  console.log("values: ", value)
   return (
       <FormControl className={classes.margin}>
-        <NativeSelect
-          value={value}
-          onChange={handleChange}
-          input={<BootstrapInput />}
+        <CustomAutocomplete
+          options={items}
+          value={items[props.value]}
+          onChange={(event,values)=>handleChange(event, values)}
+          size="small"
+          renderInput={(params) => <TextField {...params} label={props.label} variant="outlined" />}
           disabled={props.disabled === true? true : null}
-        >
-          {
-            items.map((item, i) =>
-              <option  value={i} key={i} > {item}</option>
-          )}
-        </NativeSelect>
+        />
+        
       </FormControl>
   );
 }

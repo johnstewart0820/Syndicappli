@@ -51,19 +51,24 @@ const Profile = props => {
     avatar: '/images/Login.png',
   };
   const handleClickToHome = ()=>{
+    localStorage.setItem("select", JSON.stringify(0));
     const usertype = authService.getAccess('usertype');  
       switch(usertype){
         case 'superadmin':
           history.push('/admin/dashboard');
+          window.location.reload();
           break;
         case 'admin':
           history.push('/admin/dashboard');
+          window.location.reload();
           break;
         case 'manager':
           history.push('/manager/dashboard');
+          window.location.reload();
           break;
         case 'owner':
           history.push('/owner/dashboard');
+          window.location.reload();
           break;
         default:
           break;

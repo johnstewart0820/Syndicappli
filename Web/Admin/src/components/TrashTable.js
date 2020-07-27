@@ -118,9 +118,9 @@ const useStyles = makeStyles({
         borderBottomRightRadius: '8px',
       },
     },
-    '& thead tr:first-child th': {
-      borderRadius: 30,
-    },
+    // '& thead tr:first-child th:first-child': {
+    //   borderTopLeftRadius: 30,
+    // },
     [theme.breakpoints.up('xl')]: {
       marginBottom: 16,
       marginTop: 8,

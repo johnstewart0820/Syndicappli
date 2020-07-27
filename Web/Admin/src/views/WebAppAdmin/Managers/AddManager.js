@@ -11,7 +11,7 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from 'services/authService';
 import { withRouter } from 'react-router-dom';
-
+import { Scrollbars } from 'react-custom-scrollbars';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
     "image/apng",
@@ -42,8 +42,8 @@ const AddManager = (props) => {
     const [email, setEmail] = React.useState('');
     const [phonenumber, setPhoneNumber] = React.useState('');
 
-    let company = [];
-    const [companies, setCompanies] = React.useState('');
+    let company = [''];
+    const [companies, setCompanies] = React.useState(0);
     const [companyList, setCompanyList] = React.useState([]);
     const [companyID, setCompanyID] = React.useState(-1);
     const [buildingList, setBuildingList] = React.useState([]);
@@ -201,7 +201,8 @@ const AddManager = (props) => {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
-                            company.push('');
+                            company.splice(0,company.length)
+                            company.push('Tout');
                             data.companylist.map((item) => (
                                 company.push(item.name)
                             )
@@ -353,6 +354,7 @@ const AddManager = (props) => {
             );
     }
     return (
+        <Scrollbars style={{height:'100vh'}}>
         <div className={classes.root}>
             {
                 visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
@@ -590,6 +592,7 @@ const AddManager = (props) => {
             </div>
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>
+         </Scrollbars> 
     );
 };
 

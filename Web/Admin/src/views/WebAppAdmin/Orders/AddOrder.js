@@ -7,7 +7,7 @@ import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../../components/MySelect';
-
+import { Scrollbars } from 'react-custom-scrollbars';
 const useStyles = makeStyles(theme => ({
     paper: {
         backgroundColor: theme.palette.background.paper,
@@ -43,6 +43,7 @@ const AddOrder = (props) => {
     props.onCancel();
   };
   return (
+    <Scrollbars style={{height:'100vh'}}>
     <div className={classes.root}>
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
@@ -140,6 +141,7 @@ const AddOrder = (props) => {
         </div>
         <ScrollBar/>
     </div>
+    </Scrollbars>
   );
 };
 

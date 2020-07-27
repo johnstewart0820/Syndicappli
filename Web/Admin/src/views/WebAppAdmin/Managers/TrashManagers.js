@@ -29,12 +29,12 @@ const TrashManagers = (props) => {
   const [footerItems, setFooterItems] = useState([]);
   const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
-  let company = [];
-  const [companies, setCompanies] = useState('');
+  let company = [''];
+  const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
-  const [building, setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState('');
+  let building = [''];
+  const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
@@ -97,7 +97,6 @@ const TrashManagers = (props) => {
     { key: 'connection', field: 'Connexions/mois' },
     { key: 'dailytime', field: 'Temps connexion/jour' },
     { key: 'apartment', field: 'Lots' },
-    { key: '', field: ''}
   ];
   const columns = [];
   for (let i = 0; i < 6; i++)
@@ -219,6 +218,7 @@ const TrashManagers = (props) => {
             case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
+                company.splice(0,company.length)
                 company.push('Tout');
                 data.companylist.map((item) => (
                   company.push(item.name)
@@ -256,12 +256,12 @@ const TrashManagers = (props) => {
               buildingList.splice(0,buildingList.length)
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              building.splice(0,building.length)
               building.push('Tout');
               data.buildinglist.map((item) => (
                 building.push(item.name)
               )
               );
-              setBuilding(building);
               setBuildingList([{ buildingID: -1 }, ...data.buildinglist]);
               setBuildings(0);
               setBuildingID(-1)

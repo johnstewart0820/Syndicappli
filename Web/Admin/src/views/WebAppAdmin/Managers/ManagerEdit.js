@@ -82,8 +82,8 @@ const ManagerEdit = (props) => {
   const [errorsFirstname, setErrorsFirstname] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
-  let company = [];
-  const [companies, setCompanies] = React.useState('');
+  let company = [''];
+  const [companies, setCompanies] = React.useState(0);
   const [companyList, setCompanyList] = React.useState([]);
   const [companyID, setCompanyID] = React.useState(-1);
 
@@ -104,7 +104,7 @@ const ManagerEdit = (props) => {
           switch (response.data.code) {
             case 200:
               const data = response.data.data;
-              company.push('');
+              company.splice(0,company.length)
               data.companylist.map((item) => (
                 company.push(item.name)
               )
@@ -567,7 +567,7 @@ const ManagerEdit = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
               <Typography variant="h2" className={classes.headerTitle}>
-                <b>Michel Dupont</b>
+                <b>{firstname + ' ' + lastname}</b>
               </Typography>
             </Grid>
           </Grid>

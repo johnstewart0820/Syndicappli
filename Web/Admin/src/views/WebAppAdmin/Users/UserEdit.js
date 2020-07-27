@@ -344,7 +344,7 @@ const UserEdit = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
               <Typography variant="h2" className={classes.headerTitle}>
-                <b>Mon Cabinet Syndic</b>
+                <b>{firstname + ' ' + lastname}</b>
               </Typography>
             </Grid>
           </Grid>
@@ -382,7 +382,7 @@ const UserEdit = (props) => {
                         disabled={(accessUsers === 'see' ? true : false)}
                       />
                       <label htmlFor="img_front">
-                        <EditOutlinedIcon className={classes.editAvatar} />
+                        <EditOutlinedIcon className={classes.editAvatar} disabled={(accessUsers === 'see' ? true : false)}/>
                       </label>
                     </div>
                   }
@@ -484,7 +484,7 @@ const UserEdit = (props) => {
             <Grid item container spacing={1}>
               <Grid item container ></Grid>
               <Grid item container spacing={2}>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Cabinets</p>
                   <MySelect
                     color="#9f9f9f"
@@ -494,7 +494,8 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid item container sm={3}></Grid>
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Gestionnaires</p>
                   <MySelect
                     color="#9f9f9f"
@@ -504,7 +505,8 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid item container sm={3}></Grid>
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Immeuables</p>
                   <MySelect
                     color="#9f9f9f"
@@ -514,7 +516,8 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid item container sm={3}></Grid>
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Coproprietaires</p>
                   <MySelect
                     color="#9f9f9f"
@@ -524,7 +527,8 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid item container sm={3}></Grid>
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Commandes</p>
                   <MySelect
                     color="#9f9f9f"
@@ -534,7 +538,8 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid item container sm={3}></Grid>
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Prodults</p>
                   <MySelect
                     color="#9f9f9f"
@@ -544,7 +549,8 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid item container sm={3}></Grid>
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Codes Promo</p>
                   <MySelect
                     color="#9f9f9f"
@@ -554,7 +560,8 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid xs={12} sm={6} item container direction="column">
+                <Grid item container sm={3}></Grid>
+                <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Utilisateurs</p>
                   <MySelect
                     color="#9f9f9f"

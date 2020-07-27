@@ -246,7 +246,7 @@ const BuildingsEdit = (props) => {
       </div>
       <Grid container direction="column" >
         <div className={classes.body}>
-          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8}>
+          <Grid item container spacing={5} xs={12} sm={8} md={6}>
             <Grid item container><p className={classes.headerTitle}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p className={classes.itemTitle}>Nom</p></Grid>

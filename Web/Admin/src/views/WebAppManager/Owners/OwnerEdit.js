@@ -23,6 +23,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
@@ -93,17 +94,20 @@ const OwnerEdit = (props) => {
   const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
   const [errorsCompanyName, setErrorsCompanyName] = React.useState('');
+  const [errorsLotsList, setErrorsLotsList] = React.useState('');
 
   const [lotsList, setLotsList] = React.useState([]);
   const [stateLots, setStateLots] = React.useState(false);
   const [buildingVote, setBuildingVote] = React.useState([]);
   const [voteAmount, setVoteAmount] = React.useState(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
   let voteLists = [];
-
+  const [count, setCount] = React.useState(0);
   const handleClick = () => {
     history.goBack();
   };
   const handleClickSave = () => {
+    if (apartNumber.length !== 0 && voteAmount.length !== 0)
+      setCount(count + 1);
     let cnt = 0;
     if (ownerTitle === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
     else setErrorsOwnerTitle('');
@@ -134,7 +138,8 @@ const OwnerEdit = (props) => {
     else setErrorsPhonenumber('');
     if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
     else setErrorsAddress('');
-
+    if (count === 0) { setErrorsLotsList('please check a Lot'); cnt++; }
+    else setErrorsLotsList('');
     if (cnt === 0) {
       updateOwner();
     }
@@ -250,6 +255,25 @@ const OwnerEdit = (props) => {
     lotsList.push(buildingVote);
     setLotsList(lotsList);
     setStateLots(!stateLots);
+  }
+  const handleClickRemoveLot = (num) => {
+    setCount(count - 1);
+    delete lotsList[num];
+    lotsList.splice(num, 1);
+
+    let voteamount = [...voteAmount];
+    delete voteamount[num];
+    voteamount.splice(num, 1);
+    setVoteAmount(voteamount);
+
+    let apartment = [...apartNumber];
+    delete apartment[num];
+    apartment.splice(num, 1);
+    setApartNumber(apartment);
+
+    setLotsList(lotsList);
+    setStateLots(!stateLots);
+    console.log('lotsList:', lotsList)
   }
   useEffect(() => {
     if (accessOwners === 'denied') {
@@ -511,6 +535,7 @@ const OwnerEdit = (props) => {
               }
               console.log('lotslist:', lotsList)
               setLotsList(lotsList);
+              setCount(lotsList.length)
               setStateLots(!stateLots);
               break;
             case 401:
@@ -949,42 +974,52 @@ const OwnerEdit = (props) => {
                       {
                         lotsList.map((lot, i) => {
                           return (
-                            <Grid key={i} item container direction="column" spacing={1}>
-                              <Grid item container alignItems="center" spacing={1}>
-                                <Grid item><p className={classes.itemTitle}>Lot</p></Grid>
-                                <Grid xs item container>
-                                  <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={apartNumber[i] || ""}
-                                    onChange={(event) => handleChangeApartNumber(event, i)}
-                                    style={{ width: 100 }}
-                                  />
+                            <Grid key={i} item container alignItems="center" spacing={3}>
+                              <Grid item>
+                                <Grid item container direction="column" spacing={3}>
+                                  <Grid item container alignItems="center" spacing={2}>
+                                    <Grid item><p className={classes.itemTitle}>Lot</p></Grid>
+                                    <Grid xs item container>
+                                      <TextField
+                                        className={classes.text}
+                                        variant="outlined"
+                                        value={apartNumber[i] || ""}
+                                        onChange={(event) => handleChangeApartNumber(event, i)}
+                                        style={{ width: 100 }}
+                                      />
+                                    </Grid>
+                                  </Grid>
+                                  <Grid item><p className={classes.itemTitle}>Clefs de répartition du lot</p></Grid>
+
+                                  <Grid item container direction="column" spacing={2} >
+                                    {
+                                      lot.map((vote1, j) => {
+                                        return (
+                                          <Grid key={j} item container alignItems="center" spacing={2}>
+                                            <Grid item><p className={classes.itemTitle}>{vote1.vote_branch_name}</p></Grid>
+                                            <Grid item >
+                                              <TextField
+                                                className={classes.text}
+                                                variant="outlined"
+                                                value={voteAmount[i][j] || ""}
+                                                onChange={(event) => handleChangeVoteAmount(event, i, j)}
+                                                style={{ width: 100 }}
+
+                                              />
+                                            </Grid>
+                                            <Grid item><p className={classes.itemTitle}>tantièmes</p></Grid>
+                                          </Grid>
+                                        )
+                                      })
+                                    }
+                                  </Grid>
                                 </Grid>
                               </Grid>
-                              <Grid item><p className={classes.itemTitle}>Clefs de répartition du lot</p></Grid>
-
-                              <Grid item container direction="column" spacing={1} >
-                                {
-                                  lot.map((vote1, j) => {
-                                    return (
-                                      <Grid key={j} item container alignItems="center" spacing={1}>
-                                        <Grid item><p className={classes.itemTitle}>{vote1.vote_branch_name}</p></Grid>
-                                        <Grid item >
-                                          <TextField
-                                            className={classes.text}
-                                            variant="outlined"
-                                            value={voteAmount[i][j] || ""}
-                                            onChange={(event) => handleChangeVoteAmount(event, i, j)}
-                                            style={{ width: 100 }}
-
-                                          />
-                                        </Grid>
-                                        <Grid item><p className={classes.itemTitle}>tantièmes</p></Grid>
-                                      </Grid>
-                                    )
-                                  })
-                                }
+                              <Grid item>
+                                <RemoveCircleOutlineIcon
+                                  className={classes.plus}
+                                  onClick={() => handleClickRemoveLot(i)}
+                                />
                               </Grid>
                             </Grid>
                           )
@@ -996,12 +1031,16 @@ const OwnerEdit = (props) => {
 
               </Grid>
               <Grid item style={{ marginTop: 10, marginBottom: 10 }}>
-                <MyButton
-                  name={"Ajouter un lot"}
-                  bgColor="grey"
-                  onClick={handleClickAddLots}
-                  disabled={(accessOwners === 'see' ? true : false)}
-                />
+                <Grid item>
+                  <MyButton
+                    name={"Ajouter un lot"}
+                    bgColor="grey"
+                    onClick={handleClickAddLots}
+                    disabled={(accessOwners === 'see' ? true : false)}
+                  />
+                </Grid>
+                {errorsLotsList.length > 0 &&
+                  <span className={classes.error}>{errorsLotsList}</span>}
               </Grid>
             </Grid>
             <Grid xs={12} item container direction="column" style={{ marginTop: 30 }}>

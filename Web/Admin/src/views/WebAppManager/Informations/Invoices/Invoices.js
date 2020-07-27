@@ -13,9 +13,6 @@ import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    '& .MuiTab-root': {
-      textTransform: 'none'
-    },
     [theme.breakpoints.up('xl')]: {
       paddingLeft: theme.spacing(5),
       paddingRight: theme.spacing(4),
@@ -27,6 +24,28 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
+    },
+    '& .MuiTab-root':{
+      paddingLeft: 0,
+      paddingRight: 0
+    },
+    '& .MuiTab-wrapper':{
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      textTransform: 'none',
+      color: '#363636',
+      [theme.breakpoints.up('xl')]: {
+        fontSize :20
+      },
+      [theme.breakpoints.down('lg')]: {
+        fontSize :14
+      },
+      [theme.breakpoints.down('md')]: {
+        fontSize :10
+      },
+    },
+    '& .MuiTab-textColorInherit.Mui-selected':{
+      textDecoration: 'underline'
     },
   },
   title:{
@@ -179,12 +198,12 @@ const Invoices = (props) => {
         <Tabs value={value} onChange={handleChange} 
               TabIndicatorProps={{
                 style: {
-                  backgroundColor: "#363636"
+                  width: 0
                 }
               }}
         >
-          <Tab xs={12} sm={4} label="Mon abonnement" {...a11yProps(0)} className={classes.tabTitle}/>
-          <Tab xs={12} sm={4} label="Mes modules" {...a11yProps(1)} className={classes.tabTitle}/>
+          <Tab xs={12} sm={4} label="Mon abonnement" {...a11yProps(0)} className={classes.tabTitle} disableRipple/>
+          <Tab xs={12} sm={4} label="Mes modules" {...a11yProps(1)} className={classes.tabTitle} disableRipple/>
         </Tabs>
       </div> 
       <div className={classes.body}>

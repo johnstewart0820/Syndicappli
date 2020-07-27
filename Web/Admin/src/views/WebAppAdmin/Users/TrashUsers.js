@@ -93,7 +93,6 @@ const TrashUsers = (props) => {
     { key: 'firstname', field: 'Prénom' },
     { key: 'email', field: 'Email' },
     { key: 'phone', field: 'Téléphone' },
-    { key: '', field: ''}
   ];
   const columns = [];
   for (let i = 0; i < 4; i++)

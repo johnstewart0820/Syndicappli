@@ -33,13 +33,12 @@ const TrashCompanies = (props) => {
   const selectList = [20, 50, 100, 200, -1];
   const cellList = [
     { key: 'name', field: 'Nom' },
-    { key: 'contact_name', field: 'Contact' },
+    // { key: 'contact_name', field: 'Contact' },
     { key: 'email', field: 'Email' },
     { key: 'phone', field: 'Téléphone' },
     { key: 'manager_count', field: 'Gestionnaires' },
     { key: 'apartment_count', field: 'Lots' },
     { key: 'status', field: 'Statut' },
-    { key: '', field:''}
   ];
 
   const columns = [];

@@ -14,6 +14,28 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
+    '& .MuiTab-root':{
+      paddingLeft: 0,
+      paddingRight: 0
+    },
+    '& .MuiTab-wrapper':{
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      textTransform: 'none',
+      color: '#363636',
+      [theme.breakpoints.up('xl')]: {
+        fontSize :20
+      },
+      [theme.breakpoints.down('lg')]: {
+        fontSize :14
+      },
+      [theme.breakpoints.down('md')]: {
+        fontSize :10
+      },
+    },
+    '& .MuiTab-textColorInherit.Mui-selected':{
+      textDecoration: 'underline'
+    },
   },
   title:{
     paddingTop: theme.spacing(2),
@@ -55,9 +77,9 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
+    borderRadius: 15,
+    width: 500
   },
   padding: {
     [theme.breakpoints.up('xl')]: {
@@ -250,19 +272,22 @@ export const EditCompanyStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
   },
-  body:{
+  body: {
     [theme.breakpoints.up('xl')]: {
       marginTop: 64,
+      marginBottom: 64,
       padding: 40,
       borderRadius: 30,
     },
     [theme.breakpoints.down('lg')]: {
       marginTop: 45,
+      marginBottom: 45,
       padding: 28,
       borderRadius: 21,
     },
     [theme.breakpoints.down('md')]: {
       marginTop: 32,
+      marginBottom: 32,
       padding: 20,
       borderRadius: 15,
     },
@@ -273,9 +298,9 @@ export const EditCompanyStyles = makeStyles(theme => ({
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
+    borderRadius: 15,
+    width: 500
   },
   plus:{
     color: '#707070',

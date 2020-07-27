@@ -31,8 +31,8 @@ const TrashBuildings = (props) => {
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = useState(-1);
   const [footerItems, setFooterItems] = useState([]);
-  let company = [];
-  const [companies, setCompanies] = useState('');
+  let company = [''];
+  const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
@@ -46,7 +46,6 @@ const TrashBuildings = (props) => {
     { key: 'name', field: 'Nom' },
     { key: 'address', field: 'Adresse' },
     { key: 'total', field: 'CA HT' },
-    { key: '', field: ''}
   ];
 
   const columns = [];
@@ -113,6 +112,7 @@ const TrashBuildings = (props) => {
             case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
+                company.splice(0,company.length)
                 company.push('Tout');
                 data.companylist.map((item) => (
                   company.push(item.name)

@@ -153,23 +153,25 @@ export const ModulePaymentStyles = makeStyles(theme => ({
       minHeight: 84
     },
   },
-  body:{
+  body: {
     [theme.breakpoints.up('xl')]: {
       marginTop: 64,
+      marginBottom: 64,
       padding: 40,
       borderRadius: 30,
     },
     [theme.breakpoints.down('lg')]: {
       marginTop: 45,
+      marginBottom: 45,
       padding: 28,
       borderRadius: 21,
     },
     [theme.breakpoints.down('md')]: {
       marginTop: 32,
+      marginBottom: 32,
       padding: 20,
       borderRadius: 15,
     },
-    marginBottom: 30,
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
   },
   item:{

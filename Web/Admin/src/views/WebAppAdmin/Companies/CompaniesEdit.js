@@ -912,6 +912,7 @@ const CompaniesEdit = (props) => {
         onClose={handleCloseAddManager}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        classes={{paper: classes.paper}}
       >
         <Grid item container className={classes.padding} justify="space-between">
           <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseAddManager} className={classes.close} /></Grid>
@@ -924,6 +925,7 @@ const CompaniesEdit = (props) => {
         onClose={handleCloseAddBuilding}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        classes={{paper: classes.paper}}
       >
         <Grid item container className={classes.padding} >
           <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleCloseAddBuilding} className={classes.close} /></Grid>

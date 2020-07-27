@@ -26,13 +26,13 @@ const Owners = (props) => {
   const accessOwners = authService.getAccess('role_owners');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
-  let company = [];
-  const [companies, setCompanies] = useState('');
+  let company = [''];
+  const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  const [building,setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState('');
+  const [building,setBuilding] = useState(['']);
+  const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
@@ -97,7 +97,7 @@ const Owners = (props) => {
     if (accessOwners !== 'denied') {
       getTrashOwners();
     }
-  }, [page_num, row_count, sort_column, sort_method, buildingID, role]);
+  }, [page_num, row_count, sort_column, sort_method, buildingID, role, props.refresh]);
   useEffect(()=>{
     getTrashOwners();
   },[buildingList])
@@ -108,7 +108,6 @@ const Owners = (props) => {
     { key: 'phone', field: 'Téléphone' },
     { key: 'owner_role', field: 'Role' },
     { key: 'count', field: 'Lot' },
-    { key: '', field: ''}
   ];
   const columns = [];
   for (let i = 0; i < 6; i++)
@@ -178,6 +177,7 @@ const Owners = (props) => {
             case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
+                company.splice(0,company.length)
                 company.push('Tout');
                 data.companylist.map((item) => (
                   company.push(item.name)

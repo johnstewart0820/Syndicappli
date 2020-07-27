@@ -7,6 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './useStyles';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Link from '@material-ui/core/Link';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const validateForm = (errors) => {
@@ -140,6 +141,17 @@ const ForgotPassword = (props) => {
             }
             <Grid item container justify="center">
               <MyButton name={bodySide.sendText} color="1" onClick={handleClickSend} />
+            </Grid>
+          </Grid>
+          <Grid item container xs={1} sm={2} md={4}></Grid>
+        </Grid>
+        <Grid item container justify="center">
+          <Grid item container xs={1} sm={2} md={4}></Grid>
+          <Grid item container xs={10} sm={7} md={4}>
+            <Grid item container direction="row-reverse">
+              <Link href="/login" variant="body2">
+                <p className={classes.forgot}>Accéder à la connexion</p>
+              </Link>
             </Grid>
           </Grid>
           <Grid item container xs={1} sm={2} md={4}></Grid>

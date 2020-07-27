@@ -546,7 +546,7 @@ const TeamMemberEdit = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
               <Typography variant="h2" className={classes.headerTitle}>
-                <b>Michel Dupont</b>
+                <b>{firstname + ' ' + lastname}</b>
               </Typography>
             </Grid>
           </Grid>

@@ -15,7 +15,6 @@ import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import Managers from './Managers';
 import TrashManagers from './TrashManagers';
-
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
@@ -49,7 +48,7 @@ function a11yProps(index) {
 }
 const Main = (props) => {
     const { history } = props;
-    const token = authService.getToken();    
+    const token = authService.getToken();
     if (!token) {
         window.location.replace("/login");
     }
@@ -89,10 +88,10 @@ const Main = (props) => {
                         <Grid>
                             {
                                 value === 0 ?
-                                    <MyButton 
-                                        name={"Nouveau Gestionnaires"} 
-                                        color={"1"} 
-                                        onClick={handleClickAdd} 
+                                    <MyButton
+                                        name={"Nouveau Gestionnaires"}
+                                        color={"1"}
+                                        onClick={handleClickAdd}
                                         style={{ visibility: accessManagers === 'edit' ? 'visible' : 'hidden' }}
                                     />
                                     : <MyButton name={"Nouveau Gestionnaires"} style={{ visibility: 'hidden' }} />
@@ -102,12 +101,13 @@ const Main = (props) => {
                                 onClose={handleClose}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
+                                classes={{ paper: classes.paper }}
                             >
                                 <Grid item container className={classes.padding} justify="space-between">
                                     <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
                                     <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Gestionnaire</h2></Grid>
                                 </Grid>
-                                <AddManager onCancel={handleClose} onAdd={handleAdd} refresh={refresh}/>
+                                <AddManager onCancel={handleClose} onAdd={handleAdd} refresh={refresh} />
                             </Dialog>
                         </Grid>
                     </Grid>
@@ -117,12 +117,12 @@ const Main = (props) => {
                 <Tabs value={value} onChange={handleChange}
                     TabIndicatorProps={{
                         style: {
-                            backgroundColor: "#363636"
+                            width: 0,
                         }
                     }}
                 >
-                    <Tab xs={12} sm={4} label="Gestionnaires" {...a11yProps(0)} className={classes.tabTitle} />
-                    <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} />
+                    <Tab xs={12} sm={4} label="Gestionnaires" {...a11yProps(0)} className={classes.tabTitle} disableRipple/>
+                    <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} disableRipple/>
                 </Tabs>
             </div>
             <div className={classes.body}>

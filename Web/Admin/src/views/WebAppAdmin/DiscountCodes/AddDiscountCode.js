@@ -4,6 +4,7 @@ import MyButton from '../../../components/MyButton';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../../components/MySelect';
 import {AddDiscountCodeStyles as useStyles} from './useStyles';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const AddDiscountCode = (props) => {
   const classes = useStyles();
@@ -90,6 +91,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
 }
 
   return (
+    <Scrollbars style={{height:'100vh'}}>
     <div className={classes.root}>
         <div className={classes.paper} sm={12}>
             <Grid container spacing={2} >
@@ -232,6 +234,7 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
             </div>
         </div>
     </div>
+    </Scrollbars>
   );
 };
 

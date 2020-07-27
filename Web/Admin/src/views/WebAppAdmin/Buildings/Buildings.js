@@ -31,8 +31,8 @@ const Buildings = (props) => {
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = useState(-1);
   const [footerItems, setFooterItems] = useState([]);
-  let company = [];
-  const [companies, setCompanies] = useState('');
+  let company = [''];
+  const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
@@ -61,6 +61,7 @@ const Buildings = (props) => {
     setRowCount(selectList[value]);
   }
   const handleChangeCompanies = (val) => {
+    console.log('building;',val)
     setCompanies(val);
     setCompanyID(companyList[val].companyID);
   };
@@ -87,12 +88,14 @@ const Buildings = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              company.splice(0,company.length)
               company.push('Tout');
               data.companylist.map((item) => (
                 company.push(item.name)
               )
               );
               setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              console.log('companyList:',company)
               break;
             case 401:
               authService.logout();

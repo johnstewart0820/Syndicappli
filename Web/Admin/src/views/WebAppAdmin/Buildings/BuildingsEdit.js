@@ -42,8 +42,9 @@ const BuildingsEdit = (props) => {
   const [errorsVote, setErrorsVote] = React.useState('');
   const [count, setCount] = React.useState(0);
 
-  const [companies, setCompanies] = React.useState('');
-  const [company, setCompany] = React.useState([]);
+  const [companies, setCompanies] = React.useState(0);
+  // const [company, setCompany] = React.useState([]);
+  let company=['']
   const handleClick = () => {
     history.goBack();
   };
@@ -151,12 +152,12 @@ const BuildingsEdit = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              company.splice(0,company.length)
               data.companylist.map((item) => (
                 company.push(item.name)
               )
               );
               setCompanyList(data.companylist);
-              setCompany(company);
               for (let i = 0; i < company.length; i++)
                 if (data.companylist[i].companyID === id)
                   setCompanies(i);
@@ -246,7 +247,7 @@ const BuildingsEdit = (props) => {
       </div>
       <Grid container direction="column" >
         <div className={classes.body}>
-          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8}>
+          <Grid item container  spacing={5} xs={12} sm={8} md={6}>
             <Grid item container><p className={classes.headerTitle}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
@@ -318,6 +319,7 @@ const BuildingsEdit = (props) => {
                 </Grid>
                 : null
             }
+
           <Grid xs={6} item container direction="column">
             <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
               <Grid item>
@@ -338,7 +340,7 @@ const BuildingsEdit = (props) => {
               {errorsVote.length > 0 &&
             <span className={classes.error}>{errorsVote}</span>}
             </Grid>
-            <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
+            <Grid item container style={{paddingTop:50, paddingBottom:50}}>
               <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings === 'see' ? true : false)} />
             </Grid>
           </Grid>

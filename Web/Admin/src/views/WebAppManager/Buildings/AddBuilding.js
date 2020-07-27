@@ -11,6 +11,7 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { ManagerService as Service } from '../../../services/api.js';
 import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
+import { Scrollbars } from 'react-custom-scrollbars';
 const ManagerService = new Service();
 const AddBuilding = (props) => {
   const classes = useStyles();
@@ -150,139 +151,141 @@ const AddBuilding = (props) => {
       );
   }
   return (
-    <div className={classes.root}>
-      {
-        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-      }
-      <div className={classes.paper} >
-        <Grid container spacing={4}>
-          <Grid item container spacing={2}>
-            <Grid item><p className={classes.title}>Nom</p></Grid>
-            <Grid xs item container alignItems="stretch">
-              <TextField
-                rows={3}
-                multiline
-                variant="outlined"
-                value={name}
-                fullWidth
-                onChange={handleChangeName}
-              />
-              {errorsName.length > 0 &&
-                <span className={classes.error}>{errorsName}</span>}
+    <Scrollbars style={{ height: '100vh' }}>
+      <div className={classes.root}>
+        {
+          visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+        }
+        <div className={classes.paper} >
+          <Grid container spacing={4}>
+            <Grid item container spacing={2}>
+              <Grid item><p className={classes.title}>Nom</p></Grid>
+              <Grid xs item container alignItems="stretch">
+                <TextField
+                  rows={3}
+                  multiline
+                  variant="outlined"
+                  value={name}
+                  fullWidth
+                  onChange={handleChangeName}
+                />
+                {errorsName.length > 0 &&
+                  <span className={classes.error}>{errorsName}</span>}
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid item container spacing={2}>
-            <Grid item><p className={classes.title}>Adresse</p></Grid>
-            <Grid xs item container alignItems="stretch">
-              <TextField
-                rows={3}
-                multiline
-                variant="outlined"
-                value={address}
-                fullWidth
-                onChange={handleChangeAddress}
-              />
-              {errorsAddress.length > 0 &&
-                <span className={classes.error}>{errorsAddress}</span>}
+            <Grid item container spacing={2}>
+              <Grid item><p className={classes.title}>Adresse</p></Grid>
+              <Grid xs item container alignItems="stretch">
+                <TextField
+                  rows={3}
+                  multiline
+                  variant="outlined"
+                  value={address}
+                  fullWidth
+                  onChange={handleChangeAddress}
+                />
+                {errorsAddress.length > 0 &&
+                  <span className={classes.error}>{errorsAddress}</span>}
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid item container alignItems="center" spacing={2}>
-            <Grid item><p className={classes.title}>Clefs de répartition</p></Grid>
-          </Grid>
-          {
-            state !== null ?
-              <Grid item container direction="column">
-                {
-                  clefList.map((clef, i) => (
-                    <Grid container spacing={4}>
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>Clefs de répartition</p></Grid>
+            </Grid>
+            {
+              state !== null ?
+                <Grid item container direction="column">
+                  {
+                    clefList.map((clef, i) => (
+                      <Grid container spacing={4}>
 
-                      <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
-                        <Grid item>
-                          <RemoveCircleOutlineIcon
-                            className={classes.plus}
-                            onClick={() => handleClickRemoveClef(i)}
-                          />
-                        </Grid>
-                        <Grid item >
-                          <p className={classes.title}>{clef.name}</p>
+                        <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
+                          <Grid item>
+                            <RemoveCircleOutlineIcon
+                              className={classes.plus}
+                              onClick={() => handleClickRemoveClef(i)}
+                            />
+                          </Grid>
+                          <Grid item >
+                            <p className={classes.title}>{clef.name}</p>
+                          </Grid>
                         </Grid>
                       </Grid>
-                    </Grid>
-                  ))
-                }
+                    ))
+                  }
+                </Grid>
+                : null
+            }
+            <Grid xs={6} item container direction="column">
+              <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
+                <Grid item>
+                  <AddCircleOutlineIcon
+                    className={classes.plus}
+                    onClick={handleClickAddClef}
+                  />
+                </Grid>
+                <Grid xs item >
+                  <TextField
+                    variant="outlined"
+                    value={addClefs}
+                    onChange={handleChangeAddClefs}
+                  />
+                </Grid>
               </Grid>
-              : null
-          }
-          <Grid xs={6} item container direction="column">
-            <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
-              <Grid item>
-                <AddCircleOutlineIcon
-                  className={classes.plus}
-                  onClick={handleClickAddClef}
-                />
-              </Grid>
-              <Grid xs item >
+              {errorsVote.length > 0 &&
+                <span className={classes.error}>{errorsVote}</span>}
+            </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>Compte Bancaire - Prélèvement SEPA</p></Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>Nom du titulaire du compte</p></Grid>
+              <Grid xs item container alignItems="stretch">
                 <TextField
                   variant="outlined"
-                  value={addClefs}
-                  onChange={handleChangeAddClefs}
+                  value={accountHolder}
+                  onChange={handleChangeAccountHolder}
+                  fullWidth
                 />
               </Grid>
             </Grid>
-            {errorsVote.length > 0 &&
-              <span className={classes.error}>{errorsVote}</span>}
-          </Grid>
-          <Grid item container alignItems="center" spacing={2}>
-            <Grid item><p className={classes.title}>Compte Bancaire - Prélèvement SEPA</p></Grid>
-          </Grid>
-          <Grid item container alignItems="center" spacing={2}>
-            <Grid item><p className={classes.title}>Nom du titulaire du compte</p></Grid>
-            <Grid xs item container alignItems="stretch">
-              <TextField
-                variant="outlined"
-                value={accountHolder}
-                onChange={handleChangeAccountHolder}
-                fullWidth
-              />
+            <Grid item container alignItems="flex-start" spacing={2}>
+              <Grid item><p className={classes.title}>Adresse</p></Grid>
+              <Grid xs item container alignItems="stretch">
+                <TextField
+                  rows={3}
+                  multiline
+                  variant="outlined"
+                  value={accountAddress}
+                  onChange={handleChangeAccountAddress}
+                  fullWidth
+                />
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid item container alignItems="flex-start" spacing={2}>
-            <Grid item><p className={classes.title}>Adresse</p></Grid>
-            <Grid xs item container alignItems="stretch">
-              <TextField
-                rows={3}
-                multiline
-                variant="outlined"
-                value={accountAddress}
-                onChange={handleChangeAccountAddress}
-                fullWidth
-              />
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>IBAN</p></Grid>
+              <Grid xs item container alignItems="stretch">
+                <TextField
+                  variant="outlined"
+                  value={accountIban}
+                  onChange={handleChangeAccountIban}
+                  fullWidth
+                />
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid item container alignItems="center" spacing={2}>
-            <Grid item><p className={classes.title}>IBAN</p></Grid>
-            <Grid xs item container alignItems="stretch">
-              <TextField
-                variant="outlined"
-                value={accountIban}
-                onChange={handleChangeAccountIban}
-                fullWidth
-              />
-            </Grid>
-          </Grid>
-          <Grid xs={12} item container direction="column" spacing={2}>
+            <Grid xs={12} item container direction="column" spacing={2}>
 
+            </Grid>
           </Grid>
-        </Grid>
-        <div className={classes.footer}>
-          <Grid container justify="space-between">
-            <MyButton name={"Créer"} color={"1"} onClick={handleClickAdd} />
-            <MyButton name={"Annuler"} bgColor="gray" onClick={handleClose} />
-          </Grid>
+          <div className={classes.footer}>
+            <Grid container justify="space-between">
+              <MyButton name={"Créer"} color={"1"} onClick={handleClickAdd} />
+              <MyButton name={"Annuler"} bgColor="gray" onClick={handleClose} />
+            </Grid>
+          </div>
         </div>
+        <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
       </div>
-      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
-    </div>
+    </Scrollbars>
   );
 };
 

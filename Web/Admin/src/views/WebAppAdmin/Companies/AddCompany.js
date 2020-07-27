@@ -10,6 +10,7 @@ import AdminService from '../../../services/api.js';
 import authService from 'services/authService';
 import { withRouter } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
@@ -206,225 +207,227 @@ const AddCompany = (props) => {
             );
     }
     return (
-        <div className={classes.root}>
-            {
-                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-            }
-            <div className={classes.paper} >
-                <Grid container spacing={4}>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>Nom</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={name}
-                                onChange={handleChangeName}
-                                fullWidth
-                            />
-                            {errorsName.length > 0 &&
-                                <span className={classes.error}>{errorsName}</span>}
+        <Scrollbars style={{ height: '100vh' }}>
+            <div className={classes.root}>
+                {
+                    visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+                }
+                <div className={classes.paper} >
+                    <Grid container spacing={4}>
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>Nom</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={name}
+                                    onChange={handleChangeName}
+                                    fullWidth
+                                />
+                                {errorsName.length > 0 &&
+                                    <span className={classes.error}>{errorsName}</span>}
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container direction="column" spacing={2}>
-                        <Grid item><p className={classes.title}>Coordonnees</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                rows={3}
-                                multiline
-                                variant="outlined"
-                                value={address}
-                                onChange={handleChangeAddress}
-                                fullWidth
-                            />
-                            {errorsAddress.length > 0 &&
-                                <span className={classes.error}>{errorsAddress}</span>}
+                        <Grid item container direction="column" spacing={2}>
+                            <Grid item><p className={classes.title}>Coordonnees</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    rows={3}
+                                    multiline
+                                    variant="outlined"
+                                    value={address}
+                                    onChange={handleChangeAddress}
+                                    fullWidth
+                                />
+                                {errorsAddress.length > 0 &&
+                                    <span className={classes.error}>{errorsAddress}</span>}
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>Email</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={email}
-                                onChange={handleChangeEmail}
-                                fullWidth
-                            />
-                            {errorsEmail.length > 0 &&
-                                <span className={classes.error}>{errorsEmail}</span>}
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>Email</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={email}
+                                    onChange={handleChangeEmail}
+                                    fullWidth
+                                />
+                                {errorsEmail.length > 0 &&
+                                    <span className={classes.error}>{errorsEmail}</span>}
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>Telephone</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={phone}
-                                onChange={handleChangePhone}
-                                fullWidth
-                            />
-                            {errorsPhone.length > 0 &&
-                                <span className={classes.error}>{errorsPhone}</span>}
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>Telephone</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={phone}
+                                    onChange={handleChangePhone}
+                                    fullWidth
+                                />
+                                {errorsPhone.length > 0 &&
+                                    <span className={classes.error}>{errorsPhone}</span>}
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>SIRET</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={siret}
-                                onChange={handleChangeSiret}
-                                fullWidth
-                            />
-                            {errorsSiret.length > 0 &&
-                                <span className={classes.error}>{errorsSiret}</span>}
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>SIRET</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={siret}
+                                    onChange={handleChangeSiret}
+                                    fullWidth
+                                />
+                                {errorsSiret.length > 0 &&
+                                    <span className={classes.error}>{errorsSiret}</span>}
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>VAT Intracommunautaire</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={vat}
-                                onChange={handleChangeVat}
-                                fullWidth
-                            />
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>VAT Intracommunautaire</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={vat}
+                                    onChange={handleChangeVat}
+                                    fullWidth
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>Compte Bancaire - Prelevement SEPA</p></Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>Nom du titulaire du compte</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={accountname}
-                                onChange={handleChangeAccountName}
-                                fullWidth
-                            />
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>Compte Bancaire - Prelevement SEPA</p></Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="flex-start" spacing={2}>
-                        <Grid item><p className={classes.title}>Adresse</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                rows={3}
-                                multiline
-                                variant="outlined"
-                                value={accountaddress}
-                                onChange={handleChangeAccountAddress}
-                                fullWidth
-                            />
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>Nom du titulaire du compte</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={accountname}
+                                    onChange={handleChangeAccountName}
+                                    fullWidth
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center" spacing={2}>
-                        <Grid item><p className={classes.title}>IBAN</p></Grid>
-                        <Grid xs item container alignItems="stretch">
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={IBAN}
-                                onChange={handleChangeIBAN}
-                                fullWidth
-                            />
+                        <Grid item container alignItems="flex-start" spacing={2}>
+                            <Grid item><p className={classes.title}>Adresse</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    rows={3}
+                                    multiline
+                                    variant="outlined"
+                                    value={accountaddress}
+                                    onChange={handleChangeAccountAddress}
+                                    fullWidth
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid xs={12} item container direction="column" spacing={2}>
-                        <Grid item><p className={classes.title}>Logo</p></Grid>
-                        <Grid item container justify="flex-start">
-                            <input className={classes.input} type="file" id="img_front" accept="image/*" onChange={handleLoadFront} />
-                            <label htmlFor="img_front">
-                                {
-                                    avatarurl === '' ?
-                                        <div className={classes.img}>
-                                            <AddCircleOutlineIcon className={classes.plus} />
-                                        </div> :
-                                        <img className={classes.img} src={avatarurl} alt="" />
-                                }
-                            </label>
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>IBAN</p></Grid>
+                            <Grid xs item container alignItems="stretch">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={IBAN}
+                                    onChange={handleChangeIBAN}
+                                    fullWidth
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item container direction="column">
-                        <Grid item>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item ><p className={classes.title}>Assemblées Générales en 360</p></Grid>
-                                <Grid xs item container>
-                                    <Checkbox
-                                        checked={assemblies360}
-                                        onChange={handleChangeAssemblies360}
-                                    />
+                        <Grid xs={12} item container direction="column" spacing={2}>
+                            <Grid item><p className={classes.title}>Logo</p></Grid>
+                            <Grid item container justify="flex-start">
+                                <input className={classes.input} type="file" id="img_front" accept="image/*" onChange={handleLoadFront} />
+                                <label htmlFor="img_front">
+                                    {
+                                        avatarurl === '' ?
+                                            <div className={classes.img}>
+                                                <AddCircleOutlineIcon className={classes.plus} />
+                                            </div> :
+                                            <img className={classes.img} src={avatarurl} alt="" />
+                                    }
+                                </label>
+                            </Grid>
+                        </Grid>
+                        <Grid item container direction="column">
+                            <Grid item>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item ><p className={classes.title}>Assemblées Générales en 360</p></Grid>
+                                    <Grid xs item container>
+                                        <Checkbox
+                                            checked={assemblies360}
+                                            onChange={handleChangeAssemblies360}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item><p className={classes.title}>Assemblées générales en Webcam</p></Grid>
+                                    <Grid xs item container>
+                                        <Checkbox
+                                            checked={assembliesWebcam}
+                                            onChange={handleChangeAssembliesWebcam}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item><p className={classes.title}>Assemblées Générales en Audio</p></Grid>
+                                    <Grid xs item container>
+                                        <Checkbox
+                                            checked={assembliesAudio}
+                                            onChange={handleChangeAssembliesAudio}
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item><p className={classes.title}>Assemblées générales en Webcam</p></Grid>
-                                <Grid xs item container>
-                                    <Checkbox
-                                        checked={assembliesWebcam}
-                                        onChange={handleChangeAssembliesWebcam}
-                                    />
+                        <Grid item><p className={classes.title}>Statut Du Cabinet</p></Grid>
+                        <Grid item container direction="row">
+                            <Grid item>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item ><p className={classes.title}>actif</p></Grid>
+                                    <Grid xs item container>
+                                        <Checkbox
+                                            checked={statusActive}
+                                            onChange={handleChangeStatusActive}
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid item>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item><p className={classes.title}>Assemblées Générales en Audio</p></Grid>
-                                <Grid xs item container>
-                                    <Checkbox
-                                        checked={assembliesAudio}
-                                        onChange={handleChangeAssembliesAudio}
-                                    />
+                            <Grid item>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item><p className={classes.title}>inactif</p></Grid>
+                                    <Grid xs item container>
+                                        <Checkbox
+                                            checked={statusInActive}
+                                            onChange={handleChangeStatusInActive}
+                                        />
+                                    </Grid>
                                 </Grid>
                             </Grid>
+                            {errorsStatus.length > 0 &&
+                                <span className={classes.error}>{errorsStatus}</span>}
                         </Grid>
                     </Grid>
-                    <Grid item><p className={classes.title}>Statut Du Cabinet</p></Grid>
-                    <Grid item container direction="row">
-                        <Grid item>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item ><p className={classes.title}>actif</p></Grid>
-                                <Grid xs item container>
-                                    <Checkbox
-                                        checked={statusActive}
-                                        onChange={handleChangeStatusActive}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item><p className={classes.title}>inactif</p></Grid>
-                                <Grid xs item container>
-                                    <Checkbox
-                                        checked={statusInActive}
-                                        onChange={handleChangeStatusInActive}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        {errorsStatus.length > 0 &&
-                            <span className={classes.error}>{errorsStatus}</span>}
-                    </Grid>
-                </Grid>
-                <div className={classes.footer}>
-                    <Grid container justify="space-between">
-                        <MyButton name={"Ajouter"} color={"1"} onClick={handleClickAdd} />
-                        <MyButton name={"Annuler"} bgColor="gray" onClick={handleClose} />
+                    <div className={classes.footer}>
+                        <Grid container justify="space-between">
+                            <MyButton name={"Ajouter"} color={"1"} onClick={handleClickAdd} />
+                            <MyButton name={"Annuler"} bgColor="gray" onClick={handleClose} />
 
-                    </Grid>
+                        </Grid>
+                    </div>
                 </div>
+                <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
             </div>
-            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
-        </div>
+        </Scrollbars>
     );
 };
 

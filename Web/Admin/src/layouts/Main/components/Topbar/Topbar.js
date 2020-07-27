@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -14,10 +13,12 @@ import authService from 'services/authService';
 import useGlobal from 'Global/global';
 import AdminService from 'services/api.js';
 import { SearchInput } from 'components';
+import {withRouter} from 'react-router-dom';
+
 const useStyles = makeStyles(theme => ({
   root: {
     boxShadow: 'none',
-    display:'flex',
+    display: 'flex',
     [theme.breakpoints.up('lg')]: {
       width: 'calc(100% - 233px)',
       height: '146px'
@@ -26,12 +27,12 @@ const useStyles = makeStyles(theme => ({
       width: 'calc(100% - 333px)',
       height: '146px'
     },
-    '& .MuiButton-root':{
-      textTransform : 'none'
+    '& .MuiButton-root': {
+      textTransform: 'none'
     },
     backgroundColor: 'white',
     '& .MuiInputBase-root': {
-      
+
       [theme.breakpoints.up('xl')]: {
         fontSize: 20
       },
@@ -85,7 +86,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   down: {
-    color:'#707070',
+    color: '#707070',
     [theme.breakpoints.up('xl')]: {
       width: 55,
       height: 20
@@ -124,21 +125,21 @@ const useStyles = makeStyles(theme => ({
 
     justifyContent: 'center',
   },
-  menuProps:{
+  menuProps: {
     textAlign: 'center',
     borderColor: '#707070',
     paddingBottom: 0,
     borderRadius: 8,
-    boxShadow:'5px 5px 19px #b6acf8',
-    maxWidth:270,
+    boxShadow: '5px 5px 19px #b6acf8',
+    maxWidth: 270,
     [theme.breakpoints.up('xl')]: {
-      marginTop:90,
+      marginTop: 90,
     },
     [theme.breakpoints.down('lg')]: {
-      marginTop:80,
+      marginTop: 80,
     },
     [theme.breakpoints.down('md')]: {
-      marginTop:45,
+      marginTop: 45,
     },
   },
   searchInput: {
@@ -168,14 +169,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Topbar = props => {
-  const { className, onSidebarOpen,  ...rest  } = props;
-
+  const { className, onSidebarOpen, ...rest } = props;
+  const {history} = props;
   const classes = useStyles();
-  const [value ,setValue] = useState('');
+  const [value, setValue] = useState('');
   const [globalState, globalActions] = useGlobal();
   const [notifications] = useState([]);
 
-  const handleChange = (newValue) =>{
+  const handleChange = (newValue) => {
     setValue(newValue);
   }
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -185,38 +186,90 @@ const Topbar = props => {
   };
   const handleClickLogout = (event) => {
     authService.logout();
-    handleClose();
+    localStorage.setItem("select", JSON.stringify(0));
+    setAnchorEl(null);
+    history.push('/login');
+    window.location.reload();
   };
   const handleClose = () => {
+    localStorage.setItem("select", JSON.stringify(0));
     setAnchorEl(null);
-
+    // window.location.reload();
   };
+  const handleClickManagerMyAccount = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/manager/myaccount');
+    window.location.reload();
+  }
+  const handleClickManagerMyCompany = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/manager/mycompany');
+    window.location.reload();
+  }
+  const handleClickManagerInvoices = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/manager/invoices');
+    window.location.reload();
+  }
+  const handleClickManagerPayment = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/manager/payment-methods');
+    window.location.reload();
+  }
+  const handleClickOwnerMyAccount = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/owner/myaccount');
+    window.location.reload();
+  }
+  const handleClickOwnerInvoices = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/owner/invoices');
+    window.location.reload();
+  }
+  const handleClickOwnerSubAccounts = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/owner/subaccounts');
+    window.location.reload();
+  }
+  const handleClickAdminMyAccount = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/admin/myaccount');
+    window.location.reload();
+  }
   useEffect(() => {
     AdminService.getProfile()
-    .then(      
-      response => {   
-        switch(response.data.code){
-          case 200:
-            localStorage.setItem("token", JSON.stringify(response.data.data.token));
-            const profile = response.data.data.profile;
-            globalActions.setFirstName(profile.firstname);
-            globalActions.setLastName(profile.lastname);
-            globalActions.setAvatarUrl(profile.photo_url);
-            break;
-          case 401:
-            authService.logout();
-            window.location.replace("/login");
-            break;
-          default:
-            ToastsStore.error(response.data.message);
-        }     
-      },
-      error => {
-        console.log('fail');        
-      }
-    );   
+      .then(
+        response => {
+          switch (response.data.code) {
+            case 200:
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              const profile = response.data.data.profile;
+              globalActions.setFirstName(profile.firstname);
+              globalActions.setLastName(profile.lastname);
+              globalActions.setAvatarUrl(profile.photo_url);
+              break;
+            case 401:
+              authService.logout();
+              window.location.replace("/login");
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          console.log('fail');
+        }
+      );
   }, []);
-  const webApp = authService.getAccess('usertype');  
+  const webApp = authService.getAccess('usertype');
   return (
     <AppBar
       {...rest}
@@ -228,7 +281,7 @@ const Topbar = props => {
             color="inherit"
             onClick={onSidebarOpen}
           >
-            <MenuIcon className={classes.menuIcon}/>
+            <MenuIcon className={classes.menuIcon} />
           </IconButton>
         </Hidden>
         <div className={classes.flexGrow} />
@@ -239,12 +292,12 @@ const Topbar = props => {
           placeholder="Rechercher..."
           onRequestSearch={() => console.log('onRequestSearch')}
         /> */}
-      <div className={classes.row}>
-        <SearchInput
-          className={classes.searchInput}
-          placeholder="Rechercher..."
-        />
-      </div>
+        <div className={classes.row}>
+          <SearchInput
+            className={classes.searchInput}
+            placeholder="Rechercher..."
+          />
+        </div>
         <IconButton color="inherit" >
           <Badge
             className={classes.alertButton}
@@ -252,13 +305,13 @@ const Topbar = props => {
             color="primary"
             variant="dot"
           >
-            <Avatar className={classes.avatar} src='/images/alarm.png'/>
+            <Avatar className={classes.avatar} src='/images/alarm.png' />
           </Badge>
         </IconButton>
         <IconButton
           className={classes.signOutButton}
-            onClick={handleClick}
-            color="inherit"
+          onClick={handleClick}
+          color="inherit"
         >
           <Avatar
             alt={globalState.firstname + ' ' + globalState.lastname}
@@ -269,122 +322,106 @@ const Topbar = props => {
           </Avatar>
         </IconButton>
         <Paper className={classes.paper}>
-            <Menu
-              id="simple-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              PaperProps={{
-                className:classes.menuProps
-              }}
-            >
-              {
-                webApp === 'manager' ?
-
-                    <div>
-                      <RouterLink to="/manager/myaccount">
-                        <MenuItem onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/my_account.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink to="/manager/mycompany">
-                        <MenuItem onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/my_company.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Mon Cabinet</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink to="/manager/invoices">
-                        <MenuItem  onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/invoice.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink to="/manager/payment-methods">
-                        <MenuItem onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/payment.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText  className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink to="/login">
-                        <MenuItem onClick={handleClickLogout}>
-                          <ListItemIcon></ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                    </div>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            PaperProps={{
+              className: classes.menuProps
+            }}
+          >
+            {
+              webApp === 'manager' ?
+                <div>
+                  <MenuItem onClick={handleClickManagerMyAccount} >
+                    <ListItemIcon>
+                      <img src="/images/my_account.png" alt="image" />
+                    </ListItemIcon>
+                    <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleClickManagerMyCompany} >
+                    <ListItemIcon>
+                      <img src="/images/my_company.png" alt="image" />
+                    </ListItemIcon>
+                    <ListItemText className={classes.menu_item}>Mon Cabinet</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleClickManagerInvoices} >
+                    <ListItemIcon>
+                      <img src="/images/invoice.png" alt="image" />
+                    </ListItemIcon>
+                    <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleClickManagerPayment} >
+                    <ListItemIcon>
+                      <img src="/images/payment.png" alt="image" />
+                    </ListItemIcon>
+                    <ListItemText className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleClickLogout}>
+                    <ListItemIcon></ListItemIcon>
+                    <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                  </MenuItem>
+                </div>
 
                 : webApp === 'owner' ?
 
-                    <div>
-                      <RouterLink to="/owner/myaccount">
-                        <MenuItem onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/my_account.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink to="/owner/invoices">
-                        <MenuItem onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/invoice.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink to="/owner/subaccounts">
-                        <MenuItem onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/sub_accounts.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Sous comptes</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink to="/login">
-                        <MenuItem onClick={handleClickLogout}>
-                          <ListItemIcon></ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                    </div>
-                :
+                  <div>
+                    <MenuItem onClick={handleClickOwnerMyAccount} >
+                      <ListItemIcon>
+                        <img src="/images/my_account.png" alt="image" />
+                      </ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleClickOwnerInvoices} >
+                      <ListItemIcon>
+                        <img src="/images/invoice.png" alt="image" />
+                      </ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleClickOwnerSubAccounts} >
+                      <ListItemIcon>
+                        <img src="/images/sub_accounts.png" alt="image" />
+                      </ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Sous comptes</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleClickLogout}>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                    </MenuItem>
+                  </div>
+                  :
 
-                    <div>
-                      <RouterLink to="/admin/myaccount">
-                        <MenuItem onClick={handleClose} >
-                          <ListItemIcon>
-                            <img src="/images/my_account.png" alt="image"/>
-                          </ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                      <Divider />
-                      <RouterLink to="/login">
-                        <MenuItem onClick={handleClickLogout}>
-                          <ListItemIcon></ListItemIcon>
-                          <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
-                        </MenuItem>
-                      </RouterLink>
-                    </div>
-              }
-            </Menu>
-          </Paper>
+                  <div>
+                    <MenuItem onClick={handleClickAdminMyAccount} >
+                      <ListItemIcon>
+                        <img src="/images/my_account.png" alt="image" />
+                      </ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleClickLogout}>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                    </MenuItem>
+                  </div>
+            }
+          </Menu>
+        </Paper>
         <Button onClick={handleClick}>
-            <p className={classes.menu_item}><b>{globalState.firstname + ' ' + globalState.lastname}</b></p>
-            <img src='/images/down.png' className={classes.down}/>
+          <p className={classes.menu_item}><b>{globalState.firstname + ' ' + globalState.lastname}</b></p>
+          <img src='/images/down.png' className={classes.down} />
         </Button>
       </Toolbar>
-            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </AppBar>
   );
 };
@@ -394,4 +431,4 @@ Topbar.propTypes = {
   onSidebarOpen: PropTypes.func
 };
 
-export default Topbar;
+export default withRouter(Topbar);
