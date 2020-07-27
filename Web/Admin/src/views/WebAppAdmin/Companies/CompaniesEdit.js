@@ -109,6 +109,8 @@ const CompaniesEdit = (props) => {
   const [buildingDeleteId, setBuildingDeleteId] = useState(-1);
   const [buildingOpenDelete, setBuildingOpenDelete] = useState(false);
   const buildingSelectList = [20, 50, 100, 200, -1];
+  const [isBuildingDisableDelete, setIsBuildingDisableDelete] = useState(true);
+  const [isManagerDisableDelete, setIsManagerDisableDelete] = useState(true);
 
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
@@ -127,7 +129,7 @@ const CompaniesEdit = (props) => {
     buildingColumns[i] = 'asc';
 
   const [cardDataList, setCardDataList] = useState([]);
-  // const contactList = [20, 50, 100, 200, -1];
+
   useEffect(() => {
     if (accessCompanies !== 'denied')
       getBuildings();
@@ -176,10 +178,6 @@ const CompaniesEdit = (props) => {
   const handleChangeVat = (event) => {
     setVat(event.target.value);
   }
-
-  // const handleChangeContact = (value) => {
-  //   setContact(value);
-  // }
 
   const handleChangeAccountName = (event) => {
     setAccountName(event.target.value);
@@ -563,6 +561,22 @@ const CompaniesEdit = (props) => {
         }
       );
   }
+  const inputBuildingTextChange = (event) => {
+    console.log(event.target.value);
+    if(event.target.value === "delete") {
+      setIsBuildingDisableDelete(false);
+    } else {
+      setIsBuildingDisableDelete(true);
+    }
+  }
+  const inputManagerTextChange = (event) => {
+    console.log(event.target.value);
+    if(event.target.value === "delete") {
+      setIsManagerDisableDelete(false);
+    } else {
+      setIsManagerDisableDelete(true);
+    }
+  }
   return (
     <div className={classes.root}>
       {
@@ -940,18 +954,27 @@ const CompaniesEdit = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this building?
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this building?
+        <DialogContentText id="alert-dialog-description">
+            Type <b style={{color: "red"}}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"            
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputBuildingTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleBuildingCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleBuildingDelete} color="primary">
+          <Button disabled={isBuildingDisableDelete} onClick={handleBuildingDelete} color="primary">
             Delete
           </Button>
         </DialogActions>
@@ -963,18 +986,27 @@ const CompaniesEdit = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this manager?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this manager?
+            Type <b style={{color: "red"}}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"            
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputManagerTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleManagerCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleManagerDelete} color="primary">
+          <Button disabled={isManagerDisableDelete} onClick={handleManagerDelete} color="primary">
             Delete
           </Button>
         </DialogActions>

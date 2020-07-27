@@ -195,8 +195,6 @@ const TrashTeamMembers = (props) => {
           setVisibleIndicator(false);
           switch(response.data.code){
             case 200:
-              building.splice(0,building.length);
-              buildingList.splice(0,buildingList.length)
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               building.push('Tout');
@@ -205,7 +203,7 @@ const TrashTeamMembers = (props) => {
               )
               );
               setBuilding(building);
-              setBuildingList([{ buildingID: -1 }, ...data.buildinglist]);
+              setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
               setBuildings(0);
               setBuildingID(-1)
               break;

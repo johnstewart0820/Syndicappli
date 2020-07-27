@@ -84,6 +84,7 @@ const OwnerEdit = (props) => {
   const [address, setAddress] = React.useState('');
   const [apartNumber, setApartNumber] = React.useState([]);
   const [companyName, setCompanyName] = React.useState('');
+  const [isDisableDelete, setIsDisableDelete] = React.useState(true);
 
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
@@ -659,6 +660,14 @@ const OwnerEdit = (props) => {
         }
       );
   }
+  const inputTextChange = (event) => {
+    console.log(event.target.value);
+    if(event.target.value === "delete") {
+      setIsDisableDelete(false);
+    } else {
+      setIsDisableDelete(true);
+    }
+  }
   return (
     <div className={classes.root}>
       {
@@ -1101,18 +1110,27 @@ const OwnerEdit = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this owner?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this owner?
+            Type <b style={{color: "red"}}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"            
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDelete} color="primary">
+          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
             Delete
           </Button>
         </DialogActions>

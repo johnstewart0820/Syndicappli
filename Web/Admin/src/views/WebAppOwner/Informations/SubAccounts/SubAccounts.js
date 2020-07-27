@@ -156,7 +156,8 @@ const SubAccounts = (props) => {
   const [email, setEmail] = React.useState('');
   const [mobile, setMobile] = React.useState('');
   const [address, setAddress] = React.useState('');
-
+  const [isDisableDelete, setIsDisableDelete] = useState(true);
+  
   const [errorsLastName, setErrorsLastName] = React.useState('');
   const [errorsFirstName, setErrorsFirstName] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
@@ -438,6 +439,14 @@ const SubAccounts = (props) => {
         }
       );
   }
+  const inputTextChange = (event) => {
+    console.log(event.target.value);
+    if(event.target.value === "delete") {
+      setIsDisableDelete(false);
+    } else {
+      setIsDisableDelete(true);
+    }
+  }
   return (
     <div>
       {
@@ -542,18 +551,27 @@ const SubAccounts = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this owner?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure to delete this owner?
+            Type <b style={{color: "red"}}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"            
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDelete} color="primary">
+          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
             Delete
           </Button>
         </DialogActions>

@@ -33,7 +33,7 @@ const TrashManagers = (props) => {
   const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
-  let building = [''];
+  const [building, setBuilding] = useState(['']);
   const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
@@ -262,9 +262,10 @@ const TrashManagers = (props) => {
                 building.push(item.name)
               )
               );
-              setBuildingList([{ buildingID: -1 }, ...data.buildinglist]);
+              setBuilding(building);
+              setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
               setBuildings(0);
-              setBuildingID(-1)
+              setBuildingID(-1);
               break;
             case 401:
               authService.logout();

@@ -30,11 +30,11 @@ const Managers = (props) => {
   const [footerItems, setFooterItems] = useState([]);
   const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
-  const [company, setCompany] = useState([]);
+  let company=['']
   const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
-  const [building, setBuilding] = useState([]);
+  const [building, setBuilding] = useState(['']);
   const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
@@ -161,7 +161,7 @@ const Managers = (props) => {
                 company.push(item.name)
               )
               );
-              setCompany(company);
+              // setCompany(company);
               setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
               break;
             case 401:
@@ -191,19 +191,18 @@ const Managers = (props) => {
           setVisibleIndicator(false);
           switch(response.data.code){
             case 200:
-              building.splice(0,building.length);
-              buildingList.splice(0,buildingList.length)
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              building.splice(0,building.length)
               building.push('Tout');
               data.buildinglist.map((item) => (
                 building.push(item.name)
               )
               );
               setBuilding(building);
-              setBuildingList([{ buildingID: -1 }, ...data.buildinglist]);
+              setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
               setBuildings(0);
-              setBuildingID(-1)
+              setBuildingID(-1);
               break;
             case 401:
               authService.logout();
