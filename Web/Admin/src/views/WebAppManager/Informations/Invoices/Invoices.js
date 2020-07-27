@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     },
     '& .MuiTab-root':{
       paddingLeft: 0,
-      paddingRight: 0
+      minWidth: 0
     },
     '& .MuiTab-wrapper':{
       flexDirection: 'row',
