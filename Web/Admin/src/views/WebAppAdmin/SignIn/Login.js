@@ -51,25 +51,28 @@ const Login = (props) => {
     setPassword(event.target.value);
     setErrorsPassword(errorsPass);
   }
-  useEffect(()=>{
-    const usertype = authService.getAccess('usertype');  
-    const token = authService.getToken();
-    if(token){
-      switch(usertype){
-        case 'superadmin':
-          history.push('/admin/dashboard');
-          break;
-        case 'admin':
-          history.push('/admin/dashboard');
-          break;
-        case 'manager':
-          history.push('/manager/dashboard');
-          break;
-        case 'owner':
-          history.push('/owner/dashboard');
-          break;
-        default:
-          break;
+  useEffect(() => {
+    if (authService.getFirstLoginState() === "false") {
+
+      const usertype = authService.getAccess('usertype');
+      const token = authService.getToken();
+      if (token) {
+        switch (usertype) {
+          case 'superadmin':
+            history.push('/admin/dashboard');
+            break;
+          case 'admin':
+            history.push('/admin/dashboard');
+            break;
+          case 'manager':
+            history.push('/manager/dashboard');
+            break;
+          case 'owner':
+            history.push('/owner/dashboard');
+            break;
+          default:
+            break;
+        }
       }
     }
   });
@@ -78,7 +81,7 @@ const Login = (props) => {
     if (email.length === 0) { setErrorsEmail('please enter your eamil'); cnt++; }
     if (password.length === 0) { setErrorsPassword('please enter your password'); cnt++; }
     if (cnt === 0) {
-      if (validateForm(errorsEmail) ) {
+      if (validateForm(errorsEmail)) {
         if (authService.getFirstLoginState() === "true") {
           firstLogin();
         }
@@ -110,7 +113,7 @@ const Login = (props) => {
               history.push('/smsauth/' + email);
             }
             else {
-              if (profile.usertype === 'superadmin' || profile.usertype === 'admin'){
+              if (profile.usertype === 'superadmin' || profile.usertype === 'admin') {
                 localStorage.clear();
                 localStorage.setItem("token", JSON.stringify(response.data.data.token));
                 localStorage.setItem("firstlogin", JSON.stringify("false"));
@@ -126,7 +129,7 @@ const Login = (props) => {
                 localStorage.setItem("select", JSON.stringify(0));
                 history.push('/admin/dashboard');
               }
-              else if (profile.usertype === 'manager'){
+              else if (profile.usertype === 'manager') {
                 localStorage.clear();
                 localStorage.setItem("token", JSON.stringify(response.data.data.token));
                 localStorage.setItem("firstlogin", JSON.stringify("false"));
@@ -147,7 +150,7 @@ const Login = (props) => {
                 localStorage.setItem("select", JSON.stringify(0));
                 history.push("/manager/dashboard");
               }
-              else if (profile.usertype === 'owner'){
+              else if (profile.usertype === 'owner') {
                 localStorage.clear();
                 localStorage.setItem("token", JSON.stringify(response.data.data.token));
                 localStorage.setItem("firstlogin", JSON.stringify("false"));
