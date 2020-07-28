@@ -50,29 +50,37 @@ const useStyles = makeStyles((theme,props)=>({
     }
   },
   select_bullet: {
-    display: 'inline-block',
+    display: 'flex',
+    alignItems:'center',
     margin: '0 2px',
     [theme.breakpoints.up('xl')]: {
-        fontSize:68
+        fontSize:68,
+        height:150,
     },
     [theme.breakpoints.down('lg')]: {
-        fontSize :48
+        fontSize :48,
+        height:80,
     },
     [theme.breakpoints.down('md')]: {
-        fontSize :34
+        fontSize :34,
+        height:40,
     },
   },
   normal_bullet: {
-    display: 'inline-block',
+    display: 'flex',
+    alignItems:'center',
     margin: '0 2px',
     [theme.breakpoints.up('xl')]: {
-        fontSize:58
+        fontSize:58,
+        height:90,
     },
     [theme.breakpoints.down('lg')]: {
-        fontSize :41
+        fontSize :41,
+        height:50,
     },
     [theme.breakpoints.down('md')]: {
-        fontSize :29
+        fontSize :29,
+        height:20,
     },
   },
   select_name: {
