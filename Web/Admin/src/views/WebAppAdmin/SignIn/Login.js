@@ -152,16 +152,20 @@ const Login = (props) => {
               }
               else if (profile.usertype === 'owner') {
                 localStorage.clear();
-                localStorage.setItem("token", JSON.stringify(response.data.data.token));
-                localStorage.setItem("firstlogin", JSON.stringify("false"));
-                localStorage.setItem("usertype", JSON.stringify(profile.usertype));
-                localStorage.setItem("role_addons", JSON.stringify('denied'));
-                localStorage.setItem("role_assemblies", JSON.stringify('denied'));
-                localStorage.setItem("role_chat", JSON.stringify('denied'));
-                localStorage.setItem("role_events", JSON.stringify('denied'));
-                localStorage.setItem("role_incidents", JSON.stringify('denied'));
-                localStorage.setItem("select", JSON.stringify(0));
-                history.push("/owner/dashboard");
+                if(profile.identity_card_back.length !== 0 && profile.identity_card_front.length !== 0){
+                  localStorage.setItem("token", JSON.stringify(response.data.data.token));
+                  localStorage.setItem("firstlogin", JSON.stringify("false"));
+                  localStorage.setItem("usertype", JSON.stringify(profile.usertype));
+                  localStorage.setItem("role_addons", JSON.stringify('denied'));
+                  localStorage.setItem("role_assemblies", JSON.stringify('denied'));
+                  localStorage.setItem("role_chat", JSON.stringify('denied'));
+                  localStorage.setItem("role_events", JSON.stringify('denied'));
+                  localStorage.setItem("role_incidents", JSON.stringify('denied'));
+                  localStorage.setItem("select", JSON.stringify(0));
+                  history.push("/owner/dashboard");
+                }else{
+                  ToastsStore.warning("Your Identify Card can't be found.");
+                }
               }
               else
                 history.push("/not-found");
