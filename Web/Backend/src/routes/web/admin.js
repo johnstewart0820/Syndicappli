@@ -94,7 +94,7 @@ router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
  */
 router.post('/productList', authMiddleware.checkToken, getProductList)
 router.post('/product', authMiddleware.checkToken, createProduct)
-router.post('/product/:id', authMiddleware.checkToken, getProduct)
+router.get('/product/:id', authMiddleware.checkToken, getProduct)
 router.put('/product/:id', authMiddleware.checkToken, updateProduct)
 router.post('/product/:id/delete', authMiddleware.checkToken, deleteProduct)
 
@@ -821,8 +821,7 @@ function getProduct(req, res){
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    let data = req.body
-    productService.getProduct(userId, userdata, data, id).then((result) => {
+    productService.getProduct(userId, userdata, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

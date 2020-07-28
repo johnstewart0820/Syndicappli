@@ -127,37 +127,18 @@ function createProduct(uid, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getProduct(uid, data, id) {
+function getProduct(uid, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select *, users.type usertype, users.email email, users.phone phone, users.address address, users.status status from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
-        let productInfo;
-        let vote_amount_info;
-        let apartment_info;
-        db.query(query, [ id, data.buildingID],   (error, rows, fields) => {
+        let query = 'Select * from ' + table.PRODUCTS + ' where productID = ?'
+
+        db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 if (rows.length == 0) {
                     reject({ message: message.INTERNAL_SERVER_ERROR })
                 } else {
-                    productInfo = rows[0];
-                    let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) where b.buildingID = ? and a.userID = ?'
-                    db.query(query, [data.buildingID, id], (error, rows, fields) => {
-                        if (error) {
-                            reject({ message: message.INTERNAL_SERVER_ERROR })
-                        } else {
-                            apartment_info = rows;
-                            let query = 'Select * from ' + table.BUILDINGS + ' b left join ' + table.APARTMENTS + ' a using (buildingID) left join ' + table.VOTE_AMOUNT_OF_PARTS + ' va using (apartmentID) left join ' + table.VOTE_BUILDING_BRANCH + ' vb using(voteID) where b.buildingID = ? and a.userID = ? and vb.buildingID = ?'
-                            db.query(query, [data.buildingID, id, data.buildingID],  (error, rows, fields) => {
-                                if (error) {
-                                    reject({ message: message.INTERNAL_SERVER_ERROR })
-                                } else {
-                                    vote_amount_info = rows;
-                                    resolve({productInfo: productInfo, amount_info: vote_amount_info, apartment_info: apartment_info});
-                                }
-                            })
-                        }
-                    })
+                    resolve(rows[0]);
                 }
             }
         })

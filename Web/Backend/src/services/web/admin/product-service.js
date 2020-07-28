@@ -92,10 +92,10 @@ function createProduct(uid, userdata ,data) {
  * @param   object authData
  * @return  json
  */
-function getProduct(uid, userdata ,data, id) {
+function getProduct(uid, userdata, id) {
     return new Promise((resolve, reject) => {
         authHelper.hasProductPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
-            productModel.getProduct(uid, data, id).then((product) => {
+            productModel.getProduct(uid, id).then((product) => {
                 if (product) {
                         let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                             expiresIn: timer.TOKEN_EXPIRATION
