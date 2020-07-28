@@ -49,7 +49,7 @@ const useStyles = makeStyles({
       // color: '#363636'
     },
     '& .MuiTableCell-root': {
-      //  textAlign: 'center',
+      fontFamily:'Poppins',
       [theme.breakpoints.up('xl')]: {
         padding: 16
       },

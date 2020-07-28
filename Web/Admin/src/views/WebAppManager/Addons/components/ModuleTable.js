@@ -61,7 +61,7 @@ const useStyles = makeStyles({
       borderRadius: '15px',
     },
     '& .MuiTableCell-root': {
-      //  textAlign: 'center',
+      fontFamily:'Poppins',
       [theme.breakpoints.up('xl')]: {
         fontSize :18,
         padding: 16
