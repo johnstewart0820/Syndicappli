@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Profile = props => {
-  const { className, ...rest } = props;
+  const { className } = props;
   const {history} = props;
   const classes = useStyles();
   const user = {
@@ -76,7 +76,6 @@ const Profile = props => {
   }
   return (
     <div
-      {...rest}
       className={clsx(classes.root, className)}
     >
       <img

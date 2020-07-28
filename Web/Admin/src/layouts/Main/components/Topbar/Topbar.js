@@ -169,7 +169,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Topbar = props => {
-  const { className, onSidebarOpen, ...rest } = props;
+  const { className, onSidebarOpen} = props;
   const {history} = props;
   const classes = useStyles();
   const [value, setValue] = useState('');
@@ -271,9 +271,11 @@ const Topbar = props => {
       );
   }, []);
   const webApp = authService.getAccess('usertype');
+  let owner_idcard_state = '';
+  if(webApp === 'owner')
+   owner_idcard_state = authService.getAccess('idcard_state');
   return (
     <AppBar
-      {...rest}
       className={clsx(classes.root, className)}
     >
       <Toolbar className={classes.toolbar}>
@@ -371,7 +373,7 @@ const Topbar = props => {
                 </div>
 
                 : webApp === 'owner' ?
-
+                  owner_idcard_state === 'true' ?
                   <div>
                     <MenuItem onClick={handleClickOwnerMyAccount} >
                       <ListItemIcon>
@@ -380,14 +382,14 @@ const Topbar = props => {
                       <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
                     </MenuItem>
                     <Divider />
-                    <MenuItem onClick={handleClickOwnerInvoices} >
+                    <MenuItem onClick={handleClickOwnerInvoices}>
                       <ListItemIcon>
                         <img src="/images/invoice.png" alt="image" />
                       </ListItemIcon>
                       <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
                     </MenuItem>
                     <Divider />
-                    <MenuItem onClick={handleClickOwnerSubAccounts} >
+                    <MenuItem onClick={handleClickOwnerSubAccounts}>
                       <ListItemIcon>
                         <img src="/images/sub_accounts.png" alt="image" />
                       </ListItemIcon>
@@ -400,6 +402,20 @@ const Topbar = props => {
                     </MenuItem>
                   </div>
                   :
+                  <div>
+                    <MenuItem onClick={handleClickOwnerMyAccount} >
+                      <ListItemIcon>
+                        <img src="/images/my_account.png" alt="image" />
+                      </ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleClickLogout}>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                    </MenuItem>
+                  </div>
+                :
 
                   <div>
                     <MenuItem onClick={handleClickAdminMyAccount} >

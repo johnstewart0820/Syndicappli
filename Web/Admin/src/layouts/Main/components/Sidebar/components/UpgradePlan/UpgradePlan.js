@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const UpgradePlan = props => {
-  const { className,  ...rest } = props;
+  const { className } = props;
   const {history} = props;
   const classes = useStyles();
   const webApp = authService.getAccess('usertype'); 
@@ -100,7 +100,6 @@ const UpgradePlan = props => {
   } 
   return (
     <div
-      {...rest}
       className={clsx(classes.root, className)}
     >
       <div className={classes.medias}>

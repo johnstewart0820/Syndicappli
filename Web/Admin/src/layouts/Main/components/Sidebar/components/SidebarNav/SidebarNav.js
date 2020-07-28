@@ -213,7 +213,7 @@ const CustomRouterLink = forwardRef((props, ref) => (
 ));
 
 const SidebarNav = props => {
-  const { pages, className, ...rest } = props;
+  const { pages, className } = props;
 
   const classes = useStyles();
   let tmp = [];
@@ -283,7 +283,6 @@ const SidebarNav = props => {
   }
   return (
     <List
-      {...rest}
       className={clsx(classes.root, className)}
     >
       {pages.map((page, i) => (
