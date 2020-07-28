@@ -22,11 +22,12 @@ import {
   Team as TeamView,
   Buildings as ManagerBuildings,
   Owners as ManagerOwners,
-  Addons as ManagerAddons
+  Addons as ManagerAddons,
+  Assemblies as ManagerAssemblies,
 } from './views/WebAppManager';
 import {
   Addons as OwnerAddons,
-  Assemblies as OwnerAssemblies
+  Assemblies as OwnerAssemblies,
 } from './views/WebAppOwner';
 //Admin import
 import Login from './views/WebAppAdmin/SignIn/Login';
@@ -46,6 +47,7 @@ import DiscountCodesEdit from 'views/WebAppAdmin/DiscountCodes/DiscountCodesEdit
 //Manager import
 import ManagerBuildingEdit from './views/WebAppManager/Buildings/BuildingsEdit';
 import ManagerOwnerEdit from './views/WebAppManager/Owners/OwnerEdit';
+import ManagerAssemblyEdit from './views/WebAppManager/Assemblies/AssemblyEdit';
 import TeamMemberEdit from './views/WebAppManager/Team/TeamMemberEdit';
 import ManagerHelp from 'views/WebAppManager/Help';
 import ManagerInvoices from './views/WebAppManager/Informations/Invoices';
@@ -357,10 +359,16 @@ const Routes = () => {
         path="/manager/addons/payment"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={ManagerAssemblies}
         exact
         layout={MainLayout}
         path="/manager/assemblies"
+      />
+      <RouteWithLayout
+        component={ManagerAssemblyEdit}
+        exact
+        layout={MainLayout}
+        path="/manager/assemblies/edit/:id"
       />
       <RouteWithLayout
         component={DashboardView}
