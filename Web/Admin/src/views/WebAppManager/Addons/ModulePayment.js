@@ -10,7 +10,7 @@ import TextField from '@material-ui/core/TextField';
 
 const ModulePayment = (props) => {
   const { history } = props;
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -48,6 +48,24 @@ const ModulePayment = (props) => {
         </Grid>
       </div>
       <div className={classes.tool}>
+        <Grid item container spacing={1}>
+          <Grid item container justify="space-between">
+            <Grid item>
+              <p className={classes.billingAddress}>Pack de Modules : Immeuble 36 rue Hector Berlioz, Agen </p>
+            </Grid>
+            <Grid item>
+              <p className={classes.billingAddress}>x1</p>
+            </Grid>
+          </Grid>
+          <Grid item container justify="space-between">
+            <Grid item>
+              <p className={classes.itemTitle}></p>
+            </Grid>
+            <Grid item>
+              <p className={classes.price}>12,90€</p>
+            </Grid>
+          </Grid>
+        </Grid>
       </div>
       <div className={classes.body}>
         <Grid item container direction="column" spacing={5}>

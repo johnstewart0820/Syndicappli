@@ -119,7 +119,6 @@ export default function InvoiceTable  (props)  {
   const [cells,setCells] = useState(props.cells);
   const items = props.products;
   return ( 
-      <Grid container direction="column" spacing={2}>
           <Table className={classes.root}>
             <TableHead>
               <TableRow >
@@ -153,6 +152,5 @@ export default function InvoiceTable  (props)  {
               ))}
             </TableBody>
           </Table>
-      </Grid>
   );
 };

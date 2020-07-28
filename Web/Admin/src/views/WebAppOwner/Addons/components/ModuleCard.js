@@ -123,12 +123,12 @@ const useStyles = makeStyles(theme => ({
 const ModuleCard = (props) => {
   const {history} = props;
   const classes = useStyles();
-  const handleClickBuyPack = ()=>{
+  const handleClickBuyModule = ()=>{
     props.onClick();
   }
   return (
     <div className={classes.body}>
-        <Grid xs={11} container direction="column" justify="center" alignItems="center" spacing={4}>
+        <Grid xs={11} item container direction="column" justify="center" alignItems="center" spacing={4}>
             <Grid item>
                 <p className={classes.headerTitle}><b>{props.title}</b></p>
             </Grid>
@@ -140,7 +140,7 @@ const ModuleCard = (props) => {
             </Grid>
             <Grid  item container direction="column" alignItems="center" spacing={3}>
               <Grid item ><p className={classes.price}><b>{props.price}</b></p></Grid>
-              <Grid item ><MyButton name = {"J'achète le pack"} color={"1"} onClick={handleClickBuyPack}/></Grid>
+              <Grid item ><MyButton name = {"J'achète le module"} color={"1"} onClick={handleClickBuyModule}/></Grid>
             </Grid>
         </Grid>
     </div>

@@ -79,9 +79,9 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
+    borderRadius: 15,
+    width: 500
   },
   padding: {
     [theme.breakpoints.up('xl')]: {
@@ -144,32 +144,32 @@ export const ModulePaymentStyles = makeStyles(theme => ({
   },
   tool:{
     [theme.breakpoints.up('xl')]: {
-      minHeight: 170
+      minHeight: 200
     },
     [theme.breakpoints.down('lg')]: {
-      minHeight: 120
+      minHeight: 140
     },
     [theme.breakpoints.down('md')]: {
-      minHeight: 84
+      minHeight: 100
     },
   },
   body: {
     [theme.breakpoints.up('xl')]: {
       marginTop: 64,
       marginBottom: 64,
-      padding: 40,
+      padding: 84,
       borderRadius: 30,
     },
     [theme.breakpoints.down('lg')]: {
       marginTop: 45,
       marginBottom: 45,
-      padding: 28,
+      padding: 59,
       borderRadius: 21,
     },
     [theme.breakpoints.down('md')]: {
       marginTop: 32,
       marginBottom: 32,
-      padding: 20,
+      padding: 42,
       borderRadius: 15,
     },
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',

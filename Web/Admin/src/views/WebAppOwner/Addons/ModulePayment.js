@@ -37,9 +37,28 @@ const ModulePayment = (props) => {
           </Grid>
         </Grid>
       </div>
-      <div className={classes.tool}>
-      </div>
+
       <div className={classes.body}>
+      <div className={classes.tool}>
+      <Grid item container spacing={1}>
+            <Grid item container justify="space-between">
+              <Grid item>
+                <p className={classes.billingAddress}><b>Module</b> : Participer à une Assemblée Générale à Distance en Visio Conférence à 360° </p>
+              </Grid>
+              <Grid item>
+                <p className={classes.billingAddress}>x1</p>
+              </Grid>
+            </Grid>
+            <Grid item container justify="space-between">
+              <Grid item>
+                <p className={classes.itemTitle}></p>
+              </Grid>
+              <Grid item>
+                <p className={classes.price}>12,90€</p>
+              </Grid>
+            </Grid>
+          </Grid>
+      </div>
         <Grid item container direction="column" spacing={5}>
           <Grid item container spacing={1}>
             <Grid item container justify="space-between">

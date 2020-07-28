@@ -131,11 +131,11 @@ const CompaniesEdit = (props) => {
   const [cardDataList, setCardDataList] = useState([]);
 
   useEffect(() => {
-    if (accessCompanies !== 'denied')
+    if (accessCompanies !== 'denied' && accessBuildings !== 'denied')
       getBuildings();
   }, [building_page_num, building_row_count, building_sort_method, building_sort_column, building_refresh]);
   useEffect(() => {
-    if (accessCompanies !== 'denied')
+    if (accessCompanies !== 'denied' && accessManagers !== 'denied')
       getManagers();
   }, [manager_page_num, manager_row_count, manager_sort_method, manager_sort_column, manager_refresh]);
   const handleClick = () => {

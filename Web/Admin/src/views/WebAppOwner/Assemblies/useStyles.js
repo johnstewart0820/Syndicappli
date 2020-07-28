@@ -14,6 +14,28 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
+    '& .MuiTab-root':{
+      paddingLeft: 0,
+      minWidth: 0
+    },
+    '& .MuiTab-wrapper':{
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      textTransform: 'none',
+      color: '#363636',
+      [theme.breakpoints.up('xl')]: {
+        fontSize :20
+      },
+      [theme.breakpoints.down('lg')]: {
+        fontSize :14
+      },
+      [theme.breakpoints.down('md')]: {
+        fontSize :10
+      },
+    },
+    '& .MuiTab-textColorInherit.Mui-selected':{
+      textDecoration: 'underline'
+    },
   },
   title:{
     paddingTop: theme.spacing(2),
@@ -30,18 +52,21 @@ const useStyles = makeStyles(theme => ({
       fontSize :18
     },
   },
-  itemTitle: {
+  body:{
+    paddingTop:25
+  },
+  assemblyName: {
     [theme.breakpoints.up('xl')]: {
-      fontSize :22
+      fontSize :36
     },
     [theme.breakpoints.down('lg')]: {
-      fontSize :15
+      fontSize :25
     },
     [theme.breakpoints.down('md')]: {
-      fontSize :11
+      fontSize :18
     },
   },
-  subTitle: {
+  assemblyDate: {
     [theme.breakpoints.up('xl')]: {
       fontSize :18
     },
@@ -52,6 +77,29 @@ const useStyles = makeStyles(theme => ({
       fontSize :9
     },
   },
+  assemblyDocuments: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize :20
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize :14
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize :10
+    },
+  },
+  doc_tip:{
+    [theme.breakpoints.up('xl')]: {
+      fontSize :13
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize :9
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize :6
+    },
+    textAlign: 'center'
+  },
   tool: {
     [theme.breakpoints.up('xl')]: {
       minHeight: 67
@@ -61,20 +109,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('md')]: {
       minHeight: 33
-    },
-  },
-  price:{
-    [theme.breakpoints.up('xl')]: {
-      marginTop: 70,
-      fontSize :40
-    },
-    [theme.breakpoints.down('lg')]: {
-      marginTop: 50,
-      fontSize :28
-    },
-    [theme.breakpoints.down('md')]: {
-      marginTop: 35,
-      fontSize :20
     },
   },
   paper: {
@@ -97,14 +131,105 @@ const useStyles = makeStyles(theme => ({
   close: {
     cursor: 'pointer',
     color: 'gray'
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
+  documents: {
+    cursor: 'pointer',
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+    border: '1px solid rgba(112,112,112,0.43)',
+    borderRadius: 8,
+    [theme.breakpoints.up('xl')]: {
+      width: 116,
+      height: 92,
+      marginTop: 20,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 81,
+      height: 64,
+      marginTop: 14,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 57,
+      height: 45,
+      marginTop: 10,
+    },
+  },
+  place: {
+    [theme.breakpoints.up('xl')]: {
+      width: 15,
+      height: 21,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 11,
+      height: 15,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 8,
+      height: 11,
+    },
+    float:'left'
+  },
+  bodyContent: {
+    [theme.breakpoints.up('xl')]: {
+      paddingTop: 120
+    },
+    [theme.breakpoints.down('lg')]: {
+      paddingTop: 84
+    },
+    [theme.breakpoints.down('md')]: {
+      paddingTop: 60
+    },
+  },
+  sizepng: {
+    [theme.breakpoints.up('xl')]: {
+      width: 116,
+      height: 92,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 81,
+      height: 64,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 57,
+      height: 45,
+    },
+  },
+  size: {
+    [theme.breakpoints.up('xl')]: {
+      width: 49,
+      height: 61,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 35,
+      height: 43,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 25,
+      height: 30,
+    },
+  },
 }));
 
 export const AddTeamMemberStyles = makeStyles(theme => ({
   paper: {
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: 5,
-      padding: theme.spacing(2, 4, 3),
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    borderRadius: 15,
+    width: 500
   },
   footer: {
     [theme.breakpoints.up('xl')]: {
@@ -196,9 +321,22 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize: 9,
       },
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
-export const ModulePaymentStyles = makeStyles(theme => ({
+export const EditTeamMemberStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
       paddingLeft: theme.spacing(5),
@@ -229,9 +367,6 @@ export const ModulePaymentStyles = makeStyles(theme => ({
         fontSize: 11,
       },
     },
-    '& .MuiOutlinedInput-multiline':{
-      padding: 0
-    },
     '& p':{
       marginBottom: 0
     }
@@ -240,43 +375,23 @@ export const ModulePaymentStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
   },
-  tool:{
-    [theme.breakpoints.up('xl')]: {
-      minHeight: 170,
-      paddingTop: 84,
-      paddingLeft: 84,
-      paddingRight: 84,
-    },
-    [theme.breakpoints.down('lg')]: {
-      minHeight: 120,
-      paddingTop: 59,
-      paddingLeft: 59,
-      paddingRight: 59,
-    },
-    [theme.breakpoints.down('md')]: {
-      minHeight: 84,
-      paddingTop: 42,
-      paddingLeft: 42,
-      paddingRight: 42,
-    },
-  },
   body: {
     [theme.breakpoints.up('xl')]: {
       marginTop: 64,
       marginBottom: 64,
-      padding: 84,
+      padding: 40,
       borderRadius: 30,
     },
     [theme.breakpoints.down('lg')]: {
       marginTop: 45,
       marginBottom: 45,
-      padding: 59,
+      padding: 28,
       borderRadius: 21,
     },
     [theme.breakpoints.down('md')]: {
       marginTop: 32,
       marginBottom: 32,
-      padding: 42,
+      padding: 20,
       borderRadius: 15,
     },
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
@@ -289,6 +404,35 @@ export const ModulePaymentStyles = makeStyles(theme => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+  },
+  plus:{
+    color: '#707070',
+    [theme.breakpoints.up('xl')]: {
+      width:31 , 
+      height: 31,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width:22 , 
+      height: 22,
+    },
+    [theme.breakpoints.down('md')]: {
+      width:15 , 
+      height: 15,
+    },
+  },
+  size: {
+    [theme.breakpoints.up('xl')]: {
+      width: 214,
+      height: 214,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 150,
+      height: 150,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 105,
+      height: 105,
+    },
   },
   input: {
     display: 'none',
@@ -306,15 +450,16 @@ export const ModulePaymentStyles = makeStyles(theme => ({
   indicator: {
     color: 'gray'
   },
-  billingAddress:{
+  backTitle:{
+    cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
-      fontSize: 20,
+      fontSize: 18,
     },
     [theme.breakpoints.down('lg')]: {
-      fontSize: 14,
+      fontSize: 13,
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: 10,
+      fontSize: 9,
     },
   },
   itemTitle:{
@@ -351,7 +496,7 @@ export const ModulePaymentStyles = makeStyles(theme => ({
         fontSize :18
       },
   },
-  price:{
+  sepaTitle:{
     [theme.breakpoints.up('xl')]: {
       fontSize :28
     },
@@ -362,7 +507,7 @@ export const ModulePaymentStyles = makeStyles(theme => ({
       fontSize :14
     },
   },
-  sepaItemTitle:{
+  permissionItemTitle:{
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
     },
@@ -373,16 +518,48 @@ export const ModulePaymentStyles = makeStyles(theme => ({
       fontSize: 9,
     },
   },
-  modifier:{
+  img: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+    border: '1px dashed rgba(112,112,112,0.43)',
+    borderRadius: 8,
     [theme.breakpoints.up('xl')]: {
-      fontSize: 15,
+      width: 362,
+      height: 278,
+      marginTop: 30,
+      marginRight: 30
     },
     [theme.breakpoints.down('lg')]: {
-      fontSize: 11,
+      width: 253,
+      height: 177,
+      marginTop: 21,
+      marginRight: 21
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: 8,
+      width: 177,
+      height: 124,
+      marginTop: 15,
+      marginRight: 15
     },
   },
+  editAvatar:{
+    cursor:'pointer',
+    [theme.breakpoints.up('xl')]: {
+      width: 54,
+      height: 54,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 38,
+      height: 38,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 27,
+      height: 27,
+    },
+      backgroundColor: 'white',
+      borderRadius: '50%',
+      color: 'gray'
+  }
 }));
   export default useStyles;

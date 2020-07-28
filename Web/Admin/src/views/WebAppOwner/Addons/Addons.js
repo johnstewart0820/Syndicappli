@@ -1,10 +1,13 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import MyButton from '../../../components/MyButton';
+import Dialog from '@material-ui/core/Dialog';
+import CloseIcon from '@material-ui/icons/Close';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
 import ModuleCard from './components/ModuleCard';
+import VotePerCorrespondance from './components/VotePerCorrespondance';
+import Delegate from './components/Delegate.js';
 
 const Addons = (props) => {
   const {history}=props;
@@ -14,19 +17,43 @@ const Addons = (props) => {
   }
 
   const classes = useStyles();
+  const [openAdvance, setOpenAdvance] = React.useState(false);
+  const [openDelegate, setOpenDelegate] = React.useState(false);
+  const [openAudio, setOpenAudio] = React.useState(false);
+  const [openVisio, setOpenVisio] = React.useState(false);
+
   const handleClickAdvance = ()=>{
-    alert('advance')
+    setOpenAdvance(true);
+    // alert('advance')
   }
   const handleClickDelegate = ()=>{
-    alert('delegate')
+    setOpenDelegate(true);
+    // alert('delegate')
   }
   const handleClickAudio = ()=>{
-    alert('audio')
+    setOpenAudio(true);
+    // alert('audio')
   }
   const handleClickVisio = ()=>{
-    alert('visio')
+    setOpenVisio(true);
+    // alert('visio')
   }
-
+  const handleCloseAdvance = () => {
+    setOpenAdvance(false);
+  };
+  const handleCloseDelegate = () => {
+    setOpenDelegate(false);
+  };
+  const handleCloseAudio = () => {
+    setOpenAudio(false);
+  };
+  const handleCloseVisio = () => {
+    setOpenVisio(false);
+  };
+const handleClickBuy = () => {
+  history.push('/addons/payment');
+  window.location.reload();
+};
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -105,6 +132,58 @@ const Addons = (props) => {
           </Grid>
         </Grid>
       </div>
+      <Dialog
+          open={openAdvance}
+          onClose={handleCloseAdvance}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          classes={{paper: classes.paper}}
+      >
+          <Grid item container className={classes.padding} justify="space-between">
+              <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseAdvance} className={classes.close} /></Grid>
+              <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Voter par correspondance</h2></Grid>
+          </Grid>
+          <VotePerCorrespondance onCancel={handleCloseAdvance} onBuy={handleClickBuy}/>
+      </Dialog>
+      <Dialog
+          open={openDelegate}
+          onClose={handleCloseDelegate}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          classes={{paper: classes.paper}}
+      >
+          <Grid item container className={classes.padding} justify="space-between">
+              <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseDelegate} className={classes.close} /></Grid>
+              <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Déléguer mon pouvoir</h2></Grid>
+          </Grid>
+          <Delegate onCancel={handleCloseDelegate} onBuy={handleClickBuy}/>
+      </Dialog>
+      <Dialog
+          open={openAudio}
+          onClose={handleCloseAudio}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          classes={{paper: classes.paper}}
+      >
+          <Grid item container className={classes.padding} justify="space-between">
+              <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseAudio} className={classes.close} /></Grid>
+              <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Participer à une Assemblée Générale à Distance</h2></Grid>
+          </Grid>
+          <VotePerCorrespondance onCancel={handleCloseAudio} onBuy={handleClickBuy}/>
+      </Dialog>
+      <Dialog
+          open={openVisio}
+          onClose={handleCloseVisio}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          classes={{paper: classes.paper}}
+      >
+          <Grid item container className={classes.padding} justify="space-between">
+              <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseVisio} className={classes.close} /></Grid>
+              <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Voter par correspondance</h2></Grid>
+          </Grid>
+          <VotePerCorrespondance onCancel={handleCloseVisio} onBuy={handleClickBuy}/>
+      </Dialog>
       <div className={classes.tool}></div>
     </div>
   );

@@ -25,7 +25,8 @@ import {
   Addons as ManagerAddons
 } from './views/WebAppManager';
 import {
-  Addons as OwnerAddons
+  Addons as OwnerAddons,
+  Assemblies as OwnerAssemblies
 } from './views/WebAppOwner';
 //Admin import
 import Login from './views/WebAppAdmin/SignIn/Login';
@@ -244,7 +245,7 @@ const Routes = () => {
         path="/owner/addons/payment"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={OwnerAssemblies}
         exact
         layout={MainLayout}
         path="/owner/assemblies"

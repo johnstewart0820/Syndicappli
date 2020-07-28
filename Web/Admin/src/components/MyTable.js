@@ -414,7 +414,12 @@ export default function ProductTable(props) {
       </Grid>
       <Grid item container className={classes.body} alignItems="center">
         <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
-          <MyButton name={props.leftBtn} color={"1"} onClick={handleClick} />
+          <MyButton 
+            name={props.leftBtn} 
+            color={"1"} 
+            onClick={handleClick} 
+            style={{visibility:props.leftBtn && props.access === 'edit' ? 'visible': 'hidden'}}
+          />
         </Grid>
         <Grid xs={12} sm={6} item container direction="row-reverse">
           <Pagination
