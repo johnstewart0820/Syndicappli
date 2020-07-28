@@ -1,1 +1,1 @@
-export { default } from './DiscountCodes';
+export { default } from './Main';

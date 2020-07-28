@@ -7,6 +7,9 @@ import MyButton from 'components/MyButton';
 import authService from '../../../services/authService.js';
 import {withRouter } from 'react-router-dom';
 import {EditDiscountCodeStyles as useStyles} from './useStyles';
+import AdminService from '../../../services/api.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 
 const DiscountCodesEdit = (props) => {
   const {history}=props;
@@ -16,6 +19,7 @@ const DiscountCodesEdit = (props) => {
   }
   const accessDiscountCodes = authService.getAccess('role_discountcodes');  
   const classes = useStyles();
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const customerTypeList = ['', 'gestionnaire', 'copropriétaires', 'copropriété'];
   const discountTypeList = ['', 'fixe', 'pourcentage'];
@@ -106,13 +110,50 @@ const handleClickSave = ()=>{
   else setErrorsMaxAmountOfUsePerUser('');
   
   if(cnt ===0){
-
-      handleClose();
+    updateDiscountCode();
   }
 }
-
+const updateDiscountCode = () => {
+  const requestData = {
+    // 'companyID': companyID,
+    // 'name': name,
+    // 'address': address,
+    // 'vote_branches': clefList,
+    // 'sepa_name': accountHolder,
+    // 'sepa_address': accountAddress,
+    // 'iban': accountIban
+  }
+  setVisibleIndicator(true);
+  AdminService.updateDiscountCode(props.match.params.id, requestData)
+    .then(
+      response => {
+        setVisibleIndicator(false);
+        switch(response.data.code){
+          case 200:
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            ToastsStore.success("Updated successfully!");
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+        }
+      },
+      error => {
+        ToastsStore.error("Can't connect to the server!");
+        setVisibleIndicator(false);
+      }
+    );
+};
   return (
     <div className={classes.root}>
+            {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -131,7 +172,7 @@ const handleClickSave = ()=>{
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
-          <Grid item container direction="column" spacing={5} xs={12} sm={10} md={8} lg={6} xl={4}>
+          <Grid item container  spacing={5} xs={12} sm={10} md={8} lg={6} xl={4}>
             <Grid item container><p  className={classes.headerTitle}><b>Informations</b></p></Grid>
             <Grid item container alignItems="center" spacing={1}>
                     <Grid item><p className={classes.itemTitle}>Catégorie</p></Grid>
@@ -151,7 +192,6 @@ const handleClickSave = ()=>{
                     <Grid item><p className={classes.itemTitle}>Nom</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
-                            id="outlined-basic" 
                             className={classes.text} 
                             variant="outlined"
                             value={codeName}
@@ -162,11 +202,10 @@ const handleClickSave = ()=>{
                         <span className={classes.error}>{errorsCodeName}</span>}
                     </Grid>
                 </Grid>
-                <Grid xs={6} item container  alignItems="center" spacing={1}>
+                <Grid item container  alignItems="center" spacing={1}>
                     <Grid item><p className={classes.itemTitle}>Date de début</p></Grid>
                     <Grid xs item container>
                         <TextField 
-                            id="outlined-basic" 
                             className={classes.text} 
                             variant="outlined" 
                             value={startDate}
@@ -178,11 +217,10 @@ const handleClickSave = ()=>{
                         <span className={classes.error}>{errorsStartDate}</span>}
                     </Grid>
                 </Grid>
-                <Grid xs={6} item container alignItems="center" spacing={1}>
+                <Grid item container alignItems="center" spacing={1}>
                     <Grid item ><p className={classes.itemTitle}>Date de fin</p></Grid>
                     <Grid xs item container>
                         <TextField 
-                            id="outlined-basic" 
                             className={classes.text} 
                             variant="outlined"
                             value={endDate}
@@ -212,7 +250,6 @@ const handleClickSave = ()=>{
                     <Grid item><p className={classes.itemTitle}>Montant</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
-                            id="outlined-basic" 
                             className={classes.text} 
                             variant="outlined"
                             value={disocuntAmount}
@@ -241,7 +278,6 @@ const handleClickSave = ()=>{
                     <Grid item><p className={classes.itemTitle}>Nombre maximal d'activations</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
-                            id="outlined-basic" 
                             className={classes.text} 
                             variant="outlined"
                             value={maxAmountOfUse}
@@ -256,7 +292,6 @@ const handleClickSave = ()=>{
                     <Grid item><p className={classes.itemTitle}>Nombre maximal d'activations par utilisateur</p></Grid>
                     <Grid xs item container direction="column">
                         <TextField 
-                            id="outlined-basic" 
                             className={classes.text} 
                             variant="outlined"
                             value={maxAmountOfUsePerUser}
@@ -273,6 +308,7 @@ const handleClickSave = ()=>{
           </Grid>
         </div>
       </Grid>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };

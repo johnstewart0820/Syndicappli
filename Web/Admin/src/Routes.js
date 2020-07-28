@@ -63,6 +63,7 @@ import OwnerSubAccounts from './views/WebAppOwner/Informations/SubAccounts';
 import OwnerHelp from 'views/WebAppOwner/Help';
 import OwnerAddonsPayment from './views/WebAppOwner/Addons/ModulePayment';
 import AcceptInvitation from 'views/WebAppOwner/Informations/SubAccounts/AcceptInvitation';
+import OwnerPaymentMethods from './views/WebAppOwner/Informations/PaymentMethods';
 const Routes = () => {
   return (
     <Switch>
@@ -277,7 +278,7 @@ const Routes = () => {
         path="/owner/subaccounts"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={OwnerPaymentMethods}
         exact
         layout={MainLayout}
         path="/owner/payment-methods"

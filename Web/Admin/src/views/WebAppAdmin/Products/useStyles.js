@@ -118,16 +118,8 @@ export const AddProductStyles = makeStyles(theme => ({
     paddingBottom: 30
   },
   root: {
-    '& .MuiTextField-root': {
-        [theme.breakpoints.up('xl')]: {
-          width: 500,
-        },
-        [theme.breakpoints.down('lg')]: {
-          width: 350,
-        },
-        [theme.breakpoints.down('md')]: {
-          width: 245,
-        },
+    '& .MuiOutlinedInput-multiline':{
+      padding: 0
     },
     '& .MuiOutlinedInput-input':{
       [theme.breakpoints.up('xl')]: {
@@ -208,9 +200,9 @@ export const EditProductStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    '& .MuiTextField-root': {
-      // width: '100%'
-  },
+    '& .MuiOutlinedInput-multiline':{
+      padding: 0
+    },
   '& .MuiOutlinedInput-input':{
       [theme.breakpoints.up('xl')]: {
         padding: '17px 25px',

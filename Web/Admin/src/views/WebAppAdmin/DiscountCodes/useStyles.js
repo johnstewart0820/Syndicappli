@@ -14,6 +14,28 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
+    '& .MuiTab-root':{
+      paddingLeft: 0,
+      minWidth: 0
+    },
+    '& .MuiTab-wrapper':{
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      textTransform: 'none',
+      color: '#363636',
+      [theme.breakpoints.up('xl')]: {
+        fontSize :20
+      },
+      [theme.breakpoints.down('lg')]: {
+        fontSize :14
+      },
+      [theme.breakpoints.down('md')]: {
+        fontSize :10
+      },
+    },
+    '& .MuiTab-textColorInherit.Mui-selected':{
+      textDecoration: 'underline'
+    },
   },
   title:{
     paddingTop: theme.spacing(2),
@@ -64,7 +86,20 @@ const useStyles = makeStyles(theme => ({
   close: {
     cursor: 'pointer',
     color: 'gray'
-  }
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
 export const AddDiscountCodeStyles = makeStyles(theme => ({
   paper: {
@@ -85,17 +120,6 @@ export const AddDiscountCodeStyles = makeStyles(theme => ({
     paddingBottom: 30
   },
   root: {
-    '& .MuiTextField-root': {
-        [theme.breakpoints.up('xl')]: {
-          width: 500,
-        },
-        [theme.breakpoints.down('lg')]: {
-          width: 350,
-        },
-        [theme.breakpoints.down('md')]: {
-          width: 245,
-        },
-    },
     '& .MuiOutlinedInput-input':{
       [theme.breakpoints.up('xl')]: {
         padding: '17px 25px',
@@ -139,6 +163,19 @@ export const AddDiscountCodeStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize: 9,
     },
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
   },
 }));
 export const EditDiscountCodeStyles = makeStyles(theme => ({
@@ -272,6 +309,19 @@ export const EditDiscountCodeStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize :18
       },
-  }
+  },
+    div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
   export default useStyles;

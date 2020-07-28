@@ -1,11 +1,8 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../../components/MyButton';
-import ScrollBar from 'react-perfect-scrollbar';
 import TextField from '@material-ui/core/TextField';
 import MySelect from '../../../components/MySelect';
-import { COUNTRIES } from '../../../components/countries';
-import Multiselect from '../../../components/Multiselect.js';
 import { Checkbox } from '@material-ui/core';
 import { AddProductStyles as useStyles } from './useStyles';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -13,7 +10,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 const AddProducts = (props) => {
     const classes = useStyles();
 
-    const priceTypeList = ['', 'Editer', 'Voir', 'Refusé'];
+    const priceTypeList = ['Par lot', 'Par unité'];
     const selected = [
         { label: "Albania", value: "Albania" },
         { label: "Argentina", value: "Argentina" },
@@ -25,12 +22,8 @@ const AddProducts = (props) => {
     ];
     const [categorie, setCategorie] = React.useState(selected);
     const [billingCycle, setBillingCycle] = React.useState(selected);
-    const companiesList = COUNTRIES.map((country, id) => {
-        return {
-            label: country
-        }
-    })
-    const buildingsList = companiesList;
+    const categorieList = ['Gestionnaires', 'Copropriétaires', 'immeubles'];
+    const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
 
     const [renewal, setRenewal] = React.useState(false);
     const [productName, setProductName] = React.useState('');
@@ -98,11 +91,12 @@ const AddProducts = (props) => {
                         <Grid item container alignItems="center" spacing={2}>
                             <Grid item><p className={classes.title}>Catégorie</p></Grid>
                             <Grid xs item container>
-                                <Multiselect
-                                    selected={categorie}
-                                    no={'No companies found'}
-                                    all={companiesList}
-                                    onSelected={handleChangeCategorie}
+                                <MySelect
+                                    color="gray"
+                                    data={categorieList}
+                                    onChangeSelect={handleChangeCategorie}
+                                    value={categorie}
+                                    width="100%"
                                 />
                                 {errorsCategorie.length > 0 &&
                                     <span className={classes.error}>{errorsCategorie}</span>}
@@ -111,11 +105,12 @@ const AddProducts = (props) => {
                         <Grid item container alignItems="center" spacing={2}>
                             <Grid item><p className={classes.title}>Récurrence</p></Grid>
                             <Grid xs item container>
-                                <Multiselect
-                                    selected={billingCycle}
-                                    no={'No buildings found'}
-                                    all={buildingsList}
-                                    onSelected={handleChangeBillingCycle}
+                                <MySelect
+                                    color="gray"
+                                    data={billingCycleList}
+                                    onChangeSelect={handleChangeBillingCycle}
+                                    value={billingCycle}
+                                    width="100%"
                                 />
                                 {errorsBillingCycle.length > 0 &&
                                     <span className={classes.error}>{errorsBillingCycle}</span>}
@@ -136,11 +131,11 @@ const AddProducts = (props) => {
                             <Grid item><p className={classes.title}>Nom</p></Grid>
                             <Grid xs item container>
                                 <TextField
-                                    id="outlined-basic"
                                     className={classes.text}
                                     variant="outlined"
                                     value={productName}
                                     onChange={handleChangeProductName}
+                                    fullWidth
                                 />
                                 {errorsProductName.length > 0 &&
                                     <span className={classes.error}>{errorsProductName}</span>}
@@ -150,13 +145,13 @@ const AddProducts = (props) => {
                             <Grid item><p className={classes.title}>Description</p></Grid>
                             <Grid xs item container>
                                 <TextField
-                                    id="outlined-basic"
                                     className={classes.text}
                                     variant="outlined"
                                     value={productDescription}
                                     onChange={handleChangeProductDescription}
                                     multiline
                                     rows={5}
+                                    fullWidth
                                 />
                                 {errorsProductDescription.length > 0 &&
                                     <span className={classes.error}>{errorsProductDescription}</span>}
@@ -170,7 +165,7 @@ const AddProducts = (props) => {
                                     data={priceTypeList}
                                     onChangeSelect={handleChangePriceType}
                                     value={priceType}
-                                    width="80%"
+                                    width="100%"
                                 />
                                 {errorsPriceType.length > 0 &&
                                     <span className={classes.error}>{errorsPriceType}</span>}
@@ -180,11 +175,11 @@ const AddProducts = (props) => {
                             <Grid item><p className={classes.title}>Prix (€ HT par lot)</p></Grid>
                             <Grid xs item container>
                                 <TextField
-                                    id="outlined-basic"
                                     className={classes.text}
                                     variant="outlined"
                                     value={price}
                                     onChange={handleChangePrice}
+                                    fullWidth
                                 />
                                 {errorsPrice.length > 0 &&
                                     <span className={classes.error}>{errorsPrice}</span>}
@@ -198,7 +193,6 @@ const AddProducts = (props) => {
                         </Grid>
                     </div>
                 </div>
-                <ScrollBar />
             </div>
         </Scrollbars>
     );

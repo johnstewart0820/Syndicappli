@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MyTable from '../../../../components/MyTable';
+import OrderTable from './OrderTable';
 import authService from '../../../../services/authService.js';
 import MyDialog from '../../../../components/MyDialog';
 import AdminService from '../../../../services/api.js';
@@ -163,6 +163,9 @@ const OrdersManager = (props) => {
   const handleClickEdit = (id) => {
     history.push('/admin/orders/edit/' + id);
   };
+  const handleClickDownload = (id)=>{
+    
+  }
   const handleClickDelete = (id) => {
     if (accessOrders === 'edit') {
       setOpenDelete(true);
@@ -262,7 +265,7 @@ const OrdersManager = (props) => {
         <MyButton name={"Exporter les factures"} color={"1"} onClick={handleClickExport} />
       </Grid>
       <MyDialog open={openDialog} role={accessOrders} onClose={handleCloseDialog} />
-      <MyTable
+      <OrderTable
         onChangeSelect={handleChangeSelect}
         onChangePage={handleChangePagination}
         onSelectSort={handleSort}
@@ -273,6 +276,7 @@ const OrdersManager = (props) => {
         cells={cellList}
         onClickEdit={handleClickEdit}
         onClickDelete={handleClickDelete}
+        onClickDownload={handleClickDownload}
         access={accessOrders}
       />
       <Dialog

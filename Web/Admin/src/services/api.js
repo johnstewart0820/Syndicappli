@@ -153,6 +153,28 @@ class AdminService {
     return axios.post(API_URL + 'web/admin/manager/' + id + '/delete', status, { headers: authHeader() });
   }
 
+    //DiscountCode Part
+    getDiscountCodesList(data) {
+      return axios.post(API_URL + 'web/admin/buildingList',
+        data,
+        { headers: authHeader() });
+    }
+    createDiscountCode(data) {
+      return axios.post(API_URL + 'web/admin/building',
+        data,
+        { headers: authHeader() });
+    }
+    updateDiscountCode(id, data) {
+      return axios.put(API_URL + 'web/admin/building/' + id, data,
+        { headers: authHeader() });
+    }
+    getDiscountCode(id) {
+      return axios.get(API_URL + 'web/admin/building/' + id, { headers: authHeader() });
+    }
+    deleteDiscountCode(id, status) {
+      return axios.post(API_URL + 'web/admin/building/' + id + '/delete', status, { headers: authHeader() });
+    }
+
   getBuildingListByCompany(data) {
     return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
   }

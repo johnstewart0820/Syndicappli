@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {withRouter } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
+import { withRouter } from 'react-router-dom';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTable from '../../../components/MyTable';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import MyButton from '../../../components/MyButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import AddDiscountCode from './AddDiscountCode';
 import CloseIcon from '@material-ui/icons/Close';
@@ -21,7 +20,7 @@ import useStyles from './useStyles';
 const DiscountCodes = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -29,183 +28,175 @@ const DiscountCodes = (props) => {
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-
-  const [deleteId,setDeleteId] = useState(-1);
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+  const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
-  const [totalpage , setTotalPage] = useState(1);
+  const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
-  const [page_num , setPageNum] = useState(1);
+  const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
-  const [sort_method , setSortMethod] = useState('asc');
-  const selectList=[20, 50, 100, 200, -1];
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-  // const handleOpenDelete = () => {
-  //   setOpenDelete(true);
-  // };
-
+  const [sort_method, setSortMethod] = useState('asc');
+  const selectList = [20, 50, 100, 200, -1];
+  const [isDisableDelete, setIsDisableDelete] = useState(true);
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
   const handleCloseDialog = (val) => {
     setOpenDialog(val);
   };
-  const handleAdd = ()=>{
+  const handleAdd = () => {
 
   };
-  const handleClickAdd = ()=>{
-    if(accessDiscountCodes === 'edit'){
+  const handleClickAdd = () => {
+    if (accessDiscountCodes === 'edit') {
       setOpen(true);
     }
-    if(accessDiscountCodes === 'see'){
+    if (accessDiscountCodes === 'see') {
       setOpenDialog(true);
     }
   };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
-  const handleChangePagination = (value)=>{
+  const handleChangePagination = (value) => {
     setPageNum(value);
   }
-  const handleSort = (index , direct)=>{
+  const handleSort = (index, direct) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  const getDatas = ()=>{
+  const getDatas = () => {
     const requestData = {
       'search_key': '',
-      'page_num' : page_num-1,
-      'row_count' : row_count,
-      'sort_column' : sort_column,
-      'sort_method' : sort_method
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method,
+      'status': 'active'
     }
-    AdminService.getUserList(requestData)
-    .then(      
-      response => {        
-        // setVisibleIndicator(false);  
-        switch(response.data.code){
-          case 200:
-
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            // ToastsStore.error(response.data.message);
+    setVisibleIndicator(true);
+    AdminService.getDiscountCodesList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              // setDataList(data.codelist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          setVisibleIndicator(false);
+          ToastsStore.error("Can't connect to the server.");
         }
-      },
-      error => {
-        // setVisibleIndicator(false);
-      }
-    );
+      );
   }
-  useEffect(()=>{
-    if(accessDiscountCodes === 'denied'){
+  useEffect(() => {
+    if (accessDiscountCodes === 'denied') {
       setOpenDialog(true);
     }
   });
   useEffect(() => {
-    // getDataList();
-    if(accessDiscountCodes !== 'denied')
-        getDatas();
-  }, [page_num, row_count,sort_column, sort_method]);
-  const cellList = [ 
-    {key : 'codename' , field : 'Nom'}, 
-    {key : 'customer_type' , field : 'Catégorie'},
-    {key : 'discount_amount' , field : 'Réduction'}, 
-    {key : 'start_date' , field : 'Début'},
-    {key : 'end_date' , field : 'Fin'},
-    {key : 'amount_times' , field : 'Activations'},
-    {key : 'status' , field : 'Statut'}
+    if (accessDiscountCodes !== 'denied')
+      getDatas();
+  }, [page_num, row_count, sort_column, sort_method, props.refresh]);
+  const cellList = [
+    { key: 'codename', field: 'Nom' },
+    { key: 'customer_type', field: 'Catégorie' },
+    { key: 'discount_amount', field: 'Réduction' },
+    { key: 'start_date', field: 'Début' },
+    { key: 'end_date', field: 'Fin' },
+    { key: 'amount_times', field: 'Activations' },
+    { key: 'status', field: 'Statut' }
   ];
   const columns = [];
-  for(let i = 0; i < 7; i++)
+  for (let i = 0; i < 7; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
-    history.push('/admin/discountcodes/edit/'+id);
+    history.push('/admin/discountcodes/edit/' + id);
   };
-  const handleClickDelete = (id)=>{
-    if(accessDiscountCodes === 'edit'){
+  const handleClickDelete = (id) => {
+    if (accessDiscountCodes === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
-    }else{
+    } else {
       setOpenDialog(true);
     }
   };
-  const handleDelete = ()=>{
+  const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
-    AdminService.deleteUser(deleteId)
-    .then(      
-      response => {        
-        // setVisibleIndicator(false);
-        switch(response.data.code){
-          case 200:
-
-            break;
-          case 401:
-            authService.logout();
-            history.push('/login');
-            window.location.reload();
-            break;
-          default:
-            // ToastsStore.error(response.data.message);
+    setVisibleIndicator(true);
+    let data = {
+      'status': 'trash'
+    }
+    AdminService.deleteDiscountCode(deleteId, data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getDatas();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
         }
-      },
-      error => {
-        // setVisibleIndicator(false);
-      }
-    );
+      );
+  }
+  const inputTextChange = (event) => {
+    console.log(event.target.value);
+    if (event.target.value === "delete") {
+      setIsDisableDelete(false);
+    } else {
+      setIsDisableDelete(true);
+    }
   }
   return (
-    <div className={classes.root}>
-      <div className={classes.title}>
-        <Grid item container justify="space-around" alignItems="center">
-          <Grid item xs={12} sm={6} container justify="flex-start" >
-            <Grid item>
-              <Typography variant="h2" className={classes.titleText}>
-                <b>Mes Codes Promo</b>
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} sm={6} container justify="flex-end" >
-            <Grid>
-              <MyButton name = {"Nouveau code"} color={"1"} onClick={handleClickAdd}/>
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <Grid item container className={classes.padding} >
-                  <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close}/></Grid>
-                  <Grid xs={12} item ><p id="transition-modal-title" className={classes.modalTitle}><b>Nouveau Code Promo</b></p></Grid>
-                </Grid>
-                <AddDiscountCode onCancel={handleClose} onAdd={handleAdd}/>
-              </Dialog>
-            </Grid>
-          </Grid>
-        </Grid>
-      </div>
+    <>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.tool}>
-      </div> 
+      </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessDiscountCodes} onClose={handleCloseDialog}/>
-        <MyTable 
-          onChangeSelect={handleChangeSelect} 
-          onChangePage={handleChangePagination} 
-          onSelectSort={handleSort} 
-          page={page_num} 
-          columns={columns} 
-          products={dataList} 
-          totalpage={totalpage} 
-          cells={cellList} 
+        <MyDialog open={openDialog} role={accessDiscountCodes} onClose={handleCloseDialog} />
+        <MyTable
+          onChangeSelect={handleChangeSelect}
+          onChangePage={handleChangePagination}
+          onSelectSort={handleSort}
+          page={page_num}
+          columns={columns}
+          products={dataList}
+          totalpage={totalpage}
+          cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
           access={accessDiscountCodes}
@@ -216,26 +207,35 @@ const DiscountCodes = (props) => {
         onClose={handleCloseDelete}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        >
+      >
         <DialogTitle id="alert-dialog-title">
-          Delete
+          Are you sure to delete this building?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Type <b style={{ color: "red" }}>delete</b> into the text field
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"
+            type="text"
+            fullWidth
+            variant="outlined"
+            onChange={inputTextChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDelete} color="primary">
+          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
+    </>
   );
 };
 
