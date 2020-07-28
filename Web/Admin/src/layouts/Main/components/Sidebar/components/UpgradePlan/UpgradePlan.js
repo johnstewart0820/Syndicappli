@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
       height: 23,
       width: 23
     },
-    [theme.breakpoints.between('lg','lg')]: {
+    [theme.breakpoints.down('lg')]: {
       height: 16,
       width: 16,
     },
@@ -75,12 +75,12 @@ const useStyles = makeStyles(theme => ({
       fontSize:16, 
       paddingLeft:15,
     },
-    [theme.breakpoints.between('lg','lg')]: {
-      fontSize:11, 
+    [theme.breakpoints.down('lg')]: {
+      fontSize:13, 
       paddingLeft:10,
     },
     [theme.breakpoints.down('md')]: {
-      fontSize:8, 
+      fontSize:10, 
       paddingLeft:7,
     },
     textDecoration:'underline',
