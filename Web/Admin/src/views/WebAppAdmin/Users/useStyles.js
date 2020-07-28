@@ -64,15 +64,15 @@ const useStyles = makeStyles(theme => ({
     },
   },
   tool: {
-    [theme.breakpoints.up('xl')]: {
-      minHeight: 67
-    },
-    [theme.breakpoints.down('lg')]: {
-      minHeight: 47
-    },
-    [theme.breakpoints.down('md')]: {
-      minHeight: 33
-    },
+    // [theme.breakpoints.up('xl')]: {
+    //   minHeight: 67
+    // },
+    // [theme.breakpoints.down('lg')]: {
+    //   minHeight: 47
+    // },
+    // [theme.breakpoints.down('md')]: {
+    //   minHeight: 33
+    // },
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -249,9 +249,6 @@ export const EditUserStyles = makeStyles(theme => ({
     '& p':{
       marginBottom: 0
     }
-  },
-  tool: {
-    minHeight: '67px'
   },
   title:{
     paddingTop: theme.spacing(2),
