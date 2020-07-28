@@ -46,7 +46,7 @@ const useStyles = makeStyles({
     '& thead button': {
       background: 'transparent',
       outline: 'transparent',
-      color: '#363636'
+      // color: '#363636'
     },
     '& .MuiTableCell-root': {
       //  textAlign: 'center',

@@ -20,7 +20,8 @@ const CustomAutocomplete = withStyles((theme) => ({
       [theme.breakpoints.down('md')]: {
         height: 30,
         paddingTop: "8px"
-      }
+      },
+      color: 'gray'
     },
     '& .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input':{
       padding: "0px"
