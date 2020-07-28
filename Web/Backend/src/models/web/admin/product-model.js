@@ -43,50 +43,23 @@ var productModel = {
 function getProductList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, users.userID ID, users.phone phone, users.email email
-                    FROM users
-                    LEFT JOIN user_relationship USING ( userID ) 
-                    LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
-                    Left join companies using (companyID)
-                    LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "product" and users.firstname like ? and users.permission = ? and s.count > 0 `
+                    *
+                    FROM products
+                    WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
         search_key = '%' + data.search_key + '%'
-        let params = [search_key, data.status];
-        if (data.role !== "all") {
-            query += 'and users.product_role = ? ';
-            params.push(data.role)
-        }
-        if (data.buildingID != -1) {
-            query += ` and buildings.buildingID = ?`
-            params.push(data.buildingID)
-        }
-        else if (data.companyID != -1) {
-            query += ` and companies.companyID = ?`
-            params.push(data.companyID)
-        }
+        let params = [data.status, uid, data.type, search_key];
 
         if (sort_column === -1)
-            query += ' order by users.userID desc';
+            query += ' order by productID desc';
         else {
             if (sort_column === 0)
-                query += ' order by users.lastname ';
+                query += ' order by name ';
             else if (sort_column === 1)
-                query += ' order by users.firstname ';
-            else if (sort_column === 2) {
-                query += ' order by users.email ';
-            }
-            else if (sort_column === 3) {
-                query += ' order by users.phone ';
-            }
-            else if (sort_column === 4) {
-                query += ' order by users.product_role ';
-            } else if (sort_column === 5) {
-                query += ' order by s.count ';
-            }
+                query += ' order by price ';
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
@@ -111,27 +84,10 @@ function getCountProductList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
                     count(*) count
-                    FROM users
-                    LEFT JOIN user_relationship USING ( userID )
-                    LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
-                    Left join companies using (companyID)
-                    LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "product" and users.firstname like ? and users.permission = ? and s.count > 0 `
-        let params = [search_key, data.status];
-        if (data.role !== "all") {
-            query += 'and users.product_role = ? ';
-            params.push(data.role)
-        }
-
-        if (data.buildingID != -1) {
-            query += ` and buildings.buildingID = ?`
-            params.push(data.buildingID)
-        }
-        else if (data.companyID != -1) {
-            query += ` and companies.companyID = ?`
-            params.push(data.companyID)
-        }
+                    FROM products
+                    WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
         search_key = '%' + data.search_key + '%'
+        let params = [data.status, uid, data.type, search_key];
 
         db.query(query, params, (error, rows, fields) => {
             if (error) {
