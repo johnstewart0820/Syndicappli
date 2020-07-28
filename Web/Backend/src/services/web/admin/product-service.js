@@ -121,19 +121,14 @@ function getProduct(uid, userdata, id) {
  * @param   object authData
  * @return  json
  */
-function updateProduct(uid, userdata ,data, files, id) {
+function updateProduct(uid, userdata, data, id) {
     return new Promise((resolve, reject) => {
         authHelper.hasProductPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            productModel.updateProduct_info(id, data, files).then((response) => {
-                productModel.delete_apartments(data, id).then((response) => {
-                    productModel.createProduct(uid, data, id).then((response) => {
-                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                            expiresIn: timer.TOKEN_EXPIRATION
-                        })
-                        resolve({ code: code.OK, message: '', data: { 'token': token} })
-                    })
+            productModel.updateProduct(id, data).then((response) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
                 })
-                
+                resolve({ code: code.OK, message: '', data: { 'token': token} }) 
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
