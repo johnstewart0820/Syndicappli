@@ -44,7 +44,7 @@ var managerModel = {
 function getManagerList(uid, data) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
-      ifnull(sum(a.count), 0) count, u.userID ID, u.firstname, u.lastname, u.email
+      ifnull(sum(a.count), 0) count, u.userID ID, u.firstname, u.lastname, u.email, u.phone
       FROM
       (select * from users where permission = ?) u 
       LEFT JOIN user_relationship r on u.userID = r.userID

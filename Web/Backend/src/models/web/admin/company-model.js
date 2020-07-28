@@ -38,7 +38,7 @@ function getCompanyList(uid, data) {
     return new Promise((resolve, reject) => {
 
         let query = `select c.*, c.companyID as ID, 
-                    (select count(m.userID) from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID) as manager_count,
+                    (select count(m.userID) from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'building' left join buildings on usr.relationID = buildings.buildingID and buildings.permission="active" where m.usertype = 'manager' and m.permission = 'active' and buildings.companyID = c.companyID) as manager_count,
                     concat((select firstname from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID order by m.userID asc limit 1), " ", (select lastname from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID order by m.userID asc limit 1)) as contact_name,
                     (select count(a.apartmentID) from ` + table.APARTMENTS + ` a left join ` + table.BUILDINGS + ` b on b.buildingID = a.buildingID left join ` + table.COMPANIES + ` com on com.companyID = b.companyID where a.permission = 'active' and b.permission = 'active' and com.permission = 'active' and com.companyID = c.companyID) as apartment_count
                     from ` + table.COMPANIES + ` c
@@ -211,7 +211,7 @@ function updateCompany(companyID, uid, data, file) {
 function getCompany(uid, companyID) {
     return new Promise((resolve, reject) => {
         let query = `select c.*, 
-                    (select count(m.userID) from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'company' where m.usertype = 'manager' and m.permission = 'active' and usr.relationID = c.companyID) as manager_count,
+                    (select count(m.userID) from ` + table.USERS + ` m left join ` + table.USER_RELATIONSHIP + ` usr on usr.userID = m.userID and usr.type = 'building' left join buildings on usr.relationID = buildings.buildingID and buildings.permission="active" where m.usertype = 'manager' and m.permission = 'active' and buildings.companyID = c.companyID) as manager_count,
                     (select count(a.apartmentID) from ` + table.APARTMENTS + ` a left join ` + table.BUILDINGS + ` b on b.buildingID = a.buildingID and b.permission = 'active' left join ` + table.COMPANIES + ` com on com.companyID = b.companyID and com.permission = 'active' where a.permission = 'active' and com.companyID = c.companyID) as apartment_count
                     from ` + table.COMPANIES + ` c
                     where c.companyID = ? and c.permission = "active"`
