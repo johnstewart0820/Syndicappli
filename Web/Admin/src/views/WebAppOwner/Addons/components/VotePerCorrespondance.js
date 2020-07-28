@@ -26,6 +26,7 @@ export const useStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         paddingTop: 43,
       },
+      paddingBottom: 30
     },
     root: {
       '& .MuiOutlinedInput-multiline':{

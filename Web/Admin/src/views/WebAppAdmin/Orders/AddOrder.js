@@ -15,8 +15,17 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(2, 4, 3),
     },
     footer: {
-        paddingTop: 30,
-    },
+        [theme.breakpoints.up('xl')]: {
+          paddingTop: 89,
+        },
+        [theme.breakpoints.down('lg')]: {
+          paddingTop: 62,
+        },
+        [theme.breakpoints.down('md')]: {
+          paddingTop: 43,
+        },
+        paddingBottom: 30
+      },
     root: {
         [theme.breakpoints.up('xl')]: {
             padding: '17px 25px',

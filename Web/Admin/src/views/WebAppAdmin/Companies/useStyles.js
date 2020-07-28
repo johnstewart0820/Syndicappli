@@ -82,15 +82,7 @@ const useStyles = makeStyles(theme => ({
     width: 500
   },
   padding: {
-    [theme.breakpoints.up('xl')]: {
-      padding: 32
-    },
-    [theme.breakpoints.down('lg')]: {
-      padding: 22
-    },
-    [theme.breakpoints.down('md')]: {
-      padding: 15
-    },
+    padding: theme.spacing(2, 4, 3),
   },
   close: {
     cursor: 'pointer',
@@ -127,6 +119,7 @@ export const AddCompanyStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       paddingTop: 43,
     },
+    paddingBottom: 30
   },
   root: {
       '& .MuiOutlinedInput-multiline':{
@@ -460,15 +453,7 @@ export const EditCompanyStyles = makeStyles(theme => ({
     cursor: 'pointer',
   },
   padding: {
-    [theme.breakpoints.up('xl')]: {
-      padding: 32
-    },
-    [theme.breakpoints.down('lg')]: {
-      padding: 22
-    },
-    [theme.breakpoints.down('md')]: {
-      padding: 15
-    },
+      padding: theme.spacing(2, 4, 3),
   },
   close: {
     cursor: 'pointer',
@@ -491,6 +476,7 @@ export const AddBuildingStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       paddingTop: 43,
     },
+    paddingBottom: 30
   },
   root: {
       '& .MuiOutlinedInput-input':{
@@ -592,6 +578,7 @@ export const AddManagerStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       paddingTop: 43,
     },
+    paddingBottom: 30
   },
   root: {
       '& .MuiOutlinedInput-input':{

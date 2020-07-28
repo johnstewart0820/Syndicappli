@@ -81,18 +81,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 4, 3),
   },
   padding: {
-    [theme.breakpoints.up('xl')]: {
-      padding: 32
-    },
-    [theme.breakpoints.down('lg')]: {
-      padding: 22
-    },
-    [theme.breakpoints.down('md')]: {
-      padding: 15
-    },
-    [theme.breakpoints.down('sm')]: {
-      padding: 11
-    },
+    padding: theme.spacing(2, 4, 3),
   },
   close: {
     cursor: 'pointer',
