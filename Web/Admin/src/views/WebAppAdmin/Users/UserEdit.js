@@ -15,7 +15,7 @@ import MyDialog from '../../../components/MyDialog.js';
 import { EditUserStyles as useStyles } from './useStyles';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import useGlobal from 'Global/global';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -37,12 +37,12 @@ const UserEdit = (props) => {
   const { history } = props;
 
   const token = authService.getToken();
-  // if (!token) {
-  //   history.push("/admin/login");
-  //   window.location.reload();
-  // }
+  if (!token) {
+    window.location.replace("/login");
+  }
   const accessUsers = authService.getAccess('role_users');
   const classes = useStyles();
+  const [globalState, setGlobalActions] = useGlobal();
   const permissionList = ['Voir', 'Editer', 'Refusé'];
   const role_permission = ['see', 'edit', 'denied'];
 
@@ -318,6 +318,17 @@ const UserEdit = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success('Updated user successfully!');
+              if(globalState.ID === Number(props.match.params.id)){
+                localStorage.setItem("role_companies", JSON.stringify(role_permission[companiesPermission]));
+                localStorage.setItem("role_managers", JSON.stringify(role_permission[managersPermission]));
+                localStorage.setItem("role_buildings", JSON.stringify(role_permission[buildingsPermission]));
+                localStorage.setItem("role_owners", JSON.stringify(role_permission[ownersPermission]));
+                localStorage.setItem("role_orders", JSON.stringify('denied'));
+                localStorage.setItem("role_products", JSON.stringify('denied'));
+                localStorage.setItem("role_discountcodes", JSON.stringify('denied'));
+                localStorage.setItem("role_users", JSON.stringify(role_permission[usersPermission]));
+                window.location.reload();
+              }
               break;
             case 401:
               authService.logout();

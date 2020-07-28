@@ -1,6 +1,7 @@
 import globalHook from 'use-global-hook';
 import React from 'react';
 const initialState = {
+  ID : -1,
   firstname : ' ',
   lastname : ' ',
   avatarurl: '',
@@ -8,6 +9,9 @@ const initialState = {
 };
  
 const actions = {
+    setID: (store, id)=>{
+        store.setState({ID : id});
+    },
     setFirstName: (store, firstname)=>{
         store.setState({firstname : firstname});
     },

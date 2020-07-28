@@ -299,6 +299,7 @@ const MyAccount = (props) => {
               setEmail(profile.email);
               setPhone(profile.phone);
               setAvatarUrl(profile.photo_url);
+              globalActions.setID(profile.userID);
               globalActions.setFirstName(profile.firstname);
               globalActions.setLastName(profile.lastname);
               globalActions.setAvatarUrl(profile.photo_url);

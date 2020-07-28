@@ -21,6 +21,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
+import useGlobal from 'Global/global';
+
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
@@ -47,6 +49,7 @@ const TeamMemberEdit = (props) => {
     window.location.replace("/login");
   }
   const accessTeam = authService.getAccess('role_team');
+  const [globalState, setGlobalActions] = useGlobal();
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
@@ -521,6 +524,22 @@ const TeamMemberEdit = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success('Updated manager successfully!');
+              if(globalState.ID === Number(props.match.params.id)){
+                localStorage.setItem("role_addons", JSON.stringify('denied'));
+                localStorage.setItem("role_advertisement", JSON.stringify('denied'));
+                localStorage.setItem("role_assemblies", JSON.stringify('denied'));
+                localStorage.setItem("role_buildings", JSON.stringify(role_permission[buildingsPermission]));
+                localStorage.setItem("role_chat", JSON.stringify('denied'));
+                localStorage.setItem("role_company", JSON.stringify('denied'));
+                localStorage.setItem("role_events", JSON.stringify('denied'));
+                localStorage.setItem("role_incidents", JSON.stringify('denied'));
+                localStorage.setItem("role_invoices", JSON.stringify('denied'));
+                localStorage.setItem("role_owners", JSON.stringify(role_permission[ownersPermission]));
+                localStorage.setItem("role_payments", JSON.stringify('denied'));
+                localStorage.setItem("role_providers", JSON.stringify('denied'));
+                localStorage.setItem("role_team", JSON.stringify(role_permission[teamPermission]));
+                window.location.reload();
+              }
               break;
             case 401:
               authService.logout();

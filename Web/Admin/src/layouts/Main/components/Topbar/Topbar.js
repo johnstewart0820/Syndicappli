@@ -252,6 +252,7 @@ const Topbar = props => {
             case 200:
               localStorage.setItem("token", JSON.stringify(response.data.data.token));
               const profile = response.data.data.profile;
+              globalActions.setID(profile.userID);
               globalActions.setFirstName(profile.firstname);
               globalActions.setLastName(profile.lastname);
               globalActions.setAvatarUrl(profile.photo_url);
