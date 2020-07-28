@@ -192,8 +192,8 @@ const CompaniesEdit = (props) => {
   }
 
   const handleLoadFront = (event) => {
-    if (validFileType(event.target.files[0])) {
-      if (event.target.files[0] !== undefined) {
+    if (event.target.files[0] !== undefined) {
+      if (validFileType(event.target.files[0])) {
         if (event.target.files[0].size > 5 * 1048576) {
           ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
@@ -201,9 +201,9 @@ const CompaniesEdit = (props) => {
           setAvatarUrl(URL.createObjectURL(event.target.files[0]));
         }
       }
-    }
-    else {
-      ToastsStore.warning('Image format is not correct.');
+      else {
+        ToastsStore.warning('Image format is not correct.');
+      }
     }
   }
   const handleClickAddManager = () => {
@@ -565,7 +565,7 @@ const CompaniesEdit = (props) => {
   }
   const inputBuildingTextChange = (event) => {
     console.log(event.target.value);
-    if(event.target.value === "delete") {
+    if (event.target.value === "delete") {
       setIsBuildingDisableDelete(false);
     } else {
       setIsBuildingDisableDelete(true);
@@ -573,7 +573,7 @@ const CompaniesEdit = (props) => {
   }
   const inputManagerTextChange = (event) => {
     console.log(event.target.value);
-    if(event.target.value === "delete") {
+    if (event.target.value === "delete") {
       setIsManagerDisableDelete(false);
     } else {
       setIsManagerDisableDelete(true);
@@ -928,7 +928,7 @@ const CompaniesEdit = (props) => {
         onClose={handleCloseAddManager}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        classes={{paper: classes.paper}}
+        classes={{ paper: classes.paper }}
       >
         <Grid item container className={classes.padding} justify="space-between">
           <Grid item container direction="row-reverse"><CloseIcon onClick={handleCloseAddManager} className={classes.close} /></Grid>
@@ -941,7 +941,7 @@ const CompaniesEdit = (props) => {
         onClose={handleCloseAddBuilding}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        classes={{paper: classes.paper}}
+        classes={{ paper: classes.paper }}
       >
         <Grid item container className={classes.padding} >
           <Grid xs={12} item container direction="row-reverse"><CloseIcon onClick={handleCloseAddBuilding} className={classes.close} /></Grid>
@@ -959,13 +959,13 @@ const CompaniesEdit = (props) => {
           Are you sure to delete this building?
         </DialogTitle>
         <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
+          <DialogContentText id="alert-dialog-description">
+            Type <b style={{ color: "red" }}>delete</b> into the text field
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            id="text"            
+            id="text"
             type="text"
             fullWidth
             variant="outlined"
@@ -992,12 +992,12 @@ const CompaniesEdit = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
+            Type <b style={{ color: "red" }}>delete</b> into the text field
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            id="text"            
+            id="text"
             type="text"
             fullWidth
             variant="outlined"

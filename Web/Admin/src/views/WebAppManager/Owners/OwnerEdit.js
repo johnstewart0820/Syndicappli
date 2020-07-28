@@ -150,8 +150,8 @@ const OwnerEdit = (props) => {
   };
 
   const handleLoadFront = (event) => {
-    if (validFileType(event.target.files[0])) {
-      if (event.target.files[0] !== undefined) {
+    if (event.target.files[0] !== undefined) {
+      if (validFileType(event.target.files[0])) {
         if (event.target.files[0].size > 5 * 1048576) {
           ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
@@ -159,14 +159,14 @@ const OwnerEdit = (props) => {
           setAvatarUrl(URL.createObjectURL(event.target.files[0]));
         }
       }
-    }
-    else {
-      ToastsStore.warning('Image format is not correct.');
+      else {
+        ToastsStore.warning('Image format is not correct.');
+      }
     }
   }
   const handleLoadIdcard = (event) => {
-    if (validFileType(event.target.files[0])) {
-      if (event.target.files[0] !== undefined) {
+    if (event.target.files[0] !== undefined) {
+      if (validFileType(event.target.files[0])) {
         if (event.target.files[0].size > 5 * 1048576) {
           ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
@@ -177,9 +177,9 @@ const OwnerEdit = (props) => {
           setState(!state);
         }
       }
-    }
-    else {
-      ToastsStore.warning('Image format is not correct.');
+      else {
+        ToastsStore.warning('Image format is not correct.');
+      }
     }
   }
   const handleClickCloseIdcard = (num) => {
@@ -660,7 +660,7 @@ const OwnerEdit = (props) => {
   }
   const inputTextChange = (event) => {
     console.log(event.target.value);
-    if(event.target.value === "delete") {
+    if (event.target.value === "delete") {
       setIsDisableDelete(false);
     } else {
       setIsDisableDelete(true);
@@ -1097,12 +1097,12 @@ const OwnerEdit = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
+            Type <b style={{ color: "red" }}>delete</b> into the text field
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            id="text"            
+            id="text"
             type="text"
             fullWidth
             variant="outlined"

@@ -93,8 +93,8 @@ const AddManager = (props) => {
         }
     }
     const handleLoadFront = (event) => {
-        if (validFileType(event.target.files[0])) {
-            if (event.target.files[0] !== undefined) {
+        if (event.target.files[0] !== undefined) {
+            if (validFileType(event.target.files[0])) {
                 if (event.target.files[0].size > 5 * 1048576) {
                     ToastsStore.warning('Image size should be low than 5 MB.');
                 }
@@ -103,9 +103,9 @@ const AddManager = (props) => {
                     setAvatarUrl(URL.createObjectURL(event.target.files[0]));
                 }
             }
-        }
-        else {
-            ToastsStore.warning('Image format is not correct.');
+            else {
+                ToastsStore.warning('Image format is not correct.');
+            }
         }
     }
 
@@ -201,7 +201,7 @@ const AddManager = (props) => {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
-                            company.splice(0,company.length)
+                            company.splice(0, company.length)
                             company.push('Tout');
                             data.companylist.map((item) => (
                                 company.push(item.name)
@@ -354,245 +354,245 @@ const AddManager = (props) => {
             );
     }
     return (
-        <Scrollbars style={{height:'100vh'}}>
-        <div className={classes.root}>
-            {
-                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-            }
-            <div className={classes.paper} sm={12}>
-                <Grid container spacing={2} >
-                    <Grid item container justify="center" alignItems="center">
-                        <Grid xs={3} item container><p className={classes.title}>Carbinet</p></Grid>
-                        <Grid xs={9} item container>
+        <Scrollbars style={{ height: '100vh' }}>
+            <div className={classes.root}>
+                {
+                    visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+                }
+                <div className={classes.paper} sm={12}>
+                    <Grid container spacing={2} >
+                        <Grid item container justify="center" alignItems="center">
+                            <Grid xs={3} item container><p className={classes.title}>Carbinet</p></Grid>
+                            <Grid xs={9} item container>
+                                <MySelect
+                                    color="gray"
+                                    data={company}
+                                    onChangeSelect={handleChangeCompanies}
+                                    value={companies}
+                                    width="80%"
+                                />
+                                {errorsCompanies.length > 0 &&
+                                    <span className={classes.error}>{errorsCompanies}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container alignItems="center">
+                            <Grid item xs={3}><p className={classes.title}>Immeubles</p></Grid>
+                            <Grid xs={9} item container alignItems="stretch">
+                                <Multiselect
+                                    selected={buildings1}
+                                    no={'No buildings found'}
+                                    all={suggestions}
+                                    onSelected={handleChangeBuildings}
+                                    width="80%"
+                                />
+                                {errorsBuildings.length > 0 &&
+                                    <span className={classes.error}>{errorsBuildings}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container justify="space-between" alignItems="center">
+                            <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
+                            <Grid xs={6} item container>
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={lastname}
+                                    onChange={handleChangeLastName}
+                                />
+                                {errorsLastname.length > 0 &&
+                                    <span className={classes.error}>{errorsLastname}</span>}
+                            </Grid>
+                            <Grid xs={3} item></Grid>
+                        </Grid>
+                        <Grid item container justify="space-between" alignItems="center">
+                            <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
+                            <Grid xs={6} item container>
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={firstname}
+                                    onChange={handleChangeFirstName}
+                                />
+                                {errorsFirstname.length > 0 &&
+                                    <span className={classes.error}>{errorsFirstname}</span>}
+                            </Grid>
+                            <Grid xs={3} item></Grid>
+                        </Grid>
+                        <Grid item container justify="space-between" alignItems="center">
+                            <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
+                            <Grid xs={6} item container>
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={email}
+                                    onChange={handleChangeEmail}
+                                />
+                                {errorsEmail.length > 0 &&
+                                    <span className={classes.error}>{errorsEmail}</span>}
+                            </Grid>
+                            <Grid xs={3} item></Grid>
+                        </Grid>
+                        <Grid item container justify="space-between" alignItems="center">
+                            <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
+                            <Grid xs={6} item container>
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={phonenumber}
+                                    onChange={handleChangePhoneNumber}
+                                />
+                                {errorsPhonenumber.length > 0 &&
+                                    <span className={classes.error}>{errorsPhonenumber}</span>}
+                            </Grid>
+                            <Grid xs={3} item></Grid>
+                        </Grid>
+                        <Grid xs={12} item container direction="column" >
+                            <p className={classes.title}>Photo</p>
+                            <Grid item container justify="flex-start">
+                                <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
+                                <label htmlFor="img_front">
+                                    {
+                                        avatarurl === '' ?
+                                            <div className={classes.img}>
+                                                <AddCircleOutlineIcon className={classes.plus} />
+                                            </div> :
+                                            <img className={classes.img} src={avatarurl} alt="" />
+                                    }
+                                </label>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <br />
+                    <p className={classes.title}><b>Permissions</b></p>
+                    <br />
+                    <Grid container spacing={2}>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Immeubles</p>
                             <MySelect
                                 color="gray"
-                                data={company}
-                                onChangeSelect={handleChangeCompanies}
-                                value={companies}
-                                width="80%"
+                                data={permissionList}
+                                onChangeSelect={handleChangeBuildingsPermission}
+                                value={buildingsPermission}
                             />
-                            {errorsCompanies.length > 0 &&
-                                <span className={classes.error}>{errorsCompanies}</span>}
                         </Grid>
-                    </Grid>
-                    <Grid item container alignItems="center">
-                        <Grid item xs={3}><p className={classes.title}>Immeubles</p></Grid>
-                        <Grid xs={9} item container alignItems="stretch">
-                            <Multiselect
-                                selected={buildings1}
-                                no={'No buildings found'}
-                                all={suggestions}
-                                onSelected={handleChangeBuildings}
-                                width="80%"
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Copropriétaires</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeOwnersPermission}
+                                value={ownersPermission}
                             />
-                            {errorsBuildings.length > 0 &&
-                                <span className={classes.error}>{errorsBuildings}</span>}
                         </Grid>
-                    </Grid>
-                    <Grid item container justify="space-between" alignItems="center">
-                        <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
-                        <Grid xs={6} item container>
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={lastname}
-                                onChange={handleChangeLastName}
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Messagerie</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeChatPermission}
+                                value={chatPermission}
                             />
-                            {errorsLastname.length > 0 &&
-                                <span className={classes.error}>{errorsLastname}</span>}
                         </Grid>
-                        <Grid xs={3} item></Grid>
-                    </Grid>
-                    <Grid item container justify="space-between" alignItems="center">
-                        <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
-                        <Grid xs={6} item container>
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={firstname}
-                                onChange={handleChangeFirstName}
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Incidents</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeIncidentsPermission}
+                                value={incidentsPermission}
                             />
-                            {errorsFirstname.length > 0 &&
-                                <span className={classes.error}>{errorsFirstname}</span>}
                         </Grid>
-                        <Grid xs={3} item></Grid>
-                    </Grid>
-                    <Grid item container justify="space-between" alignItems="center">
-                        <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
-                        <Grid xs={6} item container>
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={email}
-                                onChange={handleChangeEmail}
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Assemblées</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeAssembliesPermission}
+                                value={assembliesPermission}
                             />
-                            {errorsEmail.length > 0 &&
-                                <span className={classes.error}>{errorsEmail}</span>}
                         </Grid>
-                        <Grid xs={3} item></Grid>
-                    </Grid>
-                    <Grid item container justify="space-between" alignItems="center">
-                        <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
-                        <Grid xs={6} item container>
-                            <TextField
-                                className={classes.text}
-                                variant="outlined"
-                                value={phonenumber}
-                                onChange={handleChangePhoneNumber}
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Événements</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeEventsPermission}
+                                value={eventsPermission}
                             />
-                            {errorsPhonenumber.length > 0 &&
-                                <span className={classes.error}>{errorsPhonenumber}</span>}
                         </Grid>
-                        <Grid xs={3} item></Grid>
-                    </Grid>
-                    <Grid xs={12} item container direction="column" >
-                        <p className={classes.title}>Photo</p>
-                        <Grid item container justify="flex-start">
-                            <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
-                            <label htmlFor="img_front">
-                                {
-                                    avatarurl === '' ?
-                                        <div className={classes.img}>
-                                            <AddCircleOutlineIcon className={classes.plus} />
-                                        </div> :
-                                        <img className={classes.img} src={avatarurl} alt="" />
-                                }
-                            </label>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Équipe</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeTeamPermission}
+                                value={teamPermission}
+                            />
+                        </Grid>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Prestataires</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeProvidersPermission}
+                                value={providersPermission}
+                            />
+                        </Grid>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Annonces</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeAnnouncementsPermission}
+                                value={announcementsPermission}
+                            />
+                        </Grid>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Cabinet</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeCompanyPermission}
+                                value={companyPermission}
+                            />
+                        </Grid>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Modules</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeAddonsPermission}
+                                value={addonsPermission}
+                            />
+                        </Grid>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Factures</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangeInvoicesPermission}
+                                value={invoicesPermission}
+                            />
+                        </Grid>
+                        <Grid xs={6} item container direction="column">
+                            <p className={classes.title}>Moyens de paiement</p>
+                            <MySelect
+                                color="gray"
+                                data={permissionList}
+                                onChangeSelect={handleChangePaymentMethodsPermission}
+                                value={paymentMethodsPermission}
+                            />
                         </Grid>
                     </Grid>
-                </Grid>
-                <br />
-                <p className={classes.title}><b>Permissions</b></p>
-                <br />
-                <Grid container spacing={2}>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Immeubles</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeBuildingsPermission}
-                            value={buildingsPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Copropriétaires</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeOwnersPermission}
-                            value={ownersPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Messagerie</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeChatPermission}
-                            value={chatPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Incidents</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeIncidentsPermission}
-                            value={incidentsPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Assemblées</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeAssembliesPermission}
-                            value={assembliesPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Événements</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeEventsPermission}
-                            value={eventsPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Équipe</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeTeamPermission}
-                            value={teamPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Prestataires</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeProvidersPermission}
-                            value={providersPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Annonces</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeAnnouncementsPermission}
-                            value={announcementsPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Cabinet</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeCompanyPermission}
-                            value={companyPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Modules</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeAddonsPermission}
-                            value={addonsPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Factures</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangeInvoicesPermission}
-                            value={invoicesPermission}
-                        />
-                    </Grid>
-                    <Grid xs={6} item container direction="column">
-                        <p className={classes.title}>Moyens de paiement</p>
-                        <MySelect
-                            color="gray"
-                            data={permissionList}
-                            onChangeSelect={handleChangePaymentMethodsPermission}
-                            value={paymentMethodsPermission}
-                        />
-                    </Grid>
-                </Grid>
-                <div className={classes.footer}>
-                    <Grid container justify="space-between">
-                        <MyButton name={"Creer"} color={"1"} onClick={handleCreate} />
-                        <MyButton name={"Annuler"} bgColor="grey" onClick={handleClose} />
-                    </Grid>
+                    <div className={classes.footer}>
+                        <Grid container justify="space-between">
+                            <MyButton name={"Creer"} color={"1"} onClick={handleCreate} />
+                            <MyButton name={"Annuler"} bgColor="grey" onClick={handleClose} />
+                        </Grid>
+                    </div>
                 </div>
+                <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
             </div>
-            <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
-        </div>
-         </Scrollbars> 
+        </Scrollbars>
     );
 };
 

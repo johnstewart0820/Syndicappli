@@ -298,8 +298,8 @@ const MyAccount = (props) => {
     setConfirmPassword(event.target.value);
   }
   const handleLoadFront = (event) => {
-    if (validFileType(event.target.files[0])) {
-      if (event.target.files[0] !== undefined) {
+    if (event.target.files[0] !== undefined) {
+      if (validFileType(event.target.files[0])) {
         if (event.target.files[0].size > 5 * 1048576) {
           ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
@@ -307,9 +307,9 @@ const MyAccount = (props) => {
           setAvatarUrl(URL.createObjectURL(event.target.files[0]));
         }
       }
-    }
-    else {
-      ToastsStore.warning('Image format is not correct.');
+      else {
+        ToastsStore.warning('Image format is not correct.');
+      }
     }
   }
   useEffect(() => {

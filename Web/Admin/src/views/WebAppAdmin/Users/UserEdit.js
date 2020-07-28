@@ -250,8 +250,8 @@ const UserEdit = (props) => {
     setUsersPermission(val);
   }
   const handleLoadFront = (event) => {
-    if (validFileType(event.target.files[0])) {
-      if (event.target.files[0] !== undefined) {
+    if (event.target.files[0] !== undefined) {
+      if (validFileType(event.target.files[0])) {
         if (event.target.files[0].size > 5 * 1048576) {
           ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
@@ -259,9 +259,9 @@ const UserEdit = (props) => {
           setAvatarUrl(URL.createObjectURL(event.target.files[0]));
         }
       }
-    }
-    else {
-      ToastsStore.warning('Image format is nor correct.');
+      else {
+        ToastsStore.warning('Image format is nor correct.');
+      }
     }
   }
   const updateUser = () => {
@@ -318,7 +318,7 @@ const UserEdit = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success('Updated user successfully!');
-              if(globalState.ID === Number(props.match.params.id)){
+              if (globalState.ID === Number(props.match.params.id)) {
                 localStorage.setItem("role_companies", JSON.stringify(role_permission[companiesPermission]));
                 localStorage.setItem("role_managers", JSON.stringify(role_permission[managersPermission]));
                 localStorage.setItem("role_buildings", JSON.stringify(role_permission[buildingsPermission]));
@@ -393,7 +393,7 @@ const UserEdit = (props) => {
                         disabled={(accessUsers === 'see' ? true : false)}
                       />
                       <label htmlFor="img_front">
-                        <EditOutlinedIcon className={classes.editAvatar} disabled={(accessUsers === 'see' ? true : false)}/>
+                        <EditOutlinedIcon className={classes.editAvatar} disabled={(accessUsers === 'see' ? true : false)} />
                       </label>
                     </div>
                   }

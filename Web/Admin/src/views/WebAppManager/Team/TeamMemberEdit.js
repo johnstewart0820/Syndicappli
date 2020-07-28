@@ -294,8 +294,8 @@ const TeamMemberEdit = (props) => {
     }
   };
   const handleLoadFront = (event) => {
-    if (validFileType(event.target.files[0])) {
-      if (event.target.files[0] !== undefined) {
+    if (event.target.files[0] !== undefined) {
+      if (validFileType(event.target.files[0])) {
         if (event.target.files[0].size > 5 * 1048576) {
           ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
@@ -303,9 +303,9 @@ const TeamMemberEdit = (props) => {
           setAvatarUrl(URL.createObjectURL(event.target.files[0]));
         }
       }
-    }
-    else {
-      ToastsStore.warning('Image format is not correct.');
+      else {
+        ToastsStore.warning('Image format is not correct.');
+      }
     }
   }
   const handleChangeBuildingsPermission = (val) => {
@@ -524,7 +524,7 @@ const TeamMemberEdit = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success('Updated manager successfully!');
-              if(globalState.ID === Number(props.match.params.id)){
+              if (globalState.ID === Number(props.match.params.id)) {
                 localStorage.setItem("role_addons", JSON.stringify('denied'));
                 localStorage.setItem("role_advertisement", JSON.stringify('denied'));
                 localStorage.setItem("role_assemblies", JSON.stringify('denied'));
@@ -558,7 +558,7 @@ const TeamMemberEdit = (props) => {
   }
   const inputTextChange = (event) => {
     console.log(event.target.value);
-    if(event.target.value === "delete") {
+    if (event.target.value === "delete") {
       setIsDisableDelete(false);
     } else {
       setIsDisableDelete(true);
@@ -880,12 +880,12 @@ const TeamMemberEdit = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
+            Type <b style={{ color: "red" }}>delete</b> into the text field
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            id="text"            
+            id="text"
             type="text"
             fullWidth
             variant="outlined"
