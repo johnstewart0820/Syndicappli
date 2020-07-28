@@ -23,6 +23,7 @@ const buildingService = require('../../services/web/admin/building-service')
 const companyService = require('../../services/web/admin/company-service')
 const managerService = require('../../services/web/admin/manager-service')
 const ownerService = require('../../services/web/admin/owner-service')
+const productService = require('../../services/web/admin/product-service')
 const {validate} = require('express-validation')
 var adminValidation = require('../../validator/admin-validation')
 var multer  = require('multer')
@@ -87,6 +88,16 @@ router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
 router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
+
+/**
+ * product api
+ */
+router.post('/productList', authMiddleware.checkToken, getProductList)
+router.post('/product', authMiddleware.checkToken, createProduct)
+router.post('/product/:id', authMiddleware.checkToken, getProduct)
+router.put('/product/:id', authMiddleware.checkToken, updateProduct)
+router.post('/product/:id/delete', authMiddleware.checkToken, deleteProduct)
+
 /**
  * Function that get profile data
  *
@@ -628,6 +639,7 @@ function updateManagerStatus(req, res) {
     })
 }
 
+/////////////////////////////////Owner/////////////////////////////
 /**
  * Function that get the owner list
  *
@@ -748,6 +760,110 @@ function deleteOwner(req, res) {
     let id = req.params.id
     let data = req.body
     ownerService.deleteOwner(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+//////////////////////////product////////////////////////////
+/**
+ * Function that get the product list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getProductList(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    productService.getProductList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+
+/**
+ * Function that create owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createProduct(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    productService.createProduct(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get product
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getProduct(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    productService.getProduct(userId, userdata, data, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update product
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateProduct(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id;
+    productService.updateProduct(userId, userdata, data, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete product
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteProduct(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    productService.deleteProduct(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
