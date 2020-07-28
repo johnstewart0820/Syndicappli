@@ -76,7 +76,7 @@ const CompaniesEdit = (props) => {
 
   const [avatarurl, setAvatarUrl] = useState("");
   const [avatar, setAvatar] = useState(null);
-  const [managerCount, setamountCompany] = useState(0);
+  const [managerCount, setManagerCount] = useState(0);
   const [apartmentCount, setApartmentCount] = useState(0);
 
   const [managerDataList, setManagerDataList] = useState([]);
@@ -332,6 +332,8 @@ const CompaniesEdit = (props) => {
                 setAssemblies360(data.access_360cam === 'true' ? true : false);
                 setAssembliesWebcam(data.access_webcam === 'true' ? true : false);
                 setAssembliesAudio(data.access_audio === 'true' ? true : false);
+                setManagerCount(data.manager_count ? data.manager_count : 0);
+                setApartmentCount(data.apartment_count ? data.apartment_count : 0);
                 if (data.status === 'active') {
                   setStatusActive(true);
                   setStatusInActive(false);
