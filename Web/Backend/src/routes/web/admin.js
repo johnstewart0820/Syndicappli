@@ -44,6 +44,7 @@ router.post('/user', authMiddleware.checkToken, upload.single('logo'), createUse
 router.get('/user/:id', authMiddleware.checkToken, getUser)
 router.put('/user/:id', authMiddleware.checkToken, upload.single('logo'), updateUser)
 router.post('/user/:id/delete', authMiddleware.checkToken, deleteUser)
+router.post('/user/deleteAll', authMiddleware.checkToken, deleteAllUser)
 
 /**
  * company api
@@ -56,7 +57,6 @@ router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), upd
 router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
 router.post('/company/:id/delete', authMiddleware.checkToken, deleteCompany)
-
 
 /**
  * building api
@@ -89,6 +89,7 @@ router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
 router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
+router.post('/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
 
 /**
  * product api
@@ -244,6 +245,24 @@ function deleteUser(req, res) {
     let id = req.params.id
     let data = req.body
     adminService.deleteUser(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete all trashed user
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllUser(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    adminService.deleteAllUser(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -764,6 +783,24 @@ function deleteOwner(req, res) {
     let id = req.params.id
     let data = req.body
     ownerService.deleteOwner(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete all trashed owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllOwner(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    ownerService.deleteAllOwner(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

@@ -32,7 +32,8 @@ var ownerModel = {
     updateOwner: updateOwner,
     delete_apartments: delete_apartments,
     deleteOwner: deleteOwner,
-    updateOwnerStatus: updateOwnerStatus
+    updateOwnerStatus: updateOwnerStatus,
+    deleteAllOwner: deleteAllOwner,
 }
 
 /**
@@ -531,4 +532,73 @@ function deleteOwner(uid, id, data) {
         })
     })
   }
+
+  /**
+ * delete trased all owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteAllOwner(uid) {
+    return new Promise((resolve, reject) => {
+        let query = 'Select * from ' + table.USERS + ' where usertype = "owner" and permission = "trash" and created_by = ?'
+
+        db.query(query, [uid], (error, rows, fields) => {
+            let users = rows
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                let query = 'Delete from ' + table.USERS + ' where usertype = "owner" and permission = "trash" and created_by = ?'
+                db.query(query, [uid], (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                    } else {
+                        for (let i in users) {
+                            let query = 'Delete from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+                            db.query(query, [users[i].userID], (error, rows, fields) => {
+                                if (error) {
+                                    reject({ message: message.INTERNAL_SERVER_ERROR})
+                                } else {
+                                    let query = 'Delete from ' + table.ROLE + ' where userID = ?'
+                                    db.query(query, [users[i].userID], (error, rows, fields) => {
+                                        if (error) {
+                                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                                        } else {
+                                            let query = 'Select * from ' + table.APARTMENTS + ' where userID = ?'
+                                            db.query(query, [user[i].userID], (error, rows, fields) => {
+                                                if (error) {
+                                                    reject({ message: message.INTERNAL_SERVER_ERROR})
+                                                } else {
+                                                    let apartments = rows
+                                                    let query = 'Delete from ' + table.APARTMENTS + ' where userID = ?'
+                                                    db.query(query, [user[i].userID], (error, rows, fields) => {
+                                                        if (error) {
+                                                            reject({ message: message.INTERNAL_SERVER_ERROR})
+                                                        } else {
+                                                            let query = 'Delete from ' + table.VOTE_AMOUNT_OF_PARTS + ' where apartmentID = ?'
+                                                            for (let j in apartments) {
+                                                                db.query(query, [apartments[j].apartmentID], (error, rows, fields) => {
+                                                                    if (error) {
+                                                                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                                                                    }
+                                                                })
+                                                            }
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                        resolve("OK")
+                    }
+                })
+            }
+        })
+    })
+}
+
 module.exports = ownerModel

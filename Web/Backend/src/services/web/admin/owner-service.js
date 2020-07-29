@@ -24,6 +24,7 @@ var ownerService = {
     updateOwner: updateOwner,
     updateOwnerStatus: updateOwnerStatus,
     deleteOwner: deleteOwner,
+    deleteAllOwner: deleteAllOwner,
 }
 
 /**
@@ -193,6 +194,36 @@ function deleteOwner(uid, id, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             ownerModel.deleteOwner(uid, id, data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that delete All trashed owner data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function deleteAllOwner(uid, userdata) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            ownerModel.deleteAllOwner(uid).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
