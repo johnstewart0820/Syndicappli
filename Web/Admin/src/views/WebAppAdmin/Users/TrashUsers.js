@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import AdminService from '../../../services/api.js';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsStore } from 'react-toasts';
@@ -17,7 +16,6 @@ const TrashUsers = (props) => {
   }
   const accessUsers = authService.getAccess('role_users');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
@@ -27,9 +25,6 @@ const TrashUsers = (props) => {
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
 
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
@@ -80,11 +75,6 @@ const TrashUsers = (props) => {
       );
   }
   useEffect(() => {
-    if (accessUsers === 'denied') {
-      setOpenDialog(true);
-    }
-  });
-  useEffect(() => {
     if (accessUsers !== 'denied')
       getTrashUsers();
   }, [page_num, row_count, sort_column, sort_method]);
@@ -132,7 +122,6 @@ const TrashUsers = (props) => {
       <div className={classes.tool}>
       </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog} />
         <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}

@@ -9,7 +9,6 @@ import MyButton from 'components/MyButton';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog.js';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Checkbox } from '@material-ui/core';
 import IdCard from 'components/IdCard';
@@ -45,7 +44,6 @@ const OwnerEdit = (props) => {
     window.location.replace("/login");
   }
   const accessOwners = authService.getAccess('role_owners');
-  const [openDialog, setOpenDialog] = React.useState(false);
   const [state, setState] = React.useState(false);
   const classes = useStyles();
 
@@ -138,10 +136,6 @@ const OwnerEdit = (props) => {
       updateOwner();
     }
   }
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
-
   const handleLoadFront = (event) => {
     if (event.target.files[0] !== undefined) {
       if (validFileType(event.target.files[0])) {
@@ -1059,7 +1053,6 @@ const OwnerEdit = (props) => {
             </Grid>
           </Grid>
           <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-            <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog} />
             <MyButton
               name={"Sauvegarder"}
               color={"1"}

@@ -7,7 +7,6 @@ import MyButton from 'components/MyButton';
 import authService from 'services/authService.js';
 import MyTableCard from 'components/MyTableCard';
 import {  withRouter } from 'react-router-dom';
-import MyDialog from 'components/MyDialog.js';
 import AdminService from 'services/api.js';
 import {makeStyles} from '@material-ui/styles';
 
@@ -121,7 +120,6 @@ const PaymentMethods = (props) => {
   }
   const accessBuildings = authService.getAccess('role_buildings');  
   const classes = useStyles();
-  const [openDialog, setOpenDialog] = React.useState(false);
 
   const [accountHolder, setAccountHolder] = React.useState('');
   const [accountAddress, setAccountAddress] = React.useState('');
@@ -141,9 +139,7 @@ const PaymentMethods = (props) => {
   const handleChangeAccountIban = (event) =>{
     setAccountIban(event.target.value);
   };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
+
  useEffect(() => {
     getDataList();
   }, []);

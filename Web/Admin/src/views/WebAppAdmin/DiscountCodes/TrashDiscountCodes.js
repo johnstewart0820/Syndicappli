@@ -6,7 +6,6 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog';
 import useStyles from './useStyles';
 
 const TrashDiscountCodes = (props) => {

@@ -10,7 +10,6 @@ import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import authService from '../../../services/authService.js';
 import Multiselect from '../../../components/Multiselect.js';
-import MyDialog from '../../../components/MyDialog.js';
 import { EditManagerStyles as useStyles } from './useStyles';
 import AdminService from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
@@ -42,7 +41,6 @@ const ManagerEdit = (props) => {
   }
   const accessManagers = authService.getAccess('role_managers');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
   const permissionList = ['Voir', 'Editer', 'Refusé'];
   const role_permission = ['see', 'edit', 'denied'];
@@ -310,9 +308,6 @@ const ManagerEdit = (props) => {
       updateManager();
     }
   }
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
   const handleChangeLastName = (event) => {
     setLastName(event.target.value);
   }
@@ -903,7 +898,6 @@ const ManagerEdit = (props) => {
             </Grid>
           </Grid>
           <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-            <MyDialog open={openDialog} role={accessManagers} onClose={handleCloseDialog} />
             <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessManagers === 'see' ? true : false)} />
           </Grid>
         </div>

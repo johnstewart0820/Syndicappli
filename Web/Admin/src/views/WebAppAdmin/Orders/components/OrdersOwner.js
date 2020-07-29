@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import OrderTable from './OrderTable';
 import authService from '../../../../services/authService.js';
-import MyDialog from '../../../../components/MyDialog';
 import AdminService from '../../../../services/api.js';
 import { withRouter } from 'react-router-dom';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -27,7 +26,6 @@ const OrdersManager = (props) => {
     window.location.replace("/login");
   }
   const accessOrders = authService.getAccess('role_orders');
-  const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
 
   const [company, setCompany] = useState(0);
@@ -58,18 +56,12 @@ const OrdersManager = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
   const handleAdd = () => {
 
   };
   const handleClickExport = () => {
     if (accessOrders === 'edit') {
       setOpen(true);
-    }
-    if (accessOrders === 'see') {
-      setOpenDialog(true);
     }
   };
   const handleChangeCompany = (value) => {
@@ -146,11 +138,7 @@ const OrdersManager = (props) => {
         }
       );
   }
-  useEffect(() => {
-    if (accessOrders === 'denied') {
-      setOpenDialog(true);
-    }
-  });
+
   useEffect(() => {
     //  getDataList();
     if (accessOrders !== 'denied')
@@ -170,9 +158,7 @@ const OrdersManager = (props) => {
     if (accessOrders === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
-    } else {
-      setOpenDialog(true);
-    }
+    } 
   };
   const handleDelete = () => {
     handleCloseDelete();
@@ -264,7 +250,6 @@ const OrdersManager = (props) => {
       <Grid item style={{ marginTop: 48 }}>
         <MyButton name={"Exporter les factures"} color={"1"} onClick={handleClickExport} />
       </Grid>
-      <MyDialog open={openDialog} role={accessOrders} onClose={handleCloseDialog} />
       <OrderTable
         onChangeSelect={handleChangeSelect}
         onChangePage={handleChangePagination}

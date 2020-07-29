@@ -11,7 +11,6 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import AdminService from '../../../services/api.js';
 import authService from '../../../services/authService.js';
 import Multiselect from '../../../components/Multiselect.js';
-import MyDialog from '../../../components/MyDialog.js';
 import { EditUserStyles as useStyles } from './useStyles';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -73,11 +72,7 @@ const UserEdit = (props) => {
   const [suggestions, setSuggestions] = React.useState([]);
   const [companies, setCompanies] = React.useState([]);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
   useEffect(() => {
-    if (accessUsers === 'denied') {
-      setOpenDialog(true);
-    }
     if (accessUsers !== 'denied') {
       setVisibleIndicator(true);
       AdminService.getCompanyListByUser()
@@ -188,9 +183,7 @@ const UserEdit = (props) => {
       updateUser();
     }
   }
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
+
   const handleChangeLastName = (event) => {
     setLastName(event.target.value);
   }
@@ -586,7 +579,6 @@ const UserEdit = (props) => {
             </Grid>
           </Grid>
           <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-            <MyDialog open={openDialog} role={accessUsers} onClose={handleCloseDialog} />
             <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessUsers === 'see' ? true : false)} />
           </Grid>
         </div>

@@ -7,7 +7,6 @@ import MyButton from 'components/MyButton';
 import authService from '../../../services/authService.js';
 import MySelect from '../../../components/MySelect.js';
 import { withRouter } from 'react-router-dom';
-import MyDialog from '../../../components/MyDialog.js';
 import { EditBuildingStyles as useStyles } from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
@@ -24,7 +23,6 @@ const BuildingsEdit = (props) => {
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
   const [state, setState] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
 
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');
@@ -70,9 +68,6 @@ const BuildingsEdit = (props) => {
   };
   const handleChangeAccountIban = (event) => {
     setAccountIban(event.target.value);
-  };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
   };
   const handleChangeAddClefs = (event) => {
     setAddClefs(event.target.value);
@@ -179,9 +174,6 @@ const BuildingsEdit = (props) => {
   }
 
   useEffect(() => {
-    if (accessBuildings === 'denied') {
-      setOpenDialog(true);
-    }
     if (accessBuildings !== 'denied') {
       setVisibleIndicator(true);
       AdminService.getBuilding(props.match.params.id)
@@ -397,7 +389,6 @@ const BuildingsEdit = (props) => {
               <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessBuildings === 'see' ? true : false)} /></Grid>
               <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessBuildings === 'see' ? true : false)} />  </Grid>
             </Grid>
-            <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog} />
           </Grid>
         </div>
       </Grid>

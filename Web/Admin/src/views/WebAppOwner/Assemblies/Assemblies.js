@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import Grid from '@material-ui/core/Grid';
-import MyDialog from '../../../components/MyDialog';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import { OwnerService as Service } from '../../../services/api.js';
