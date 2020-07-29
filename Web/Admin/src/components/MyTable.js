@@ -384,7 +384,7 @@ export default function ProductTable(props) {
                     className={classes.editItem} 
                     onClick={() => handleClickDelete(i)}
                     disabled={(props.access === 'see' ? true : false)}
-                    style={{visibility:item.ID === 1 ? 'hidden': 'visible'}}
+                    style={{visibility:item.userID === 1 ? 'hidden': 'visible'}}
                   />
                 </TableCell>
               </TableRow>

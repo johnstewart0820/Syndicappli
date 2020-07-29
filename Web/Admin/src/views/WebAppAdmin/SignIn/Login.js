@@ -57,6 +57,7 @@ const Login = (props) => {
       const usertype = authService.getAccess('usertype');
       const token = authService.getToken();
       if (token) {
+        localStorage.setItem("select", JSON.stringify(0));
         switch (usertype) {
           case 'superadmin':
             history.push('/admin/dashboard');
@@ -123,7 +124,7 @@ const Login = (props) => {
                 localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
                 localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
                 localStorage.setItem("role_orders", JSON.stringify('denied'));
-                localStorage.setItem("role_products", JSON.stringify('denied'));
+                localStorage.setItem("role_products", JSON.stringify(profile.role_products));
                 localStorage.setItem("role_discountcodes", JSON.stringify('denied'));
                 localStorage.setItem("role_users", JSON.stringify(profile.role_users));
                 localStorage.setItem("select", JSON.stringify(0));
