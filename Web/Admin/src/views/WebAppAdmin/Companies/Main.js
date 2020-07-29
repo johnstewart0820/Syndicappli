@@ -15,7 +15,9 @@ import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import Companies from './Companies';
 import TrashCompanies from './TrashCompanies';
-
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import AdminService from 'services/api.js';
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
@@ -49,7 +51,7 @@ function a11yProps(index) {
 }
 const Main = (props) => {
     const { history } = props;
-    const token = authService.getToken();    
+    const token = authService.getToken();
     if (!token) {
         window.location.replace("/login");
     }
@@ -59,6 +61,8 @@ const Main = (props) => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const [refresh, setRefresh] = React.useState(false);
+    const [openDelete, setOpenDelete] = React.useState(false);
+    const [visibleIndicator, setVisibleIndicator] = React.useState(false);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -74,9 +78,49 @@ const Main = (props) => {
             setOpen(true);
         }
     };
-
+    const handleClickEmptyTrashCompany = () => {
+        setOpenDelete(true);
+    };
+    const handleCloseDelete = () => {
+        setOpenDelete(false);
+    };
+    const handleDelete = () => {
+        handleCloseDelete();
+        setVisibleIndicator(true);
+        let data = {
+            'status': 'trash'
+        }
+        AdminService.emptyTrashCompany(data)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
+                        case 200:
+                            ToastsStore.success("Deleted Successfully!");
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            setRefresh(!refresh);
+                            break;
+                        case 401:
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
+                        default:
+                            ToastsStore.error(response.data.message);
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
     return (
         <div className={classes.root}>
+            {
+                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+            }
             <div className={classes.title}>
                 <Grid item container justify="space-around" alignItems="center">
                     <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -88,22 +132,18 @@ const Main = (props) => {
                     </Grid>
                     <Grid item xs={12} sm={6} container justify="flex-end" >
                         <Grid>
-                            {
-                                value === 0 ?
-                                    <MyButton 
-                                        name={"Nouveau Cabinet"} 
-                                        color={"1"} 
-                                        onClick={handleClickAdd} 
-                                        style={{ visibility: accessCompanies === 'edit' ? 'visible' : 'hidden' }}
-                                    />
-                                    : <MyButton name={"Nouveau Cabinet"} style={{ visibility: 'hidden' }} />
-                            }
+                            <MyButton
+                                name={value === 0 ? "Nouveau Cabinet" : "Poubelle Vide"}
+                                color={"1"}
+                                onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashCompany}
+                                style={{ visibility: accessCompanies === 'edit' ? 'visible' : 'hidden' }}
+                            />
                             <Dialog
                                 open={open}
                                 onClose={handleClose}
                                 aria-labelledby="alert-dialog-title"
                                 aria-describedby="alert-dialog-description"
-                                classes={{paper: classes.paper}}
+                                classes={{ paper: classes.paper }}
                             >
                                 <Grid item container className={classes.padding} justify="space-between">
                                     <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
@@ -119,12 +159,12 @@ const Main = (props) => {
                 <Tabs value={value} onChange={handleChange}
                     TabIndicatorProps={{
                         style: {
-                            width:0
+                            width: 0
                         }
                     }}
                 >
-                    <Tab xs={12} sm={4} label="Cabinets" {...a11yProps(0)} className={classes.tabTitle} disableRipple/>
-                    <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} disableRipple/>
+                    <Tab xs={12} sm={4} label="Cabinets" {...a11yProps(0)} className={classes.tabTitle} disableRipple />
+                    <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} disableRipple />
                 </Tabs>
             </div>
             <div className={classes.body}>
@@ -132,9 +172,15 @@ const Main = (props) => {
                     <Companies refresh={refresh} />
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <TrashCompanies />
+                    <TrashCompanies refresh={refresh} />
                 </TabPanel>
             </div>
+            <DeleteConfirmDialog
+                openDelete={openDelete}
+                handleCloseDelete={handleCloseDelete}
+                handleDelete={handleDelete}
+                account={'company'}
+            />
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>
     );

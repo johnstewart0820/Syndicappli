@@ -55,7 +55,7 @@ const TrashTeamMembers = (props) => {
   useEffect(() => {
     if (accessTeam !== 'denied')
       getTrashManagers();
-  }, [page_num, row_count, sort_column, sort_method, buildingID]);
+  }, [page_num, row_count, sort_column, sort_method, buildingID, props.refresh]);
   useEffect(() => {
     getTrashManagers()
   }, [buildingList])

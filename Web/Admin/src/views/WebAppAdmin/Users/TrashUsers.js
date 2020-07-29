@@ -77,7 +77,7 @@ const TrashUsers = (props) => {
   useEffect(() => {
     if (accessUsers !== 'denied')
       getTrashUsers();
-  }, [page_num, row_count, sort_column, sort_method]);
+  }, [page_num, row_count, sort_column, sort_method,props.refresh]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },

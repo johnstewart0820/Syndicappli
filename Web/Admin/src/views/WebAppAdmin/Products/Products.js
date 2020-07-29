@@ -17,6 +17,10 @@ import ProductsOwner from './components/ProductsOwner';
 import useStyles from './useStyles';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import TrashProducts from './TrashProducts';
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import AdminService from 'services/api.js';
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -63,6 +67,8 @@ const Products = (props) => {
   const accessProducts = authService.getAccess('role_products');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const handleClose = () => {
     setOpen(false);
   };
@@ -75,9 +81,49 @@ const Products = (props) => {
       setOpen(true);
     }
   };
-
+  const handleClickEmptyTrashProduct = () => {
+    setOpenDelete(true);
+  };
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleDelete = () => {
+    handleCloseDelete();
+    setVisibleIndicator(true);
+    let data = {
+      'status': 'trash'
+    }
+    AdminService.emptyTrashProduct(data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              ToastsStore.success("Deleted Successfully!");
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              setRefresh(!refresh);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   return (
     <div className={classes.root}>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -89,16 +135,12 @@ const Products = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
-              {
-                value !== 3 ?
-                  <MyButton
-                    name={"Nouveau Produits"}
-                    color={"1"}
-                    onClick={handleClickAdd}
-                    style={{ visibility: accessProducts === 'edit' ? 'visible' : 'hidden' }}
-                  />
-                  : <MyButton name={"Nouveau Produits"} style={{ visibility: 'hidden' }} />
-              }
+              <MyButton
+                name={value !== 3 ? "Nouveau Produits" : "Poubelle Vide"}
+                color={"1"}
+                onClick={value !== 3 ? handleClickAdd : handleClickEmptyTrashProduct}
+                style={{ visibility: accessProducts === 'edit' ? 'visible' : 'hidden' }}
+              />
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -144,6 +186,12 @@ const Products = (props) => {
           <TrashProducts refresh={refresh} />
         </TabPanel>
       </div>
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'product'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );

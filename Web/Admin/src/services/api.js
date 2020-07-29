@@ -56,7 +56,9 @@ class AdminService {
   deleteUser(id, status) {
     return axios.post(API_URL + 'web/admin/user/' + id + '/delete', status, { headers: authHeader() });
   }
-
+  emptyTrashUser(status) {
+    return axios.post(API_URL + 'web/admin/user/deleteAll', status, { headers: authHeader() });
+  }
   //Company Part
   getCompanyList(data) {
     return axios.post(API_URL + 'web/admin/companyList',
@@ -78,7 +80,9 @@ class AdminService {
   deleteCompany(id, status) {
     return axios.post(API_URL + 'web/admin/company/' + id + '/delete', status, { headers: authHeader() });
   }
-
+  emptyTrashCompany(status) {
+    return axios.post(API_URL + 'web/admin/company/deleteAll', status, { headers: authHeader() });
+  }
   //Building Part
   getBuildingList(data) {
     return axios.post(API_URL + 'web/admin/buildingList',
@@ -100,7 +104,9 @@ class AdminService {
   deleteBuilding(id, status) {
     return axios.post(API_URL + 'web/admin/building/' + id + '/delete', status, { headers: authHeader() });
   }
-
+  emptyTrashBuilding(status) {
+    return axios.post(API_URL + 'web/admin/building/deleteAll', status, { headers: authHeader() });
+  }
   //Owner Part
   getOwnerList(data) {
     return axios.post(API_URL + 'web/admin/ownerList',
@@ -126,7 +132,9 @@ class AdminService {
   deleteOwner(id, status) {
     return axios.post(API_URL + 'web/admin/owner/' + id + '/delete', status, { headers: authHeader() });
   }
-
+  emptyTrashOwner(status) {
+    return axios.post(API_URL + 'web/admin/owner/deleteAll', status, { headers: authHeader() });
+  }
   //Manager Part
   getManagerList(data) {
     return axios.post(API_URL + 'web/admin/managerList',
@@ -152,51 +160,57 @@ class AdminService {
   deleteManager(id, status) {
     return axios.post(API_URL + 'web/admin/manager/' + id + '/delete', status, { headers: authHeader() });
   }
-
-    //DiscountCode Part
-    getDiscountCodesList(data) {
-      return axios.post(API_URL + 'web/admin/buildingList',
-        data,
-        { headers: authHeader() });
-    }
-    createDiscountCode(data) {
-      return axios.post(API_URL + 'web/admin/building',
-        data,
-        { headers: authHeader() });
-    }
-    updateDiscountCode(id, data) {
-      return axios.put(API_URL + 'web/admin/building/' + id, data,
-        { headers: authHeader() });
-    }
-    getDiscountCode(id) {
-      return axios.get(API_URL + 'web/admin/building/' + id, { headers: authHeader() });
-    }
-    deleteDiscountCode(id, status) {
-      return axios.post(API_URL + 'web/admin/building/' + id + '/delete', status, { headers: authHeader() });
-    }
-
-    //Product Part
-    getProductList(data) {
-      return axios.post(API_URL + 'web/admin/productList',
-        data,
-        { headers: authHeader() });
-    }
-    createProduct(data) {
-      return axios.post(API_URL + 'web/admin/product',
-        data,
-        { headers: authHeader() });
-    }
-    updateProduct(id, data) {
-      return axios.put(API_URL + 'web/admin/product/' + id, data,
-        { headers: authHeader() });
-    }
-    getProduct(id) {
-      return axios.get(API_URL + 'web/admin/product/' + id, { headers: authHeader() });
-    }
-    deleteProduct(id, status) {
-      return axios.post(API_URL + 'web/admin/product/' + id + '/delete', status, { headers: authHeader() });
-    }
-
+  emptyTrashManager(status) {
+    return axios.post(API_URL + 'web/admin/manager/deleteAll', status, { headers: authHeader() });
+  }
+  //DiscountCode Part
+  getDiscountCodesList(data) {
+    return axios.post(API_URL + 'web/admin/buildingList',
+      data,
+      { headers: authHeader() });
+  }
+  createDiscountCode(data) {
+    return axios.post(API_URL + 'web/admin/building',
+      data,
+      { headers: authHeader() });
+  }
+  updateDiscountCode(id, data) {
+    return axios.put(API_URL + 'web/admin/building/' + id, data,
+      { headers: authHeader() });
+  }
+  getDiscountCode(id) {
+    return axios.get(API_URL + 'web/admin/building/' + id, { headers: authHeader() });
+  }
+  deleteDiscountCode(id, status) {
+    return axios.post(API_URL + 'web/admin/building/' + id + '/delete', status, { headers: authHeader() });
+  }
+  emptyTrashCode(status) {
+    return axios.post(API_URL + 'web/admin/building/deleteAll', status, { headers: authHeader() });
+  }
+  //Product Part
+  getProductList(data) {
+    return axios.post(API_URL + 'web/admin/productList',
+      data,
+      { headers: authHeader() });
+  }
+  createProduct(data) {
+    return axios.post(API_URL + 'web/admin/product',
+      data,
+      { headers: authHeader() });
+  }
+  updateProduct(id, data) {
+    return axios.put(API_URL + 'web/admin/product/' + id, data,
+      { headers: authHeader() });
+  }
+  getProduct(id) {
+    return axios.get(API_URL + 'web/admin/product/' + id, { headers: authHeader() });
+  }
+  deleteProduct(id, status) {
+    return axios.post(API_URL + 'web/admin/product/' + id + '/delete', status, { headers: authHeader() });
+  }
+  emptyTrashProduct(status) {
+    return axios.post(API_URL + 'web/admin/product/deleteAll', status, { headers: authHeader() });
+  }
   getBuildingListByCompany(data) {
     return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
   }
@@ -231,7 +245,7 @@ export class OwnerService {
   deleteOwner(id) {
     return axios.delete(API_URL + 'web/owner/subAccount/' + id, { headers: authHeader() });
   }
-  reinviteOwner(id,data){
+  reinviteOwner(id, data) {
     return axios.post(API_URL + 'web/owner/subAccount/' + id + '/reinvite', data, { headers: authHeader() });
   }
   acceptInvitation(data) {
@@ -279,6 +293,9 @@ export class ManagerService {
   deleteBuilding(id, status) {
     return axios.post(API_URL + 'web/manager/building/' + id + '/delete', status, { headers: authHeader() });
   }
+  emptyTrashBuilding(status) {
+    return axios.post(API_URL + 'web/manager/building/deleteAll', status, { headers: authHeader() });
+  }
   //Owner Part
   getOwnerList(data) {
     return axios.post(API_URL + 'web/manager/ownerList',
@@ -304,6 +321,9 @@ export class ManagerService {
   deleteOwner(id, status) {
     return axios.post(API_URL + 'web/manager/owner/' + id + '/delete', status, { headers: authHeader() });
   }
+  emptyTrashOwner(status) {
+    return axios.post(API_URL + 'web/manager/owner/deleteAll', status, { headers: authHeader() });
+  }
   //Team Part
   getTeamMemberList(data) {
     return axios.post(API_URL + 'web/manager/teamList',
@@ -328,6 +348,9 @@ export class ManagerService {
   }
   deleteTeamMember(id, status) {
     return axios.post(API_URL + 'web/manager/team/' + id + '/delete', status, { headers: authHeader() });
+  }
+  emptyTrashTeamMember(status) {
+    return axios.post(API_URL + 'web/manager/team/deleteAll', status, { headers: authHeader() });
   }
 
   getCompanyListByUser() {
