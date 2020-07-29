@@ -75,11 +75,11 @@ function getProfile(uid) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function updateProfile(uid, data, files) {
+function updateProfile(uid, data, file) {
     return new Promise(async function(resolve, reject) {
-        var file_name = ""
-        if(files.avatar){
-            uploadS3 = await s3Helper.uploadS3(files, s3buckets.AVATAR)
+        let file_name = ""
+        if (file)  {
+            uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
             file_name = uploadS3.Location
         }
 

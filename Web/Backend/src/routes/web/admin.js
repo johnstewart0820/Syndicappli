@@ -34,7 +34,7 @@ var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileS
  * profile api
  */
 router.get('/profile', authMiddleware.checkToken, getProfile)
-router.post('/profile', authMiddleware.checkToken, updateProfile)
+router.post('/profile', authMiddleware.checkToken, upload.single('avatar'), updateProfile)
 
 /**
  * user api
@@ -138,21 +138,14 @@ function getProfile(req, res) {
 
 
 function updateProfile(req, res) {
-    var form = new formidable.IncomingForm();
-    let file_name = "";
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    form.on('fileBegin', function (name, file){
-        file_name = Date.now() + '.jpg';
-        file.path = '/tmp/' + file_name;
-    });
-
-    form.parse(req, function (err, fields, files) {
-        adminService.updateProfile(userId, fields, files, userdata).then((result)=>{
-            res.json(result)
-        }).catch((err) => {
-            res.json(err)
-        });
+    let data = req.body
+    let file = req.file
+    adminService.updateProfile(userId, data, file, userdata).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
     });
 }
 
