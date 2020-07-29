@@ -15,13 +15,7 @@ import { EditManagerStyles as useStyles } from './useStyles';
 import AdminService from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -75,7 +69,6 @@ const ManagerEdit = (props) => {
   const [invoicesPermission, setInvoicesPermission] = React.useState(0);
   const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
   const [apartNumber, setApartNumber] = React.useState('');
-  const [isDisableDelete, setIsDisableDelete] = React.useState(true);
 
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
@@ -107,7 +100,6 @@ const ManagerEdit = (props) => {
             case 200:
               const data = response.data.data;
               company.splice(0, company.length)
-              // company.push('Tout')
               data.companylist.map((item) => (
                 company.push(item.name)
               )
@@ -228,16 +220,11 @@ const ManagerEdit = (props) => {
         }
       );
   }
-  // useEffect(() => {
-  //   setBuildingList(buildingList);
 
-
-  // }, [buildingList])
   useEffect(() => {
     getBuildings()
   }, [companyID]);
   useEffect(() => {
-    // getManager()
     AdminService.getManager(props.match.params.id)
       .then(
         response => {
@@ -613,14 +600,7 @@ const ManagerEdit = (props) => {
         }
       );
   }
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if (event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
-  }
+
   return (
     <div className={classes.root}>
       {
@@ -928,38 +908,12 @@ const ManagerEdit = (props) => {
           </Grid>
         </div>
       </Grid>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this manager?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Type <b style={{ color: "red" }}>delete</b> into the text field
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+                openDelete={openDelete}
+                handleCloseDelete={handleCloseDelete}
+                handleDelete={handleDelete}
+                account={'manager'}
+            />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );

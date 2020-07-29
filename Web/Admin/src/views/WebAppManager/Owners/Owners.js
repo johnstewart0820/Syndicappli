@@ -4,23 +4,16 @@ import authService from '../../../services/authService.js';
 import SelectTable from '../../../components/SelectTable';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {ManagerService as Service} from '../../../services/api.js';
+import { ManagerService as Service } from '../../../services/api.js';
 import MySelect from '../../../components/MySelect';
 import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import useStyles from './useStyles';
-import TextField from '@material-ui/core/TextField';
-
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 const ManagerService = new Service();
 const Owners = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -31,12 +24,10 @@ const Owners = (props) => {
   const [company, setCompany] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  const [building,setBuilding] = useState([]);
+  const [building, setBuilding] = useState([]);
   const [buildings, setBuildings] = useState('');
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
-
-  const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
 
   const [deleteId, setDeleteId] = useState(-1);
@@ -51,7 +42,6 @@ const Owners = (props) => {
   const selectList = [20, 50, 100, 200, -1];
   const roleList = ['Tout', 'Copropriétaire', 'Sous-compte', 'member of the council'];
   const owner_role = ['all', 'owner', 'subaccount', 'member'];
-  const [isDisableDelete, setIsDisableDelete] = useState(true);
 
   const handleChangeBuildings = (val) => {
     setBuildings(val);
@@ -60,10 +50,6 @@ const Owners = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
-
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
@@ -79,11 +65,7 @@ const Owners = (props) => {
     console.log(roleList[role])
   }
   useEffect(() => {
-    if (accessOwners === 'denied') {
-      setOpenDialog(true);
-    } else {
-      getCompanies()
-    }
+    getCompanies()
   }, [accessOwners]);
   useEffect(() => {
     if (accessOwners !== 'denied') {
@@ -94,10 +76,10 @@ const Owners = (props) => {
     if (accessOwners !== 'denied') {
       getOwners();
     }
-  }, [page_num, row_count, sort_column, sort_method, buildingID, role,props.refresh]);
-  useEffect(()=>{
+  }, [page_num, row_count, sort_column, sort_method, buildingID, role, props.refresh]);
+  useEffect(() => {
     getOwners();
-  },[buildingList])
+  }, [buildingList])
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -112,16 +94,16 @@ const Owners = (props) => {
   const handleClickEdit = (id, buildingid) => {
     history.push('/manager/owners/edit?id=' + id + '&&buildingID=' + buildingid);
   };
-  const handleClickDelete = (id,buildingID) => {
-      setOpenDelete(true);
-      setDeleteId(id);
+  const handleClickDelete = (id, buildingID) => {
+    setOpenDelete(true);
+    setDeleteId(id);
   };
-  const handleClickAllSelect = ()=>{
+  const handleClickAllSelect = () => {
   }
-  const handleClickImport = ()=>{
+  const handleClickImport = () => {
     // setPageNum();
   }
-  const handleClickExport = ()=>{
+  const handleClickExport = () => {
     // setPageNum();
   }
   const handleDelete = () => {
@@ -131,11 +113,11 @@ const Owners = (props) => {
     let data = {
       'status': 'trash'
     }
-    ManagerService.deleteOwner(deleteId,data)
+    ManagerService.deleteOwner(deleteId, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -164,7 +146,7 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -197,12 +179,12 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
-              building.splice(0,building.length);
+              building.splice(0, building.length);
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-                building.push('Tout');
+              building.push('Tout');
               data.buildinglist.map((item) => (
                 building.push(item.name)
               )
@@ -236,7 +218,7 @@ const Owners = (props) => {
       'sort_method': sort_method,
       'role': owner_role[role],
       'buildingID': buildingID,
-      'companyID' : companyID,
+      'companyID': companyID,
       'status': 'active'
     }
     setVisibleIndicator(true);
@@ -244,7 +226,7 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -270,15 +252,6 @@ const Owners = (props) => {
       );
   }
 
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if(event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
-  }
-  
   return (
     <>
       {
@@ -317,7 +290,7 @@ const Owners = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-      <SelectTable
+        <SelectTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -334,38 +307,12 @@ const Owners = (props) => {
           type="owner"
         />
       </div>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this owner?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"            
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'owner'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
 
     </>

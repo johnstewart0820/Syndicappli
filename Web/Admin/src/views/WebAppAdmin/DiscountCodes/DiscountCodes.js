@@ -3,20 +3,10 @@ import { withRouter } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTable from '../../../components/MyTable';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import AddDiscountCode from './AddDiscountCode';
-import CloseIcon from '@material-ui/icons/Close';
 import AdminService from '../../../services/api.js';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog';
 import useStyles from './useStyles';
-
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 const DiscountCodes = (props) => {
   const { history } = props;
 
@@ -26,12 +16,10 @@ const DiscountCodes = (props) => {
   }
   const accessDiscountCodes = authService.getAccess('role_discountcodes');
 
-  const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
@@ -39,23 +27,8 @@ const DiscountCodes = (props) => {
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
-  const [isDisableDelete, setIsDisableDelete] = useState(true);
   const handleCloseDelete = () => {
     setOpenDelete(false);
-  };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
-  const handleAdd = () => {
-
-  };
-  const handleClickAdd = () => {
-    if (accessDiscountCodes === 'edit') {
-      setOpen(true);
-    }
-    if (accessDiscountCodes === 'see') {
-      setOpenDialog(true);
-    }
   };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
@@ -107,11 +80,6 @@ const DiscountCodes = (props) => {
       );
   }
   useEffect(() => {
-    if (accessDiscountCodes === 'denied') {
-      setOpenDialog(true);
-    }
-  });
-  useEffect(() => {
     if (accessDiscountCodes !== 'denied')
       getDatas();
   }, [page_num, row_count, sort_column, sort_method, props.refresh]);
@@ -134,8 +102,6 @@ const DiscountCodes = (props) => {
     if (accessDiscountCodes === 'edit') {
       setOpenDelete(true);
       setDeleteId(id);
-    } else {
-      setOpenDialog(true);
     }
   };
   const handleDelete = () => {
@@ -171,14 +137,7 @@ const DiscountCodes = (props) => {
         }
       );
   }
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if (event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
-  }
+
   return (
     <>
       {
@@ -187,7 +146,6 @@ const DiscountCodes = (props) => {
       <div className={classes.tool}>
       </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessDiscountCodes} onClose={handleCloseDialog} />
         <MyTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
@@ -202,38 +160,12 @@ const DiscountCodes = (props) => {
           access={accessDiscountCodes}
         />
       </div>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this building?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Type <b style={{ color: "red" }}>delete</b> into the text field
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+                openDelete={openDelete}
+                handleCloseDelete={handleCloseDelete}
+                handleDelete={handleDelete}
+                account={'code'}
+            />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </>
   );

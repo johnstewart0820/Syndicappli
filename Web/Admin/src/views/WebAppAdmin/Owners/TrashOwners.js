@@ -6,19 +6,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import AdminService from '../../../services/api.js';
 import MySelect from '../../../components/MySelect';
 import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-
 import useStyles from './useStyles';
 import TrashTable from 'components/TrashTable.js';
 const Owners = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -31,15 +24,11 @@ const Owners = (props) => {
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  const [building,setBuilding] = useState(['']);
+  const [building, setBuilding] = useState(['']);
   const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [openDelete, setOpenDelete] = React.useState(false);
-
-  const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
@@ -60,13 +49,6 @@ const Owners = (props) => {
     setBuildings(val);
 
   };
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
-
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
@@ -79,14 +61,9 @@ const Owners = (props) => {
   }
   const handleChangeRoles = (value) => {
     setRole(value);
-    console.log(roleList[role])
   }
   useEffect(() => {
-    if (accessOwners === 'denied') {
-      setOpenDialog(true);
-    } else {
-      getCompanies()
-    }
+    getCompanies()
   }, [accessOwners]);
   useEffect(() => {
     if (accessOwners !== 'denied') {
@@ -98,9 +75,9 @@ const Owners = (props) => {
       getTrashOwners();
     }
   }, [page_num, row_count, sort_column, sort_method, buildingID, role, props.refresh]);
-  useEffect(()=>{
+  useEffect(() => {
     getTrashOwners();
-  },[buildingList])
+  }, [buildingList])
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
@@ -112,15 +89,15 @@ const Owners = (props) => {
   const columns = [];
   for (let i = 0; i < 6; i++)
     columns[i] = 'asc';
-    const handleClickRestore = (id,buildingID) => {
-        let data={
-            'status': 'active'
-        }
-      AdminService.deleteOwner(id,data)
+  const handleClickRestore = (id, buildingID) => {
+    let data = {
+      'status': 'active'
+    }
+    AdminService.deleteOwner(id, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -141,30 +118,6 @@ const Owners = (props) => {
           setVisibleIndicator(false);
         }
       );
-    }
-  const handleDelete = () => {
-    handleCloseDelete();
-    setDeleteId(-1);
-    setVisibleIndicator(true);
-    AdminService.deleteUser(deleteId)
-      .then(
-        response => {
-          console.log(response.data);
-          setVisibleIndicator(false);
-          if (response.data.code !== 200) {
-            console.log('error');
-          } else {
-            console.log('success');
-            alert('Deleted successful');
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-          }
-        },
-        error => {
-          console.log('fail');
-          setVisibleIndicator(false);
-        }
-      );
   }
 
   const getCompanies = () => {
@@ -173,17 +126,17 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                company.splice(0,company.length)
-                company.push('Tout');
-                data.companylist.map((item) => (
-                  company.push(item.name)
-                )
-                );
-                setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              company.splice(0, company.length)
+              company.push('Tout');
+              data.companylist.map((item) => (
+                company.push(item.name)
+              )
+              );
+              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
               break;
             case 401:
               authService.logout();
@@ -209,12 +162,12 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
-              building.splice(0,building.length);
+              building.splice(0, building.length);
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-                building.push('Tout');
+              building.push('Tout');
               data.buildinglist.map((item) => (
                 building.push(item.name)
               )
@@ -256,15 +209,15 @@ const Owners = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                if (!data.totalpage)
-                  setTotalPage(1);
-                else
-                  setTotalPage(data.totalpage);
-                setDataList(data.ownerlist);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.ownerlist);
               break;
             case 401:
               authService.logout();
@@ -332,7 +285,6 @@ const Owners = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-
         <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
@@ -347,30 +299,6 @@ const Owners = (props) => {
           access={accessOwners}
         />
       </div>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Delete
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
 
     </>

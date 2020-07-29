@@ -41,6 +41,7 @@ import SMSAuth from 'views/WebAppAdmin/SMSAuth';
 import BuildingsEdit from 'views/WebAppAdmin/Buildings/BuildingsEdit';
 import ProductsEdit from 'views/WebAppAdmin/Products/ProductsEdit';
 import OwnerEdit from 'views/WebAppAdmin/Owners/OwnerEdit';
+import OrderEdit from 'views/WebAppAdmin/Orders/OrderEdit';
 import AdminHelp from 'views/WebAppAdmin/Help';
 import DiscountCodesEdit from 'views/WebAppAdmin/DiscountCodes/DiscountCodesEdit';
 
@@ -195,6 +196,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/admin/orders"
+      />
+      <RouteWithLayout
+        component={OrderEdit}
+        exact
+        layout={MainLayout}
+        path="/admin/orders/edit/:id"
       />
       <RouteWithLayout
         component={OwnersView}

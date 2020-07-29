@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import MyTable from '../../../components/MyTable';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 
 const Companies = (props) => {
   const { history } = props;
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -31,7 +25,6 @@ const Companies = (props) => {
   const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
-  const [isDisableDelete, setIsDisableDelete] = useState(true);
   const selectList = [20, 50, 100, 200, -1];
   const cellList = [
     { key: 'name', field: 'Nom' },
@@ -79,14 +72,14 @@ const Companies = (props) => {
     handleCloseDelete();
     setDeleteId(-1);
     setVisibleIndicator(true);
-    let data={
-      'status':'trash'
+    let data = {
+      'status': 'trash'
     }
-    AdminService.deleteCompany(deleteId,data)
+    AdminService.deleteCompany(deleteId, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -122,7 +115,7 @@ const Companies = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               console.log('success');
               const data = response.data.data;
@@ -148,16 +141,6 @@ const Companies = (props) => {
         }
       );
   }
-
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if(event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
-  }
-
   return (
     <div>
       {
@@ -182,38 +165,12 @@ const Companies = (props) => {
           access={accessCompanies}
         />
       </div>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this company?
-        </DialogTitle>
-        <DialogContent>        
-          <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"            
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'company'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );

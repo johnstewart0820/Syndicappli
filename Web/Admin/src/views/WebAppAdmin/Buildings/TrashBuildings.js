@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import MyDialog from '../../../components/MyDialog';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
 import AdminService from '../../../services/api.js';
 import MySelect from '../../../components/MySelect';
 import useStyles from './useStyles';
@@ -19,17 +11,13 @@ import TrashTable from 'components/TrashTable';
 
 const TrashBuildings = (props) => {
   const { history } = props;
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
   const accessBuildings = authService.getAccess('role_buildings');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [openDelete, setOpenDelete] = React.useState(false);
-  const [deleteId, setDeleteId] = useState(-1);
   const [footerItems, setFooterItems] = useState([]);
   let company = [''];
   const [companies, setCompanies] = useState(0);
@@ -52,15 +40,15 @@ const TrashBuildings = (props) => {
   for (let i = 0; i < 3; i++)
     columns[i] = 'asc';
 
-    const handleClickRestore = (id) => {
-        let data={
-            'status': 'active'
-        }
-      AdminService.deleteBuilding(id,data)
+  const handleClickRestore = (id) => {
+    let data = {
+      'status': 'active'
+    }
+    AdminService.deleteBuilding(id, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -81,7 +69,7 @@ const TrashBuildings = (props) => {
           setVisibleIndicator(false);
         }
       );
-    }
+  }
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
@@ -96,29 +84,23 @@ const TrashBuildings = (props) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
   const getCompanies = () => {
     setVisibleIndicator(true);
     AdminService.getCompanyListByUser()
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                company.splice(0,company.length)
-                company.push('Tout');
-                data.companylist.map((item) => (
-                  company.push(item.name)
-                )
-                );
-                setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              company.splice(0, company.length)
+              company.push('Tout');
+              data.companylist.map((item) => (
+                company.push(item.name)
+              )
+              );
+              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
               break;
             case 401:
               authService.logout();
@@ -150,19 +132,19 @@ const TrashBuildings = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                if (!data.totalpage)
-                  setTotalPage(1);
-                else
-                  setTotalPage(data.totalpage);
-                setDataList(data.buildinglist);
-                let amount = 0;
-    
-                const items = ['Total', data.totalcount, amount];
-                setFooterItems(items);
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.buildinglist);
+              let amount = 0;
+
+              const items = ['Total', data.totalcount, amount];
+              setFooterItems(items);
               break;
             case 401:
               authService.logout();
@@ -181,50 +163,12 @@ const TrashBuildings = (props) => {
   }
 
   useEffect(() => {
-    if (accessBuildings === 'denied') {
-      setOpenDialog(true);
-    } else {
-      getCompanies();
-    }
+    getCompanies();
   }, [accessBuildings]);
   useEffect(() => {
-    if (accessBuildings !== 'denied')
-      getTrashBuildings();
-    console.log(companyID)
+    getTrashBuildings();
   }, [page_num, row_count, sort_column, sort_method, companyID, props.refresh]);
 
-
-
-  const handleDelete = () => {
-    handleCloseDelete();
-    setDeleteId(-1);
-    setVisibleIndicator(true);
-    AdminService.deleteUser(deleteId)
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch(response.data.code){
-            case 200:
-                console.log('success');
-                alert('Deleted successful');
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          console.log('fail');
-          setVisibleIndicator(false);
-        }
-      );
-  }
   return (
     <>
       {
@@ -250,7 +194,6 @@ const TrashBuildings = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessBuildings} onClose={handleCloseDialog} />
         <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
@@ -266,30 +209,6 @@ const TrashBuildings = (props) => {
           access={accessBuildings}
         />
       </div>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Delete
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </>
   );

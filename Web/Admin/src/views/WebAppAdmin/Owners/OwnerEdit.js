@@ -9,7 +9,6 @@ import MyButton from 'components/MyButton';
 import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog.js';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Checkbox } from '@material-ui/core';
 import IdCard from 'components/IdCard';
@@ -17,13 +16,8 @@ import { EditOwnerStyles as useStyles } from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import AdminService from '../../../services/api.js';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -49,7 +43,6 @@ const OwnerEdit = (props) => {
     window.location.replace("/login");
   }
   const accessOwners = authService.getAccess('role_owners');
-  const [openDialog, setOpenDialog] = React.useState(false);
   const [state, setState] = React.useState(false);
   const classes = useStyles();
   const [openDelete, setOpenDelete] = React.useState(false);
@@ -84,7 +77,6 @@ const OwnerEdit = (props) => {
   const [address, setAddress] = React.useState('');
   const [apartNumber, setApartNumber] = React.useState([]);
   const [companyName, setCompanyName] = React.useState('');
-  const [isDisableDelete, setIsDisableDelete] = React.useState(true);
 
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
@@ -105,9 +97,6 @@ const OwnerEdit = (props) => {
   let voteLists = [];
   const [count, setCount] = React.useState(0);
   useEffect(() => {
-    if (accessOwners === 'denied') {
-      setOpenDialog(true);
-    }
     if (accessOwners !== 'denied') {
       getCompanies();
       getBuildings();
@@ -191,10 +180,6 @@ const OwnerEdit = (props) => {
       updateOwner();
     }
   }
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
-
   const handleLoadFront = (event) => {
     if (event.target.files[0] !== undefined) {
       if (validFileType(event.target.files[0])) {
@@ -661,14 +646,7 @@ const OwnerEdit = (props) => {
         }
       );
   }
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if (event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
-  }
+
   return (
     <div className={classes.root}>
       {
@@ -1094,7 +1072,6 @@ const OwnerEdit = (props) => {
             </Grid>
           </Grid>
           <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-            <MyDialog open={openDialog} role={accessOwners} onClose={handleCloseDialog} />
             <MyButton
               name={"Sauvegarder"}
               color={"1"}
@@ -1104,38 +1081,12 @@ const OwnerEdit = (props) => {
           </Grid>
         </div>
       </Grid>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this owner?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Type <b style={{ color: "red" }}>delete</b> into the text field
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'owner'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );

@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
 import MySelect from '../../../components/MySelect';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
-import MyDialog from '../../../components/MyDialog';
-import {ManagerService as Service} from '../../../services/api.js';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { ManagerService as Service } from '../../../services/api.js';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import TextField from '@material-ui/core/TextField';
-
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 const ManagerService = new Service();
 const TeamMembers = (props) => {
   const { history } = props;
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
   const accessTeam = authService.getAccess('role_team');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [deleteId, setDeleteId] = useState(-1);
   const classes = useStyles();
@@ -43,19 +34,14 @@ const TeamMembers = (props) => {
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
-  const [isDisableDelete, setIsDisableDelete] = useState(true);
-
 
   const handleChangeBuildings = (val) => {
-    console.log('val;'+val)
+    console.log('val;' + val)
     setBuildings(val);
     setBuildingID(buildingList[val].buildingID);
   };
   const handleCloseDelete = () => {
     setOpenDelete(false);
-  };
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
   };
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
@@ -68,11 +54,7 @@ const TeamMembers = (props) => {
     setSortMethod(direct);
   }
   useEffect(() => {
-    if (accessTeam === 'denied') {
-      setOpenDialog(true);
-    } else {
-      getCompanies();
-    }
+    getCompanies();
   }, [accessTeam]);
   const getCompanies = () => {
     setVisibleIndicator(true);
@@ -80,7 +62,7 @@ const TeamMembers = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -107,7 +89,6 @@ const TeamMembers = (props) => {
 
   useEffect(() => {
     getBuildings();
-    // getManagers();
   }, [companyID]);
   const getBuildings = () => {
     const requestData = {
@@ -118,7 +99,7 @@ const TeamMembers = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -147,13 +128,10 @@ const TeamMembers = (props) => {
         }
       );
   }
-  useEffect(()=>{
-    getManagers()
-  },[buildingList])
   useEffect(() => {
-    if (accessTeam === 'denied') {
-      setOpenDialog(true);
-    }
+    getManagers()
+  }, [buildingList])
+  useEffect(() => {
     if (accessTeam !== 'denied')
       getManagers();
   }, [page_num, row_count, sort_column, sort_method, props.refresh, buildingID]);
@@ -181,11 +159,11 @@ const TeamMembers = (props) => {
     let data = {
       'status': 'trash'
     }
-    ManagerService.deleteTeamMember(deleteId,data)
+    ManagerService.deleteTeamMember(deleteId, data)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -217,18 +195,18 @@ const TeamMembers = (props) => {
       'sort_method': sort_method,
       'buildingID': buildingID,
       'companyID': companyID,
-      'status' : 'active'
+      'status': 'active'
     }
     setVisibleIndicator(true);
     ManagerService.getTeamMemberList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              if(data.totalpage)
+              if (data.totalpage)
                 setTotalPage(data.totalpage);
               else
                 setTotalPage(1)
@@ -248,15 +226,6 @@ const TeamMembers = (props) => {
           setVisibleIndicator(false);
         }
       );
-  }
-
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if(event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
   }
 
   return (
@@ -284,7 +253,6 @@ const TeamMembers = (props) => {
         </Grid>
       </div>
       <div className={classes.body}>
-        <MyDialog open={openDialog} role={accessTeam} onClose={handleCloseDialog} />
         <MyTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
@@ -299,38 +267,12 @@ const TeamMembers = (props) => {
           access={accessTeam}
         />
       </div>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this team member?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"            
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'team member'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </>
   );

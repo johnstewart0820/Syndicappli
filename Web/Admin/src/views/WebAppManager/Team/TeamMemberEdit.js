@@ -10,19 +10,12 @@ import Badge from '@material-ui/core/Badge';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import authService from '../../../services/authService.js';
 import Multiselect from '../../../components/Multiselect.js';
-import MyDialog from '../../../components/MyDialog.js';
 import { EditTeamMemberStyles as useStyles } from './useStyles';
 import { ManagerService as Service } from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import useGlobal from 'Global/global';
-
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
@@ -51,7 +44,6 @@ const TeamMemberEdit = (props) => {
   const accessTeam = authService.getAccess('role_team');
   const [globalState, setGlobalActions] = useGlobal();
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
   const classes = useStyles();
   const permissionList = ['Voir', 'Editer', 'Refusé'];
   const role_permission = ['see', 'edit', 'denied'];
@@ -78,7 +70,6 @@ const TeamMemberEdit = (props) => {
   const [invoicesPermission, setInvoicesPermission] = React.useState(0);
   const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
   const [apartNumber, setApartNumber] = React.useState('');
-  const [isDisableDelete, setIsDisableDelete] = React.useState(true);
 
   const [errorsBuildings, setErrorsBuildings] = React.useState('');
   const [errorsLastname, setErrorsLastname] = React.useState('');
@@ -255,9 +246,7 @@ const TeamMemberEdit = (props) => {
       updateManager();
     }
   }
-  const handleCloseDialog = (val) => {
-    setOpenDialog(val);
-  };
+
   const handleChangeLastName = (event) => {
     setLastName(event.target.value);
   }
@@ -556,14 +545,7 @@ const TeamMemberEdit = (props) => {
         }
       );
   }
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if (event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
-  }
+
   return (
     <div className={classes.root}>
       {
@@ -864,43 +846,16 @@ const TeamMemberEdit = (props) => {
             </Grid>
           </Grid>
           <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-            <MyDialog open={openDialog} role={accessTeam} onClose={handleCloseDialog} />
             <MyButton name={"Sauvegarder"} color={"1"} onClick={onClickSave} disabled={(accessTeam === 'see' ? true : false)} />
           </Grid>
         </div>
       </Grid>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this team member?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Type <b style={{ color: "red" }}>delete</b> into the text field
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-          </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'team member'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
