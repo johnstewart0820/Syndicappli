@@ -176,7 +176,7 @@ export default function SubAccountsTable(props) {
     props.onClickResend(id);
   }
   return (
-    <Grid item container direction="column" spacing={2} xs={12} sm={8} md={8} lg={8} xl={6}>
+    <Grid item container direction="column" spacing={2} xs={12} sm={8} md={8} lg={8} xl={6}  style={{overflowX:'auto'}}>
       <Table className={classes.root}>
         <TableHead>
           <TableRow >

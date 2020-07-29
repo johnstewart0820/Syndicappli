@@ -447,7 +447,7 @@ const AddOwner = (props) => {
                         {
                             ownerTitle === 4 ?
                                 <Grid xs={12} item container alignItems="center" spacing={1}>
-                                    <Grid item><p className={classes.title}>Carbinet Nom</p></Grid>
+                                    <Grid item><p className={classes.title}>Cabinet Nom</p></Grid>
                                     <Grid xs item container direction="column">
                                         <TextField
                                             className={classes.text}

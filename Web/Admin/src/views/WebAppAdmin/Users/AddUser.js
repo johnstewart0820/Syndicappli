@@ -270,7 +270,7 @@ const AddUser = (props) => {
                 <div className={classes.paper} sm={12}>
                     <Grid container spacing={2} >
                         <Grid item container alignItems="center">
-                            <Grid xs={3} item container><p className={classes.title}>Carbinets</p></Grid>
+                            <Grid xs={3} item container><p className={classes.title}>Cabinets</p></Grid>
                             <Grid xs={9} item container alignItems="stretch">
                                 <Multiselect
                                     selected={companies}

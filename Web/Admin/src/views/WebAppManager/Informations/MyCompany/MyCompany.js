@@ -395,8 +395,6 @@ const MyCompany = (props) => {
             </Grid>
           </Grid>
         </div>
-        <div className={classes.tool}>
-        </div>
         <div className={classes.body}>
           <Grid container direction="row-reverse" spacing={5}>
             <Grid item container xs={12} sm={5} md={4} lg={4} xl={3} justify="flex-end">

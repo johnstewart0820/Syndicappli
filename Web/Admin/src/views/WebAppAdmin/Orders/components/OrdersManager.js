@@ -201,7 +201,7 @@ const OrdersManager = (props) => {
       );
   }
   return (
-    <Grid container spacing={3} direction="column">
+    <Grid item container spacing={3} direction="column">
       <Grid item></Grid>
       <Grid item container spacing={2} direction="row-reverse" >
         <Grid item>

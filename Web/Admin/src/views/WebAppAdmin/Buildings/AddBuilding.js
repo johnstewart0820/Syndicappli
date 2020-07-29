@@ -104,13 +104,12 @@ const AddBuilding = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              company.push('');
               data.companylist.map((item) => (
                 company.push(item.name)
               )
               );
-              setCompanyList(data.companylist);
-              if (data.companylist.length !== 0)
-                setCompanyID(data.companylist[0].companyID);
+              setCompanyList([{ 'companyID': -1 },...data.companylist]);
               break;
             case 401:
               authService.logout();
@@ -183,7 +182,6 @@ const AddBuilding = (props) => {
                   data={company}
                   onChangeSelect={handleChangeCompanies}
                   value={companies}
-                  width="50%"
                 />
                 {errorsCompanies.length > 0 &&
                   <span className={classes.error}>{errorsCompanies}</span>}

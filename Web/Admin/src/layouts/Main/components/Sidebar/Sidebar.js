@@ -115,7 +115,7 @@ const Sidebar = props => {
       status: accessManagers
     },
     {
-      title: 'Mes immeubles',
+      title: 'Mes Immeubles',
       href: '/admin/buildings',
       activeIcon: <img src='/images/ic_building_active.png' className={classes.icon}/>,
       inactiveIcon:<img src='/images/ic_building_inactive.png' className={classes.icon}/>,

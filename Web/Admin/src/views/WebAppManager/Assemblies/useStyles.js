@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
     },
     '& .MuiTab-root':{
       paddingLeft: 0,
+      paddingRight: 30,
       minWidth: 0
     },
     '& .MuiTab-wrapper':{
@@ -250,6 +251,7 @@ export const EditAssemblyStyles = makeStyles(theme => ({
     },
     '& .MuiTab-root':{
       paddingLeft: 0,
+      paddingRight: 30,
       minWidth: 0
     },
     '& .MuiTab-wrapper':{

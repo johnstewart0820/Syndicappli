@@ -323,9 +323,9 @@ const UserEdit = (props) => {
                 localStorage.setItem("role_managers", JSON.stringify(role_permission[managersPermission]));
                 localStorage.setItem("role_buildings", JSON.stringify(role_permission[buildingsPermission]));
                 localStorage.setItem("role_owners", JSON.stringify(role_permission[ownersPermission]));
-                localStorage.setItem("role_orders", JSON.stringify('denied'));
-                localStorage.setItem("role_products", JSON.stringify('denied'));
-                localStorage.setItem("role_discountcodes", JSON.stringify('denied'));
+                localStorage.setItem("role_orders", JSON.stringify(role_permission[ordersPermission]));
+                localStorage.setItem("role_products", JSON.stringify(role_permission[productsPermission]));
+                localStorage.setItem("role_discountcodes", JSON.stringify(role_permission[discountCodesPermission]));
                 localStorage.setItem("role_users", JSON.stringify(role_permission[usersPermission]));
                 window.location.reload();
               }
@@ -405,7 +405,7 @@ const UserEdit = (props) => {
               <Grid item container direction="column" justify="space-between" xs={12} sm={8}>
                 <Grid item container><p></p></Grid>
                 <Grid item container alignItems="center" spacing={2}>
-                  <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
+                  <Grid item><p className={classes.itemTitle}>Cabinets</p></Grid>
                   <Grid xs item container alignItems="stretch">
                     <Multiselect
                       selected={companies}

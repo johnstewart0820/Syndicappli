@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import theme from 'theme';
 import Pagination from '@material-ui/lab/Pagination';
@@ -21,14 +19,8 @@ const BootstrapInput = withStyles((theme) => ({
       [theme.breakpoints.between('lg', 'lg')]: {
         marginTop: 17,
       },
-      [theme.breakpoints.between('md', 'md')]: {
+      [theme.breakpoints.down('md')]: {
         marginTop: 12,
-      },
-      [theme.breakpoints.between('sm', 'sm')]: {
-        marginTop: 8,
-      },
-      [theme.breakpoints.down('sm')]: {
-        marginTop: 6,
       },
     },
   },
@@ -91,14 +83,8 @@ const useStyles = makeStyles({
       [theme.breakpoints.between('lg', 'lg')]: {
         borderBottomLeftRadius: '21px',
       },
-      [theme.breakpoints.between('md', 'md')]: {
+      [theme.breakpoints.down('md')]: {
         borderBottomLeftRadius: '15px',
-      },
-      [theme.breakpoints.between('sm', 'sm')]: {
-        borderBottomLeftRadius: '11px',
-      },
-      [theme.breakpoints.down('sm')]: {
-        borderBottomLeftRadius: '8px',
       },
     },
     '& tbody tr:last-child td:last-child': {
@@ -108,14 +94,8 @@ const useStyles = makeStyles({
       [theme.breakpoints.between('lg', 'lg')]: {
         borderBottomRightRadius: '21px',
       },
-      [theme.breakpoints.between('md', 'md')]: {
+      [theme.breakpoints.down('md')]: {
         borderBottomRightRadius: '15px',
-      },
-      [theme.breakpoints.between('sm', 'sm')]: {
-        borderBottomRightRadius: '11px',
-      },
-      [theme.breakpoints.down('sm')]: {
-        borderBottomRightRadius: '8px',
       },
     },
     // '& thead tr:first-child th:first-child': {
@@ -131,20 +111,10 @@ const useStyles = makeStyles({
       marginTop: 6,
       borderRadius: '21px',
     },
-    [theme.breakpoints.between('md', 'md')]: {
+    [theme.breakpoints.down('md')]: {
       marginBottom: 8,
       marginTop: 4,
       borderRadius: '15px',
-    },
-    [theme.breakpoints.between('sm', 'sm')]: {
-      marginBottom: 6,
-      marginTop: 3,
-      borderRadius: '11px',
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginBottom: 4,
-      marginTop: 2,
-      borderRadius: '8px',
     },
     '& thead button': {
       background: 'transparent',
@@ -161,17 +131,9 @@ const useStyles = makeStyles({
         fontSize: 14,
         padding: 11
       },
-      [theme.breakpoints.between('md', 'md')]: {
+      [theme.breakpoints.down('md')]: {
         fontSize: 10,
         padding: 8
-      },
-      [theme.breakpoints.between('sm', 'sm')]: {
-        fontSize: 7,
-        padding: 6
-      },
-      [theme.breakpoints.down('sm')]: {
-        fontSize: 5,
-        padding: 5
       },
     }
   },
@@ -182,14 +144,8 @@ const useStyles = makeStyles({
     [theme.breakpoints.between('lg', 'lg')]: {
       marginBottom: 11,
     },
-    [theme.breakpoints.between('md', 'md')]: {
+    [theme.breakpoints.down('md')]: {
       marginBottom: 8,
-    },
-    [theme.breakpoints.between('sm', 'sm')]: {
-      marginBottom: 6,
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginBottom: 4,
     },
     '& .MuiPaginationItem-textPrimary.Mui-selected': {
       background: 'linear-gradient(90deg, #00b8d4 10%, #00bf82 90%)',
@@ -234,10 +190,6 @@ const useStyles = makeStyles({
     [theme.breakpoints.down('md')]: {
       width: 11,
       height: 11
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: 8,
-      height: 8
     },
   },
   hide: {
@@ -325,7 +277,7 @@ export default function TrashTable(props) {
           </FormControl>
         </div>
       </Grid>
-      <Grid item container >
+      <Grid item container  style={{overflowX:'auto'}}>
         <Table className={classes.root}>
           <TableHead>
             <TableRow >

@@ -94,6 +94,7 @@ const ManagerEdit = (props) => {
   const [mulitID, setMultiID] = React.useState([]);
   const [suggestions, setSuggestions] = React.useState([]);
   useEffect(() => {
+    getManager();
     getCompanies();
   }, [accessManagers]);
   const getCompanies = () => {
@@ -106,11 +107,12 @@ const ManagerEdit = (props) => {
             case 200:
               const data = response.data.data;
               company.splice(0, company.length)
+              // company.push('Tout')
               data.companylist.map((item) => (
                 company.push(item.name)
               )
               );
-              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
+              setCompanyList([ ...data.companylist]);
               break;
             case 401:
               authService.logout();
@@ -147,6 +149,11 @@ const ManagerEdit = (props) => {
               );
               setBuildingList(data.buildinglist);
               setSuggestions(buildings1);
+              for (let i = 0; i < companyList.length; i++)
+              if (companyID === companyList[i].companyID) {
+                setCompanies(i);
+                break;
+              }
               break;
             case 401:
               authService.logout();
@@ -199,19 +206,11 @@ const ManagerEdit = (props) => {
                 setSuspendState('Suspendre le compte');
               else if (profile.status === 'inactive')
                 setSuspendState('Restaurer le compte');
-              let buildingID = [];
+              buildingID.splice(0,buildingID.length)
               data.buildinglist.map((item, i) => (
                 buildingID[i] = item.relationID
               )
               );
-              let buildings = [];
-              for (let i = 0; i < buildingID.length; i++)
-                for (let j = 0; j < buildingList.length; j++)
-                  if (buildingID[i] === buildingList[j].buildingID) {
-                    buildings[i] = { label: buildingList[j].name, value: buildingList[j].buildingID };
-                    break;
-                  }
-              setBuildings(buildings);
               setMultiID(buildingID);
               break;
             case 401:
@@ -229,24 +228,80 @@ const ManagerEdit = (props) => {
         }
       );
   }
-  useEffect(() => {
-    setBuildingList(buildingList);
+  // useEffect(() => {
+  //   setBuildingList(buildingList);
 
 
-  }, [buildingList])
+  // }, [buildingList])
   useEffect(() => {
     getBuildings()
-  }, [companies]);
-  useEffect(() => {
-    getManager()
-
-    for (let i = 0; i < companyList.length; i++)
-      if (companyID === companyList[i].companyID) {
-        setCompanies(i);
-        break;
-      }
-
   }, [companyID]);
+  useEffect(() => {
+    // getManager()
+    AdminService.getManager(props.match.params.id)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              const profile = data.manager;
+              setLastName(profile.lastname);
+              setFirstName(profile.firstname);
+              setEmail(profile.email);
+              setPhoneNumber(profile.phone);
+              setAvatarUrl(profile.photo_url);
+              setAddonsPermission(role_permission.indexOf(profile.role_addons));
+              setAnnouncementsPermission(role_permission.indexOf(profile.role_advertisement));
+              setAssembliesPermission(role_permission.indexOf(profile.role_assemblies));
+              setBuildingsPermission(role_permission.indexOf(profile.role_buildings));
+              setChatPermission(role_permission.indexOf(profile.role_chat));
+              setCompanyPermission(role_permission.indexOf(profile.role_company));
+              setEventsPermission(role_permission.indexOf(profile.role_events));
+              setIncidentsPermission(role_permission.indexOf(profile.role_incidents));
+              setInvoicesPermission(role_permission.indexOf(profile.role_invoices));
+              setOwnersPermission(role_permission.indexOf(profile.role_owners));
+              setPaymentMethodsPermission(role_permission.indexOf(profile.role_payments));
+              setProvidersPermission(role_permission.indexOf(profile.role_providers));
+              setTeamPermission(role_permission.indexOf(profile.role_team));
+              setApartNumber(profile.count);
+              if (profile.status === 'active')
+                setSuspendState('Suspendre le compte');
+              else if (profile.status === 'inactive')
+                setSuspendState('Restaurer le compte');
+              buildingID.splice(0,buildingID.length)
+              data.buildinglist.map((item, i) => (
+                buildingID[i] = item.relationID
+              )
+              );
+              setMultiID(buildingID);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }, [buildingList]);
+  useEffect(()=>{
+    let buildings = [];
+    for (let i = 0; i < mulitID.length; i++)
+      for (let j = 0; j < buildingList.length; j++)
+        if (mulitID[i] === buildingList[j].buildingID) {
+          buildings[i] = { label: buildingList[j].name, value: buildingList[j].buildingID };
+          break;
+        }
+    setBuildings(buildings);
+  },[mulitID])
   const handleClick = () => {
     history.goBack();
   };
@@ -258,7 +313,7 @@ const ManagerEdit = (props) => {
     else setErrorsFirstname('');
     if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
     else setErrorsCompanies('');
-    if (mulitID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+    if (buildings.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
     else setErrorsBuildings('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
@@ -712,7 +767,7 @@ const ManagerEdit = (props) => {
                 </Grid>
               </Grid>
               <Grid item container alignItems="center" spacing={2}>
-                <Grid item><p className={classes.itemTitle}>Carbinet</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Cabinet</p></Grid>
                 <Grid xs item container alignItems="stretch">
                   <MySelect
                     color="gray"

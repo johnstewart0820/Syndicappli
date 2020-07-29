@@ -3,44 +3,10 @@ import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { makeStyles , withStyles} from '@material-ui/core/styles';
+import { makeStyles  } from '@material-ui/core/styles';
 import theme from 'theme';
-import Pagination from '@material-ui/lab/Pagination';
 import Grid from '@material-ui/core/Grid';
 import MyButton from './MyButton';
-
-import FormControl from '@material-ui/core/FormControl';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import InputBase from '@material-ui/core/InputBase';
-
-const BootstrapInput = withStyles((theme) => ({
-  root: {
-    'label + &': {
-      marginTop: theme.spacing(3),
-    },
-  },
-  input: {
-    borderRadius: 4,
-    position: 'relative',
-    backgroundColor: theme.palette.background.paper,
-    border: '1px solid #ced4da',
-    fontSize: 17,
-    padding: '2px 26px 2px 12px',
-    height:33,
-    display: 'flex',
-    alignItems: 'center',
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
-    // Use the system font instead of the default Roboto font.
-    fontFamily: [
-      'Popppins',
-    ].join(','),
-    '&:focus': {
-      borderRadius: 4,
-      borderColor: '#80bdff',
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-    },
-  },
-}))(InputBase);
 
 const useStyles = makeStyles({
 
@@ -167,7 +133,7 @@ export default function ProductTable  (props)  {
     <div >
       <Grid container direction="column" spacing={6}>
         <Grid item></Grid>
-        <Grid item>
+        <Grid item  style={{overflowX:'auto'}}>
           <Table className={classes.root}>
             <TableHead />
             <TableBody>

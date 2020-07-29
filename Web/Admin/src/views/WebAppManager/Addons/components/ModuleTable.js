@@ -85,7 +85,7 @@ export default function ModuleTable  (props)  {
   const [cells,setCells] = useState(props.cells);
   const items = props.products;
   return ( 
-      <Grid container xs={12} sm={8} md={8} lg={8} xl={6}>
+      <Grid container xs={12} sm={8} md={8} lg={8} xl={6}  style={{overflowX:'auto'}}>
           <Table className={classes.root}>
             <TableHead>
               <TableRow >

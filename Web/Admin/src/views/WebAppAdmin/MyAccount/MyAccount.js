@@ -404,8 +404,7 @@ const MyAccount = (props) => {
             </Grid>
           </Grid>
         </div>
-        <div className={classes.tool}>
-        </div>
+
         <div className={classes.body}>
           <Grid container direction="column" spacing={5}>
             <Grid item container spacing={2} direction="row" justify="space-between">

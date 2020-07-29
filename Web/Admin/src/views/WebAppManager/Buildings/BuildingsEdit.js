@@ -263,7 +263,7 @@ const BuildingsEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.itemTitle}>Carbinets</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Cabinets</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <MySelect
                   color="gray"

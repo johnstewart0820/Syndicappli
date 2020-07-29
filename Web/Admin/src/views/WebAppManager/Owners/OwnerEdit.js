@@ -771,7 +771,7 @@ const OwnerEdit = (props) => {
                 {
                   ownerTitle === 4 ?
                     <Grid item container alignItems="center" spacing={1}>
-                      <Grid item><p className={classes.itemTitle}>Carbinet Nom</p></Grid>
+                      <Grid item><p className={classes.itemTitle}>Cabinet Nom</p></Grid>
                       <Grid xs item container direction="column">
                         <TextField
                           className={classes.text}

@@ -202,7 +202,7 @@ const AddManager = (props) => {
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
                             company.splice(0, company.length)
-                            company.push('Tout');
+                            company.push('');
                             data.companylist.map((item) => (
                                 company.push(item.name)
                             )
@@ -362,7 +362,7 @@ const AddManager = (props) => {
                 <div className={classes.paper} sm={12}>
                     <Grid container spacing={2} >
                         <Grid item container justify="center" alignItems="center">
-                            <Grid xs={3} item container><p className={classes.title}>Carbinet</p></Grid>
+                            <Grid xs={3} item container><p className={classes.title}>Cabinet</p></Grid>
                             <Grid xs={9} item container>
                                 <MySelect
                                     color="gray"

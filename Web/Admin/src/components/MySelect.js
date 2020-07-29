@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme, props) => ({
 export default function CustomizedSelects(props) {
   const classes = useStyles(props);
   const [items, setItems] = React.useState(props.data);
-  // const items = props.data;
   const [value, setValue] = React.useState(props.value);
   const handleChange = (event, values) => {
     let result = 0;
@@ -52,15 +51,10 @@ export default function CustomizedSelects(props) {
       if (items[i] === values)
         result = i;
     }
-    console.log('select:',values)
     props.onChangeSelect(result);
     
   };
-  // useEffect(()=>{
-  //   if(props.value)
-  //     setValue(props.value)
-  // }, [props.value]);
-  console.log("values: ", value)
+
   return (
       <FormControl className={classes.margin}>
         <CustomAutocomplete

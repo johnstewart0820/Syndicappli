@@ -123,9 +123,9 @@ const Login = (props) => {
                 localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
                 localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
                 localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
-                localStorage.setItem("role_orders", JSON.stringify('denied'));
+                localStorage.setItem("role_orders", JSON.stringify(profile.role_orders));
                 localStorage.setItem("role_products", JSON.stringify(profile.role_products));
-                localStorage.setItem("role_discountcodes", JSON.stringify('denied'));
+                localStorage.setItem("role_discountcodes", JSON.stringify(profile.role_discountcodes));
                 localStorage.setItem("role_users", JSON.stringify(profile.role_users));
                 localStorage.setItem("select", JSON.stringify(0));
                 history.push('/admin/dashboard');

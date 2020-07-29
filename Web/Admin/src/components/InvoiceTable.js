@@ -1,9 +1,8 @@
 import React, {useState } from 'react';
 import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell} from '@material-ui/core';
-import { makeStyles , withStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import theme from 'theme';
-import Grid from '@material-ui/core/Grid';
 const useStyles = makeStyles({
   margin: {
     width: props => props.width,
@@ -26,14 +25,8 @@ const useStyles = makeStyles({
       [theme.breakpoints.between('lg','lg')]: {
         borderBottomLeftRadius: '21px',
       },
-      [theme.breakpoints.between('md','md')]: {
+      [theme.breakpoints.down('md')]: {
         borderBottomLeftRadius: '15px',
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        borderBottomLeftRadius: '11px',
-      },
-      [theme.breakpoints.down('sm')]: {
-        borderBottomLeftRadius: '8px',
       },
     },
     '& tbody tr:last-child td:last-child':{
@@ -43,14 +36,8 @@ const useStyles = makeStyles({
       [theme.breakpoints.between('lg','lg')]: {
         borderBottomRightRadius: '21px',
       },
-      [theme.breakpoints.between('md','md')]: {
+      [theme.breakpoints.down('md')]: {
         borderBottomRightRadius: '15px',
-      },
-      [theme.breakpoints.between('sm','sm')]: {
-        borderBottomRightRadius: '11px',
-      },
-      [theme.breakpoints.down('sm')]: {
-        borderBottomRightRadius: '8px',
       },
     },
     '& thead tr:first-child th':{
@@ -119,6 +106,7 @@ export default function InvoiceTable  (props)  {
   const [cells,setCells] = useState(props.cells);
   const items = props.products;
   return ( 
+    <div  style={{overflowX:'auto'}}>
           <Table className={classes.root}>
             <TableHead>
               <TableRow >
@@ -152,5 +140,6 @@ export default function InvoiceTable  (props)  {
               ))}
             </TableBody>
           </Table>
+    </div>
   );
 };

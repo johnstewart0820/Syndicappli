@@ -294,7 +294,7 @@ const Owners = (props) => {
       <div className={classes.tool}>
         <Grid container spacing={2} direction="column">
           <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
-            <Grid item ><p className={classes.subTitle}>Carbinet</p></Grid>
+            <Grid item ><p className={classes.subTitle}>Cabinet</p></Grid>
             <Grid xs item container direction="row-reverse">
               <Grid item container direction="column" alignItems="stretch">
                 <MySelect
