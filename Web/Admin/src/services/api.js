@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
-// const API_URL = "http://192.168.105.38:3001/api/";
+// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
+const API_URL = "http://192.168.105.38:3001/api/";
 class AdminService {
   //Login
   login(data) {
@@ -173,6 +173,28 @@ class AdminService {
     }
     deleteDiscountCode(id, status) {
       return axios.post(API_URL + 'web/admin/building/' + id + '/delete', status, { headers: authHeader() });
+    }
+
+    //Product Part
+    getProductList(data) {
+      return axios.post(API_URL + 'web/admin/productList',
+        data,
+        { headers: authHeader() });
+    }
+    createProduct(data) {
+      return axios.post(API_URL + 'web/admin/product',
+        data,
+        { headers: authHeader() });
+    }
+    updateProduct(id, data) {
+      return axios.put(API_URL + 'web/admin/product/' + id, data,
+        { headers: authHeader() });
+    }
+    getProduct(id) {
+      return axios.get(API_URL + 'web/admin/product/' + id, { headers: authHeader() });
+    }
+    deleteProduct(id, status) {
+      return axios.post(API_URL + 'web/admin/product/' + id + '/delete', status, { headers: authHeader() });
     }
 
   getBuildingListByCompany(data) {

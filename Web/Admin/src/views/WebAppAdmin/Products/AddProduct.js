@@ -6,31 +6,31 @@ import MySelect from '../../../components/MySelect';
 import { Checkbox } from '@material-ui/core';
 import { AddProductStyles as useStyles } from './useStyles';
 import { Scrollbars } from 'react-custom-scrollbars';
+import AdminService from 'services/api.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import { withRouter } from 'react-router-dom';
+import authService from 'services/authService.js';
 
 const AddProducts = (props) => {
     const classes = useStyles();
-
+    const { history } = props;
     const priceTypeList = ['Par lot', 'Par unité'];
-    const selected = [
-        { label: "Albania", value: "Albania" },
-        { label: "Argentina", value: "Argentina" },
-        { label: "Austria", value: "Austria" },
-        { label: "Cocos Islands", value: "Cocos Islands" },
-        { label: "Kuwait", value: "Kuwait" },
-        { label: "Sweden", value: "Sweden" },
-        { label: "Venezuela", value: "Venezuela" }
-    ];
-    const [categorie, setCategorie] = React.useState(selected);
-    const [billingCycle, setBillingCycle] = React.useState(selected);
-    const categorieList = ['Gestionnaires', 'Copropriétaires', 'immeubles'];
+    const en_priceTypeList = ['per_apartment','per_unit'];
+    const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+    const [categorie, setCategorie] = React.useState(0);
+    const [billingCycle, setBillingCycle] = React.useState(0);
+    const categorieList = ['Gestionnaires', 'Copropriétaires', 'Immeubles'];
+    const en_categorieList = ['managers','owners','buildings'];
     const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
-
+    const en_billingCycleList = ['one_time','annually','monthly'];
     const [renewal, setRenewal] = React.useState(false);
     const [productName, setProductName] = React.useState('');
     const [productDescription, setProductDescription] = React.useState('');
-    const [priceType, setPriceType] = React.useState('');
+    const [priceType, setPriceType] = React.useState(0);
     const [price, setPrice] = React.useState('');
-
+    const [vat_state, setVatState] = React.useState(false);
+    const [vat_fee, setVatFee] = React.useState('');
     const [errorsCategorie, setErrorsCategorie] = React.useState('');
     const [errorsBillingCycle, setErrorsBillingCycle] = React.useState('');
     const [errorsRenewal, setErrorsRenewal] = React.useState('');
@@ -38,6 +38,7 @@ const AddProducts = (props) => {
     const [errorsProductDescription, setErrorsProductDescription] = React.useState('');
     const [errorsPriceType, setErrorsPriceType] = React.useState('');
     const [errorsPrice, setErrorsPrice] = React.useState('');
+    const [errorsVatFee, setErrorsVatFee] = React.useState('');
 
     const handleClose = () => {
         props.onCancel();
@@ -52,15 +53,56 @@ const AddProducts = (props) => {
         else setErrorsCategorie('');
         if (billingCycle.length === 0) { setErrorsBillingCycle('please select billing cycle'); cnt++; }
         else setErrorsBillingCycle('');
-        if (price.length === 0) { setErrorsPrice('please enter price'); cnt++; }
+        if (!price) { setErrorsPrice('please enter price'); cnt++; }
         else setErrorsPrice('');
         if (priceType.length === 0) { setErrorsPriceType('please enter your price type'); cnt++; }
         else setErrorsPriceType('');
-
-        if (cnt === 0) {
-
-            handleClose();
+        if (vat_state === true) {
+            if (!vat_fee) { setErrorsVatFee('please enter VAT fee'); cnt++; }
+            else setErrorsVatFee('');
         }
+        if (cnt === 0) {
+            createProduct();
+        }
+    }
+    const createProduct = () => {
+        const requestData = {
+            'buyer_type': en_categorieList[categorie],
+            'billing_cycle': en_billingCycleList[billingCycle],
+            'renewal': renewal,
+            'name': productName,
+            'description': productDescription,
+            'price_type': en_priceTypeList[priceType],
+            'price': price,
+            'vat_option': vat_state,
+            'vat_fee': vat_fee,
+        }
+        setVisibleIndicator(true);
+        AdminService.createProduct(requestData)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            props.onAdd();
+                            handleClose();
+                            break;
+                        case 401:
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
+                        default:
+                            ToastsStore.error(response.data.message);
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
     }
     const handleChangeProductName = (event) => {
         setProductName(event.target.value);
@@ -68,8 +110,8 @@ const AddProducts = (props) => {
     const handleChangeProductDescription = (event) => {
         setProductDescription(event.target.value);
     }
-    const handleChangePrice = (val) => {
-        setPrice(val);
+    const handleChangePrice = (event) => {
+        setPrice(+event.target.value);
     }
     const handleChangePriceType = (val) => {
         setPriceType(val);
@@ -83,9 +125,18 @@ const AddProducts = (props) => {
     const handleChangeRenewal = (event) => {
         setRenewal(event.target.checked);
     }
+    const handleChangeVatState = (event) => {
+        setVatState(event.target.checked);
+    }
+    const handleChangeVatFee = (event) => {
+        setVatFee(+event.target.value);
+    }
     return (
         <Scrollbars style={{ height: '100vh' }}>
             <div className={classes.root}>
+                {
+                    visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+                }
                 <div className={classes.paper} sm={12}>
                     <Grid container spacing={2} >
                         <Grid item container alignItems="center" spacing={2}>
@@ -177,7 +228,7 @@ const AddProducts = (props) => {
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
-                                    value={price}
+                                    value={price || ''}
                                     onChange={handleChangePrice}
                                     fullWidth
                                 />
@@ -185,6 +236,34 @@ const AddProducts = (props) => {
                                     <span className={classes.error}>{errorsPrice}</span>}
                             </Grid>
                         </Grid>
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>VAT applicable</p></Grid>
+                            <Grid xs item container>
+                                <Checkbox
+                                    checked={vat_state}
+                                    onChange={handleChangeVatState}
+                                />
+                            </Grid>
+                        </Grid>
+                        {
+                            vat_state === true ?
+                                <Grid item container alignItems="center" spacing={2}>
+                                    <Grid item><p className={classes.title}>VAT en %</p></Grid>
+                                    <Grid xs item container>
+                                        <TextField
+                                            className={classes.text}
+                                            variant="outlined"
+                                            value={vat_fee || ''}
+                                            onChange={handleChangeVatFee}
+                                            fullWidth
+                                        />
+                                        {errorsVatFee.length > 0 &&
+                                            <span className={classes.error}>{errorsVatFee}</span>}
+                                    </Grid>
+                                </Grid>
+                                :
+                                null
+                        }
                     </Grid>
                     <div className={classes.footer}>
                         <Grid container justify="space-between">
@@ -193,9 +272,10 @@ const AddProducts = (props) => {
                         </Grid>
                     </div>
                 </div>
+                <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
             </div>
         </Scrollbars>
     );
 };
 
-export default AddProducts;
+export default withRouter(AddProducts);

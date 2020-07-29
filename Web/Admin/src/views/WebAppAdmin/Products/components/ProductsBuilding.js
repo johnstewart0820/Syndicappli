@@ -14,7 +14,7 @@ import AdminService from 'services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 
-const ProductsOwner = (props) => {
+const ProductsBuilding = (props) => {
   const { history } = props;
   const token = authService.getToken();    
   if (!token) {
@@ -48,7 +48,7 @@ const ProductsOwner = (props) => {
   }
   useEffect(() => {
     if (accessProducts !== 'denied')
-      getProductsOwner();
+      getProductsOwnerShip();
   }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   const handleChangeSelect = (value) => {
@@ -86,7 +86,7 @@ const ProductsOwner = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success("Deleted successfully!");
-              getProductsOwner();
+              getProductsOwnerShip();
               break;
             case 401:
               authService.logout();
@@ -103,7 +103,7 @@ const ProductsOwner = (props) => {
         }
       );
   }
-  const getProductsOwner = () => {
+  const getProductsOwnerShip= () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
@@ -111,7 +111,7 @@ const ProductsOwner = (props) => {
       'sort_column': sort_column,
       'sort_method': sort_method,
       'status': 'active',
-      'type' : 'owners'
+      'type' : 'buildings'
     }
     setVisibleIndicator(true);
     AdminService.getProductList(requestData)
@@ -214,4 +214,4 @@ const ProductsOwner = (props) => {
   );
 };
 
-export default withRouter(ProductsOwner);
+export default withRouter(ProductsBuilding);

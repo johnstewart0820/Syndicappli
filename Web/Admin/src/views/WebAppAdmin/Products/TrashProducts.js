@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import MyTable from 'components/MyTable';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -8,19 +7,23 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { withRouter } from 'react-router-dom';
-import authService from 'services/authService.js';
-import {ProductsManagerStyles as useStyles} from '../useStyles';
-import AdminService from 'services/api.js';
+import authService from '../../../services/authService.js';
+import useStyles from './useStyles';
+import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
-
-const ProductsOwner = (props) => {
+import TrashTable from 'components/TrashTable';
+import Grid from '@material-ui/core/Grid';
+import MySelect from '../../../components/MySelect';
+const TrashProducts = (props) => {
   const { history } = props;
   const token = authService.getToken();    
   if (!token) {
     window.location.replace("/login");
   }
   const accessProducts = authService.getAccess('role_products');
+  const categorieList = ['Gestionnaires', 'Copropriétaires', 'immeubles'];
+  const en_categorieList = ['managers','owners','buildings'];
+  const [categorie, setCategorie] = React.useState(0);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
   const [openDelete, setOpenDelete] = React.useState(false);
@@ -31,7 +34,6 @@ const ProductsOwner = (props) => {
   const [page_num, setPageNum] = useState(1);
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
-  const [isDisableDelete, setIsDisableDelete] = useState(true);
   const selectList = [20, 50, 100, 200, -1];
   const cellList = [
     { key: 'name', field: 'Nom' },
@@ -42,14 +44,40 @@ const ProductsOwner = (props) => {
   for (let i = 0; i < 2; i++)
     columns[i] = 'asc';
 
-  const handleClickEdit = (id) => {
-    console.log(id);
-    history.push('/admin/products/edit/' + id);
+  const handleClickRestore = (id) => {
+      let data={
+          'status': 'active'
+      }
+    AdminService.deleteProduct(id,data)
+    .then(
+      response => {
+        setVisibleIndicator(false);
+        switch(response.data.code){
+          case 200:
+            const data = response.data.data;
+            localStorage.setItem("token", JSON.stringify(data.token));
+            ToastsStore.success("Restored successfully!");
+            getTrashProducts();
+            break;
+          case 401:
+            authService.logout();
+            history.push('/login');
+            window.location.reload();
+            break;
+          default:
+            ToastsStore.error(response.data.message);
+        }
+      },
+      error => {
+        ToastsStore.error("Can't connect to the server!");
+        setVisibleIndicator(false);
+      }
+    );
   }
   useEffect(() => {
     if (accessProducts !== 'denied')
-      getProductsOwner();
-  }, [page_num, row_count, sort_column, sort_method, props.refresh]);
+      getTrashProducts();
+  }, [page_num, row_count, sort_column, sort_method, props.refresh, categorie]);
 
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
@@ -73,45 +101,19 @@ const ProductsOwner = (props) => {
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
-    setVisibleIndicator(true);
-    let data={
-      'status':'trash'
-    }
-    AdminService.deleteProduct(deleteId,data)
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch(response.data.code){
-            case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              ToastsStore.success("Deleted successfully!");
-              getProductsOwner();
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
   }
-  const getProductsOwner = () => {
+  const handleChangeCategorie = (val) => {
+    setCategorie(val);
+}
+  const getTrashProducts = () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
       'row_count': row_count,
       'sort_column': sort_column,
       'sort_method': sort_method,
-      'status': 'active',
-      'type' : 'owners'
+      'status': 'trash',
+      'type' : en_categorieList[categorie]
     }
     setVisibleIndicator(true);
     AdminService.getProductList(requestData)
@@ -120,13 +122,13 @@ const ProductsOwner = (props) => {
           setVisibleIndicator(false);
           switch(response.data.code){
             case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              if (!data.totalpage)
-                setTotalPage(1);
-              else
-                setTotalPage(data.totalpage);
-              setDataList(data.productlist);
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                if (!data.totalpage)
+                  setTotalPage(1);
+                else
+                  setTotalPage(data.totalpage);
+                setDataList(data.productlist);
               break;
             case 401:
               authService.logout();
@@ -138,19 +140,10 @@ const ProductsOwner = (props) => {
           }
         },
         error => {
-          console.log('fail');
+          ToastsStore.error("Can't connect to the server");
           setVisibleIndicator(false);
         }
       );
-  }
-
-  const inputTextChange = (event) => {
-    console.log(event.target.value);
-    if(event.target.value === "delete") {
-      setIsDisableDelete(false);
-    } else {
-      setIsDisableDelete(true);
-    }
   }
 
   return (
@@ -161,9 +154,22 @@ const ProductsOwner = (props) => {
       <div className={classes.title}>
       </div>
       <div className={classes.tool}>
+      <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
+            <Grid item ><p className={classes.subTitle}>Catégorie</p></Grid>
+            <Grid xs item container direction="row-reverse">
+              <Grid item container direction="column" alignItems="stretch">
+                <MySelect
+                  color="gray"
+                  data={categorieList}
+                  onChangeSelect={handleChangeCategorie}
+                  value={categorie}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
       </div>
       <div className={classes.body}>
-        <MyTable
+        <TrashTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
@@ -172,8 +178,7 @@ const ProductsOwner = (props) => {
           products={dataList}
           totalpage={totalpage}
           cells={cellList}
-          onClickEdit={handleClickEdit}
-          onClickDelete={handleClickDelete}
+          onClickRestore={handleClickRestore}
           access={accessProducts}
         />
       </div>
@@ -184,27 +189,19 @@ const ProductsOwner = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Are you sure to delete this company?
+          Delete
         </DialogTitle>
-        <DialogContent>        
+        <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Type <b style={{color: "red"}}>delete</b> into the text field
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
           </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"            
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={inputTextChange}
-          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button disabled={isDisableDelete} onClick={handleDelete} color="primary">
+          <Button onClick={handleDelete} color="primary">
             Delete
           </Button>
         </DialogActions>
@@ -214,4 +211,4 @@ const ProductsOwner = (props) => {
   );
 };
 
-export default withRouter(ProductsOwner);
+export default withRouter(TrashProducts);

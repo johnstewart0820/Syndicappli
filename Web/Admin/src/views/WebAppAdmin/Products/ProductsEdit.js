@@ -5,27 +5,33 @@ import TextField from '@material-ui/core/TextField';
 import MySelect from '../../../components/MySelect';
 import MyButton from 'components/MyButton';
 import authService from '../../../services/authService.js';
-import Multiselect from '../../../components/Multiselect.js';
-import { COUNTRIES } from '../../../components/countries';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
 import { Checkbox } from '@material-ui/core';
 import { EditProductStyles as useStyles } from './useStyles';
+import AdminService from 'services/api.js';
 
 const ProductsEdit = (props) => {
   const { history } = props;
   const priceTypeList = ['Par lot', 'Par unité'];
+  const en_priceTypeList = ['per_apartment','per_unit'];
   const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
   const accessProducts = authService.getAccess('role_products');
   const classes = useStyles();
-  const [openDialog, setOpenDialog] = React.useState(false);
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [renewal, setRenewal] = useState(false);
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
-  const [priceType, setPriceType] = useState('');
+  const [priceType, setPriceType] = useState(0);
   const [price, setPrice] = useState('');
+  const [vat_state, setVatState] = React.useState(false);
+  const [vat_fee, setVatFee] = React.useState('');
+  const [categorie, setCategorie] = React.useState(0);
+  const [billingCycle, setBillingCycle] = React.useState(0);
 
   const [errorsCategorie, setErrorsCategorie] = useState('');
   const [errorsBillingCycle, setErrorsBillingCycle] = useState('');
@@ -34,27 +40,14 @@ const ProductsEdit = (props) => {
   const [errorsProductDescription, setErrorsProductDescription] = useState('');
   const [errorsPriceType, setErrorsPriceType] = useState('');
   const [errorsPrice, setErrorsPrice] = useState('');
+  const [errorsVatFee, setErrorsVatFee] = React.useState('');
 
-  const selected = [
-    { label: "Albania", value: "Albania" },
-    { label: "Argentina", value: "Argentina" },
-    { label: "Austria", value: "Austria" },
-    { label: "Cocos Islands", value: "Cocos Islands" },
-    { label: "Kuwait", value: "Kuwait" },
-    { label: "Sweden", value: "Sweden" },
-    { label: "Venezuela", value: "Venezuela" }
-  ];
-  const [categorie, setCategorie] = React.useState(selected);
-  const [billingCycle, setBillingCycle] = React.useState(selected);
-  const categorieList = ['Gestionnaires', 'Copropriétaires', 'immeubles'];
+  const categorieList = ['Gestionnaires', 'Copropriétaires', 'Immeubles'];
+  const en_categorieList = ['managers','owners','buildings'];
   const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
+  const en_billingCycleList = ['one_time','annually','monthly'];
   useEffect(() => {
-    if (accessProducts === 'denied') {
-      setOpenDialog(true);
-    }
-    if (accessProducts !== 'denied') {
-
-    }
+    getProduct();
   }, [accessProducts]);
 
 
@@ -69,7 +62,8 @@ const ProductsEdit = (props) => {
     setProductDescription(event.target.value);
   }
   const handleChangePrice = (event) => {
-    setPrice(event.target.value);
+    setPrice(+event.target.value);
+    console.log(price)
   }
   const handleChangePriceType = (val) => {
     setPriceType(val);
@@ -83,7 +77,13 @@ const ProductsEdit = (props) => {
   const handleChangeRenewal = (event) => {
     setRenewal(event.target.checked);
   }
-  const handleClickAdd = () => {
+  const handleChangeVatState = (event) => {
+    setVatState(event.target.checked);
+}
+const handleChangeVatFee = (event) => {
+    setVatFee(+event.target.value);
+}
+  const handleClickSave = () => {
     let cnt = 0;
     if (productName.length === 0) { setErrorsProductName('please enter your product name'); cnt++; }
     else setErrorsProductName('');
@@ -93,17 +93,98 @@ const ProductsEdit = (props) => {
     else setErrorsCategorie('');
     if (billingCycle.length === 0) { setErrorsBillingCycle('please select billing cycle'); cnt++; }
     else setErrorsBillingCycle('');
-    if (price.length === 0) { setErrorsPrice('please enter price'); cnt++; }
+    if (!price ) { setErrorsPrice('please enter price'); cnt++; }
     else setErrorsPrice('');
     if (priceType.length === 0) { setErrorsPriceType('please enter your price type'); cnt++; }
     else setErrorsPriceType('');
-
+    if (vat_state === true) {
+      if (!vat_fee) { setErrorsVatFee('please enter VAT fee'); cnt++; }
+      else setErrorsVatFee('');
+    }
     if (cnt === 0) {
-
+      updateProduct();
     }
   };
+  const getProduct = ()=>{
+    setVisibleIndicator(true);
+    AdminService.getProduct(props.match.params.id)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data.product;
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              setBillingCycle(en_billingCycleList.indexOf(data.billing_cycle));
+              setCategorie(en_categorieList.indexOf(data.buyer_type));
+              setProductDescription(data.description);
+              setProductName(data.name);
+              setPrice(data.price);
+              setRenewal(data.renewal === 'true' ? true : false);
+              setPriceType(en_priceTypeList.indexOf(data.price_type));
+              if(data.vat_option === 'true'){
+                setVatState(true);
+                setVatFee(data.vat_fee);
+              }
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const updateProduct = () => {
+    const requestData = {
+        'buyer_type': en_categorieList[categorie],
+        'billing_cycle': en_billingCycleList[billingCycle],
+        'renewal': renewal,
+        'name': productName,
+        'description': productDescription,
+        'price_type': en_priceTypeList[priceType],
+        'price': price,
+        'vat_option': vat_state,
+        'vat_fee': vat_fee,
+    }
+    setVisibleIndicator(true);
+    AdminService.updateProduct(props.match.params.id,requestData)
+        .then(
+            response => {
+                setVisibleIndicator(false);
+                switch (response.data.code) {
+                    case 200:
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        ToastsStore.success('Updated successfully!');
+                        break;
+                    case 401:
+                        authService.logout();
+                        history.push('/login');
+                        window.location.reload();
+                        break;
+                    default:
+                        ToastsStore.error(response.data.message);
+                }
+            },
+            error => {
+                ToastsStore.error("Can't connect to the server!");
+                setVisibleIndicator(false);
+            }
+        );
+}
   return (
     <div className={classes.root}>
+                      {
+                    visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+                }
       <div className={classes.title}>
         <Grid item container justify="space-around" alignItems="center">
           <Grid item xs={12} sm={6} container justify="flex-start" >
@@ -218,7 +299,7 @@ const ProductsEdit = (props) => {
                   id="outlined-basic"
                   className={classes.text}
                   variant="outlined"
-                  value={price}
+                  value={price || ''}
                   onChange={handleChangePrice}
                   disabled={(accessProducts === 'see' ? true : false)}
                 />
@@ -226,12 +307,41 @@ const ProductsEdit = (props) => {
                   <span className={classes.error}>{errorsPrice}</span>}
               </Grid>
             </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>VAT applicable</p></Grid>
+              <Grid xs item container>
+                <Checkbox
+                  checked={vat_state}
+                  onChange={handleChangeVatState}
+                />
+              </Grid>
+            </Grid>
+            {
+              vat_state === true ?
+                <Grid item container alignItems="center" spacing={2}>
+                  <Grid item><p className={classes.title}>VAT en %</p></Grid>
+                  <Grid xs item container>
+                    <TextField
+                      className={classes.text}
+                      variant="outlined"
+                      value={vat_fee || ''}
+                      onChange={handleChangeVatFee}
+                      fullWidth
+                    />
+                    {errorsVatFee.length > 0 &&
+                      <span className={classes.error}>{errorsVatFee}</span>}
+                  </Grid>
+                </Grid>
+                :
+                null
+            }
             <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessProducts === 'see' ? true : false)} />
+              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessProducts === 'see' ? true : false)} />
             </Grid>
           </Grid>
         </div>
       </Grid>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };
