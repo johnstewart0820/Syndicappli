@@ -24,6 +24,7 @@ const companyService = require('../../services/web/admin/company-service')
 const managerService = require('../../services/web/admin/manager-service')
 const ownerService = require('../../services/web/admin/owner-service')
 const productService = require('../../services/web/admin/product-service')
+const discountCodesService = require('../../services/web/admin/discountcodes-service')
 const {validate} = require('express-validation')
 var adminValidation = require('../../validator/admin-validation')
 var multer  = require('multer')
@@ -97,6 +98,16 @@ router.post('/product', authMiddleware.checkToken, createProduct)
 router.get('/product/:id', authMiddleware.checkToken, getProduct)
 router.put('/product/:id', authMiddleware.checkToken, updateProduct)
 router.post('/product/:id/delete', authMiddleware.checkToken, deleteProduct)
+
+/**
+ * discountcode api
+ */
+router.post('/discountCodeList', authMiddleware.checkToken, getDiscountCodeList)
+router.post('/discountCode', authMiddleware.checkToken, createDiscountCode)
+router.get('/discountCode/:id', authMiddleware.checkToken, getDiscountCode)
+router.put('/discountCode/:id', authMiddleware.checkToken, updateDiscountCode)
+router.post('/discountCode/:id/delete', authMiddleware.checkToken, deleteDiscountCode)
+
 
 /**
  * Function that get profile data
@@ -868,4 +879,108 @@ function deleteProduct(req, res) {
         res.json(err)
     })
 }
+
+//////////////////////////discount_codes////////////////////////////
+/**
+ * Function that get the discountcodes list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getDiscountCodeList(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    discountCodesService.getDiscountCodeList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+
+/**
+ * Function that create discountcodes
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createDiscountCode(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    discountCodesService.createDiscountCode(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get discountcode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getDiscountCode(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    discountCodesService.getDiscountCode(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update discountcode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateDiscountCode(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id;
+    discountCodesService.updateDiscountCode(userId, userdata, data, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete discountcode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteDiscountCode(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    discountCodesService.deleteDiscountCode(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
 module.exports = router

@@ -26,6 +26,7 @@ const tables = {
     VOTEBRANCH: 'vote_branch',
     INVOICES: 'invoices',
     PRODUCTS: 'products',
+    DISCOUNTCODES: 'discount_codes',
 }
 
 module.exports = tables

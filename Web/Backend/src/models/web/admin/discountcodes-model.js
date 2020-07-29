@@ -21,13 +21,13 @@ var mail = require('../../../constants/mail')
 var randtoken = require('rand-token');
 var code = require('../../../constants/code')
 
-var productModel = {
-    getProductList: getProductList,
-    getCountProductList: getCountProductList,
-    createProduct: createProduct,
-    getProduct: getProduct,
-    updateProduct: updateProduct,
-    deleteProduct: deleteProduct,
+var discountCodeModel = {
+    getDiscountCodeList: getDiscountCodeList,
+    getCountDiscountCodeList: getCountDiscountCodeList,
+    createDiscountCode: createDiscountCode,
+    getDiscountCode: getDiscountCode,
+    updateDiscountCode: updateDiscountCode,
+    deleteDiscountCode: deleteDiscountCode,
 }
 
 /**
@@ -37,11 +37,11 @@ var productModel = {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getProductList(uid, data) {
+function getDiscountCodeList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, productID ID
-                    FROM products
+                    *
+                    FROM discountCodes
                     WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
 
         sort_column = Number(data.sort_column);
@@ -51,7 +51,7 @@ function getProductList(uid, data) {
         let params = [data.status, uid, data.type, search_key];
 
         if (sort_column === -1)
-            query += ' order by productID desc';
+            query += ' order by discountCodeID desc';
         else {
             if (sort_column === 0)
                 query += ' order by name ';
@@ -77,11 +77,11 @@ function getProductList(uid, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getCountProductList(uid, data) {
+function getCountDiscountCodeList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
                     count(*) count
-                    FROM products
+                    FROM discountCodes
                     WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [data.status, uid, data.type, search_key];
@@ -98,15 +98,15 @@ function getCountProductList(uid, data) {
 
 
 /**
- * create Product only product table
+ * create DiscountCode only discountCode table
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function createProduct(uid, data) {
+function createDiscountCode(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `Insert into ` + table.PRODUCTS + ` (buyer_type, billing_cycle, renewal, name, description, price_type, price, vat_option, vat_fee, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?)`;
+        let query = `Insert into ` + table.DISCOUNTCODES + ` (buyer_type, billing_cycle, renewal, name, description, price_type, price, vat_option, vat_fee, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?)`;
         db.query(query, [data.buyer_type, data.billing_cycle, data.renewal, data.name, data.description, data.price_type, data.price, data.vat_option, data.vat_fee, uid, timeHelper.getCurrentTime()], function (error, result, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
@@ -118,15 +118,15 @@ function createProduct(uid, data) {
 }
 
 /**
- * get product
+ * get discountCode
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function getProduct(uid, id) {
+function getDiscountCode(uid, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from ' + table.PRODUCTS + ' where productID = ?'
+        let query = 'Select * from ' + table.DISCOUNTCODES + ' where discountCodeID = ?'
 
         db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
@@ -144,15 +144,15 @@ function getProduct(uid, id) {
 
 
 /**
- * update Product only product table
+ * update DiscountCode only discountCode table
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function updateProduct(id, data) {
+function updateDiscountCode(id, data) {
     return new Promise(async (resolve, reject) => {
-        let query = `Update ` + table.PRODUCTS + ` set buyer_type = ?, billing_cycle = ?, renewal = ?, name = ?, description = ?, price_type = ?, price = ?, vat_option = ?, vat_fee = ?, updated_at = ? where productID = ? `
+        let query = `Update ` + table.DISCOUNTCODES + ` set buyer_type = ?, billing_cycle = ?, renewal = ?, name = ?, description = ?, price_type = ?, price = ?, vat_option = ?, vat_fee = ?, updated_at = ? where discountCodeID = ? `
         db.query(query, [data.buyer_type, data.billing_cycle, data.renewal, data.name, data.description, data.price_type, data.price, data.vat_option, data.vat_fee, timeHelper.getCurrentTime(), id], function (error, result, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
@@ -164,15 +164,15 @@ function updateProduct(id, data) {
 }
 
 /**
- * delete product
+ * delete discountCode
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteProduct(uid, id, data) {
+function deleteDiscountCode(uid, id, data) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where productID = ?'
+        let query = 'UPDATE ' + table.DISCOUNTCODES + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where discountCodeID = ?'
   
         db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
@@ -183,4 +183,4 @@ function deleteProduct(uid, id, data) {
         })
     })
   }
-module.exports = productModel
+module.exports = discountCodeModel

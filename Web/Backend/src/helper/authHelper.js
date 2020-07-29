@@ -18,7 +18,7 @@ const authHelper = {
     hasBuildingPermission: hasBuildingPermission,
     hasOwnerPermission: hasOwnerPermission,
     hasOrderPermission: hasOrderPermission,
-    hasDiscountcodePermission: hasDiscountcodePermission,
+    hasDiscountCodePermission: hasDiscountCodePermission,
     hasUserPermission: hasUserPermission,
     hasTeamPermission: hasTeamPermission,
 }
@@ -156,7 +156,7 @@ function hasProductPermission(userdata, permission){
     })
 }
 
-function hasDiscountcodePermission(userdata, permission){
+function hasDiscountCodePermission(userdata, permission){
     return new Promise((resolve, reject) => {
         let status = false
         for (i in permission) {
