@@ -638,7 +638,7 @@ const ManagerEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessManagers === 'see' ? true : false)}/>
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
@@ -785,6 +785,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeBuildingsPermission}
                   value={buildingsPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -794,6 +795,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeOwnersPermission}
                   value={ownersPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -803,6 +805,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeChatPermission}
                   value={chatPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -812,6 +815,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeIncidentsPermission}
                   value={incidentsPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -821,6 +825,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAssembliesPermission}
                   value={assembliesPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -830,6 +835,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeEventsPermission}
                   value={eventsPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -839,6 +845,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeTeamPermission}
                   value={teamPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -848,6 +855,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeProvidersPermission}
                   value={providersPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -857,6 +865,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAnnouncementsPermission}
                   value={announcementsPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -866,6 +875,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeCompanyPermission}
                   value={companyPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -875,6 +885,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeAddonsPermission}
                   value={addonsPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -884,6 +895,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangeInvoicesPermission}
                   value={invoicesPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
               <Grid xs={6} item container direction="column">
@@ -893,6 +905,7 @@ const ManagerEdit = (props) => {
                   data={permissionList}
                   onChangeSelect={handleChangePaymentMethodsPermission}
                   value={paymentMethodsPermission}
+                  disabled={(accessManagers === 'see' ? true : false)}
                 />
               </Grid>
             </Grid>

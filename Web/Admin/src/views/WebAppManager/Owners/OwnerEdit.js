@@ -685,7 +685,7 @@ const OwnerEdit = (props) => {
                     }}
                     badgeContent={
                       <div>
-                        <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
+                        <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessOwners === 'see' ? true : false)}/>
                         <label htmlFor="img_front">
                           <EditOutlinedIcon className={classes.editAvatar} />
                         </label>
@@ -921,6 +921,7 @@ const OwnerEdit = (props) => {
                   value={buildings}
                   disabled={true}
                   width="50%"
+                  disabled={(accessOwners === 'see' ? true : false)}
                 />
                 {errorsBuildings.length > 0 &&
                   <span className={classes.error}>{errorsBuildings}</span>}
@@ -972,6 +973,7 @@ const OwnerEdit = (props) => {
                                         value={apartNumber[i] || ""}
                                         onChange={(event) => handleChangeApartNumber(event, i)}
                                         style={{ width: 100 }}
+                                        disabled={(accessOwners === 'see' ? true : false)}
                                       />
                                     </Grid>
                                   </Grid>
@@ -990,7 +992,7 @@ const OwnerEdit = (props) => {
                                                 value={voteAmount[i][j] || ""}
                                                 onChange={(event) => handleChangeVoteAmount(event, i, j)}
                                                 style={{ width: 100 }}
-
+                                                disabled={(accessOwners === 'see' ? true : false)}
                                               />
                                             </Grid>
                                             <Grid item><p className={classes.itemTitle}>tantièmes</p></Grid>
@@ -1004,7 +1006,7 @@ const OwnerEdit = (props) => {
                               <Grid item>
                                 <RemoveCircleOutlineIcon
                                   className={classes.plus}
-                                  onClick={() => handleClickRemoveLot(i)}
+                                  onClick={accessOwners === 'see' ? null : () => handleClickRemoveLot(i)}
                                 />
                               </Grid>
                             </Grid>

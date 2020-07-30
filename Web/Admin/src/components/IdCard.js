@@ -118,7 +118,7 @@ export default function IdCard(props) {
                 border: '2px solid gray',
                 padding: '1px 4px',
               }}
-              badgeContent={<CloseIcon onClick={() => handleClose(i)} 
+              badgeContent={<CloseIcon onClick={props.disabled ? null : () => handleClose(i)} 
                 className={props.badge === 'first' ? classes.badge1 : classes.badge2}/>}
             >
               <Avatar className={props.type === 'first' ? classes.identify1 : classes.identify2} alt="" src={idcardurl} />

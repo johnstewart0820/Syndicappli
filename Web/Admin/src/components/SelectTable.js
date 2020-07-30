@@ -399,13 +399,11 @@ export default function SelectTable(props) {
                   <EditIcon
                     className={classes.editItem}
                     onClick={() => handleClickEdit(i)}
-                    disabled={(props.access === 'see' ? true : false)}
                   />
                       &nbsp;&nbsp;
                   <DeleteIcon
                     className={classes.editItem}
-                    onClick={() => handleClickDelete(i)}
-                    disabled={(props.access === 'see' ? true : false)}
+                    onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
                   />
                 </TableCell>
               </TableRow>

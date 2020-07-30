@@ -298,7 +298,7 @@ const BuildingsEdit = (props) => {
                           <Grid item>
                             <RemoveCircleOutlineIcon
                               className={classes.plus}
-                              onClick={() => handleClickRemoveClef(i)}
+                              onClick={accessBuildings === 'see'? null:() => handleClickRemoveClef(i)}
                             />
                           </Grid>
                           <Grid item xs={6} >

@@ -588,7 +588,7 @@ const TeamMemberEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessTeam === 'see' ? true : false)} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>

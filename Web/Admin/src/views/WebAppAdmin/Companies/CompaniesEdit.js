@@ -592,6 +592,7 @@ const CompaniesEdit = (props) => {
                       value={name}
                       onChange={handleChangeName}
                       fullWidth
+                      disabled={(accessCompanies === 'see' ? true : false)}
                     />
                     {errorsName.length > 0 &&
                       <span className={classes.error}>{errorsName}</span>}
@@ -611,7 +612,7 @@ const CompaniesEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} />
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessCompanies === 'see' ? true : false)}/>
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
@@ -638,6 +639,7 @@ const CompaniesEdit = (props) => {
                     value={address}
                     onChange={handleChangeAddress}
                     fullWidth
+                    disabled={(accessCompanies === 'see' ? true : false)}
                   />
                   {errorsAddress.length > 0 &&
                     <span className={classes.error}>{errorsAddress}</span>}
@@ -655,6 +657,7 @@ const CompaniesEdit = (props) => {
                   variant="outlined"
                   value={email}
                   onChange={handleChangeEmail}
+                  disabled={(accessCompanies === 'see' ? true : false)}
                 />
                 {errorsEmail.length > 0 &&
                   <span className={classes.error}>{errorsEmail}</span>}
@@ -668,6 +671,7 @@ const CompaniesEdit = (props) => {
                   variant="outlined"
                   value={phone}
                   onChange={handleChangePhone}
+                  disabled={(accessCompanies === 'see' ? true : false)}
                 />
                 {errorsPhone.length > 0 &&
                   <span className={classes.error}>{errorsPhone}</span>}
@@ -694,6 +698,7 @@ const CompaniesEdit = (props) => {
                   value={siret}
                   onChange={handleChangeSiret}
                   fullWidth
+                  disabled={(accessCompanies === 'see' ? true : false)}
                 />
                 {errorsSiret.length > 0 &&
                   <span className={classes.error}>{errorsSiret}</span>}
@@ -708,6 +713,7 @@ const CompaniesEdit = (props) => {
                   value={vat}
                   onChange={handleChangeVat}
                   fullWidth
+                  disabled={(accessCompanies === 'see' ? true : false)}
                 />
               </Grid>
             </Grid>
@@ -719,6 +725,7 @@ const CompaniesEdit = (props) => {
                     <Checkbox
                       checked={assemblies360}
                       onChange={handleChangeAssemblies360}
+                      disabled={(accessCompanies === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -730,6 +737,7 @@ const CompaniesEdit = (props) => {
                     <Checkbox
                       checked={assembliesWebcam}
                       onChange={handleChangeAssembliesWebcam}
+                      disabled={(accessCompanies === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -741,6 +749,7 @@ const CompaniesEdit = (props) => {
                     <Checkbox
                       checked={assembliesAudio}
                       onChange={handleChangeAssembliesAudio}
+                      disabled={(accessCompanies === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -756,6 +765,7 @@ const CompaniesEdit = (props) => {
                       <Checkbox
                         checked={statusActive}
                         onChange={handleChangeStatusActive}
+                        disabled={(accessCompanies === 'see' ? true : false)}
                       />
                     </Grid>
                   </Grid>
@@ -767,6 +777,7 @@ const CompaniesEdit = (props) => {
                       <Checkbox
                         checked={statusInActive}
                         onChange={handleChangeStatusInActive}
+                        disabled={(accessCompanies === 'see' ? true : false)}
                       />
                     </Grid>
                   </Grid>
@@ -776,7 +787,7 @@ const CompaniesEdit = (props) => {
                 <span className={classes.error}>{errorsStatus}</span>}
             </Grid>
             <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickSave} />
+              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessCompanies === 'see' ? true : false)}/>
             </Grid>
           </Grid>
         </div>
@@ -858,6 +869,7 @@ const CompaniesEdit = (props) => {
                       value={accountname}
                       onChange={handleChangeAccountName}
                       fullWidth
+                      disabled={(accessCompanies === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -874,6 +886,7 @@ const CompaniesEdit = (props) => {
                       value={accountaddress}
                       onChange={handleChangeAccountAddress}
                       fullWidth
+                      disabled={(accessCompanies === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -888,14 +901,15 @@ const CompaniesEdit = (props) => {
                       value={IBAN}
                       onChange={handleChangeIBAN}
                       fullWidth
+                      disabled={(accessCompanies === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name={"Editer le mandat"} color={"1"} /></Grid>
-              <Grid item><MyButton name={"Supprimer"} bgColor="grey" />  </Grid>
+              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessCompanies === 'see' ? true : false)}/></Grid>
+              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessCompanies === 'see' ? true : false)}/>  </Grid>
             </Grid>
           </Grid>
         </div>

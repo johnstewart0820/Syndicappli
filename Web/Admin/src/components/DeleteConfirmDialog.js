@@ -14,6 +14,7 @@ const DeleteConfirmDialog= (props)=> {
     props.handleCloseDelete();
   };
   const handleDelete = ()=>{
+    setIsDisableDelete(true);
       props.handleDelete();
   }
   const inputTextChange = (event) => {
