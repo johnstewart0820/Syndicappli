@@ -30,7 +30,8 @@ var managerModel = {
   getManager: getManager,
   updateManager: updateManager,
   updateManagerStatus: updateManagerStatus,
-  deleteManager: deleteManager
+  deleteManager: deleteManager,
+  deleteAllManager: deleteAllManager,
 }
 
 
@@ -404,6 +405,50 @@ function deleteManager(uid, id, data) {
               reject({ message: message.INTERNAL_SERVER_ERROR })
           } else {
               resolve("ok")
+          }
+      })
+  })
+}
+
+/**
+ * delete trased all team member
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteAllManager(data) {
+  return new Promise((resolve, reject) => {
+    let query = 'Select * from ' + table.USERS + ' u left join user_relationship r on u.userID = r.userID and r.type = "building" and u.usertype = "owner" and u.permission = "trash" left join buildings b on b.buildingID = r.relationID where b.companyID = ?'
+
+      db.query(query, [data.companyID], (error, rows, fields) => {
+          let users = rows
+          if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR })
+          } else {
+              let query = 'Delete from ' + table.USERS + ' where userID = ?'
+              for (let i in users) {
+                db.query(query, [users[i].userID], (error, rows, fields) => {
+                  if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR})
+                  } else {
+                    let query = 'Delete from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+                    db.query(query, [users[i].userID], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR})
+                        } else {
+                            let query = 'Delete from ' + table.ROLE + ' where userID = ?'
+                            db.query(query, [users[i].userID], (error, rows, fields) => {
+                                if (error) {
+                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                }
+                            })
+                        }
+                    })
+                  }
+                })
+              }
+              resolve("OK")
           }
       })
   })

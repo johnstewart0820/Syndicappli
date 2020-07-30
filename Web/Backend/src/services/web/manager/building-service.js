@@ -23,7 +23,8 @@ var buildingService = {
     createBuilding: createBuilding,
     getBuilding: getBuilding,
     updateBuilding: updateBuilding,
-    deleteBuilding: deleteBuilding
+    deleteBuilding: deleteBuilding,
+    deleteAllBuilding: deleteAllBuilding
 }
 
 
@@ -193,5 +194,36 @@ function deleteBuilding(uid, id, userdata, data) {
         })
     })
 }
+
+/**
+ * Function that delete All trashed company data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function deleteAllBuilding(uid, userdata, data) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            buildingModel.deleteAllBuilding(data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
 
 module.exports = buildingService

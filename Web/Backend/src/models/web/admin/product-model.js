@@ -83,9 +83,9 @@ function getCountProductList(uid, data) {
         let query = `SELECT
                     count(*) count
                     FROM products
-                    WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
+                    WHERE permission = ? and buyer_type = ? and name like ? `
         search_key = '%' + data.search_key + '%'
-        let params = [data.status, uid, data.type, search_key];
+        let params = [data.status, data.type, search_key];
 
         db.query(query, params, (error, rows, fields) => {
             if (error) {
@@ -194,7 +194,7 @@ function deleteProduct(uid, id, data) {
  */
 function deleteAllProduct(uid) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = "deleted" where created_by = ? and permission = "trash"'
+        let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = "deleted" where  permission = "trash"'
   
         db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {

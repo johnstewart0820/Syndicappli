@@ -222,10 +222,10 @@ function deleteManager(uid, id, userdata, data) {
  * @param   object authData
  * @return  json
  */
-function deleteAllManager(uid, userdata) {
+function deleteAllManager(uid, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasManagerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            managerModel.deleteAllManager(uid).then((result) => {
+            managerModel.deleteAllManager(data).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

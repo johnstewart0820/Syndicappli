@@ -324,74 +324,68 @@ function deleteBuilding(uid, id, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteAllBuilding(uid) {
+function deleteAllBuilding(data) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from ' + table.BUILDINGS + ' where permission = "trash" and created_by = ?'
-        db.query(query, [uid],  (error, rows, fields) => {
-            if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR})
-            } else {
-                let buildings = rows
-                let query = 'Delete from ' + table.BUILDINGS + ' where permission = "trash" and created_by = ?'
-                db.query(query, [uid], async (error, rows, fields) => {
-                    if (error) {
-                        reject({ message: message.INTERNAL_SERVER_ERROR})
-                    } else {
-                        for (let j in buildings) {
-                            let query = 'Select * from ' + table.APARTMENTS + ' where buildingID = ?'
-                            await db.query(query, [buildings[j].buildingID], (error, rows, fields) => {
+        let buildings = data.list
+        for (let i in buildings) {
+            let query = 'Delete from ' + table.BUILDINGS + ' where buildingID = ?'
+            db.query(query, [buildings[i]], async (error, rows, fields) => {
+                if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR})
+                } else {
+                    let query = 'Select * from ' + table.APARTMENTS + ' where buildingID = ?'
+                    await db.query(query, [buildings[i]], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR})
+                        } else {
+                            let apartments = rows
+                            let query = 'Delete from ' + table.APARTMENTS + ' where buildingID = ?'
+                            db.query(query, [buildings[i]], (error, rows, fields) => {
                                 if (error) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR})
                                 } else {
-                                    let apartments = rows
-                                    let query = 'Delete from ' + table.APARTMENTS + ' where buildingID = ?'
-                                    db.query(query, [buildings[j].buildingID], (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR})
-                                        } else {
-                                            for (let k in apartments) {
-                                                let query = 'Select * from ' + table.VOTE_AMOUNT_OF_PARTS + ' where apartmentID = ?'
+                                    for (let k in apartments) {
+                                        let query = 'Select * from ' + table.VOTE_AMOUNT_OF_PARTS + ' where apartmentID = ?'
+                                        db.query(query, [apartments[k].apartmentID], (error, rows, fields) => {
+                                            if (error) {
+                                                reject({ message: message.INTERNAL_SERVER_ERROR})
+                                            } else {
+                                                let votes = rows
+                                                let query = 'Delete from ' + table.VOTE_AMOUNT_OF_PARTS + ' where apartmentID = ?'
                                                 db.query(query, [apartments[k].apartmentID], (error, rows, fields) => {
                                                     if (error) {
-                                                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                                                        reject({ message: message.INTERNAL_SERVER_ERROR })
                                                     } else {
-                                                        let votes = rows
-                                                        let query = 'Delete from ' + table.VOTE_AMOUNT_OF_PARTS + ' where apartmentID = ?'
-                                                        db.query(query, [apartments[k].apartmentID], (error, rows, fields) => {
-                                                            if (error) {
-                                                                reject({ message: message.INTERNAL_SERVER_ERROR })
-                                                            } else {
-                                                                let query = 'Delete from ' + table.VOTE_BUILDING_BRANCH + ' where voteID = ?'
-                                                                for (let l in votes) {
-                                                                    db.query(query, [votes[l].voteID], (error, rows, fields) => {
-                                                                        if (error) {
-                                                                            reject({ message: message.INTERNAL_SERVER_ERROR})
-                                                                        }
-                                                                    })
+                                                        let query = 'Delete from ' + table.VOTE_BUILDING_BRANCH + ' where voteID = ?'
+                                                        for (let l in votes) {
+                                                            db.query(query, [votes[l].voteID], (error, rows, fields) => {
+                                                                if (error) {
+                                                                    reject({ message: message.INTERNAL_SERVER_ERROR})
                                                                 }
-                                                            }
-                                                        })
+                                                            })
+                                                        }
                                                     }
                                                 })
                                             }
-                                        }
-                                    })
-                                }
-                            })
-                            let relation_query = 'Delete * from ' + table.USER_RELATIONSHIP + ' where relationID = ?'
-                            await db.query(relation_query, [buildings[j].buildingID], (error, rows, fields) => {
-                                if (error) {
-                                    reject({ message: message.INTERNAL_SERVER_ERROR})
+                                        })
+                                    }
                                 }
                             })
                         }
-                    }
-                })
-                resolve("OK")
-            }
-        })
+                    })
+                    let relation_query = 'Delete * from ' + table.USER_RELATIONSHIP + ' where relationID = ?'
+                    await db.query(relation_query, [buildings[i]], (error, rows, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR})
+                        }
+                    })
+                }
+            })
+        }
+        resolve("OK")
     })
 }
+
 
 
 module.exports = buildingModel

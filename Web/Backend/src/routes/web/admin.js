@@ -263,7 +263,8 @@ function deleteUser(req, res) {
 function deleteAllUser(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    adminService.deleteAllUser(userId, userdata).then((result) => {
+    let data = req.body
+    adminService.deleteAllUser(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -382,7 +383,8 @@ function deleteCompany(req, res) {
 function deleteAllCompany(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    companyService.deleteAllCompany(userId, userdata).then((result) => {
+    let data = req.body
+    companyService.deleteAllCompany(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -526,7 +528,8 @@ function updateBuilding(req, res) {
 function deleteAllBuilding(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    buildingService.deleteAllBuilding(userId, userdata).then((result) => {
+    let data = req.body
+    buildingService.deleteAllBuilding(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -690,7 +693,8 @@ function updateManagerStatus(req, res) {
 function deleteAllManager(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    managerService.deleteAllManager(userId, userdata).then((result) => {
+    let data = req.body
+    managerService.deleteAllManager(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -835,7 +839,8 @@ function deleteOwner(req, res) {
 function deleteAllOwner(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    ownerService.deleteAllOwner(userId, userdata).then((result) => {
+    let data = req.body
+    ownerService.deleteAllOwner(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

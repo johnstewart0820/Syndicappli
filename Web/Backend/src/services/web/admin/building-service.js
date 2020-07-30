@@ -236,10 +236,10 @@ function deleteBuilding(uid, id, userdata, data) {
  * @param   object authData
  * @return  json
  */
-function deleteAllBuilding(uid, userdata) {
+function deleteAllBuilding(uid, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            buildingModel.deleteAllBuilding(uid).then((result) => {
+            buildingModel.deleteAllBuilding(data).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

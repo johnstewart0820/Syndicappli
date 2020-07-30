@@ -220,10 +220,10 @@ function deleteOwner(uid, id, userdata, data) {
  * @param   object authData
  * @return  json
  */
-function deleteAllOwner(uid, userdata) {
+function deleteAllOwner(uid, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            ownerModel.deleteAllOwner(uid).then((result) => {
+            ownerModel.deleteAllOwner(data).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

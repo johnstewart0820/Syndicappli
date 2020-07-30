@@ -438,40 +438,33 @@ function deleteManager(uid, id, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteAllManager(uid) {
+function deleteAllManager(data) {
   return new Promise((resolve, reject) => {
-      let query = 'Select * from ' + table.USERS + ' where usertype = "manager" and permission = "trash" and created_by = ?'
-
-      db.query(query, [uid], (error, rows, fields) => {
-          let users = rows
-          if (error) {
-              reject({ message: message.INTERNAL_SERVER_ERROR })
-          } else {
-              let query = 'Delete from ' + table.USERS + ' where usertype = "manager" and permission = "trash" and created_by = ?'
-              db.query(query, [uid], (error, rows, fields) => {
-                  if (error) {
-                      reject({ message: message.INTERNAL_SERVER_ERROR})
-                  } else {
-                      for (let i in users) {
-                          let query = 'Delete from ' + table.USER_RELATIONSHIP + ' where userID = ?'
-                          db.query(query, [users[i].userID], (error, rows, fields) => {
-                              if (error) {
-                                  reject({ message: message.INTERNAL_SERVER_ERROR})
-                              } else {
-                                  let query = 'Delete from ' + table.ROLE + ' where userID = ?'
-                                  db.query(query, [users[i].userID], (error, rows, fields) => {
-                                      if (error) {
-                                          reject({ message: message.INTERNAL_SERVER_ERROR })
-                                      }
-                                  })
-                              }
-                          })
-                      }
-                      resolve("OK")
-                  }
+    let users = data.list
+    
+    let query = 'Delete from ' + table.USERS + ' where userID = ?'
+    for (let i in users) {
+      db.query(query, [users[i]], (error, rows, fields) => {
+        if (error) {
+          reject({ message: message.INTERNAL_SERVER_ERROR})
+        } else {
+          let query = 'Delete from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+          db.query(query, [users[i]], (error, rows, fields) => {
+            if (error) {
+              reject({ message: message.INTERNAL_SERVER_ERROR})
+            } else {
+              let query = 'Delete from ' + table.ROLE + ' where userID = ?'
+              db.query(query, [users[i]], (error, rows, fields) => {
+                if (error) {
+                  reject({ message: message.INTERNAL_SERVER_ERROR })
+                }
               })
-          }
+            }
+          })
+        }
       })
+    }
+    resolve("OK")
   })
 }
 
