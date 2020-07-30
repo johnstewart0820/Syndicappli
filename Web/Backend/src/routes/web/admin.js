@@ -51,12 +51,10 @@ router.post('/user/deleteAll', authMiddleware.checkToken, deleteAllUser)
  */
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
 router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
-// router.post('/company', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), createCompany)
 router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), updateCompany)
-// router.put('/company/:id', authMiddleware.checkToken, validate(adminValidation.company), upload.single('logo'), updateCompany)
-router.post('/allCompanyList', authMiddleware.checkToken, getAllCompanyList)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
 router.post('/company/:id/delete', authMiddleware.checkToken, deleteCompany)
+router.post('/company/deleteAll', authMiddleware.checkToken, deleteAllCompany)
 
 /**
  * building api
@@ -78,6 +76,7 @@ router.get('/manager/:id', authMiddleware.checkToken, getManager)
 router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
 router.post('/manager/:id/delete', authMiddleware.checkToken, deleteManager)
 router.put('/manager/:id/status', authMiddleware.checkToken, updateManagerStatus)
+router.post('/manager/deleteAll', authMiddleware.checkToken, deleteAllManager)
 
 
 /**
@@ -351,19 +350,37 @@ function getCompany(req, res) {
 }
 
 /**
- * Function that get all company list
+ * Function that delete company
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
  * @param   object req
  * @param   object res
  * @return  json
  */
-function getAllCompanyList(req, res) {
-
+function deleteCompany(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
+    let id = req.params.id
     let data = req.body
-    adminService.getAllCompanyList(userId, data, userdata).then((result) => {
+    companyService.deleteCompany(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete all trashed company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllCompany(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    companyService.deleteAllCompany(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -385,26 +402,6 @@ function getCompanyListByUser(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     buildingService.getCompanyListByUser(userId, userdata).then((result) => {
-        res.json(result)
-    }).catch((err) => {
-        res.json(err)
-    })
-}
-
-/**
- * Function that delete company
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object req
- * @param   object res
- * @return  json
- */
-function deleteCompany(req, res) {
-    let userId = req.decoded.uid
-    let userdata = req.decoded.userdata
-    let id = req.params.id
-    let data = req.body
-    companyService.deleteCompany(userId, id, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -656,6 +653,24 @@ function updateManagerStatus(req, res) {
     let id = req.params.id;
     let data = req.body
     managerService.updateManagerStatus(userId, id, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete all trashed manager
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllManager(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    managerService.deleteAllManager(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
