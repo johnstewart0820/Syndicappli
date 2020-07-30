@@ -18,6 +18,7 @@ import TrashUsers from './TrashUsers';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AdminService from 'services/api.js';
+import useGlobal from 'Global/global';
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
@@ -55,7 +56,7 @@ const Main = (props) => {
     if (!token) {
         window.location.replace("/login");
     }
-
+    const [globalState, globalActions] = useGlobal();
     const accessUsers = authService.getAccess('role_users');
     const [value, setValue] = React.useState(0);
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
@@ -74,6 +75,7 @@ const Main = (props) => {
         setRefresh(!refresh);
     };
     const handleClickEmptyTrashUser = () => {
+        if(globalState.trash.type === 'user' && globalState.trash.ID.length != 0)     
         setOpenDelete(true);
     };
     const handleClickAdd = () => {
@@ -88,7 +90,8 @@ const Main = (props) => {
         handleCloseDelete();
         setVisibleIndicator(true);
         let data = {
-            'status': 'trash'
+            'status': 'trash',
+            'list' : globalState.trash.ID
         }
         AdminService.emptyTrashUser( data)
             .then(

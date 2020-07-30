@@ -7,6 +7,7 @@ import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
+import useGlobal from 'Global/global';
 
 const TrashDiscountCodes = (props) => {
     const { history } = props;
@@ -17,7 +18,7 @@ const TrashDiscountCodes = (props) => {
     }
     const accessDiscountCodes = authService.getAccess('role_discountcodes');
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-
+    const [globalState, globalActions] = useGlobal();
     const classes = useStyles();
     const [dataList, setDataList] = useState([]);
     const [totalpage, setTotalPage] = useState(1);
@@ -60,6 +61,12 @@ const TrashDiscountCodes = (props) => {
                             else
                                 setTotalPage(data.totalpage);
                             // setDataList(data.codelist);
+                            // let codeID = [];
+                            // data.buildinglist.map((item, i) => (
+                            //     codeID[i] = item.codeID
+                            // )
+                            // );
+                            // globalActions.setTrash({type : 'code', ID : codeID});
                             break;
                         case 401:
                             authService.logout();

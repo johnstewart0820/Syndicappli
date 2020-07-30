@@ -6,6 +6,10 @@ const initialState = {
   lastname : ' ',
   avatarurl: '',
   smsAuth : '',
+  trash : {
+    type : '',
+    ID : []
+  },
 };
  
 const actions = {
@@ -23,6 +27,9 @@ const actions = {
     },
     setSmsAuth : (store, smsAuth)=>{
         store.setState({smsAuth: smsAuth});
+    },
+    setTrash : (store, trash)=>{
+        store.setState({trash: trash});
     },
 };
  

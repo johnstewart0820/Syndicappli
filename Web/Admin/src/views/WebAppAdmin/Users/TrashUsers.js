@@ -6,6 +6,7 @@ import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsStore } from 'react-toasts';
 import TrashTable from 'components/TrashTable';
+import useGlobal from 'Global/global.js';
 
 const TrashUsers = (props) => {
   const { history } = props;
@@ -14,6 +15,7 @@ const TrashUsers = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
+  const [globalState, globalActions] = useGlobal();
   const accessUsers = authService.getAccess('role_users');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
@@ -58,6 +60,12 @@ const TrashUsers = (props) => {
                 else
                     setTotalPage(1);
                 setDataList(data.userlist);
+                let userID = [];
+                data.userlist.map((item, i) => (
+                  userID[i] = item.userID
+                )
+                );
+                globalActions.setTrash({type : 'user', ID : userID});
               break;
             case 401:
               authService.logout();

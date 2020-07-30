@@ -6,6 +6,7 @@ import { ManagerService as Service } from '../../../services/api.js';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TrashTable from 'components/TrashTable';
+import useGlobal from 'Global/global.js';
 const ManagerService = new Service();
 const TrashBuildings = (props) => {
   const { history } = props;
@@ -13,6 +14,7 @@ const TrashBuildings = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
+  const [globalState, globalActions] = useGlobal();
   const accessBuildings = authService.getAccess('role_buildings');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
@@ -125,6 +127,12 @@ const TrashBuildings = (props) => {
               else
                 setTotalPage(data.totalpage);
               setDataList(data.buildinglist);
+              let buildingID = [];
+              data.buildinglist.map((item, i) => (
+                buildingID[i] = item.buildingID
+              )
+              );
+              globalActions.setTrash({type : 'manager_building', ID : buildingID});
               break;
             case 401:
               authService.logout();

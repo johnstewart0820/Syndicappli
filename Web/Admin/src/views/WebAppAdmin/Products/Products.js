@@ -20,6 +20,7 @@ import TrashProducts from './TrashProducts';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AdminService from 'services/api.js';
+import useGlobal from 'Global/global';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -64,6 +65,7 @@ const Products = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const [globalState, globalActions] = useGlobal();
   const accessProducts = authService.getAccess('role_products');
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -82,6 +84,7 @@ const Products = (props) => {
     }
   };
   const handleClickEmptyTrashProduct = () => {
+    if(globalState.trash.type === 'product' && globalState.trash.ID.length != 0)          
     setOpenDelete(true);
   };
   const handleCloseDelete = () => {
@@ -91,7 +94,8 @@ const Products = (props) => {
     handleCloseDelete();
     setVisibleIndicator(true);
     let data = {
-      'status': 'trash'
+      'status': 'trash',
+      'list' : globalState.trash.ID
     }
     AdminService.emptyTrashProduct(data)
       .then(

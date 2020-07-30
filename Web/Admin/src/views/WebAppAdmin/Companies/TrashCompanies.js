@@ -6,6 +6,7 @@ import useStyles from './useStyles';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TrashTable from 'components/TrashTable';
+import useGlobal from 'Global/global.js';
 
 const TrashCompanies = (props) => {
   const { history } = props;
@@ -13,6 +14,7 @@ const TrashCompanies = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
+  const [globalState, globalActions] = useGlobal();
   const accessCompanies = authService.getAccess('role_companies');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
@@ -106,6 +108,12 @@ const TrashCompanies = (props) => {
               else
                 setTotalPage(data.totalpage);
               setDataList(data.companylist);
+              let companyID = [];
+              data.companylist.map((item, i) => (
+                companyID[i] = item.companyID
+              )
+              );
+              globalActions.setTrash({type : 'company', ID : companyID});
               break;
             case 401:
               authService.logout();

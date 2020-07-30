@@ -8,6 +8,7 @@ import MySelect from '../../../components/MySelect';
 import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TrashTable from 'components/TrashTable';
+import useGlobal from 'Global/global';
 
 const TrashBuildings = (props) => {
   const { history } = props;
@@ -17,6 +18,7 @@ const TrashBuildings = (props) => {
   }
   const accessBuildings = authService.getAccess('role_buildings');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+  const [globalState, globalActions] = useGlobal();
   const classes = useStyles();
   const [footerItems, setFooterItems] = useState([]);
   let company = [''];
@@ -141,8 +143,13 @@ const TrashBuildings = (props) => {
               else
                 setTotalPage(data.totalpage);
               setDataList(data.buildinglist);
+              let buildingID = [];
+              data.buildinglist.map((item, i) => (
+                buildingID[i] = item.buildingID
+              )
+              );
               let amount = 0;
-
+              globalActions.setTrash({type : 'building', ID : buildingID});
               const items = ['Total', data.totalcount, amount];
               setFooterItems(items);
               break;

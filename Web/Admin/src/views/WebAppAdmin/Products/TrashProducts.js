@@ -8,12 +8,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import TrashTable from 'components/TrashTable';
 import Grid from '@material-ui/core/Grid';
 import MySelect from '../../../components/MySelect';
+import useGlobal from 'Global/global.js';
 const TrashProducts = (props) => {
   const { history } = props;
   const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
+  const [globalState, globalActions] = useGlobal();
   const accessProducts = authService.getAccess('role_products');
   const categorieList = ['Gestionnaires', 'Copropriétaires', 'immeubles'];
   const en_categorieList = ['managers', 'owners', 'buildings'];
@@ -108,6 +110,12 @@ const TrashProducts = (props) => {
               else
                 setTotalPage(data.totalpage);
               setDataList(data.productlist);
+              let productID = [];
+              data.productlist.map((item, i) => (
+                productID[i] = item.ID
+              )
+              );
+              globalActions.setTrash({type : 'product', ID : productID});
               break;
             case 401:
               authService.logout();

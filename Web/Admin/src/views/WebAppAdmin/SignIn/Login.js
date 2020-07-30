@@ -119,14 +119,14 @@ const Login = (props) => {
                 localStorage.setItem("token", JSON.stringify(response.data.data.token));
                 localStorage.setItem("firstlogin", JSON.stringify("false"));
                 localStorage.setItem("usertype", JSON.stringify(profile.usertype));
-                localStorage.setItem("role_companies", JSON.stringify(profile.role_companies));
-                localStorage.setItem("role_managers", JSON.stringify(profile.role_managers));
-                localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
-                localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
-                localStorage.setItem("role_orders", JSON.stringify('denied'));
-                localStorage.setItem("role_products", JSON.stringify('denied'));
-                localStorage.setItem("role_discountcodes", JSON.stringify('denied'));
-                localStorage.setItem("role_users", JSON.stringify(profile.role_users));
+                localStorage.setItem("role_companies", profile.role_companies === undefined ? 'denied': JSON.stringify(profile.role_companies));
+                localStorage.setItem("role_managers", profile.role_managers === undefined ? 'denied': JSON.stringify(profile.role_managers));
+                localStorage.setItem("role_buildings", profile.role_buildings === undefined ? 'denied': JSON.stringify(profile.role_buildings));
+                localStorage.setItem("role_owners", profile.role_owners === undefined ? 'denied': JSON.stringify(profile.role_owners));
+                localStorage.setItem("role_orders", profile.role_orders === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_products", profile.role_products === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_discountcodes", profile.role_discountcodes === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_users", profile.role_users === undefined ? 'denied': JSON.stringify(profile.role_users));
                 localStorage.setItem("select", JSON.stringify(0));
                 history.push('/admin/dashboard');
               }
@@ -135,19 +135,19 @@ const Login = (props) => {
                 localStorage.setItem("token", JSON.stringify(response.data.data.token));
                 localStorage.setItem("firstlogin", JSON.stringify("false"));
                 localStorage.setItem("usertype", JSON.stringify(profile.usertype));
-                localStorage.setItem("role_addons", JSON.stringify('denied'));
-                localStorage.setItem("role_advertisement", JSON.stringify('denied'));
-                localStorage.setItem("role_assemblies", JSON.stringify('denied'));
-                localStorage.setItem("role_buildings", JSON.stringify(profile.role_buildings));
-                localStorage.setItem("role_chat", JSON.stringify('denied'));
-                localStorage.setItem("role_company", JSON.stringify('denied'));
-                localStorage.setItem("role_events", JSON.stringify('denied'));
-                localStorage.setItem("role_incidents", JSON.stringify('denied'));
-                localStorage.setItem("role_invoices", JSON.stringify('denied'));
-                localStorage.setItem("role_owners", JSON.stringify(profile.role_owners));
-                localStorage.setItem("role_payments", JSON.stringify('denied'));
-                localStorage.setItem("role_providers", JSON.stringify('denied'));
-                localStorage.setItem("role_team", JSON.stringify(profile.role_team));
+                localStorage.setItem("role_addons", profile.role_addons === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_advertisement", profile.role_advertisement === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_assemblies", profile.role_assemblies === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_buildings", profile.role_buildings === undefined ? 'denied': JSON.stringify(profile.role_buildings));
+                localStorage.setItem("role_chat", profile.role_chat === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_company", profile.role_company === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_events", profile.role_events === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_incidents", profile.role_incidents === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_invoices", profile.role_invoices === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_owners", profile.role_owners === undefined ? 'denied': JSON.stringify(profile.role_owners));
+                localStorage.setItem("role_payments", profile.role_payments === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_providers", profile.role_providers === undefined ? 'denied': JSON.stringify('denied'));
+                localStorage.setItem("role_team", profile.role_team === undefined ? 'denied': JSON.stringify(profile.role_team));
                 localStorage.setItem("select", JSON.stringify(0));
                 history.push("/manager/dashboard");
               }
@@ -158,11 +158,11 @@ const Login = (props) => {
                 localStorage.setItem("usertype", JSON.stringify(profile.usertype));
                 localStorage.setItem("select", JSON.stringify(0));
                 if(profile.identity_card_back.length !== 0 && profile.identity_card_front.length !== 0){
-                  localStorage.setItem("role_addons", JSON.stringify('denied'));
-                  localStorage.setItem("role_assemblies", JSON.stringify('denied'));
-                  localStorage.setItem("role_chat", JSON.stringify('denied'));
-                  localStorage.setItem("role_events", JSON.stringify('denied'));
-                  localStorage.setItem("role_incidents", JSON.stringify('denied'));
+                  localStorage.setItem("role_addons", profile.role_addons === undefined ? 'denied': JSON.stringify('denied'));
+                  localStorage.setItem("role_assemblies", profile.role_assemblies === undefined ? 'denied': JSON.stringify('denied'));
+                  localStorage.setItem("role_chat", profile.role_chat === undefined ? 'denied': JSON.stringify('denied'));
+                  localStorage.setItem("role_events", profile.role_events === undefined ? 'denied': JSON.stringify('denied'));
+                  localStorage.setItem("role_incidents", profile.role_incidents === undefined ? 'denied': JSON.stringify('denied'));
                   localStorage.setItem("idcard_state",JSON.stringify('true'));
                 }else{
                   localStorage.setItem("role_addons", JSON.stringify('denied'));

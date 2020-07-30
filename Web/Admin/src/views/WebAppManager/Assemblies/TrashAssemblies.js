@@ -8,6 +8,7 @@ import MySelect from '../../../components/MySelect';
 import Grid from '@material-ui/core/Grid';
 import useStyles from './useStyles';
 import TrashTable from 'components/TrashTable.js';
+import useGlobal from 'Global/global.js';
 
 const ManagerService = new Service();
 const TrashOwners = (props) => {
@@ -17,7 +18,7 @@ const TrashOwners = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
-
+  const [globalState, globalActions] = useGlobal();
   const accessOwners = authService.getAccess('role_owners');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
@@ -182,6 +183,12 @@ const TrashOwners = (props) => {
               else
                 setTotalPage(data.totalpage);
               setDataList(data.ownerlist);
+              let ownerID = [];
+              data.ownerlist.map((item, i) => (
+                ownerID[i] = item.ownerID
+              )
+              );
+              globalActions.setTrash({type : 'owner', ID : ownerID});
               break;
             case 401:
               authService.logout();

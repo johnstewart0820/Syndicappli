@@ -8,12 +8,14 @@ import useStyles from './useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import TrashTable from 'components/TrashTable';
+import useGlobal from 'Global/global';
 const TrashManagers = (props) => {
   const { history } = props;
   const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
+  const [globalState, globalActions] = useGlobal();
   const accessManagers = authService.getAccess('role_managers');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [footerItems, setFooterItems] = useState([]);
@@ -132,6 +134,12 @@ const TrashManagers = (props) => {
               else
                 setTotalPage(1);
               setDataList(data.managerlist);
+              let managerID = [];
+              data.managerlist.map((item, i) => (
+                managerID[i] = item.ID
+              )
+              );
+              globalActions.setTrash({type : 'manager', ID : managerID});
               let amount_connection = 0;
               const items = ['Total', '', data.totalcount, amount_connection, amount_connection, amount_connection];
               setFooterItems(items);
