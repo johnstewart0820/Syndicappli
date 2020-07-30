@@ -523,7 +523,7 @@ function updateBuilding(req, res) {
  * @param   object res
  * @return  json
  */
-function deleteAllCompany(req, res) {
+function deleteAllBuilding(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     buildingService.deleteAllBuilding(userId, userdata).then((result) => {
