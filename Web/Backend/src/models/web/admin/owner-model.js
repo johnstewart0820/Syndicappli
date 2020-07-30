@@ -561,13 +561,13 @@ function deleteAllOwner(data) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                 } else {
                                     let query = 'Select * from ' + table.APARTMENTS + ' where userID = ?'
-                                    db.query(query, [user[i]], (error, rows, fields) => {
+                                    db.query(query, [users[i]], (error, rows, fields) => {
                                         if (error) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR})
                                         } else {
                                             let apartments = rows
                                             let query = 'Delete from ' + table.APARTMENTS + ' where userID = ?'
-                                            db.query(query, [user[i]], (error, rows, fields) => {
+                                            db.query(query, [users[i]], (error, rows, fields) => {
                                                 if (error) {
                                                     reject({ message: message.INTERNAL_SERVER_ERROR})
                                                 } else {

@@ -45,7 +45,8 @@ router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
-router.post('/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
+router.post('/trash/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
+
 
 /**
  * team api
@@ -56,7 +57,7 @@ router.get('/team/:id', authMiddleware.checkToken, getManager)
 router.put('/team/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
 router.post('/team/:id/delete', authMiddleware.checkToken, deleteManager)
 router.put('/team/:id/status', authMiddleware.checkToken, updateManagerStatus)
-router.post('/team/deleteAll', authMiddleware.checkToken, deleteAllManager)
+router.post('/trash/team/deleteAll', authMiddleware.checkToken, deleteAllManager)
 
 /**
  * owner api
@@ -67,7 +68,7 @@ router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
 router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
-router.post('/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
+router.post('/trash/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
 
 /**
  * Function that get profile data
@@ -579,6 +580,7 @@ function updateOwnerStatus(req, res){
 function deleteAllOwner(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
+    let data = req.body
     ownerService.deleteAllOwner(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {

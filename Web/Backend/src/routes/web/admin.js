@@ -44,7 +44,7 @@ router.post('/user', authMiddleware.checkToken, upload.single('logo'), createUse
 router.get('/user/:id', authMiddleware.checkToken, getUser)
 router.put('/user/:id', authMiddleware.checkToken, upload.single('logo'), updateUser)
 router.post('/user/:id/delete', authMiddleware.checkToken, deleteUser)
-router.post('/user/deleteAll', authMiddleware.checkToken, deleteAllUser)
+router.post('/trash/user/deleteAll', authMiddleware.checkToken, deleteAllUser)
 
 /**
  * company api
@@ -54,7 +54,7 @@ router.post('/company', authMiddleware.checkToken, upload.single('logo'), create
 router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), updateCompany)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
 router.post('/company/:id/delete', authMiddleware.checkToken, deleteCompany)
-router.post('/company/deleteAll', authMiddleware.checkToken, deleteAllCompany)
+router.post('/trash/company/deleteAll', authMiddleware.checkToken, deleteAllCompany)
 
 /**
  * building api
@@ -66,7 +66,7 @@ router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
-router.post('/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
+router.post('/trash/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
 
 /**
  * manager api
@@ -77,7 +77,7 @@ router.get('/manager/:id', authMiddleware.checkToken, getManager)
 router.put('/manager/:id', authMiddleware.checkToken, upload.single('logo'), updateManager)
 router.post('/manager/:id/delete', authMiddleware.checkToken, deleteManager)
 router.put('/manager/:id/status', authMiddleware.checkToken, updateManagerStatus)
-router.post('/manager/deleteAll', authMiddleware.checkToken, deleteAllManager)
+router.post('/trash/manager/deleteAll', authMiddleware.checkToken, deleteAllManager)
 
 
 /**
@@ -89,7 +89,7 @@ router.post('/owner/:id', authMiddleware.checkToken, getOwner)
 router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo_url', maxCount: 1}, {name: 'id_card_front', maxCount: 1},{name: 'id_card_back', maxCount: 1}]), updateOwner)
 router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
-router.post('/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
+router.post('/trash/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
 
 /**
  * product api
@@ -99,7 +99,7 @@ router.post('/product', authMiddleware.checkToken, createProduct)
 router.get('/product/:id', authMiddleware.checkToken, getProduct)
 router.put('/product/:id', authMiddleware.checkToken, updateProduct)
 router.post('/product/:id/delete', authMiddleware.checkToken, deleteProduct)
-router.post('/product/deleteAll', authMiddleware.checkToken, deleteAllProduct)
+router.post('/trash/product/deleteAll', authMiddleware.checkToken, deleteAllProduct)
 
 /**
  * discountcode api
