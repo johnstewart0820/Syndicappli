@@ -291,25 +291,25 @@ function deleteAllCompany(uid) {
             } else {
                 let companies = rows
                 let query = 'Delete from ' + table.COMPANIES + ' where permission = "trash" and created_by = ?'
-                db.query(query, [uid], (error, rows, fields) => {
+                db.query(query, [uid], async (error, rows, fields) => {
                     if (error) {
                         reject({ message: message.INTERNAL_SERVER_ERROR})
                     } else {
                         for (let i in companies) {
                             let query = 'Select * from ' + table.BUILDINGS + ' where companyID = ?'
-                            db.query(query, [companies[i].companyID], (error, rows, fields) => {
+                            await db.query(query, [companies[i].companyID],  (error, rows, fields) => {
                                 if (error) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR})
                                 } else {
                                     let buildings = rows
                                     let query = 'Delete from ' + table.BUILDINGS + ' where companyID = ?'
-                                    db.query(query, [companies[i].companyID], (error, rows, fields) => {
+                                    db.query(query, [companies[i].companyID], async (error, rows, fields) => {
                                         if (error) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR})
                                         } else {
                                             for (let j in buildings) {
                                                 let query = 'Select * from ' + table.APARTMENTS + ' where buildingID = ?'
-                                                db.query(query, [buildings[j].buildingID], (error, rows, fields) => {
+                                                await db.query(query, [buildings[j].buildingID], (error, rows, fields) => {
                                                     if (error) {
                                                         reject({ message: message.INTERNAL_SERVER_ERROR})
                                                     } else {
@@ -348,10 +348,21 @@ function deleteAllCompany(uid) {
                                                         })
                                                     }
                                                 })
+                                                let relation_query = 'Delete * from ' + table.USER_RELATIONSHIP + ' where relationID = ?'
+                                                await db.query(relation_query, [buildings[j].buildingID], (error, rows, fields) => {
+                                                    if (error) {
+                                                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                                                    }
+                                                })
                                             }
                                         }
                                     })
                                 }
+                            })
+                            let relation_query = 'Delete * from ' + table.USER_RELATIONSHIP + ' where relationID = ?'
+                            await db.query(relation_query, [companies[i].companyID], (error, rows, fields) => {
+                                if (error)
+                                    reject({ message: message.INTERNAL_SERVER_ERROR})
                             })
                         }
                         resolve("OK")

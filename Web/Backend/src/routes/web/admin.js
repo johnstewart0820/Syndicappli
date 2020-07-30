@@ -66,6 +66,7 @@ router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
+router.post('/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
 
 /**
  * manager api
@@ -98,6 +99,7 @@ router.post('/product', authMiddleware.checkToken, createProduct)
 router.get('/product/:id', authMiddleware.checkToken, getProduct)
 router.put('/product/:id', authMiddleware.checkToken, updateProduct)
 router.post('/product/:id/delete', authMiddleware.checkToken, deleteProduct)
+router.post('/product/deleteAll', authMiddleware.checkToken, deleteAllProduct)
 
 /**
  * discountcode api
@@ -514,6 +516,24 @@ function updateBuilding(req, res) {
 }
 
 /**
+ * Function that delete all trashed building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllCompany(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    buildingService.deleteAllBuilding(userId, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
  * Function that deletes building
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
@@ -919,6 +939,24 @@ function deleteProduct(req, res) {
     let id = req.params.id
     let data = req.body
     productService.deleteProduct(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete all trashed product
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllProduct(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    productService.deleteAllProduct(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

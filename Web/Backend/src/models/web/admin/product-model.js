@@ -28,6 +28,7 @@ var productModel = {
     getProduct: getProduct,
     updateProduct: updateProduct,
     deleteProduct: deleteProduct,
+    deleteAllProduct: deleteAllProduct
 }
 
 /**
@@ -175,6 +176,27 @@ function deleteProduct(uid, id, data) {
         let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where productID = ?'
   
         db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+  }
+
+/**
+ * delete all product
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteAllProduct(uid) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = "deleted" where created_by = ? and permission = "trash"'
+  
+        db.query(query, [ uid ], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
