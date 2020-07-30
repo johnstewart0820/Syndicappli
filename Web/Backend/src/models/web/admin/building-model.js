@@ -373,7 +373,7 @@ function deleteAllBuilding(data) {
                             })
                         }
                     })
-                    let relation_query = 'Delete * from ' + table.USER_RELATIONSHIP + ' where relationID = ?'
+                    let relation_query = 'Delete from ' + table.USER_RELATIONSHIP + ' where relationID = ?'
                     await db.query(relation_query, [buildings[i]], (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR})

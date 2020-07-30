@@ -343,7 +343,7 @@ function deleteAllCompany(data) {
                                                 })
                                             }
                                         })
-                                        let relation_query = 'Delete * from ' + table.USER_RELATIONSHIP + ' where relationID = ? and type = "building"'
+                                        let relation_query = 'Delete from ' + table.USER_RELATIONSHIP + ' where relationID = ? and type = "building"'
                                         await db.query(relation_query, [buildings[j].buildingID], (error, rows, fields) => {
                                             if (error) {
                                                 reject({ message: message.INTERNAL_SERVER_ERROR})
@@ -354,7 +354,7 @@ function deleteAllCompany(data) {
                             })
                         }
                     })
-                    let relation_query = 'Delete * from ' + table.USER_RELATIONSHIP + ' where relationID = ? and type = "company"'
+                    let relation_query = 'Delete from ' + table.USER_RELATIONSHIP + ' where relationID = ? and type = "company"'
                     await db.query(relation_query, [companies[i]], (error, rows, fields) => {
                         if (error)
                             reject({ message: message.INTERNAL_SERVER_ERROR})
