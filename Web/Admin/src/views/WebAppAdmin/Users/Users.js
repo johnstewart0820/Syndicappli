@@ -94,6 +94,7 @@ const Users = (props) => {
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/admin/users/edit/' + id);
+    window.location.reload();
   };
   const handleClickDelete = (id) => {
     setOpenDelete(true);

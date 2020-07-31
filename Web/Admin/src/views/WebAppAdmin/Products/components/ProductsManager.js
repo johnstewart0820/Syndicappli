@@ -37,6 +37,7 @@ const ProductsManager = (props) => {
   const handleClickEdit = (id) => {
     console.log(id);
     history.push('/admin/products/edit/' + id);
+    window.location.reload();
   }
   useEffect(() => {
     if (accessProducts !== 'denied')

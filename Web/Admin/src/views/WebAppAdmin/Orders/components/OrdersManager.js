@@ -150,6 +150,7 @@ const OrdersManager = (props) => {
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/admin/orders/edit/' + id);
+    window.location.reload();
   };
   const handleClickDownload = (id)=>{
 

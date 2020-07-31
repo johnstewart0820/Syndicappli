@@ -43,6 +43,7 @@ const Addons = (props) => {
   };
   const handleClickBuyPack = ()=>{
     history.push("/manager/addons/payment");
+    window.location.reload();
   };
   const handleClickBuyAgain = ()=>{
     setPurchaseAddonState(!purchaseAddonState);

@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { List, ListItem, Button } from '@material-ui/core';
-
+import {withRouter} from 'react-router-dom';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -190,15 +190,76 @@ const CustomRouterLink = forwardRef((props, ref) => (
 
 const SidebarNav = props => {
   const { pages, className } = props;
-
+  const {history} = props;
   const classes = useStyles();
+
+  let current_url = new URL(window.location.href);
+  let path_name = current_url.pathname;
+  let path = path_name.split("/");
+  let i = 0;
+  switch(path[1]){
+    case 'admin' :
+      switch(path[2]){
+        case 'dashboard' : i = 0; break;
+        case 'companies' : i = 1; break;
+        case 'managers' : i = 2; break;
+        case 'buildings' : i = 3; break;
+        case 'owners' : i = 4; break;
+        case 'orders' : i = 5; break;
+        case 'products' : i = 6; break;
+        case 'discountcodes' : i = 7; break;
+        case 'users' : i = 8; break;
+        default : i = -1; break;
+      }
+      localStorage.setItem("select", JSON.stringify(i));
+      break;
+    case 'manager' :
+      switch(path[2]){
+        case 'dashboard' : i = 0; break;
+        case 'buildings' : i = 1; break;
+        case 'owners' : i = 2; break;
+        case 'chat' : i = 3; break;
+        case 'incidents' : i = 4; break;
+        case 'assemblies' : i = 5; break;
+        case 'events' : i = 6; break;
+        case 'team' : i = 7; break;
+        case 'providers' : i = 8; break;
+        case 'announcements' : i = 9; break;
+        case 'addons' : i = 10; break;
+        default : i = -1; break;
+      }
+      localStorage.setItem("select", JSON.stringify(i));
+      break;
+    case 'owner' :
+      switch(path[2]){
+        case 'dashboard' : i = 0; break;
+        case 'chat' : i = 1; break;
+        case 'incidents' : i = 2; break;
+        case 'assemblies' : i = 3; break;
+        case 'events' : i = 4; break;
+        case 'addons' : i = 5; break;
+        default : i = -1; break;
+      }
+      localStorage.setItem("select", JSON.stringify(i));
+      break;
+  }
+
+  let select = JSON.parse(localStorage.getItem('select'));
   let tmp = [];
   for (let k = 0; k < 12; k++) {
     tmp[k] = { active: false, over: false };
   }
-  let select = JSON.parse(localStorage.getItem('select'));
   tmp[select] = { active: true, over: true };
   const [status, setStatus] = useState(tmp);
+  window.addEventListener('popstate', function (event) {
+    // for (let k = 0; k < 12; k++) {
+    //   tmp[k] = { active: false, over: false };
+    // }
+    // setStatus(tmp);
+    tmp[select] = { active: true, over: true };
+    setStatus(tmp);
+    window.location.reload()
+  });
   const handleMouseOver = (event, id, state) => {
     if (state[id].active === false)
       if (state[id].over === false) {
@@ -292,4 +353,4 @@ SidebarNav.propTypes = {
   pages: PropTypes.array.isRequired
 };
 
-export default SidebarNav;
+export default withRouter(SidebarNav);

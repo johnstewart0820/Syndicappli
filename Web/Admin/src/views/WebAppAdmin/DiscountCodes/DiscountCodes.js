@@ -97,6 +97,7 @@ const DiscountCodes = (props) => {
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/admin/discountcodes/edit/' + id);
+    window.location.reload();
   };
   const handleClickDelete = (id) => {
     if (accessDiscountCodes === 'edit') {

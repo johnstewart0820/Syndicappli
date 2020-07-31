@@ -43,6 +43,7 @@ const Companies = (props) => {
   const handleClickEdit = (id) => {
     console.log(id);
     history.push('/admin/companies/edit/' + id);
+    window.location.reload();
   }
   useEffect(() => {
     if (accessCompanies !== 'denied')

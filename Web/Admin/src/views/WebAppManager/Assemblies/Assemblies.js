@@ -101,6 +101,7 @@ const Assemblies = (props) => {
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/manager/assemblies/edit?id=' + id);
+    window.location.reload();
   };
   const handleClickDelete = (id,buildingID) => {
       setOpenDelete(true);
