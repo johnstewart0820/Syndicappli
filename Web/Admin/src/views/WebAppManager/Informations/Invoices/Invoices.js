@@ -28,7 +28,8 @@ const useStyles = makeStyles(theme => ({
     '& .MuiTab-root':{
       paddingLeft: 0,
       paddingRight: 30,
-      minWidth: 0
+      minWidth: 0,
+      fontWeight:'bold'
     },
     '& .MuiTab-wrapper':{
       flexDirection: 'row',
@@ -46,7 +47,8 @@ const useStyles = makeStyles(theme => ({
       },
     },
     '& .MuiTab-textColorInherit.Mui-selected':{
-      textDecoration: 'underline'
+      textDecoration: 'underline',
+      textUnderlinePosition: 'under'
     },
   },
   title:{
