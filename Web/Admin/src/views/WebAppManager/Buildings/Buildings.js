@@ -186,6 +186,7 @@ const Buildings = (props) => {
       {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
+      <div className={classes.title}></div>
       <div className={classes.body}>
         <SelectTable
           onChangeSelect={handleChangeSelect}
