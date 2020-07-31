@@ -1,186 +1,198 @@
-// /**
-//  * Auth model file
-//  *
-//  * @package   backend/src/models
-//  * @author    Taras Hryts <streaming9663@gmail.com>
-//  * @copyright 2020 Say Digital Company
-//  * @license   Turing License
-//  * @version   2.0
-//  * @link      https://turing.ly/
-//  */
+/**
+ * Auth model file
+ *
+ * @package   backend/src/models
+ * @author    Taras Hryts <streaming9663@gmail.com>
+ * @copyright 2020 Say Digital Company
+ * @license   Turing License
+ * @version   2.0
+ * @link      https://turing.ly/
+ */
 
-// var db = require('../../../database/database')
-// var message  = require('../../../constants/message')
-// var bcrypt = require('bcrypt-nodejs')
-// var table  = require('../../../constants/table')
-// const s3Helper = require('../../../helper/s3helper')
-// const s3buckets = require('../../../constants/s3buckets')
-// const timeHelper = require('../../../helper/timeHelper')
-// const {sendMail} = require('../../../helper/mailHelper')
-// var mail = require('../../../constants/mail')
-// var randtoken = require('rand-token');
-// var code = require('../../../constants/code')
+var db = require('../../../database/database')
+var message  = require('../../../constants/message')
+var bcrypt = require('bcrypt-nodejs')
+var table  = require('../../../constants/table')
+const s3Helper = require('../../../helper/s3helper')
+const s3buckets = require('../../../constants/s3buckets')
+const timeHelper = require('../../../helper/timeHelper')
+const {sendMail} = require('../../../helper/mailHelper')
+var mail = require('../../../constants/mail')
+var randtoken = require('rand-token');
+var code = require('../../../constants/code')
 
-// var discountCodeModel = {
-//     getDiscountCodeList: getDiscountCodeList,
-//     getCountDiscountCodeList: getCountDiscountCodeList,
-//     createDiscountCode: createDiscountCode,
-//     getDiscountCode: getDiscountCode,
-//     updateDiscountCode: updateDiscountCode,
-//     deleteDiscountCode: deleteDiscountCode,
-// }
+var discountCodeModel = {
+    getDiscountCodeList: getDiscountCodeList,
+    getCountDiscountCodeList: getCountDiscountCodeList,
+    createDiscountCode: createDiscountCode,
+    getDiscountCode: getDiscountCode,
+    updateDiscountCode: updateDiscountCode,
+    deleteDiscountCode: deleteDiscountCode,
+}
 
-// /**
-//  * get company list with filter key
-//  *
-//  * @author  Taras Hryts <streaming9663@gmail.com>
-//  * @param   object authData
-//  * @return  object If success returns object else returns message
-//  */
-// function getDiscountCodeList(uid, data) {
-//     return new Promise((resolve, reject) => {
-//         let query = `SELECT
-//                     *
-//                     FROM discountCodes
-//                     WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
+/**
+ * get company list with filter key
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getDiscountCodeList(uid, data) {
+    return new Promise((resolve, reject) => {
+        let query = `SELECT
+                    *, if(DATE(end_date ) > CURRENT_DATE, "active", "expired") status
+                    FROM discount_codes
+                    WHERE permission = ? and name like ? `
 
-//         sort_column = Number(data.sort_column);
-//         row_count = Number(data.row_count);
-//         page_num = Number(data.page_num);
-//         search_key = '%' + data.search_key + '%'
-//         let params = [data.status, uid, data.type, search_key];
+        sort_column = Number(data.sort_column);
+        row_count = Number(data.row_count);
+        page_num = Number(data.page_num);
+        search_key = '%' + data.search_key + '%'
+        let params = [data.status, search_key];
 
-//         if (sort_column === -1)
-//             query += ' order by discountCodeID desc';
-//         else {
-//             if (sort_column === 0)
-//                 query += ' order by name ';
-//             else if (sort_column === 1)
-//                 query += ' order by price ';
-//             query += data.sort_method;
-//         }
-//         query += ' limit ' + page_num * row_count + ',' + row_count
-//         db.query(query, params, (error, rows, fields) => {
-//             if (error) {
-//                 reject({ message: message.INTERNAL_SERVER_ERROR })
-//             } else {
-//                 resolve(rows);
-//             }
-//         })
-//     })
-// }
+        if (sort_column === -1)
+            query += ' order by discount_codeID desc';
+        else {
+            if (sort_column === 0)
+                query += ' order by name ';
+            else if (sort_column === 1)
+                query += ' order by user_type ';
+            else if (sort_column === 2)
+                query += ' order by discount_type, discount_amount ';
+            else if (sort_column === 3)
+                query += ' order by start_date ';
+            else if (sort_column === 4)
+                query += ' order by end_date ';
+            else if (sort_column === 5)
+                query += ' order by end_date ';
+            else if (sort_column === 6)
+                query += ' order by status ';
+            query += data.sort_method;
+        }
+        query += ' limit ' + page_num * row_count + ',' + row_count
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows);
+            }
+        })
+    })
+}
 
-// /**
-//  * get count for building list for search filter
-//  *
-//  * @author  Taras Hryts <streaming9663@gmail.com>
-//  * @param   object authData
-//  * @return  object If success returns object else returns message
-//  */
-// function getCountDiscountCodeList(uid, data) {
-//     return new Promise((resolve, reject) => {
-//         let query = `SELECT
-//                     count(*) count
-//                     FROM discountCodes
-//                     WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
-//         search_key = '%' + data.search_key + '%'
-//         let params = [data.status, uid, data.type, search_key];
+/**
+ * get count for building list for search filter
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCountDiscountCodeList(uid, data) {
+    return new Promise((resolve, reject) => {
+        let query = `SELECT
+                    count(*) count
+                    FROM discount_codes
+                    WHERE permission = ? and name like ? `
+        search_key = '%' + data.search_key + '%'
+        let params = [data.status, search_key];
 
-//         db.query(query, params, (error, rows, fields) => {
-//             if (error) {
-//                 reject({ message: message.INTERNAL_SERVER_ERROR })
-//             } else {
-//                 resolve(rows[0].count)
-//             }
-//         })
-//     })
-// }
-
-
-// /**
-//  * create DiscountCode only discountCode table
-//  *
-//  * @author  Taras Hryts <streaming9663@gmail.com>
-//  * @param   object authData
-//  * @return  object If success returns object else returns message
-//  */
-// function createDiscountCode(uid, data) {
-//     return new Promise((resolve, reject) => {
-//         let query = `Insert into ` + table.DISCOUNTCODES + ` (buyer_type, billing_cycle, renewal, name, description, price_type, price, vat_option, vat_fee, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?)`;
-//         db.query(query, [data.buyer_type, data.billing_cycle, data.renewal, data.name, data.description, data.price_type, data.price, data.vat_option, data.vat_fee, uid, timeHelper.getCurrentTime()], function (error, result, fields) {
-//             if (error) {
-//                 reject({ message: message.INTERNAL_SERVER_ERROR });
-//             } else {
-//                 resolve("ok")
-//             }
-//         })
-//     })
-// }
-
-// /**
-//  * get discountCode
-//  *
-//  * @author  Taras Hryts <streaming9663@gmail.com>
-//  * @param   object authData
-//  * @return  object If success returns object else returns message
-//  */
-// function getDiscountCode(uid, id) {
-//     return new Promise((resolve, reject) => {
-//         let query = 'Select * from ' + table.DISCOUNTCODES + ' where discountCodeID = ?'
-
-//         db.query(query, [ id ],   (error, rows, fields) => {
-//             if (error) {
-//                 reject({ message: message.INTERNAL_SERVER_ERROR })
-//             } else {
-//                 if (rows.length == 0) {
-//                     reject({ message: message.INTERNAL_SERVER_ERROR })
-//                 } else {
-//                     resolve(rows[0]);
-//                 }
-//             }
-//         })
-//     })
-// }
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows[0].count)
+            }
+        })
+    })
+}
 
 
-// /**
-//  * update DiscountCode only discountCode table
-//  *
-//  * @author  Taras Hryts <streaming9663@gmail.com>
-//  * @param   object authData
-//  * @return  object If success returns object else returns message
-//  */
-// function updateDiscountCode(id, data) {
-//     return new Promise(async (resolve, reject) => {
-//         let query = `Update ` + table.DISCOUNTCODES + ` set buyer_type = ?, billing_cycle = ?, renewal = ?, name = ?, description = ?, price_type = ?, price = ?, vat_option = ?, vat_fee = ?, updated_at = ? where discountCodeID = ? `
-//         db.query(query, [data.buyer_type, data.billing_cycle, data.renewal, data.name, data.description, data.price_type, data.price, data.vat_option, data.vat_fee, timeHelper.getCurrentTime(), id], function (error, result, fields) {
-//             if (error) {
-//                 reject({ message: message.INTERNAL_SERVER_ERROR });
-//             } else {
-//                 resolve("ok")
-//             }
-//         })
-//     })
-// }
+/**
+ * create DiscountCode only discountCode table
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createDiscountCode(uid, data) {
+    return new Promise((resolve, reject) => {
+        if (data.end_date === undefined)
+            data.end_date = "9999-12-31"
+        let query = `Insert into ` + table.DISCOUNTCODES + ` (user_type, name, start_date, end_date, discount_type, discount_amount, billing_cycle, amount_of_use, amount_of_use_per_user, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?)`;
+        db.query(query, [data.user_type, data.name, data.start_date, data.end_date, data.discount_type, data.discount_amount, data.billing_cycle, data.amount_of_use, data.amount_of_use_per_user, "active", uid,timeHelper.getCurrentTime()], function (error, result, fields) {
+            if (error) {
+                reject({ message: error });
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+}
 
-// /**
-//  * delete discountCode
-//  *
-//  * @author  Taras Hryts <streaming9663@gmail.com>
-//  * @param   object authData
-//  * @return  object If success returns object else returns message
-//  */
-// function deleteDiscountCode(uid, id, data) {
-//     return new Promise((resolve, reject) => {
-//         let query = 'UPDATE ' + table.DISCOUNTCODES + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where discountCodeID = ?'
+/**
+ * get discountCode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getDiscountCode(uid, id) {
+    return new Promise((resolve, reject) => {
+        let query = 'Select * from ' + table.DISCOUNTCODES + ' where discountCodeID = ?'
+
+        db.query(query, [ id ],   (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if (rows.length == 0) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                    resolve(rows[0]);
+                }
+            }
+        })
+    })
+}
+
+
+/**
+ * update DiscountCode only discountCode table
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateDiscountCode(id, data) {
+    return new Promise(async (resolve, reject) => {
+        let query = `Update ` + table.DISCOUNTCODES + ` set buyer_type = ?, billing_cycle = ?, renewal = ?, name = ?, description = ?, price_type = ?, price = ?, vat_option = ?, vat_fee = ?, updated_at = ? where discountCodeID = ? `
+        db.query(query, [data.buyer_type, data.billing_cycle, data.renewal, data.name, data.description, data.price_type, data.price, data.vat_option, data.vat_fee, timeHelper.getCurrentTime(), id], function (error, result, fields) {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR });
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+}
+
+/**
+ * delete discountCode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteDiscountCode(uid, id, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE ' + table.DISCOUNTCODES + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where discountCodeID = ?'
   
-//         db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
-//             if (error) {
-//                 reject({ message: message.INTERNAL_SERVER_ERROR })
-//             } else {
-//                 resolve("ok")
-//             }
-//         })
-//     })
-//   }
-// module.exports = discountCodeModel
+        db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("ok")
+            }
+        })
+    })
+  }
+module.exports = discountCodeModel

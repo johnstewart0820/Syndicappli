@@ -43,13 +43,13 @@ function getProductList(uid, data) {
         let query = `SELECT
                     *, productID ID
                     FROM products
-                    WHERE permission = ? and created_by = ? and buyer_type = ? and name like ? `
+                    WHERE permission = ? and buyer_type = ? and name like ? `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
         search_key = '%' + data.search_key + '%'
-        let params = [data.status, uid, data.type, search_key];
+        let params = [data.status, data.type, search_key];
 
         if (sort_column === -1)
             query += ' order by productID desc';

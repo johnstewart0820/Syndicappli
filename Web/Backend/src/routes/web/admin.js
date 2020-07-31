@@ -28,7 +28,7 @@ const discountCodesService = require('../../services/web/admin/discountcodes-ser
 const {validate} = require('express-validation')
 var adminValidation = require('../../validator/admin-validation')
 var multer  = require('multer')
-var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
+var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: 5242880} })
 
 /**
  * profile api
@@ -109,7 +109,7 @@ router.post('/discountCode', authMiddleware.checkToken, createDiscountCode)
 router.get('/discountCode/:id', authMiddleware.checkToken, getDiscountCode)
 router.put('/discountCode/:id', authMiddleware.checkToken, updateDiscountCode)
 router.post('/discountCode/:id/delete', authMiddleware.checkToken, deleteDiscountCode)
-
+router.post('/trash/discountCode/deleteAll', authMiddleware.checkToken, deleteAllDiscountCode)
 
 /**
  * Function that get profile data
@@ -1065,6 +1065,25 @@ function deleteDiscountCode(req, res) {
     let id = req.params.id
     let data = req.body
     discountCodesService.deleteDiscountCode(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete all discountcode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllDiscountCode(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    discountCodesService.deleteAllDiscountCode(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
