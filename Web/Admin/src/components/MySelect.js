@@ -9,22 +9,22 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 const CustomAutocomplete = withStyles((theme) => ({
   root: {
     '& .MuiInputBase-root.MuiOutlinedInput-root.MuiAutocomplete-inputRoot.MuiInputBase-fullWidth.MuiInputBase-formControl': {
-      [theme.breakpoints.up('xl')]: {
-        height: 30,
-        paddingTop: "8px"
-      },
-      [theme.breakpoints.between('lg','lg')]: {
-        height: 30,
-        paddingTop: "8px"
-      },
-      [theme.breakpoints.down('md')]: {
-        height: 30,
-        paddingTop: "8px"
-      },
+      // [theme.breakpoints.up('xl')]: {
+      //   height: 30,
+      //   paddingTop: "8px"
+      // },
+      // [theme.breakpoints.between('lg','lg')]: {
+      //   height: 30,
+      //   paddingTop: "8px"
+      // },
+      // [theme.breakpoints.down('md')]: {
+      //   height: 30,
+      //   paddingTop: "8px"
+      // },
       color: 'gray'
     },
     '& .MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input':{
-      padding: "0px"
+      // padding: "0px"
     }
   }
 }))(Autocomplete);

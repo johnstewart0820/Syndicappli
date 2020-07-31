@@ -195,8 +195,6 @@ const Buildings = (props) => {
       {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
-      <div className={classes.title}>
-      </div>
       <div className={classes.tool}>
         <Grid container spacing={2} direction="column">
           <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
