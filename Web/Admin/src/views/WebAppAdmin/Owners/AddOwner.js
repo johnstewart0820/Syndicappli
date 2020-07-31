@@ -41,7 +41,7 @@ const AddOwner = (props) => {
     const [companyList, setCompanyList] = React.useState([]);
     const [companyID, setCompanyID] = React.useState(-1);
 
-    const [building, setBuilding] = React.useState([]);
+    const [building, setBuilding] = React.useState(['']);
     const [buildings, setBuildings] = React.useState(0);
     const [buildingList, setBuildingList] = React.useState([]);
     const [buildingID, setBuildingID] = React.useState(-1);
@@ -116,7 +116,7 @@ const AddOwner = (props) => {
             if (firstname.length === 0) { setErrorsFirstname('please enter owner first name'); cnt++; }
             else setErrorsFirstname('');
         }
-        if (company.length === 0) { setErrorsCompanies('please select companies'); cnt++; }
+        if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
         else setErrorsCompanies('');
         if (building.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
         else setErrorsBuildings('');

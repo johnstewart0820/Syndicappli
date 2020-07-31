@@ -192,9 +192,9 @@ const BuildingsEdit = (props) => {
                 getCompanyList(building.companyID);
                 setName(building.name);
                 setAddress(building.address);
-                setAccountHolder(building.account_holdername);
-                setAccountAddress(building.account_address);
-                setAccountIban(building.account_IBAN);
+                // setAccountHolder(building.account_holdername);
+                // setAccountAddress(building.account_address);
+                // setAccountIban(building.account_IBAN);
                 setCompanyID(building.companyID);
                 setClefList(clefList);
                 setCount(vote_list.length);
@@ -272,11 +272,13 @@ const BuildingsEdit = (props) => {
             </Grid>
             <Grid item container direction="column" spacing={2}>
               <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
+              <Grid xs={12} item container alignItems="stretch" direction="column">
                 <TextField
-                  rows={3} multiline
+                  rows={5} 
+                  multiline
                   variant="outlined"
                   value={address}
+                  fullWidth
                   onChange={handleChangeAddress}
                   disabled={(accessBuildings === 'see' ? true : false)}
                 />
