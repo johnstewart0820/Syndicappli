@@ -11,6 +11,7 @@ import MyButton from './MyButton';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
+import useGlobal from 'Global/global';
 
 const BootstrapInput = withStyles((theme) => ({
   root: {
@@ -213,6 +214,7 @@ const useStyles = makeStyles({
 export default function ProductTable(props) {
   const classes = useStyles();
   const [direction, setDirection] = useState(props.columns);
+  const [globalState, globalActions] = useGlobal();
   const tempDirection = props.columns;
   let tempDirect = [];
   if (tempDirection) {
@@ -344,7 +346,7 @@ export default function ProductTable(props) {
                   <DeleteIcon 
                     className={classes.editItem} 
                     onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
-                    style={{visibility:item.userID === 1 ? 'hidden': 'visible'}}
+                    style={{visibility:item.ID === globalState.ID ? 'hidden': 'visible'}}
                   />
                 </TableCell>
               </TableRow>

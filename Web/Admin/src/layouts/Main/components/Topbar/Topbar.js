@@ -12,9 +12,12 @@ import Divider from '@material-ui/core/Divider';
 import authService from 'services/authService';
 import useGlobal from 'Global/global';
 import AdminService from 'services/api.js';
+import {ManagerService as Service1} from 'services/api.js';
+import {OwnerService as Service2} from 'services/api.js';
 import { SearchInput } from 'components';
 import {withRouter} from 'react-router-dom';
-
+const ManagerService = new Service1();
+const OwnerService = new Service2();
 const useStyles = makeStyles(theme => ({
   root: {
     boxShadow: 'none',
@@ -245,7 +248,15 @@ const Topbar = props => {
     window.location.reload();
   }
   useEffect(() => {
-    AdminService.getProfile()
+    const usertype = authService.getAccess('usertype');
+    let Service = AdminService;
+    switch(usertype){
+      case 'superadmin' : Service = AdminService; break;
+      case 'admin' : Service = AdminService; break;
+      case 'manager' : Service = ManagerService; break;
+      case 'owner' : Service = OwnerService; break;
+    }
+    Service.getProfile()
       .then(
         response => {
           switch (response.data.code) {
