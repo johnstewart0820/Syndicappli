@@ -930,7 +930,7 @@ const OwnerEdit = (props) => {
             <Grid xs={6} item container justify="space-between" direction="row">
               <Grid item>
                 <Grid container alignItems="center" spacing={1}>
-                  <Grid item ><p className={classes.itemTitle}>Locataire</p></Grid>
+                  <Grid item ><p className={classes.itemTitle}>Sous-compte</p></Grid>
                   <Grid xs item container>
                     <Checkbox
                       checked={isSubAccount}

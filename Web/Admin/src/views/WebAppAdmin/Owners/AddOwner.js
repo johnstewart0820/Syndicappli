@@ -623,7 +623,7 @@ const AddOwner = (props) => {
                         <Grid item container justify="space-between" direction="row">
                             <Grid item>
                                 <Grid container alignItems="center" spacing={1}>
-                                    <Grid item ><p className={classes.title}>Locataire</p></Grid>
+                                    <Grid item ><p className={classes.title}>Sous-compte</p></Grid>
                                     <Grid xs item container>
                                         <Checkbox
                                             checked={isSubAccount}
