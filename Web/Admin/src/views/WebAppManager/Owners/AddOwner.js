@@ -36,12 +36,12 @@ const AddOwner = (props) => {
     const { history } = props;
     const classes = useStyles();
     const [state, setState] = React.useState(false);
-    const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
+    const titleList = ['Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
 
     const [companyID, setCompanyID] = React.useState(-1);
 
-    const [building, setBuilding] = React.useState([]);
-    const [buildings, setBuildings] = React.useState('');
+    const [building, setBuilding] = React.useState(['']);
+    const [buildings, setBuildings] = React.useState(0);
     const [buildingList, setBuildingList] = React.useState([]);
     const [buildingID, setBuildingID] = React.useState(-1);
 
@@ -93,8 +93,6 @@ const AddOwner = (props) => {
     }, [companyID]);
     const handleCreate = () => {
         let cnt = 0;
-        if (ownerTitle === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
-        else setErrorsOwnerTitle('');
         if (ownerTitle === 4) {
             if (companyName.length === 0) { setErrorsCompanyName('please enter company name'); cnt++; }
             else setErrorsCompanyName('');
