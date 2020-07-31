@@ -183,8 +183,8 @@ const OwnerEdit = (props) => {
   const handleLoadFront = (event) => {
     if (event.target.files[0] !== undefined) {
       if (validFileType(event.target.files[0])) {
-        if (event.target.files[0].size > 1 * 1048576) {
-          ToastsStore.warning('Image size should be low than 1 MB.');
+        if (event.target.files[0].size > 5 * 1048576) {
+          ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
           setAvatar(event.target.files[0]);
           setAvatarUrl(URL.createObjectURL(event.target.files[0]));
@@ -198,8 +198,8 @@ const OwnerEdit = (props) => {
   const handleLoadIdcard = (event) => {
     if (event.target.files[0] !== undefined) {
       if (validFileType(event.target.files[0])) {
-        if (event.target.files[0].size > 1 * 1048576) {
-          ToastsStore.warning('Image size should be low than 1 MB.');
+        if (event.target.files[0].size > 5 * 1048576) {
+          ToastsStore.warning('Image size should be low than 5 MB.');
         } else {
           idcardurls.push(URL.createObjectURL(event.target.files[0]));
           idcards.push(event.target.files[0])
