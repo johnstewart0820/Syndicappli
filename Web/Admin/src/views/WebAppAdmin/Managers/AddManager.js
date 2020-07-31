@@ -95,8 +95,8 @@ const AddManager = (props) => {
     const handleLoadFront = (event) => {
         if (event.target.files[0] !== undefined) {
             if (validFileType(event.target.files[0])) {
-                if (event.target.files[0].size > 5 * 1048576) {
-                    ToastsStore.warning('Image size should be low than 5 MB.');
+                if (event.target.files[0].size > 1 * 1048576) {
+                    ToastsStore.warning('Image size should be low than 1 MB.');
                 }
                 else {
                     setAvatar(event.target.files[0]);
