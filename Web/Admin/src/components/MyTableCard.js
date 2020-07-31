@@ -163,7 +163,7 @@ export default function ProductTable  (props)  {
           </Table>
         </Grid>  
           <Grid xs={12} item container className={props.leftBtn ? classes.show : classes.hide} >
-            <MyButton name={props.leftBtn} color={"1"} />
+            <MyButton name={props.leftBtn} color={"1"} onClick={()=>props.onClickAdd()}/>
           </Grid>
       </Grid>
     </div>
