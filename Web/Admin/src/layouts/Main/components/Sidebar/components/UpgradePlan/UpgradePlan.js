@@ -72,18 +72,19 @@ const useStyles = makeStyles(theme => ({
   fontsize: {
     cursor: 'pointer',
     [theme.breakpoints.up('xl')]: {
-      fontSize:16, 
+      fontSize:20, 
       paddingLeft:15,
     },
     [theme.breakpoints.down('lg')]: {
-      fontSize:13, 
+      fontSize:14, 
       paddingLeft:10,
     },
     [theme.breakpoints.down('md')]: {
-      fontSize:10, 
+      fontSize:13, 
       paddingLeft:7,
     },
     textDecoration:'underline',
+    textUnderlinePosition: 'under',
     color:'white',
   }
 }));
