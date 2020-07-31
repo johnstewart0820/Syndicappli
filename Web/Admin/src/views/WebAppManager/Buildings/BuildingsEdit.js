@@ -40,8 +40,8 @@ const BuildingsEdit = (props) => {
   const [errorsVote, setErrorsVote] = React.useState('');
   const [count, setCount] = React.useState(0);
 
-  const [companies, setCompanies] = React.useState('');
-  const [company, setCompany] = React.useState([]);
+  const [companies, setCompanies] = React.useState(0);
+  const [company, setCompany] = React.useState(['']);
   const handleClick = () => {
     history.goBack();
   };
@@ -146,13 +146,14 @@ const BuildingsEdit = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              company.splice(0,company.length)
               data.companylist.map((item) => (
                 company.push(item.name)
               )
               );
               setCompanyList(data.companylist);
               setCompany(company);
-              for (let i = 0; i < company.length; i++)
+              for (let i = 0; i < data.companylist.length; i++)
                 if (data.companylist[i].companyID === id)
                   setCompanies(i);
               break;

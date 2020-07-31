@@ -21,8 +21,8 @@ const TrashTeamMembers = (props) => {
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
   const [companyID, setCompanyID] = useState(-1);
-  const [building, setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState('');
+  const [building, setBuilding] = useState(['']);
+  const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
@@ -144,6 +144,7 @@ const TrashTeamMembers = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              building.splice(0,building.length);
               building.push('Tout');
               data.buildinglist.map((item) => (
                 building.push(item.name)

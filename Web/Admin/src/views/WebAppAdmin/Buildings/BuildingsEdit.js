@@ -153,7 +153,7 @@ const BuildingsEdit = (props) => {
               )
               );
               setCompanyList(data.companylist);
-              for (let i = 0; i < company.length; i++)
+              for (let i = 0; i < data.companylist.length; i++)
                 if (data.companylist[i].companyID === id)
                   setCompanies(i);
               break;
@@ -167,7 +167,7 @@ const BuildingsEdit = (props) => {
           }
         },
         error => {
-          ToastsStore.error("Can't connect")
+          ToastsStore.error("Can't connect to the server")
           setVisibleIndicator(false);
         }
       );

@@ -23,8 +23,8 @@ const TrashOwners = (props) => {
 
   const [companyID, setCompanyID] = useState(-1);
 
-  const [building,setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState('');
+  const [building,setBuilding] = useState(['']);
+  const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 

@@ -24,8 +24,8 @@ const Owners = (props) => {
   const [company, setCompany] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
 
-  const [building, setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState('');
+  const [building, setBuilding] = useState(['']);
+  const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
   const [openDelete, setOpenDelete] = React.useState(false);
@@ -93,6 +93,7 @@ const Owners = (props) => {
     columns[i] = 'asc';
   const handleClickEdit = (id, buildingid) => {
     history.push('/manager/owners/edit?id=' + id + '&&buildingID=' + buildingid);
+    window.location.reload();
   };
   const handleClickDelete = (id, buildingID) => {
     setOpenDelete(true);

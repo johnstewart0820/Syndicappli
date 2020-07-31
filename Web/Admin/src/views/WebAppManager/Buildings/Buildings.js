@@ -39,6 +39,7 @@ const Buildings = (props) => {
   const handleClickEdit = (id) => {
     console.log(id);
     history.push('/manager/buildings/edit/' + id);
+    window.location.reload();
   }
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
