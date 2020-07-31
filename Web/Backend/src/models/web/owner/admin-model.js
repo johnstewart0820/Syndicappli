@@ -89,7 +89,7 @@ function updateProfile(uid, data, files) {
                         id_back = profile.identity_card_back
 
                     let query = 'UPDATE ' + table.USERS + ' SET lastname = ?, firstname = ?, firstname_1 = ?, lastname_1 = ?, email = ?, phone = ?, address = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ? WHERE userID = ?'
-                    db.query(query, [ data.lastname, data.firstname, data.firstname_1, data.lastname_1, data.data.email, data.phone, data.address, photo_url, id_front, id_back, uid], (error, rows, fields) => {
+                    db.query(query, [ data.lastname, data.firstname, data.firstname_1, data.lastname_1, data.email, data.phone, data.address, photo_url, id_front, id_back, uid], (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {

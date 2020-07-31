@@ -28,7 +28,7 @@ const discountCodesService = require('../../services/web/admin/discountcodes-ser
 const {validate} = require('express-validation')
 var adminValidation = require('../../validator/admin-validation')
 var multer  = require('multer')
-var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: 5242880} })
+var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
 
 /**
  * profile api
