@@ -382,10 +382,16 @@ const MyAccount = (props) => {
     else setErrorsEmail('');
     if (phone.length === 0) { setErrorsPhone('please enter your phone number'); cnt++; }
     else setErrorsPhone('');
-    // if(old_password.length === 0) {setErrorsOldPassword('please enter your current password'); }
-    if (new_password.length !== 0 && new_password.length < 5) { setErrorsNewPassword('Password must be 5 characters long!'); }
-    else setErrorsNewPassword('');
-    // if(confirm_password.length === 0) {setErrorsConfirmPassword('please enter your confirm password');}
+    if (old_password.length !== 0) {
+      if (new_password.length === 0) { setErrorsNewPassword('please enter your new password'); cnt++; }
+      // else setErrorsNewPassword('');
+      else if (new_password.length !== 0 && new_password.length < 4) { setErrorsNewPassword('Password must be 4 characters long!'); }
+      else setErrorsNewPassword('');
+    }
+    else {
+      if (new_password.length !== 0) { setErrorsOldPassword('please enter your current password'); cnt++; }
+      else setErrorsOldPassword('');
+    }
     if (new_password !== confirm_password) { setErrorsConfirmPassword('mismatch your new password'); cnt++ }
     else setErrorsConfirmPassword('');
     if (cnt === 0) setData();

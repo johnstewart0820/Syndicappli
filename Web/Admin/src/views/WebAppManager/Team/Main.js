@@ -137,7 +137,7 @@ const Main = (props) => {
                     <Grid item xs={12} sm={6} container justify="flex-end" >
                         <Grid>
                             <MyButton
-                                name={value === 0 ? "Nouveau Équipe" : "Poubelle Vide"}
+                                name={value === 0 ? "Nouveau Équipe" : "Vider la Poubelle"}
                                 color={"1"}
                                 onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashTeamMember}
                                 style={{ visibility: accessTeam === 'edit' ? 'visible' : 'hidden' }}

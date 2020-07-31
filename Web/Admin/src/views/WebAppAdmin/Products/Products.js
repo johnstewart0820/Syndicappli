@@ -140,7 +140,7 @@ const Products = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
               <MyButton
-                name={value !== 3 ? "Nouveau Produits" : "Poubelle Vide"}
+                name={value !== 3 ? "Nouveau Produits" : "Vider la Poubelle"}
                 color={"1"}
                 onClick={value !== 3 ? handleClickAdd : handleClickEmptyTrashProduct}
                 style={{ visibility: accessProducts === 'edit' ? 'visible' : 'hidden' }}
