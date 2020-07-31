@@ -359,6 +359,19 @@ export class ManagerService {
   getBuildingListByCompany(data) {
     return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
   }
+  //PaymentMethod Part
+  deleteCard(id, status) {
+    return axios.post(API_URL + 'web/manager/payment/' + id + '/delete', status, { headers: authHeader() });
+  }
+  createCard(data) {
+    return axios.post(API_URL + 'web/manager/payment', data, { headers: authHeader() });
+  }
+  updateCard(id, data) {
+    return axios.put(API_URL + 'web/manager/payment/' + id, data, { headers: authHeader() });
+  }
+  getCard(id) {
+    return axios.get(API_URL + 'web/manager/payment/' + id, { headers: authHeader() });
+  }
 }
 
 export default new AdminService();
