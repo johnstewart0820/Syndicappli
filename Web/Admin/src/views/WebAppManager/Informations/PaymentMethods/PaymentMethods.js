@@ -141,7 +141,7 @@ const PaymentMethods = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
-  const accessBuildings = authService.getAccess('role_buildings');
+  const accesspayments = authService.getAccess('role_payments');
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [accountHolder, setAccountHolder] = useState('');
@@ -297,7 +297,7 @@ const PaymentMethods = (props) => {
                       variant="outlined"
                       value={accountHolder}
                       onChange={handleChangeAccountHolder}
-                      disabled={(accessBuildings === 'see' ? true : false)}
+                      disabled={(accesspayments === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -314,7 +314,7 @@ const PaymentMethods = (props) => {
                       variant="outlined"
                       value={accountAddress}
                       onChange={handleChangeAccountAddress}
-                      disabled={(accessBuildings === 'see' ? true : false)}
+                      disabled={(accesspayments === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
@@ -329,15 +329,15 @@ const PaymentMethods = (props) => {
                       variant="outlined"
                       value={accountIban}
                       onChange={handleChangeAccountIban}
-                      disabled={(accessBuildings === 'see' ? true : false)}
+                      disabled={(accesspayments === 'see' ? true : false)}
                     />
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessBuildings === 'see' ? true : false)} /></Grid>
-              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessBuildings === 'see' ? true : false)} />  </Grid>
+              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accesspayments === 'see' ? true : false)} /></Grid>
+              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accesspayments === 'see' ? true : false)} />  </Grid>
             </Grid>
           </Grid>
         </div>
