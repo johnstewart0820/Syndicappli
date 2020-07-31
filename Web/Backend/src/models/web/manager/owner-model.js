@@ -52,7 +52,7 @@ function getOwnerList(uid, data) {
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and companies.companyID = ? `
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and companies.companyID = ? and users.invitation_status = "accepted" `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -116,7 +116,7 @@ function getCountOwnerList(uid, data) {
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and companies.companyID = ? `
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and companies.companyID = ? and users.invitation_status = "accepted" `
         let params = [search_key, data.status, data.companyID];
         if (data.role !== "all") {
             query += 'and users.owner_role = ? ';
