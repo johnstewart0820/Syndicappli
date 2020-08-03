@@ -133,6 +133,8 @@ function createOrder(uid, userdata ,data) {
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else if (err.message === message.NOT_USE_THIS_DISCOUNT_CODE)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message:err.message, data: {}})
                 else
                     reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
             })
