@@ -372,7 +372,7 @@ const SubAccounts = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              ToastsStore.success("Resent Invite successfully!");
+              ToastsStore.success("Sent Invite successfully!");
               getOwners();
               break;
             case 401:
