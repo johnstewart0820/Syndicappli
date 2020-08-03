@@ -1082,8 +1082,7 @@ function deleteDiscountCode(req, res) {
 function deleteAllDiscountCode(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    let data = req.body
-    discountCodesService.deleteAllDiscountCode(userId, userdata, data).then((result) => {
+    discountCodesService.deleteAllDiscountCode(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

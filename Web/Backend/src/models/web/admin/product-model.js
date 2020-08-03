@@ -192,11 +192,11 @@ function deleteProduct(uid, id, data) {
  * @param   object authData
  * @return  object If success returns object else returns message
  */
-function deleteAllProduct(uid) {
+function deleteAllProduct() {
     return new Promise((resolve, reject) => {
         let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = "deleted" where  permission = "trash"'
   
-        db.query(query, [ uid ], (error, rows, fields) => {
+        db.query(query, [], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {

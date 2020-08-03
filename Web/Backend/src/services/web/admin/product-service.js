@@ -212,7 +212,7 @@ function deleteProduct(uid, id, userdata, data) {
 function deleteAllProduct(uid, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasProductPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            productModel.deleteAllProduct(uid).then((result) => {
+            productModel.deleteAllProduct().then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
