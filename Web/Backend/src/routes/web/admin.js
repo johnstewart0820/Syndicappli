@@ -25,6 +25,8 @@ const managerService = require('../../services/web/admin/manager-service')
 const ownerService = require('../../services/web/admin/owner-service')
 const productService = require('../../services/web/admin/product-service')
 const discountCodesService = require('../../services/web/admin/discountcodes-service')
+const orderService = require('../../services/web/admin/order-service')
+
 const {validate} = require('express-validation')
 var adminValidation = require('../../validator/admin-validation')
 var multer  = require('multer')
@@ -110,6 +112,17 @@ router.get('/discountCode/:id', authMiddleware.checkToken, getDiscountCode)
 router.put('/discountCode/:id', authMiddleware.checkToken, updateDiscountCode)
 router.post('/discountCode/:id/delete', authMiddleware.checkToken, deleteDiscountCode)
 router.post('/trash/discountCode/deleteAll', authMiddleware.checkToken, deleteAllDiscountCode)
+
+/**
+ * order api
+ */
+router.post('/orderList', authMiddleware.checkToken, getOrderList)
+router.post('/buyerList', authMiddleware.checkToken, getBuyerList)
+router.post('/order', authMiddleware.checkToken, createOrder)
+router.get('/order/:id', authMiddleware.checkToken, getOrder)
+router.put('/order/:id', authMiddleware.checkToken, updateOrder)
+router.post('/order/:id/delete', authMiddleware.checkToken, deleteOrder)
+router.post('/trash/order/deleteAll', authMiddleware.checkToken, deleteAllOrder)
 
 /**
  * Function that get profile data
@@ -1083,6 +1096,147 @@ function deleteAllDiscountCode(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     discountCodesService.deleteAllDiscountCode(userId, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+//////////////////////////order////////////////////////////
+/**
+ * Function that get the order list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getOrderList(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.getOrderList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get the buyer list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getBuyerList(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.getBuyerList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+
+/**
+ * Function that create order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createOrder(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.createOrder(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getOrder(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    orderService.getOrder(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateOrder(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id;
+    orderService.updateOrder(userId, userdata, data, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteOrder(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    orderService.deleteOrder(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete all trashed order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAllOrder(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    orderService.deleteAllOrder(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

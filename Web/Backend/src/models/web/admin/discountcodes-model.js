@@ -41,7 +41,7 @@ var discountCodeModel = {
 function getDiscountCodeList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, if(DATE(end_date ) > CURRENT_DATE, "active", "expired") status, discount_codeID ID
+                    *, if(DATE(end_date ) > CURRENT_DATE, "active", "expired") status, discount_codeID ID, if(end_date = "9999-12-31", "", end_date) end_date
                     FROM discount_codes
                     WHERE permission = ? and name like ? `
 

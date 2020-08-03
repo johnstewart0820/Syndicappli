@@ -27,6 +27,7 @@ const tables = {
     INVOICES: 'invoices',
     PRODUCTS: 'products',
     DISCOUNTCODES: 'discount_codes',
+    ORDERS: 'orders',
 }
 
 module.exports = tables
