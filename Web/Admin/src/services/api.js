@@ -1,6 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
+// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
+const API_URL = "https://syndic-backend.say-demo.com/api/";
 // const API_URL = "http://192.168.105.38:3001/api/";
 class AdminService {
   //Login
@@ -165,27 +166,27 @@ class AdminService {
   }
   //DiscountCode Part
   getDiscountCodesList(data) {
-    return axios.post(API_URL + 'web/admin/buildingList',
+    return axios.post(API_URL + 'web/admin/discountCodeList',
       data,
       { headers: authHeader() });
   }
   createDiscountCode(data) {
-    return axios.post(API_URL + 'web/admin/building',
+    return axios.post(API_URL + 'web/admin/discountCode',
       data,
       { headers: authHeader() });
   }
   updateDiscountCode(id, data) {
-    return axios.put(API_URL + 'web/admin/building/' + id, data,
+    return axios.put(API_URL + 'web/admin/discountCode/' + id, data,
       { headers: authHeader() });
   }
   getDiscountCode(id) {
-    return axios.get(API_URL + 'web/admin/building/' + id, { headers: authHeader() });
+    return axios.get(API_URL + 'web/admin/discountCode/' + id, { headers: authHeader() });
   }
   deleteDiscountCode(id, status) {
-    return axios.post(API_URL + 'web/admin/building/' + id + '/delete', status, { headers: authHeader() });
+    return axios.post(API_URL + 'web/admin/discountCode/' + id + '/delete', status, { headers: authHeader() });
   }
   emptyTrashCode(status) {
-    return axios.post(API_URL + 'web/admin/trash/building/deleteAll', status, { headers: authHeader() });
+    return axios.post(API_URL + 'web/admin/trash/discountCode/deleteAll', status, { headers: authHeader() });
   }
   //Product Part
   getProductList(data) {
