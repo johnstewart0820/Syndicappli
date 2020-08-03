@@ -169,7 +169,7 @@ function updateDiscountCode(id, data) {
     return new Promise((resolve, reject) => {
         if (data.end_date === undefined || data.end_date === "" || data.end_date === null)
             data.end_date = "9999-12-31"
-        let query = `Update ` + table.DISCOUNTCODES + ` set user_type = ?, name = ?, start_date = ?, end_date = ?, discount_type = ?, discount_amount = ?, billing_cycle = ?, amount_of_use = ?, amount_of_use_per_user = ?, updated_at = ? where discountCodeID = ? `
+        let query = `Update ` + table.DISCOUNTCODES + ` set user_type = ?, name = ?, start_date = ?, end_date = ?, discount_type = ?, discount_amount = ?, billing_cycle = ?, amount_of_use = ?, amount_of_use_per_user = ?, updated_at = ? where discount_codeID = ? `
         db.query(query, [data.user_type, data.name, data.start_date, data.end_date, data.discount_type, data.discount_amount, data.billing_cycle, data.amount_of_use, data.amount_of_use_per_user, timeHelper.getCurrentTime(), id], function (error, result, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
@@ -189,7 +189,7 @@ function updateDiscountCode(id, data) {
  */
 function deleteDiscountCode(uid, id, data) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.DISCOUNTCODES + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where discountCodeID = ?'
+        let query = 'UPDATE ' + table.DISCOUNTCODES + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where discount_codeID = ?'
   
         db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
