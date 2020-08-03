@@ -62,7 +62,7 @@ const DiscountCodes = (props) => {
                 setTotalPage(1);
               else
                 setTotalPage(data.totalpage);
-              // setDataList(data.codelist);
+              setDataList(data.discountCodeslist);
               break;
             case 401:
               authService.logout();
@@ -84,12 +84,12 @@ const DiscountCodes = (props) => {
       getDatas();
   }, [page_num, row_count, sort_column, sort_method, props.refresh]);
   const cellList = [
-    { key: 'codename', field: 'Nom' },
-    { key: 'customer_type', field: 'Catégorie' },
+    { key: 'name', field: 'Nom' },
+    { key: 'user_type', field: 'Catégorie' },
     { key: 'discount_amount', field: 'Réduction' },
     { key: 'start_date', field: 'Début' },
     { key: 'end_date', field: 'Fin' },
-    { key: 'amount_times', field: 'Activations' },
+    { key: 'billing_cycle', field: 'Activations' },
     { key: 'status', field: 'Statut' }
   ];
   const columns = [];

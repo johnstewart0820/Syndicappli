@@ -21,36 +21,29 @@ const DiscountCodesEdit = (props) => {
   const classes = useStyles();
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const customerTypeList = ['', 'gestionnaire', 'copropriétaires', 'copropriété'];
-  const discountTypeList = ['', 'fixe', 'pourcentage'];
-  const billingCyclesList = ['', 'une fois', '2 mois', '3 mois', '6 mois', '1 an', 'tout le cycle'];
-  const [customerType, setCustomerType] = React.useState('');
+  const CategorieList = ['Cabinets', 'Copropriétaires', 'Immeubles'];
+  const en_categorieList = ['companies','owners','buildings'];
+  const discountTypeList = [ 'fixe', 'pourcentage'];
+  const en_discountTypeList = ['fixed', 'percentage'];
+  const billingCyclesList = [ 'une fois', '2 mois', '3 mois', '6 mois', '1 an', 'tout le cycle'];
+  const en_billingCycleList = ['once','2_months','3_months', '6_months', '1_year', 'all'];
+  const [categorie, setCategorie] = React.useState(0);
   const [codeName, setCodeName] = React.useState('');
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
-  const [discountType, setDiscountType] = React.useState('');
+  const [discountType, setDiscountType] = React.useState(0);
   const [disocuntAmount, setDiscountAmount] = React.useState('');
-  const [billingCycles, setBillingCycles] = React.useState('');
+  const [billingCycles, setBillingCycles] = React.useState(0);
   const [maxAmountOfUse, setMaxAmountOfUse] = React.useState('');
   const [maxAmountOfUsePerUser, setMaxAmountOfUsePerUser] = React.useState('');
 
-  const [errorsCustomerType, setErrorsCustomerType] = React.useState('');
   const [errorsCodeName, setErrorsCodeName] = React.useState('');
   const [errorsStartDate, setErrorsStartDate] = React.useState('');
-  const [errorsEndDate, setErrorsEndDate] = React.useState('');
-  const [errorsDiscountType, setErrorsDiscountType] = React.useState('');
   const [errorsDiscountAmount, setErrorsDiscountAmount] = React.useState('');
-  const [errorsBillingCycles, setErrorsBillingCycles] = React.useState('');
-  const [errorsMaxAmountOfUse, setErrorsMaxAmountOfUse] = React.useState('');
-  const [errorsMaxAmountOfUsePerUser, setErrorsMaxAmountOfUsePerUser] = React.useState('');
-  
 
   useEffect(() => {
-    if(accessDiscountCodes === 'denied'){
-      setOpenDialog(true);
-    }
     if(accessDiscountCodes !== 'denied'){
-      
+      getDiscountCode();
     }
   }, [accessDiscountCodes]);
 
@@ -61,8 +54,8 @@ const DiscountCodesEdit = (props) => {
   const handleClose = ()=>{
     props.onCancel();
   };
-const handleChangeCustomerType = (val) => {
-    setCustomerType(val);
+const handleChangeCategorie = (val) => {
+    setCategorie(val);
 }
 const handleChangeCodeName = (event) => {
     setCodeName(event.target.value);
@@ -73,8 +66,8 @@ const handleChangeStartDate = (event) => {
 const handleChangeEndDate = (event) => {
     setEndDate(event.target.value);
 }
-const handleChangeDiscountType = (event) => {
-    setDiscountType(event.target.value);
+const handleChangeDiscountType = (val) => {
+    setDiscountType(val);
 }
 const handleChangeDiscountAmount = (event) => {
     setDiscountAmount(event.target.value);
@@ -90,49 +83,36 @@ const handleChangeMaxAmountOfUsePerUser = (event) => {
 }
 const handleClickSave = ()=>{
   let cnt = 0;
-  if(customerType.length === 0) {setErrorsCustomerType('please select cutomer type'); cnt++;}
-  else setErrorsCustomerType('');
   if(codeName.length === 0) {setErrorsCodeName('please enter code name'); cnt++;}
   else setErrorsCodeName('');
   if(startDate.length === 0) {setErrorsStartDate('please select start date'); cnt++;}
   else setErrorsStartDate('');
-  if(endDate.length === 0) {setErrorsEndDate('please select end date'); cnt++;}
-  else setErrorsEndDate('');
-  if(discountType.length === 0) {setErrorsDiscountType('please enter discount type'); cnt++;}
-  else setErrorsDiscountType('');
   if(disocuntAmount.length === 0) {setErrorsDiscountAmount('please enter discount amount'); cnt++;}
   else setErrorsDiscountAmount('');
-  if(billingCycles.length === 0) {setErrorsBillingCycles('please enter amount of billing cycles'); cnt++;}
-  else setErrorsBillingCycles('');
-  if(maxAmountOfUse.length === 0) {setErrorsMaxAmountOfUse('please enter max amount of use'); cnt++;}
-  else setErrorsMaxAmountOfUse('');
-  if(maxAmountOfUsePerUser.length === 0) {setErrorsMaxAmountOfUsePerUser('please enter max amount of use per user'); cnt++;}
-  else setErrorsMaxAmountOfUsePerUser('');
   
   if(cnt ===0){
     updateDiscountCode();
   }
 }
-const updateDiscountCode = () => {
-  const requestData = {
-    // 'companyID': companyID,
-    // 'name': name,
-    // 'address': address,
-    // 'vote_branches': clefList,
-    // 'sepa_name': accountHolder,
-    // 'sepa_address': accountAddress,
-    // 'iban': accountIban
-  }
+const getDiscountCode = ()=>{
   setVisibleIndicator(true);
-  AdminService.updateDiscountCode(props.match.params.id, requestData)
+  AdminService.getDiscountCode(props.match.params.id)
     .then(
       response => {
         setVisibleIndicator(false);
-        switch(response.data.code){
+        switch (response.data.code) {
           case 200:
-            const data = response.data.data;
-            localStorage.setItem("token", JSON.stringify(data.token));
-            ToastsStore.success("Updated successfully!");
+            const data = response.data.data.discountCodes;
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            setBillingCycles(en_billingCycleList.indexOf(data.billing_cycle));
+            setCategorie(en_categorieList.indexOf(data.user_type));
+            setDiscountType(en_discountTypeList.indexOf(data.discount_type));
+            setCodeName(data.name);
+            setStartDate(data.start_date);
+            setEndDate(data.end_date);
+            setDiscountAmount(data.discount_amount);
+            setMaxAmountOfUse(data.amount_of_use === -1 ? '' : data.amount_of_use);
+            setMaxAmountOfUsePerUser(data.amount_of_use_per_user === -1 ? '' : data.amount_of_use_per_user);
             break;
           case 401:
             authService.logout();
@@ -148,7 +128,45 @@ const updateDiscountCode = () => {
         setVisibleIndicator(false);
       }
     );
-};
+}
+const updateDiscountCode = () => {
+  const requestData = {
+      'user_type': en_categorieList[categorie],
+      'name': codeName,
+      'start_date' : startDate,
+      'end_date' : endDate,
+      'discount_type' : en_discountTypeList[discountType],
+      'discount_amount' : disocuntAmount,
+      'amount_of_use' : maxAmountOfUse.length === 0 ? -1 : maxAmountOfUse,
+      'amount_of_use_per_user' : maxAmountOfUsePerUser.length === 0 ? -1 : maxAmountOfUsePerUser,
+      'billing_cycle': en_billingCycleList[billingCycles],
+  }
+  setVisibleIndicator(true);
+  AdminService.updateDiscountCode(props.match.params.id,requestData)
+      .then(
+          response => {
+              setVisibleIndicator(false);
+              switch (response.data.code) {
+                  case 200:
+                      const data = response.data.data;
+                      localStorage.setItem("token", JSON.stringify(data.token));
+                      ToastsStore.success('Updated successfully!');
+                      break;
+                  case 401:
+                      authService.logout();
+                      history.push('/login');
+                      window.location.reload();
+                      break;
+                  default:
+                      ToastsStore.error(response.data.message);
+              }
+          },
+          error => {
+              ToastsStore.error("Can't connect to the server!");
+              setVisibleIndicator(false);
+          }
+      );
+}
   return (
     <div className={classes.root}>
             {
@@ -159,7 +177,7 @@ const updateDiscountCode = () => {
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
               <Typography variant="h2" className={classes.headerTitle}>
-                <b>Résidence les Pinsons</b>
+                <b>{codeName}</b>
               </Typography>
             </Grid>
           </Grid>
@@ -168,7 +186,7 @@ const updateDiscountCode = () => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Produit</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Code Promo</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
@@ -179,13 +197,11 @@ const updateDiscountCode = () => {
                     <Grid xs item container direction="column">
                         <MySelect 
                             color="gray" 
-                            data={customerTypeList} 
-                            onChangeSelect={handleChangeCustomerType}
-                            value={customerType}
+                            data={CategorieList} 
+                            onChangeSelect={handleChangeCategorie}
+                            value={categorie}
                             disabled={(accessDiscountCodes ==='see'? true : false)}
                         />
-                        {errorsCustomerType.length > 0 && 
-                        <span className={classes.error}>{errorsCustomerType}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
@@ -228,8 +244,6 @@ const updateDiscountCode = () => {
                             type="date"
                             disabled={(accessDiscountCodes ==='see'? true : false)}
                         />
-                        {errorsEndDate.length > 0 && 
-                        <span className={classes.error}>{errorsEndDate}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
@@ -242,8 +256,6 @@ const updateDiscountCode = () => {
                             value={discountType}
                             disabled={(accessDiscountCodes ==='see'? true : false)}
                         />
-                        {errorsDiscountType.length > 0 && 
-                        <span className={classes.error}>{errorsDiscountType}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
@@ -270,8 +282,6 @@ const updateDiscountCode = () => {
                             value={billingCycles}
                             disabled={(accessDiscountCodes ==='see'? true : false)}
                         />
-                        {errorsBillingCycles.length > 0 && 
-                        <span className={classes.error}>{errorsBillingCycles}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
@@ -284,8 +294,6 @@ const updateDiscountCode = () => {
                             onChange={handleChangeMaxAmountOfUse} 
                             disabled={(accessDiscountCodes ==='see'? true : false)}
                         />
-                        {errorsMaxAmountOfUse.length > 0 && 
-                        <span className={classes.error}>{errorsMaxAmountOfUse}</span>}
                     </Grid>
                 </Grid>
                 <Grid item container alignItems="center" spacing={1}>
@@ -298,8 +306,6 @@ const updateDiscountCode = () => {
                             onChange={handleChangeMaxAmountOfUsePerUser} 
                             disabled={(accessDiscountCodes ==='see'? true : false)}
                         />
-                        {errorsMaxAmountOfUsePerUser.length > 0 && 
-                        <span className={classes.error}>{errorsMaxAmountOfUsePerUser}</span>}
                     </Grid>
                 </Grid>
             <Grid item container style={{paddingTop:'50px',paddingBottom:'50px'}}>

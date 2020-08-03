@@ -15,52 +15,37 @@ const AddDiscountCode = (props) => {
     const { history } = props;
 
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-    const customerTypeList = ['', 'gestionnaire', 'copropriétaires', 'copropriété'];
-    const discountTypeList = ['', 'fixe', 'pourcentage'];
-    const billingCyclesList = ['', 'une fois', '2 mois', '3 mois', '6 mois', '1 an', 'tout le cycle'];
-    const [customerType, setCustomerType] = React.useState('');
+    const CategorieList = ['Cabinets', 'Copropriétaires', 'Immeubles'];
+    const en_categorieList = ['companies','owners','buildings'];
+    const discountTypeList = ['fixe', 'pourcentage'];
+    const en_discountTypeList = ['fixed', 'percentage'];
+    const billingCyclesList = ['une fois', '2 mois', '3 mois', '6 mois', '1 an', 'tout le cycle'];
+    const en_billingCycleList = ['once','2_months','3_months', '6_months', '1_year', 'all'];
+    const [categorie, setCategorie] = React.useState(0);
     const [codeName, setCodeName] = React.useState('');
     const [startDate, setStartDate] = React.useState('');
     const [endDate, setEndDate] = React.useState('');
-    const [discountType, setDiscountType] = React.useState('');
+    const [discountType, setDiscountType] = React.useState(0);
     const [disocuntAmount, setDiscountAmount] = React.useState('');
-    const [billingCycles, setBillingCycles] = React.useState('');
+    const [billingCycles, setBillingCycles] = React.useState(0);
     const [maxAmountOfUse, setMaxAmountOfUse] = React.useState('');
     const [maxAmountOfUsePerUser, setMaxAmountOfUsePerUser] = React.useState('');
 
-    const [errorsCustomerType, setErrorsCustomerType] = React.useState('');
     const [errorsCodeName, setErrorsCodeName] = React.useState('');
     const [errorsStartDate, setErrorsStartDate] = React.useState('');
-    const [errorsEndDate, setErrorsEndDate] = React.useState('');
-    const [errorsDiscountType, setErrorsDiscountType] = React.useState('');
     const [errorsDiscountAmount, setErrorsDiscountAmount] = React.useState('');
-    const [errorsBillingCycles, setErrorsBillingCycles] = React.useState('');
-    const [errorsMaxAmountOfUse, setErrorsMaxAmountOfUse] = React.useState('');
-    const [errorsMaxAmountOfUsePerUser, setErrorsMaxAmountOfUsePerUser] = React.useState('');
 
     const handleClose = () => {
         props.onCancel();
     };
     const handleCreate = () => {
         let cnt = 0;
-        if (customerType.length === 0) { setErrorsCustomerType('please select cutomer type'); cnt++; }
-        else setErrorsCustomerType('');
         if (codeName.length === 0) { setErrorsCodeName('please enter code name'); cnt++; }
         else setErrorsCodeName('');
         if (startDate.length === 0) { setErrorsStartDate('please select start date'); cnt++; }
         else setErrorsStartDate('');
-        if (endDate.length === 0) { setErrorsEndDate('please select end date'); cnt++; }
-        else setErrorsEndDate('');
-        if (discountType.length === 0) { setErrorsDiscountType('please enter discount type'); cnt++; }
-        else setErrorsDiscountType('');
         if (disocuntAmount.length === 0) { setErrorsDiscountAmount('please enter discount amount'); cnt++; }
         else setErrorsDiscountAmount('');
-        if (billingCycles.length === 0) { setErrorsBillingCycles('please enter amount of billing cycles'); cnt++; }
-        else setErrorsBillingCycles('');
-        if (maxAmountOfUse.length === 0) { setErrorsMaxAmountOfUse('please enter max amount of use'); cnt++; }
-        else setErrorsMaxAmountOfUse('');
-        if (maxAmountOfUsePerUser.length === 0) { setErrorsMaxAmountOfUsePerUser('please enter max amount of use per user'); cnt++; }
-        else setErrorsMaxAmountOfUsePerUser('');
 
         if (cnt === 0) {
             createDiscountCode();
@@ -69,13 +54,15 @@ const AddDiscountCode = (props) => {
     }
     const createDiscountCode = () => {
         const requestData = {
-            // 'companyID': companyID,
-            // 'name': name,
-            // 'address': address,
-            // 'vote_branches': clefList,
-            // 'sepa_name': accountHolder,
-            // 'sepa_address': accountAddress,
-            // 'iban': accountIban
+            'user_type': en_categorieList[categorie],
+            'name': codeName,
+            'start_date' : startDate,
+            'end_date' : endDate,
+            'discount_type' : en_discountTypeList[discountType],
+            'discount_amount' : disocuntAmount,
+            'amount_of_use' : maxAmountOfUse.length === 0 ? -1 : maxAmountOfUse,
+            'amount_of_use_per_user' : maxAmountOfUsePerUser.length === 0 ? -1 : maxAmountOfUsePerUser,
+            'billing_cycle': en_billingCycleList[billingCycles], 
         }
         setVisibleIndicator(true);
         AdminService.createDiscountCode(requestData)
@@ -104,8 +91,8 @@ const AddDiscountCode = (props) => {
                 }
             );
     }
-    const handleChangeCustomerType = (val) => {
-        setCustomerType(val);
+    const handleChangeCategorie = (val) => {
+        setCategorie(val);
     }
     const handleChangeCodeName = (event) => {
         setCodeName(event.target.value);
@@ -116,8 +103,8 @@ const AddDiscountCode = (props) => {
     const handleChangeEndDate = (event) => {
         setEndDate(event.target.value);
     }
-    const handleChangeDiscountType = (event) => {
-        setDiscountType(event.target.value);
+    const handleChangeDiscountType = (val) => {
+        setDiscountType(val);
     }
     const handleChangeDiscountAmount = (event) => {
         setDiscountAmount(event.target.value);
@@ -145,12 +132,10 @@ const AddDiscountCode = (props) => {
                             <Grid xs item container direction="column">
                                 <MySelect
                                     color="gray"
-                                    data={customerTypeList}
-                                    onChangeSelect={handleChangeCustomerType}
-                                    value={customerType}
+                                    data={CategorieList}
+                                    onChangeSelect={handleChangeCategorie}
+                                    value={categorie}
                                 />
-                                {errorsCustomerType.length > 0 &&
-                                    <span className={classes.error}>{errorsCustomerType}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -166,7 +151,7 @@ const AddDiscountCode = (props) => {
                                     <span className={classes.error}>{errorsCodeName}</span>}
                             </Grid>
                         </Grid>
-                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                        <Grid xs={12} sm={6} item container spacing={1} direction="column">
                             <Grid item><p className={classes.title}>Date de début</p></Grid>
                             <Grid xs item container>
                                 <TextField
@@ -181,7 +166,7 @@ const AddDiscountCode = (props) => {
                                     <span className={classes.error}>{errorsStartDate}</span>}
                             </Grid>
                         </Grid>
-                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                        <Grid xs={12} sm={6} item container spacing={1} direction="column">
                             <Grid item ><p className={classes.title}>Date de fin</p></Grid>
                             <Grid xs item container>
                                 <TextField
@@ -192,8 +177,6 @@ const AddDiscountCode = (props) => {
                                     type="date"
                                     fullWidth
                                 />
-                                {errorsEndDate.length > 0 &&
-                                    <span className={classes.error}>{errorsEndDate}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -205,8 +188,6 @@ const AddDiscountCode = (props) => {
                                     onChangeSelect={handleChangeDiscountType}
                                     value={discountType}
                                 />
-                                {errorsDiscountType.length > 0 &&
-                                    <span className={classes.error}>{errorsDiscountType}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -232,8 +213,6 @@ const AddDiscountCode = (props) => {
                                         onChangeSelect={handleChangeBillingCycles}
                                         value={billingCycles}
                                     />
-                                    {errorsBillingCycles.length > 0 &&
-                                        <span className={classes.error}>{errorsBillingCycles}</span>}
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -246,8 +225,6 @@ const AddDiscountCode = (props) => {
                                     value={maxAmountOfUse}
                                     onChange={handleChangeMaxAmountOfUse}
                                 />
-                                {errorsMaxAmountOfUse.length > 0 &&
-                                    <span className={classes.error}>{errorsMaxAmountOfUse}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -259,8 +236,6 @@ const AddDiscountCode = (props) => {
                                     value={maxAmountOfUsePerUser}
                                     onChange={handleChangeMaxAmountOfUsePerUser}
                                 />
-                                {errorsMaxAmountOfUsePerUser.length > 0 &&
-                                    <span className={classes.error}>{errorsMaxAmountOfUsePerUser}</span>}
                             </Grid>
                         </Grid>
                     </Grid>

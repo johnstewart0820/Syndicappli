@@ -258,9 +258,20 @@ export default function ProductTable(props) {
     switch(val){
       case 'active' : return 'actif'; 
       case 'inactive' : return 'inactif'; 
+      case 'expired' : return 'expiré'; 
       case 'owner' : return 'Copropriétaire'; 
       case 'subaccount' : return 'Sous-compte'; 
       case 'member' : return 'member of the council'; 
+      case 'managers' : return 'Gestionnaires'; 
+      case 'companies' : return 'Cabinets';
+      case 'owners' : return 'Copropriétaires'; 
+      case 'buildings' : return 'Immeubles'; 
+      case 'once' : return 'une fois'; 
+      case '2_months' : return '2 mois'; 
+      case '3_months' : return '3 mois'; 
+      case '6_months' : return '6 mois'; 
+      case '1_year' : return '1 an'; 
+      case 'all' : return 'tout le cycle'; 
       default: return val; 
     }
   }
@@ -346,7 +357,7 @@ export default function ProductTable(props) {
                   <DeleteIcon 
                     className={classes.editItem} 
                     onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
-                    style={{visibility:item.ID === globalState.ID ? 'hidden': 'visible'}}
+                    style={{visibility:item.userID === globalState.ID ? 'hidden': 'visible'}}
                   />
                 </TableCell>
               </TableRow>

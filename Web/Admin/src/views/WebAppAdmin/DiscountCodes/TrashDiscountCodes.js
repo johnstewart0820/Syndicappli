@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
-import MyTable from '../../../components/MyTable';
+import TrashTable from '../../../components/TrashTable';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -60,13 +59,13 @@ const TrashDiscountCodes = (props) => {
                                 setTotalPage(1);
                             else
                                 setTotalPage(data.totalpage);
-                            // setDataList(data.codelist);
-                            // let codeID = [];
-                            // data.buildinglist.map((item, i) => (
-                            //     codeID[i] = item.codeID
-                            // )
-                            // );
-                            // globalActions.setTrash({type : 'code', ID : codeID});
+                            setDataList(data.discountCodeslist);
+                            let codeID = [];
+                            data.discountCodeslist.map((item, i) => (
+                                codeID[i] = item.discount_codeID
+                            )
+                            );
+                            globalActions.setTrash({ type: 'code', ID: codeID });
                             break;
                         case 401:
                             authService.logout();
@@ -89,17 +88,47 @@ const TrashDiscountCodes = (props) => {
             getTrashDatas();
     }, [page_num, row_count, sort_column, sort_method, props.refresh]);
     const cellList = [
-        { key: 'codename', field: 'Nom' },
-        { key: 'customer_type', field: 'Catégorie' },
+        { key: 'name', field: 'Nom' },
+        { key: 'user_type', field: 'Catégorie' },
         { key: 'discount_amount', field: 'Réduction' },
         { key: 'start_date', field: 'Début' },
         { key: 'end_date', field: 'Fin' },
-        { key: 'amount_times', field: 'Activations' },
+        { key: 'billing_cycle', field: 'Activations' },
         { key: 'status', field: 'Statut' }
     ];
     const columns = [];
     for (let i = 0; i < 7; i++)
         columns[i] = 'asc';
+    const handleClickRestore = (id) => {
+        let data = {
+            'status': 'active'
+        }
+        AdminService.deleteDiscountCode(id, data)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
+                        case 200:
+                            const data = response.data.data;
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            ToastsStore.success("Restored successfully!");
+                            getTrashDatas();
+                            break;
+                        case 401:
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
+                        default:
+                            ToastsStore.error(response.data.message);
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
     return (
         <>
             {
@@ -108,10 +137,11 @@ const TrashDiscountCodes = (props) => {
             <div className={classes.tool}>
             </div>
             <div className={classes.body}>
-                <MyTable
+                <TrashTable
                     onChangeSelect={handleChangeSelect}
                     onChangePage={handleChangePagination}
                     onSelectSort={handleSort}
+                    onClickRestore={handleClickRestore}
                     page={page_num}
                     columns={columns}
                     products={dataList}

@@ -242,14 +242,25 @@ export default function TrashTable(props) {
   const handleClick = () => {
     props.onClick();
   }
-  const Value = (val) => {
-    switch (val) {
-      case 'active': return 'actif';
-      case 'inactive': return 'inactif';
-      case 'owner': return 'Copropriétaire';
-      case 'subaccount': return 'Sous-compte';
-      case 'member': return 'member of the council';
-      default: return val;
+  const Value = (val)=>{
+    switch(val){
+      case 'active' : return 'actif'; 
+      case 'inactive' : return 'inactif'; 
+      case 'expired' : return 'expiré'; 
+      case 'owner' : return 'Copropriétaire'; 
+      case 'subaccount' : return 'Sous-compte'; 
+      case 'member' : return 'member of the council'; 
+      case 'managers' : return 'Gestionnaires'; 
+      case 'companies' : return 'Cabinets'; 
+      case 'owners' : return 'Copropriétaires'; 
+      case 'buildings' : return 'Immeubles'; 
+      case 'once' : return 'une fois'; 
+      case '2_months' : return '2 mois'; 
+      case '3_months' : return '3 mois'; 
+      case '6_months' : return '6 mois'; 
+      case '1_year' : return '1 an'; 
+      case 'all' : return 'tout le cycle'; 
+      default: return val; 
     }
   }
   const handleClickRestore = (id) => {
