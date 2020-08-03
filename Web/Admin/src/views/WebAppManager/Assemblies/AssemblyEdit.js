@@ -13,6 +13,11 @@ import MyButton from 'components/MyButton';
 import { EditAssemblyStyles as useStyles } from './useStyles';
 import Informations from './views/Informations';
 import Documents from './views/Documents.js';
+import PostalVotes from './views/PostalVotes.js';
+import Minutes from './views/Minutes.js';
+import Resolutions from './views/Resolutions.js';
+import MeetingRoom from './views/MeetingRoom.js';
+import TimeSheet from './views/TimeSheet.js';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -141,19 +146,19 @@ const AssemblyEdit = (props) => {
           <Documents />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <Informations />
+          <Resolutions />
         </TabPanel>
         <TabPanel value={value} index={3}>
-          <Informations />
+          <PostalVotes />
         </TabPanel>
         <TabPanel value={value} index={4}>
-          <Informations />
+          <TimeSheet />
         </TabPanel>
         <TabPanel value={value} index={5}>
-          <Informations />
+          <MeetingRoom />
         </TabPanel>
         <TabPanel value={value} index={6}>
-          <Informations />
+          <Minutes />
         </TabPanel>
       </div>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
