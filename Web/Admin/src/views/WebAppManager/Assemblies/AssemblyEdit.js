@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import MyButton from 'components/MyButton';
 import { EditAssemblyStyles as useStyles } from './useStyles';
 import Informations from './views/Informations';
+import Documents from './views/Documents.js';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -86,7 +87,7 @@ const AssemblyEdit = (props) => {
       <div className={classes.tool}>
         <Grid container justify="space-between">
           <Grid item>
-            <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Copropriétaires</p>
+            <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des AG</p>
           </Grid>
           <Grid item>
             <Grid item container direction="row-reverse" spacing={2}>
@@ -137,7 +138,7 @@ const AssemblyEdit = (props) => {
           <Informations />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <Informations />
+          <Documents />
         </TabPanel>
         <TabPanel value={value} index={2}>
           <Informations />
