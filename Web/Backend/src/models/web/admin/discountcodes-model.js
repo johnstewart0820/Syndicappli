@@ -41,7 +41,7 @@ var discountCodeModel = {
 function getDiscountCodeList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, if(DATE(end_date ) > CURRENT_DATE, "active", "expired") status
+                    *, if(DATE(end_date ) > CURRENT_DATE, "active", "expired") status, discount_codeID ID
                     FROM discount_codes
                     WHERE permission = ? and name like ? `
 
@@ -139,11 +139,11 @@ function createDiscountCode(uid, data) {
  */
 function getDiscountCode(uid, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from ' + table.DISCOUNTCODES + ' where discountCodeID = ?'
+        let query = 'Select * from ' + table.DISCOUNTCODES + ' where discount_codeID = ?'
 
         db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
+                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 if (rows.length == 0) {
                     reject({ message: message.INTERNAL_SERVER_ERROR })
