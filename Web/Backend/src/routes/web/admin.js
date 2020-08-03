@@ -118,6 +118,7 @@ router.post('/trash/discountCode/deleteAll', authMiddleware.checkToken, deleteAl
  */
 router.post('/orderList', authMiddleware.checkToken, getOrderList)
 router.post('/buyerList', authMiddleware.checkToken, getBuyerList)
+router.post('/discountCodeListByType', authMiddleware.checkToken, getDiscountCodeListByType)
 router.post('/order', authMiddleware.checkToken, createOrder)
 router.get('/order/:id', authMiddleware.checkToken, getOrder)
 router.put('/order/:id', authMiddleware.checkToken, updateOrder)
@@ -1137,6 +1138,26 @@ function getBuyerList(req, res){
     let userdata = req.decoded.userdata
     let data = req.body
     orderService.getBuyerList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get the buyer list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getDiscountCodeListByType(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.getDiscountCodeListByType(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

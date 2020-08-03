@@ -60,7 +60,8 @@ function getProductList(uid, data) {
                 query += ' order by price ';
             query += data.sort_method;
         }
-        query += ' limit ' + page_num * row_count + ',' + row_count
+        if (row_count > 0)
+            query += ' limit ' + page_num * row_count + ',' + row_count
         db.query(query, params, (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })

@@ -30,6 +30,7 @@ var orderModel = {
     deleteOrder: deleteOrder,
     deleteAllOrder: deleteAllOrder,
     getBuyerList: getBuyerList,
+    getDiscountCodeListByType: getDiscountCodeListByType
 }
 
 /**
@@ -86,12 +87,12 @@ function getBuyerList(uid, data) {
             query = `SELECT
                     c.companyID buyerID, c.name
                     FROM users u left join user_relationship r on u.userID = r.userID left join companies c on r.relationID = c.companyID
-                    WHERE c.permission = "active" and u.userID = ? `
+                    WHERE c.permission = "active" and u.userID = ? and r.type="company"`
         else if (data.buyer_type === "buildings")
             query = `Select
                     b.buildingID buyerID, b.name
                     FROM users u left join user_relationship r on u.userID = r.userID left join companies c on r.relationID = c.companyID left join buildings b on c.companyID = b.companyID
-                    WHERE c.permission = "active" and b.permission = "active" and u.userID = ?`
+                    WHERE c.permission = "active" and b.permission = "active" and u.userID = ? and r.type="company"`
         else if (data.buyer_type === "owners")
             query = `SELECT
                     s.userID buyerID, CONCAT(s.firstname,s.lastname) name
@@ -114,7 +115,7 @@ function getBuyerList(uid, data) {
                     WHERE
                         c.permission = "active" 
                         AND b.permission = "active" 
-                        AND u.userID = ?`
+                        AND u.userID = ? group by s.userID and r.type="company"`
         db.query(query, [uid], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -151,6 +152,31 @@ function getCountOrderList(uid, data) {
     })
 }
 
+/**
+ * get discount code list by type
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getDiscountCodeListByType(data) {
+    return new Promise((resolve, reject) => {
+        if (data.user_type === "companies")
+            data.user_type = "managers"
+        let query = `SELECT
+                    discount_codeID, name
+                    FROM discount_codes
+                    WHERE permission = "active" and user_type = ?`
+
+        db.query(query, [data.user_type], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows)
+            }
+        })
+    })
+}
 
 /**
  * create Order only order table
