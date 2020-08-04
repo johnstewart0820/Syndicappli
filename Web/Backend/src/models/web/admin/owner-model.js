@@ -46,7 +46,7 @@ var ownerModel = {
 function getOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, users.userID ID, users.phone phone, users.email email, user_relationship.relationID buildingID
+                    *, users.userID ID, users.phone phone, users.email email, user_relationship.relationID buildingID, ifnull(s.count, 0) count
                     FROM users
                     LEFT JOIN user_relationship USING ( userID ) 
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 

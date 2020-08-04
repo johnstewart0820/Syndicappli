@@ -27,7 +27,8 @@ var ownerModel = {
     getOwner: getOwner,
     deleteOwner: deleteOwner,
     acceptInvitation: acceptInvitation,
-    reinviteOwner: reinviteOwner
+    reinviteOwner: reinviteOwner,
+    getBuildingListByOwner: getBuildingListByOwner
 }
 
 /**
@@ -40,6 +41,27 @@ var ownerModel = {
 function getOwnerList(uid) {
     return new Promise((resolve, reject) => {
         let query = `select * from users where created_by = ?`
+
+        db.query(query, [uid], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows);
+            }
+        })
+    })
+}
+
+/**
+ * get company list with filter key
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingListByOwner(uid) {
+    return new Promise((resolve, reject) => {
+        let query = `select * from users u left join user_relationship r on u.userID = r.userID and r.type="building" left join buildings b on r.relationID = b.buildingID and b.permission = "active" where created_by = ?`
 
         db.query(query, [uid], (error, rows, fields) => {
             if (error) {
@@ -219,7 +241,7 @@ function reinviteOwner(id) {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword, randomToken)
+                            sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
                             .then((response) => {
                                 resolve("OK")
                             })
