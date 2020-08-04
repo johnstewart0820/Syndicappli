@@ -143,7 +143,7 @@ function createOwner_info(uid, data) {
  */
 function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from users left join user_relationship r left join users.userID = r.userID and r.type="building" where userID = ?'
+        let query = 'Select * from users left join user_relationship r on users.userID = r.userID and r.type="building" where users.userID = ?'
         
         db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
@@ -248,7 +248,7 @@ function reinviteOwner(id) {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
+                            sendMail(mail.TITLE_OWNER_CREATE, email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
                             .then((response) => {
                                 resolve("OK")
                             })
@@ -256,7 +256,7 @@ function reinviteOwner(id) {
                                 if(err.message.statusCode == code.BAD_REQUEST){
                                     reject({ message: message.EMIL_IS_NOT_EXIST })
                                 } else {
-                                    reject({ message: err.message })
+                                    reject({ message: message.EMIL_IS_NOT_EXIST })
                                 }
                             })
                         }
