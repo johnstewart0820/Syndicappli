@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../../components/MyButton';
 import TextField from '@material-ui/core/TextField';
@@ -8,7 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
 import { Checkbox } from '@material-ui/core';
 const AddOrder = (props) => {
@@ -16,71 +16,96 @@ const AddOrder = (props) => {
     const { history } = props;
 
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-    const customerTypeList = ['', 'gestionnaire', 'copropriétaires', 'copropriété'];
-    const discountTypeList = ['', 'fixe', 'pourcentage'];
-    const billingCyclesList = ['', 'une fois', '2 mois', '3 mois', '6 mois', '1 an', 'tout le cycle'];
-    const [customerType, setCustomerType] = React.useState('');
+    const categorieList = ['Gestionnaires', 'Copropriétaires', 'Immeubles'];
+    const en_categorieList = ['managers', 'owners', 'buildings'];
+    const [categorie, setCategorie] = React.useState(0);
+    const discountTypeList = ['fixe', 'pourcentage'];
+    const [billingCycle, setBillingCycle] = React.useState(0);
+    const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
+    const en_billingCycleList = ['one_time', 'annually', 'monthly'];
+    const orderStatusList = ['parmi Terminé', 'Actif', 'En attente', 'Annulée'];
+    const en_orderstatusList = ['terminated', 'active', 'on hold', 'cancelled'];
+    const [orderStatus, setOrderStatus] = React.useState(0);
+    const paymentList = ['carte bancaire', 'SEPA'];
+    const en_paymentList = ['credit_card', 'SEPA'];
+    const [payment, setPayment] = React.useState(0);
     const [codeName, setCodeName] = React.useState('');
     const [startDate, setStartDate] = React.useState('');
     const [endDate, setEndDate] = React.useState('');
-    const [discountType, setDiscountType] = React.useState('');
-    const [disocuntAmount, setDiscountAmount] = React.useState('');
-    const [billingCycles, setBillingCycles] = React.useState('');
-    const [maxAmountOfUse, setMaxAmountOfUse] = React.useState('');
-    const [maxAmountOfUsePerUser, setMaxAmountOfUsePerUser] = React.useState('');
     const [renewal, setRenewal] = React.useState(false);
-
-    const [errorsCustomerType, setErrorsCustomerType] = React.useState('');
-    const [errorsCodeName, setErrorsCodeName] = React.useState('');
+    const [vat_state, setVatState] = React.useState(false);
+    const [vat_fee, setVatFee] = React.useState('');
+    const [priceType, setPriceType] = React.useState(0);
+    const [price, setPrice] = React.useState('');
+    const priceTypeList = ['Par lot', 'Par unité'];
+    const en_priceTypeList = ['per_apartment', 'per_unit'];
+    const [clients, setClients] = useState(['']);
+    const [client, setClient] = useState(0);
+    const [clientID, setClientID] = useState(-1);
+    const [companyID, setCompanyID] = useState(-1);
+    const [buildingID, setBuildingID] = useState(-1);
+    const [products, setProducts] = useState(['']);
+    const [product, setProduct] = useState(0);
+    const [productID, setProductID] = useState(-1);
+    const [codes, setCodes] = useState(['']);
+    const [code, setCode] = useState(0);
+    const [codeID, setCodeID] = useState(-1);
+    const [apartNumber, setApartNumber] = useState('');
+    const [productList, setProductList] = useState(['']);
+    const [clientList, setClientList] = useState(['']);
+    const [codeList, setCodeList] = useState(['']);
+    const [clientName, setClientName] = useState('');
+    const [errorsCode, setErrorsCode] = React.useState('');
     const [errorsStartDate, setErrorsStartDate] = React.useState('');
-    const [errorsEndDate, setErrorsEndDate] = React.useState('');
-    const [errorsDiscountType, setErrorsDiscountType] = React.useState('');
-    const [errorsDiscountAmount, setErrorsDiscountAmount] = React.useState('');
-    const [errorsBillingCycles, setErrorsBillingCycles] = React.useState('');
-    const [errorsMaxAmountOfUse, setErrorsMaxAmountOfUse] = React.useState('');
-    const [errorsMaxAmountOfUsePerUser, setErrorsMaxAmountOfUsePerUser] = React.useState('');
-
+    const [errorsVatFee, setErrorsVatFee] = React.useState('');
+    const [errorsPrice, setErrorsPrice] = React.useState('');
+    const [errorsApartNumber, setErrorsApartNumber] = useState('');
+    const [errorsProduct, setErrorsProduct] = useState('');
+    const [errorsClient, setErrorsClient] = useState('');
     const handleClose = () => {
         props.onCancel();
     };
     const handleCreate = () => {
         let cnt = 0;
-        if (customerType.length === 0) { setErrorsCustomerType('please select cutomer type'); cnt++; }
-        else setErrorsCustomerType('');
-        if (codeName.length === 0) { setErrorsCodeName('please enter code name'); cnt++; }
-        else setErrorsCodeName('');
         if (startDate.length === 0) { setErrorsStartDate('please select start date'); cnt++; }
         else setErrorsStartDate('');
-        if (endDate.length === 0) { setErrorsEndDate('please select end date'); cnt++; }
-        else setErrorsEndDate('');
-        if (discountType.length === 0) { setErrorsDiscountType('please enter discount type'); cnt++; }
-        else setErrorsDiscountType('');
-        if (disocuntAmount.length === 0) { setErrorsDiscountAmount('please enter discount amount'); cnt++; }
-        else setErrorsDiscountAmount('');
-        if (billingCycles.length === 0) { setErrorsBillingCycles('please enter amount of billing cycles'); cnt++; }
-        else setErrorsBillingCycles('');
-        if (maxAmountOfUse.length === 0) { setErrorsMaxAmountOfUse('please enter max amount of use'); cnt++; }
-        else setErrorsMaxAmountOfUse('');
-        if (maxAmountOfUsePerUser.length === 0) { setErrorsMaxAmountOfUsePerUser('please enter max amount of use per user'); cnt++; }
-        else setErrorsMaxAmountOfUsePerUser('');
-
+        if(priceType === 0){
+            if (!apartNumber) { setErrorsApartNumber('please enter amount of apartment number'); cnt++; }
+            else setErrorsApartNumber('');
+        }
+        if (!price) { setErrorsPrice('please enter price'); cnt++; }
+        else setErrorsPrice('');
+        if (vat_state === true) {
+            if (!vat_fee) { setErrorsVatFee('please enter VAT fee'); cnt++; }
+            else setErrorsVatFee('');
+        }
         if (cnt === 0) {
-            createDiscountCode();
-            handleClose();
+            createOrder();
         }
     }
-    const createDiscountCode = () => {
+    const createOrder = () => {
         const requestData = {
-            // 'companyID': companyID,
-            // 'name': name,
-            // 'address': address,
-            // 'vote_branches': clefList,
-            // 'sepa_name': accountHolder,
-            // 'sepa_address': accountAddress,
-            // 'iban': accountIban
+            'buyer_type' : en_categorieList[categorie],
+            'productID' : productID,
+            'buyerID' : clientID,
+            'companyID' : companyID,
+            'buildingID' : buildingID,
+            'buyer_name' : clientName,
+            'billing_cycle' : en_billingCycleList[billingCycle],
+            'renewal' : renewal ? 'true' : 'false',
+            'price_type' : en_priceTypeList[priceType],
+            'price' : price,
+            'vat_option' : vat_state ? 'true' : 'false',
+            'vat_fee' : vat_fee,
+            'apartment_amount' : apartNumber,
+            'start_date' : startDate,
+            'end_date' : endDate,
+            'payment_method' : en_paymentList[payment],
+            'discount_codeID' : codeID,
+            'status' : en_orderstatusList[orderStatus]
         }
         setVisibleIndicator(true);
-        AdminService.createDiscountCode(requestData)
+        AdminService.createOrder(requestData)
             .then(
                 response => {
                     setVisibleIndicator(false);
@@ -106,11 +131,8 @@ const AddOrder = (props) => {
                 }
             );
     }
-    const handleChangeCustomerType = (val) => {
-        setCustomerType(val);
-    }
-    const handleChangeCodeName = (event) => {
-        setCodeName(event.target.value);
+    const handleChangeCategorie = (val) => {
+        setCategorie(val);
     }
     const handleChangeStartDate = (event) => {
         setStartDate(event.target.value);
@@ -118,23 +140,183 @@ const AddOrder = (props) => {
     const handleChangeEndDate = (event) => {
         setEndDate(event.target.value);
     }
-    const handleChangeDiscountType = (event) => {
-        setDiscountType(event.target.value);
+    const handleChangeBillingCycle = (val) => {
+        setBillingCycle(val);
     }
-    const handleChangeDiscountAmount = (event) => {
-        setDiscountAmount(event.target.value);
+    const handleChangeClient = (val) => {
+        setClient(val);
+        setClientID(clientList[val].buyerID);
+        if(clientList[val].companyID)
+            setCompanyID(clientList[val].companyID);
+        if(clientList[val].buildingID)
+            setBuildingID(clientList[val].buildingID);
+        setClientName(clientList[val].name)
     }
-    const handleChangeBillingCycles = (val) => {
-        setBillingCycles(val);
+    const handleChangeCode = (val) => {
+        setCode(val);
+        setCodeID(codeList[val].discountCodeID);
     }
-    const handleChangeMaxAmountOfUse = (event) => {
-        setMaxAmountOfUse(event.target.value);
-    }
-    const handleChangeMaxAmountOfUsePerUser = (event) => {
-        setMaxAmountOfUsePerUser(event.target.value);
+    const handleChangeProduct = (val) => {
+        setProduct(val);
+        setProductID(productList[val].productID);
     }
     const handleChangeRenewal = (event) => {
         setRenewal(event.target.checked);
+    }
+    const handleChangeVatState = (event) => {
+        setVatState(event.target.checked);
+    }
+    const handleChangeVatFee = (event) => {
+        setVatFee(+event.target.value);
+    }
+    const handleChangePriceType = (val) => {
+        setPriceType(val);
+    }
+    const handleChangePayment = (val) => {
+        setPayment(val);
+    }
+    const handleChangeOrderStatus = (val) => {
+        setOrderStatus(val);
+    }
+    const handleChangePrice = (event) => {
+        setPrice(+event.target.value);
+    }
+    const handleChangeApartNumber = (event) => {
+        setApartNumber(+event.target.value);
+    }
+    useEffect( () => {
+        getProductList(categorie);
+        getBuyerList(categorie);
+        getCodeList(categorie);
+    }, [categorie]);
+    const getProductList =  (id) => {
+        const requestData = {
+            'search_key': '',
+            'page_num': 0,
+            'row_count': -1,
+            'sort_column': -1,
+            'sort_method': 'asc',
+            'status': 'active',
+            'type': en_categorieList[id]
+        }
+        setVisibleIndicator(true);
+         AdminService.getProductList(requestData)
+            .then(
+                 response => {
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
+                        case 200:
+                            const data = response.data.data;
+                            productList.splice(0,productList.length);
+                            products.splice(0,products.length)
+                            productList.push('')
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            data.productlist.map((item) =>(
+                                products.push(item.name)
+                            )
+                            );
+                            setProductList(data.productlist);
+                            if(data.productlist.length !== 0){
+                                setProducts(products);
+                                setProductID(data.productlist[0].productID);
+                            }
+                        case 401:
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
+                        default:
+                            ToastsStore.error(response.data.message);
+                    }
+                },
+                error => {
+                    console.log('fail');
+                    setVisibleIndicator(false);
+                }
+            );
+    }
+    const getBuyerList = (id) => {
+        let data={
+            'buyer_type' : en_categorieList[id]
+        }
+        setVisibleIndicator(true);
+        AdminService.getBuyerList(data)
+            .then(
+                async response => {
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
+                        case 200:
+                            const data = response.data.data;
+                            clientList.splice(0,clientList.length);
+                            clients.splice(0,clients.length);
+                            clientList.push('');
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            data.buyerlist.map((item) =>
+                                clients.push(item.name)
+                            )
+                            setClientList(clientList);
+                            if(data.buyerlist.length !== 0){
+                                setClients(clients);
+                                setClientID(data.buyerlist[0].buyerID);
+                                setClientName(data.buyerlist[0].name);
+                                if(data.buyerlist[0].companyID)
+                                    setCompanyID(data.buyerlist[0].companyID);
+                                if(data.buyerlist[0].buildingID)
+                                    setBuildingID(data.buyerlist[0].buildingID);
+                            }
+                        case 401:
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
+                        default:
+                            ToastsStore.error(response.data.message);
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
+    const getCodeList = (id) => {
+        let data={
+            'user_type' : en_categorieList[id]
+        }
+        setVisibleIndicator(true);
+        AdminService.getCodeList(data)
+            .then(
+                async response => {
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
+                        case 200:
+                            const data = response.data.data;
+                            codeList.splice(0,codeList.length);
+                            codes.splice(0,codes.length);
+                            codeList.push('');
+                            localStorage.setItem("token", JSON.stringify(data.token));
+                            data.discountcodelist.map((item) =>
+                                codes.push(item.name)
+                            )
+                            setCodeList(data.discountcodelist);
+                            if(data.discountcodelist.length !== 0){
+                                setCodes(codes);
+                                setCodeID(data.discountcodelist[0].discountCodeID);
+                            }
+                        case 401:
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
+                        default:
+                            ToastsStore.error(response.data.message);
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
     }
     return (
         <Scrollbars style={{ height: '100vh' }}>
@@ -149,12 +331,10 @@ const AddOrder = (props) => {
                             <Grid xs item container direction="column">
                                 <MySelect
                                     color="gray"
-                                    data={customerTypeList}
-                                    onChangeSelect={handleChangeCustomerType}
-                                    value={customerType}
+                                    data={categorieList}
+                                    onChangeSelect={handleChangeCategorie}
+                                    value={categorie}
                                 />
-                                {errorsCustomerType.length > 0 &&
-                                    <span className={classes.error}>{errorsCustomerType}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -162,12 +342,12 @@ const AddOrder = (props) => {
                             <Grid xs item container direction="column">
                                 <MySelect
                                     color="gray"
-                                    data={customerTypeList}
-                                    onChangeSelect={handleChangeCustomerType}
-                                    value={customerType}
+                                    data={products}
+                                    onChangeSelect={handleChangeProduct}
+                                    value={product}
                                 />
-                                {errorsCustomerType.length > 0 &&
-                                    <span className={classes.error}>{errorsCustomerType}</span>}
+                                {errorsProduct.length > 0 &&
+                                            <span className={classes.error}>{errorsProduct}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -175,12 +355,24 @@ const AddOrder = (props) => {
                             <Grid xs item container direction="column">
                                 <MySelect
                                     color="gray"
-                                    data={customerTypeList}
-                                    onChangeSelect={handleChangeCustomerType}
-                                    value={customerType}
+                                    data={clients}
+                                    onChangeSelect={handleChangeClient}
+                                    value={client}
                                 />
-                                {errorsCustomerType.length > 0 &&
-                                    <span className={classes.error}>{errorsCustomerType}</span>}
+                                {errorsClient.length > 0 &&
+                                            <span className={classes.error}>{errorsClient}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>Récurrence</p></Grid>
+                            <Grid xs item container>
+                                <MySelect
+                                    color="gray"
+                                    data={billingCycleList}
+                                    onChangeSelect={handleChangeBillingCycle}
+                                    value={billingCycle}
+                                    width="100%"
+                                />
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -188,12 +380,10 @@ const AddOrder = (props) => {
                             <Grid xs item container direction="column">
                                 <MySelect
                                     color="gray"
-                                    data={customerTypeList}
-                                    onChangeSelect={handleChangeCustomerType}
-                                    value={customerType}
+                                    data={priceTypeList}
+                                    onChangeSelect={handleChangePriceType}
+                                    value={priceType}
                                 />
-                                {errorsCustomerType.length > 0 &&
-                                    <span className={classes.error}>{errorsCustomerType}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -202,27 +392,60 @@ const AddOrder = (props) => {
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
-                                    value={codeName}
-                                    onChange={handleChangeCodeName}
+                                    value={price || ''}
+                                    onChange={handleChangePrice}
                                 />
-                                {errorsCodeName.length > 0 &&
-                                    <span className={classes.error}>{errorsCodeName}</span>}
+                                {errorsPrice.length > 0 &&
+                                    <span className={classes.error}>{errorsPrice}</span>}
                             </Grid>
                         </Grid>
-                        <Grid item container alignItems="center" spacing={1}>
-                            <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
-                            <Grid xs item container direction="column">
-                                <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={codeName}
-                                    onChange={handleChangeCodeName}
+                        <Grid item container alignItems="center" spacing={2}>
+                            <Grid item><p className={classes.title}>VAT applicable</p></Grid>
+                            <Grid xs item container>
+                                <Checkbox
+                                    checked={vat_state}
+                                    onChange={handleChangeVatState}
                                 />
-                                {errorsCodeName.length > 0 &&
-                                    <span className={classes.error}>{errorsCodeName}</span>}
                             </Grid>
                         </Grid>
-                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                        {
+                            vat_state === true ?
+                                <Grid item container alignItems="center" spacing={2}>
+                                    <Grid item><p className={classes.title}>VAT en %</p></Grid>
+                                    <Grid xs item container>
+                                        <TextField
+                                            className={classes.text}
+                                            variant="outlined"
+                                            value={vat_fee || ''}
+                                            onChange={handleChangeVatFee}
+                                            fullWidth
+                                        />
+                                        {errorsVatFee.length > 0 &&
+                                            <span className={classes.error}>{errorsVatFee}</span>}
+                                    </Grid>
+                                </Grid>
+                            :
+                                null
+                        }
+                        {
+                            priceType === 0 ?
+                                <Grid item container alignItems="center" spacing={1}>
+                                    <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
+                                    <Grid xs item container direction="column">
+                                        <TextField
+                                            className={classes.text}
+                                            variant="outlined"
+                                            value={apartNumber || ''}
+                                            onChange={handleChangeApartNumber}
+                                        />
+                                        {errorsApartNumber.length > 0 &&
+                                            <span className={classes.error}>{errorsApartNumber}</span>}
+                                    </Grid>
+                                </Grid>
+                            :
+                            null
+                        }
+                        <Grid xs={12} sm={6} item container direction="column" spacing={1}>
                             <Grid item><p className={classes.title}>Date de début</p></Grid>
                             <Grid xs item container>
                                 <TextField
@@ -237,7 +460,7 @@ const AddOrder = (props) => {
                                     <span className={classes.error}>{errorsStartDate}</span>}
                             </Grid>
                         </Grid>
-                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                        <Grid xs={12} sm={6} item container direction="column" spacing={1}>
                             <Grid item ><p className={classes.title}>Date de fin</p></Grid>
                             <Grid xs item container>
                                 <TextField
@@ -248,8 +471,6 @@ const AddOrder = (props) => {
                                     type="date"
                                     fullWidth
                                 />
-                                {errorsEndDate.length > 0 &&
-                                    <span className={classes.error}>{errorsEndDate}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -257,12 +478,10 @@ const AddOrder = (props) => {
                             <Grid xs item container direction="column">
                                 <MySelect
                                     color="gray"
-                                    data={discountTypeList}
-                                    onChangeSelect={handleChangeDiscountType}
-                                    value={discountType}
+                                    data={paymentList}
+                                    onChangeSelect={handleChangePayment}
+                                    value={payment}
                                 />
-                                {errorsDiscountType.length > 0 &&
-                                    <span className={classes.error}>{errorsDiscountType}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -277,14 +496,23 @@ const AddOrder = (props) => {
                         <Grid item container alignItems="center" spacing={1}>
                             <Grid item><p className={classes.title}>Code promo</p></Grid>
                             <Grid xs item container direction="column">
-                                <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={codeName}
-                                    onChange={handleChangeCodeName}
+                                <MySelect
+                                    color="gray"
+                                    data={codes}
+                                    onChangeSelect={handleChangeCode}
+                                    value={code}
                                 />
-                                {errorsCodeName.length > 0 &&
-                                    <span className={classes.error}>{errorsCodeName}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container alignItems="center" spacing={1}>
+                            <Grid item><p className={classes.title}>le statut de la commande</p></Grid>
+                            <Grid xs item container direction="column">
+                                <MySelect
+                                    color="gray"
+                                    data={orderStatusList}
+                                    onChangeSelect={handleChangeOrderStatus}
+                                    value={orderStatus}
+                                />
                             </Grid>
                         </Grid>
                     </Grid>

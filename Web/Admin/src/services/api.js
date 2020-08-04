@@ -1,8 +1,8 @@
 import axios from 'axios';
 import authHeader from './authHeader';
 // const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
-const API_URL = "https://syndic-backend.say-demo.com/api/";
-// const API_URL = "http://192.168.105.38:3001/api/";
+// const API_URL = "https://syndic-backend.say-demo.com/api/";
+const API_URL = "http://192.168.105.38:3001/api/";
 class AdminService {
   //Login
   login(data) {
@@ -212,6 +212,36 @@ class AdminService {
   emptyTrashProduct(status) {
     return axios.post(API_URL + 'web/admin/trash/product/deleteAll', status, { headers: authHeader() });
   }
+  //Order Part
+  getOrderList(data) {
+    return axios.post(API_URL + 'web/admin/orderList', data, { headers: authHeader() });
+  }
+  createOrder(data) {
+    return axios.post(API_URL + 'web/admin/order', data, { headers: authHeader() });
+  }
+  updateOrder(id, data) {
+    return axios.put(API_URL + 'web/admin/order/' + id, data,
+      { headers: authHeader() });
+  }
+  getOrder(id) {
+    return axios.get(API_URL + 'web/admin/order/' + id, { headers: authHeader() });
+  }
+  deleteOrder(id, status) {
+    return axios.post(API_URL + 'web/admin/order/' + id + '/delete', status, { headers: authHeader() });
+  }
+  emptyTrashOrder(status) {
+    return axios.post(API_URL + 'web/admin/trash/order/deleteAll', status, { headers: authHeader() });
+  }
+  getBuyerList(data) {
+    return axios.post(API_URL + 'web/admin/buyerList',data, { headers: authHeader() });
+  }
+  getBuyerList(data) {
+    return axios.post(API_URL + 'web/admin/buyerList',data, { headers: authHeader() });
+  }
+  getCodeList(data) {
+    return axios.post(API_URL + 'web/admin/discountCodeListByType',data, { headers: authHeader() });
+  }
+
   getBuildingListByCompany(data) {
     return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
   }

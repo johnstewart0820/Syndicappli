@@ -9,7 +9,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
 import { Checkbox } from '@material-ui/core';
-import { EditProductStyles as useStyles } from './useStyles';
+import { EditOrderStyles as useStyles } from './useStyles';
 import AdminService from 'services/api.js';
 
 const OrderEdit = (props) => {

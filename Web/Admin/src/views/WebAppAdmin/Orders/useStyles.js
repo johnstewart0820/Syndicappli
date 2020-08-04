@@ -179,102 +179,112 @@ export const AddOrderStyles = makeStyles(theme => ({
     color: 'gray'
   },
 }));
-export const AddProductStyles = makeStyles(theme => ({
-  paper: {
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: 5,
-      padding: theme.spacing(2, 4, 3),
-  },
-  footer: {
-    [theme.breakpoints.up('xl')]: {
-      paddingTop: 89,
-    },
-    [theme.breakpoints.down('lg')]: {
-      paddingTop: 62,
-    },
-    [theme.breakpoints.down('md')]: {
-      paddingTop: 43,
-    },
-    paddingBottom: 30
-  },
+export const OrdersManagerStyles = makeStyles(theme => ({
   root: {
-    '& .MuiTextField-root': {
-        [theme.breakpoints.up('xl')]: {
-          width: 500,
-        },
-        [theme.breakpoints.down('lg')]: {
-          width: 350,
-        },
-        [theme.breakpoints.down('md')]: {
-          width: 245,
-        },
-    },
-    '& .MuiOutlinedInput-input':{
-      [theme.breakpoints.up('xl')]: {
-        padding: '17px 25px',
-        fontSize: 22,
-      },
-      [theme.breakpoints.down('lg')]: {
-        padding: '12px 18px',
-        fontSize: 15,
-      },
-      [theme.breakpoints.down('md')]: {
-        padding: '8px 13px',
-        fontSize: 11,
-      },
-    },
-    '& p':{
-        marginBottom: 0
-    },
-  },  
-  input: {
-      display: 'none'
-  },
-  img: {
-    cursor: 'pointer',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-    border: '1px dashed rgba(112,112,112,0.43)',
-    borderRadius: 8,
     [theme.breakpoints.up('xl')]: {
-      width: 116,
-      height: 92,
+      paddingLeft: theme.spacing(5),
+      paddingRight: theme.spacing(4),
     },
     [theme.breakpoints.down('lg')]: {
-      width: 81,
-      height: 64,
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(3),
     },
     [theme.breakpoints.down('md')]: {
-      width: 57,
-      height: 45,
+      paddingLeft: theme.spacing(3),
+      paddingRight: theme.spacing(2),
     },
-  },
-title:{
-  [theme.breakpoints.up('xl')]: {
-    fontSize: 18,
-  },
-  [theme.breakpoints.down('lg')]: {
-    fontSize: 13,
-  },
-  [theme.breakpoints.down('md')]: {
-    fontSize: 9,
-  },
-},
-  error:{
-      color: 'red',
+    '& .MuiTab-root':{
+      paddingLeft: 0,
+      paddingRight: 30,
+      minWidth: 0,
+      fontWeight:'bold'
+    },
+    '& .MuiTab-wrapper':{
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      textTransform: 'none',
+      color: '#363636',
       [theme.breakpoints.up('xl')]: {
-        fontSize: 18,
+        fontSize :20
       },
       [theme.breakpoints.down('lg')]: {
-        fontSize: 13,
+        fontSize :14
       },
       [theme.breakpoints.down('md')]: {
-        fontSize: 9,
+        fontSize :10
       },
-  }
+    },
+    '& .MuiTab-textColorInherit.Mui-selected':{
+      textDecoration: 'underline',
+      textUnderlinePosition: 'under'
+    },
+  },
+  title:{
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
+  },
+  titleText: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize :35
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize :25
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize :18
+    },
+  },
+
+  modalTitle: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize :28
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize :20
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize :14
+    },
+  },
+  tool: {
+    // [theme.breakpoints.up('xl')]: {
+    //   minHeight: 67
+    // },
+    // [theme.breakpoints.down('lg')]: {
+    //   minHeight: 47
+    // },
+    // [theme.breakpoints.down('md')]: {
+    //   minHeight: 33
+    // },
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    borderRadius: 15,
+    width: 500
+  },
+  padding: {
+    padding: theme.spacing(2, 4, 3),
+  },
+  close: {
+    cursor: 'pointer',
+    color: 'gray'
+  },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '35%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 }));
-export const EditProductStyles = makeStyles(theme => ({
+export const EditOrderStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
       paddingLeft: theme.spacing(5),

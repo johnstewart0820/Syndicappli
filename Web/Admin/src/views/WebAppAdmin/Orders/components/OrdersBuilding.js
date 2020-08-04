@@ -15,10 +15,10 @@ import MySelect from '../../../../components/MySelect';
 import {
   Budget,
   LatestSales,
-} from '../components';
-import CurveChart from '../components/CurveChart';
+} from '.';
+import CurveChart from './CurveChart';
 
-const OrdersManager = (props) => {
+const OrdersBuilding = (props) => {
   const { history } = props;
 
   const token = authService.getToken();    
@@ -294,4 +294,4 @@ const OrdersManager = (props) => {
   );
 };
 
-export default withRouter(OrdersManager);
+export default withRouter(OrdersBuilding);

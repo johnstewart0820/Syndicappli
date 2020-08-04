@@ -18,7 +18,7 @@ import {
 } from '../components';
 import CurveChart from '../components/CurveChart';
 
-const OrdersManager = (props) => {
+const OrdersOwner = (props) => {
   const { history } = props;
 
   const token = authService.getToken();    
@@ -293,4 +293,4 @@ const OrdersManager = (props) => {
   );
 };
 
-export default withRouter(OrdersManager);
+export default withRouter(OrdersOwner);
