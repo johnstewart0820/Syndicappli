@@ -3,32 +3,32 @@ import OrderTable from './OrderTable';
 import authService from '../../../../services/authService.js';
 import AdminService from '../../../../services/api.js';
 import { withRouter } from 'react-router-dom';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../../../components/MyButton';
 import MySelect from '../../../../components/MySelect';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import {
   Budget,
   LatestSales,
 } from '../components';
 import CurveChart from '../components/CurveChart';
-
+import { OrdersManagerStyles as useStyles } from '../useStyles';
 const OrdersOwner = (props) => {
   const { history } = props;
 
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
   const accessOrders = authService.getAccess('role_orders');
   const [openDelete, setOpenDelete] = React.useState(false);
-
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+  const classes = useStyles();
   const [company, setCompany] = useState(0);
+  const [companyID, setCompanyID] = useState(-1);
+  const [buildingID, setBuildingID] = useState(-1);
   const [building, setBuilding] = useState(0);
   const [product, setProduct] = useState(0);
   const [period, setPeriod] = useState(0);
@@ -44,25 +44,14 @@ const OrdersOwner = (props) => {
   const companyList = ['', 20, 50, 100];
   const buildingList = ['', 20, 50, 100];
   const productList = ['', 20, 50, 100];
-  const periodList = ['', 'last 7 days', 'last 30 days', 'last 90 days', 'last year']
+  const periodList = ['', 'les 7 derniers jours', 'les 30 derniers jours', 'les 90 derniers jours', 'la dernière année'];
+  const en_periodList = ['', 'last 7 days', 'last 30 days', 'last 90 days', 'last year'];
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleOpenDelete = () => {
-    setOpenDelete(true);
-  };
-
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
-  const handleAdd = () => {
-
-  };
   const handleClickExport = () => {
     if (accessOrders === 'edit') {
       setOpen(true);
     }
+
   };
   const handleChangeCompany = (value) => {
     setCompany(value);
@@ -87,91 +76,60 @@ const OrdersOwner = (props) => {
     setSortMethod(direct);
   }
   useEffect(() => {
-    getDataList();
+    getBuyerList();
   }, []);
-  const getDataList = () => {
-    setDataList([
-      { userID: 1, order_number: 'Cheese', customer_name: 4.9 },
-      { userID: 2, order_number: 'Milk', customer_name: 1.9 },
-      { userID: 3, order_number: 'Yoghurt', customer_name: 2.4 },
-      { userID: 4, order_number: 'Heavy Cream', customer_name: 3.9 },
-    ])
-  }
-  const cellList = [
-    { key: 'order_number', field: 'Commande #' },
-    { key: 'customer_name', field: 'Client' },
-    { key: 'order_date', field: 'Date' },
-    { key: 'total', field: 'Total' },
-    { key: 'payment_status', field: 'Paiement' },
-    { key: 'date_of_next_payment', field: 'Prochain paiement' },
-    { key: 'order_status', field: 'Statut' },
-  ];
-  const getDatas = () => {
-    const requestData = {
-      'search_key': '',
-      'page_num': page_num - 1,
-      'row_count': row_count,
-      'sort_column': sort_column,
-      'sort_method': sort_method
-    }
-    AdminService.getUserList(requestData)
-      .then(
-        response => {
-          console.log(response.data);
-          // setVisibleIndicator(false);  
-          switch(response.data.code){
-            case 200:
-
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              // ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          console.log('fail');
-          // setVisibleIndicator(false);
-        }
-      );
-  }
-
   useEffect(() => {
-    //  getDataList();
+    getOrdersOwner();
+  }, [companyID]);
+  const cellList = [
+    { key: 'ID', field: 'Commande #' },
+    { key: 'buyer_name', field: 'Client' },
+    { key: 'start_date', field: 'Date' },
+    { key: 'price_with_vat', field: 'Total' },
+    { key: 'payment_status', field: 'Paiement' },
+    { key: 'end_date', field: 'Prochain paiement' },
+    { key: 'status', field: 'Statut' },
+  ];
+  useEffect(() => {
     if (accessOrders !== 'denied')
-      getDatas();
-  }, [page_num, row_count, sort_column, sort_method]);
+    getOrdersOwner();
+  }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   const columns = [];
-  for (let i = 0; i < 2; i++)
+  for (let i = 0; i < 7; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/admin/orders/edit/' + id);
     window.location.reload();
   };
-  const handleClickDownload = (id)=>{
+  const handleClickDownload = (id) => {
 
   }
   const handleClickDelete = (id) => {
-    if (accessOrders === 'edit') {
-      setOpenDelete(true);
-      setDeleteId(id);
-    } 
+    setOpenDelete(true);
+    setDeleteId(id);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
   };
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
-    AdminService.deleteUser(deleteId)
+    setVisibleIndicator(true);
+    let data = {
+      'status': 'trash'
+    }
+    AdminService.deleteOrder(deleteId, data)
       .then(
         response => {
-          console.log(response.data);
-          // setVisibleIndicator(false);  
-          switch(response.data.code){
+          setVisibleIndicator(false);
+          switch (response.data.code) {
             case 200:
-
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success("Deleted successfully!");
+              getOrdersOwner();
               break;
             case 401:
               authService.logout();
@@ -179,17 +137,96 @@ const OrdersOwner = (props) => {
               window.location.reload();
               break;
             default:
-              // ToastsStore.error(response.data.message);
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getOrdersOwner = () => {
+    const requestData = {
+      'search_key': '',
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method,
+      'status': 'active',
+      'type': 'owners',
+      'companyID': companyID,
+      'buildingID': buildingID
+    }
+    setVisibleIndicator(true);
+    AdminService.getOrderList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (!data.totalpage)
+                setTotalPage(1);
+              else
+                setTotalPage(data.totalpage);
+              setDataList(data.orderlist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
         },
         error => {
           console.log('fail');
-          // setVisibleIndicator(false);
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getBuyerList = () => {
+    let data = {
+      'buyer_type': 'owners'
+    }
+    setVisibleIndicator(true);
+    AdminService.getBuyerList(data)
+      .then(
+        async response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              if (data.buyerlist.length !== 0) {
+                if (data.buyerlist[0].companyID)
+                  setCompanyID(data.buyerlist[0].companyID);
+                if (data.buyerlist[0].buildingID)
+                  setBuildingID(data.buyerlist[0].buildingID);
+              }
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
         }
       );
   }
   return (
     <Grid item container spacing={3} direction="column">
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <Grid item></Grid>
       <Grid item container spacing={2} direction="row-reverse" >
         <Grid item>
@@ -251,44 +288,29 @@ const OrdersOwner = (props) => {
       <Grid item style={{ marginTop: 48 }}>
         <MyButton name={"Exporter les factures"} color={"1"} onClick={handleClickExport} />
       </Grid>
-      <OrderTable
-        onChangeSelect={handleChangeSelect}
-        onChangePage={handleChangePagination}
-        onSelectSort={handleSort}
-        page={page_num}
-        columns={columns}
-        products={dataList}
-        totalpage={totalpage}
-        cells={cellList}
-        onClickEdit={handleClickEdit}
-        onClickDelete={handleClickDelete}
-        onClickDownload={handleClickDownload}
-        access={accessOrders}
+      <Grid item>
+        <OrderTable
+          onChangeSelect={handleChangeSelect}
+          onChangePage={handleChangePagination}
+          onSelectSort={handleSort}
+          page={page_num}
+          columns={columns}
+          products={dataList}
+          totalpage={totalpage}
+          cells={cellList}
+          onClickEdit={handleClickEdit}
+          onClickDelete={handleClickDelete}
+          onClickDownload={handleClickDownload}
+          access={accessOrders}
+        />
+      </Grid>
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'product'}
       />
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Delete
-            </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
-                </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete} color="primary">
-            Cancel
-                </Button>
-          <Button onClick={handleDelete} color="primary">
-            Delete
-                </Button>
-        </DialogActions>
-      </Dialog>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </Grid>
   );
 };

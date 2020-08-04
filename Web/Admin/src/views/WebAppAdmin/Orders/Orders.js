@@ -20,7 +20,7 @@ import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AdminService from 'services/api.js';
 import useGlobal from 'Global/global';
-
+import TrashOrders from './TrashOrders';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -75,7 +75,7 @@ const Orders = (props) => {
     setOpen(false);
   };
   const handleAdd = () => {
-    ToastsStore.success("Added New Manager successfully!");
+    ToastsStore.success("Added New Order successfully!");
     setRefresh(!refresh);
   };
   const handleClickAdd = () => {
@@ -97,7 +97,7 @@ const Orders = (props) => {
       'status': 'trash',
       'list': globalState.trash.ID
     }
-    AdminService.emptyTrashManager(data)
+    AdminService.emptyTrashOrder(data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -140,9 +140,9 @@ const Orders = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
               <MyButton
-                name={value === 0 ? "Nouveau Commandes" : "Vider la Poubelle"}
+                name={value !== 3 ? "Nouveau Commandes" : "Vider la Poubelle"}
                 color={"1"}
-                onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashOrder}
+                onClick={value !== 3 ? handleClickAdd : handleClickEmptyTrashOrder}
                 style={{ visibility: accessOrders === 'edit' ? 'visible' : 'hidden' }}
               />
               <Dialog
@@ -173,6 +173,7 @@ const Orders = (props) => {
           <Tab xs={12} sm={4} label="Gestionnaires" {...a11yProps(0)} className={classes.tabTitle} disableRipple />
           <Tab xs={12} sm={4} label="Copropriétaires" {...a11yProps(1)} className={classes.tabTitle} disableRipple />
           <Tab xs={12} sm={4} label="Immeubles" {...a11yProps(2)} className={classes.tabTitle} disableRipple />
+          <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(3)} className={classes.tabTitle} disableRipple />
         </Tabs>
       </div>
       <div className={classes.body}>
@@ -184,6 +185,9 @@ const Orders = (props) => {
         </TabPanel>
         <TabPanel value={value} index={2}>
           <OrdersBuilding refresh={refresh} />
+        </TabPanel>
+        <TabPanel value={value} index={3}>
+          <TrashOrders refresh={refresh} />
         </TabPanel>
       </div>
       <DeleteConfirmDialog

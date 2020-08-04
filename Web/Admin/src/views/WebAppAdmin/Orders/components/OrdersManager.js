@@ -82,7 +82,7 @@ const OrdersManager = (props) => {
     getOrdersManager();
   }, [companyID]);
   const cellList = [
-    { key: 'order_number', field: 'Commande #' },
+    { key: 'ID', field: 'Commande #' },
     { key: 'buyer_name', field: 'Client' },
     { key: 'start_date', field: 'Date' },
     { key: 'price_with_vat', field: 'Total' },
@@ -96,7 +96,7 @@ const OrdersManager = (props) => {
   }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   const columns = [];
-  for (let i = 0; i < 2; i++)
+  for (let i = 0; i < 7; i++)
     columns[i] = 'asc';
   const handleClickEdit = (id) => {
     history.push('/admin/orders/edit/' + id);
@@ -188,7 +188,7 @@ const OrdersManager = (props) => {
         }
       );
   }
-  const getBuyerList = (id) => {
+  const getBuyerList = () => {
     let data = {
       'buyer_type': 'managers'
     }
@@ -204,11 +204,13 @@ const OrdersManager = (props) => {
               if (data.buyerlist.length !== 0) {
                 if (data.buyerlist[0].companyID)
                   setCompanyID(data.buyerlist[0].companyID);
+                if (data.buyerlist[0].buildingID)
+                  setBuildingID(data.buyerlist[0].buildingID);
               }
             case 401:
-              // authService.logout();
-              // history.push('/login');
-              // window.location.reload();
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
               break;
             default:
               ToastsStore.error(response.data.message);

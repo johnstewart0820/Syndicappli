@@ -69,10 +69,11 @@ const AddOrder = (props) => {
         let cnt = 0;
         if (startDate.length === 0) { setErrorsStartDate('please select start date'); cnt++; }
         else setErrorsStartDate('');
-        if(priceType === 0){
+        if (priceType === 0) {
             if (!apartNumber) { setErrorsApartNumber('please enter amount of apartment number'); cnt++; }
             else setErrorsApartNumber('');
         }
+        else setErrorsApartNumber('');
         if (!price) { setErrorsPrice('please enter price'); cnt++; }
         else setErrorsPrice('');
         if (vat_state === true) {
@@ -85,24 +86,24 @@ const AddOrder = (props) => {
     }
     const createOrder = () => {
         const requestData = {
-            'buyer_type' : en_categorieList[categorie],
-            'productID' : productID,
-            'buyerID' : clientID,
-            'companyID' : companyID,
-            'buildingID' : buildingID,
-            'buyer_name' : clientName,
-            'billing_cycle' : en_billingCycleList[billingCycle],
-            'renewal' : renewal ? 'true' : 'false',
-            'price_type' : en_priceTypeList[priceType],
-            'price' : price,
-            'vat_option' : vat_state ? 'true' : 'false',
-            'vat_fee' : vat_fee,
-            'apartment_amount' : apartNumber,
-            'start_date' : startDate,
-            'end_date' : endDate,
-            'payment_method' : en_paymentList[payment],
-            'discount_codeID' : codeID,
-            'status' : en_orderstatusList[orderStatus]
+            'buyer_type': en_categorieList[categorie],
+            'productID': productID,
+            'buyerID': clientID,
+            'companyID': companyID,
+            'buildingID': buildingID,
+            'buyer_name': clientName,
+            'billing_cycle': en_billingCycleList[billingCycle],
+            'renewal': renewal ? 'true' : 'false',
+            'price_type': en_priceTypeList[priceType],
+            'price': price,
+            'vat_option': vat_state ? 'true' : 'false',
+            'vat_fee': vat_fee,
+            'apartment_amount': apartNumber,
+            'start_date': startDate,
+            'end_date': endDate,
+            'payment_method': en_paymentList[payment],
+            'discount_codeID': codeID,
+            'status': en_orderstatusList[orderStatus]
         }
         setVisibleIndicator(true);
         AdminService.createOrder(requestData)
@@ -146,15 +147,15 @@ const AddOrder = (props) => {
     const handleChangeClient = (val) => {
         setClient(val);
         setClientID(clientList[val].buyerID);
-        if(clientList[val].companyID)
+        if (clientList[val].companyID)
             setCompanyID(clientList[val].companyID);
-        if(clientList[val].buildingID)
+        if (clientList[val].buildingID)
             setBuildingID(clientList[val].buildingID);
         setClientName(clientList[val].name)
     }
     const handleChangeCode = (val) => {
         setCode(val);
-        setCodeID(codeList[val].discountCodeID);
+        setCodeID(codeList[val].discount_codeID);
     }
     const handleChangeProduct = (val) => {
         setProduct(val);
@@ -184,12 +185,12 @@ const AddOrder = (props) => {
     const handleChangeApartNumber = (event) => {
         setApartNumber(+event.target.value);
     }
-    useEffect( () => {
+    useEffect(() => {
         getProductList(categorie);
         getBuyerList(categorie);
         getCodeList(categorie);
     }, [categorie]);
-    const getProductList =  (id) => {
+    const getProductList = (id) => {
         const requestData = {
             'search_key': '',
             'page_num': 0,
@@ -200,23 +201,23 @@ const AddOrder = (props) => {
             'type': en_categorieList[id]
         }
         setVisibleIndicator(true);
-         AdminService.getProductList(requestData)
+        AdminService.getProductList(requestData)
             .then(
-                 response => {
+                response => {
                     setVisibleIndicator(false);
                     switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
-                            productList.splice(0,productList.length);
-                            products.splice(0,products.length)
+                            productList.splice(0, productList.length);
+                            products.splice(0, products.length)
                             productList.push('')
                             localStorage.setItem("token", JSON.stringify(data.token));
-                            data.productlist.map((item) =>(
+                            data.productlist.map((item) => (
                                 products.push(item.name)
                             )
                             );
                             setProductList(data.productlist);
-                            if(data.productlist.length !== 0){
+                            if (data.productlist.length !== 0) {
                                 setProducts(products);
                                 setProductID(data.productlist[0].productID);
                             }
@@ -236,8 +237,8 @@ const AddOrder = (props) => {
             );
     }
     const getBuyerList = (id) => {
-        let data={
-            'buyer_type' : en_categorieList[id]
+        let data = {
+            'buyer_type': en_categorieList[id]
         }
         setVisibleIndicator(true);
         AdminService.getBuyerList(data)
@@ -247,21 +248,21 @@ const AddOrder = (props) => {
                     switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
-                            clientList.splice(0,clientList.length);
-                            clients.splice(0,clients.length);
+                            clientList.splice(0, clientList.length);
+                            clients.splice(0, clients.length);
                             clientList.push('');
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.buyerlist.map((item) =>
                                 clients.push(item.name)
                             )
                             setClientList(clientList);
-                            if(data.buyerlist.length !== 0){
+                            if (data.buyerlist.length !== 0) {
                                 setClients(clients);
                                 setClientID(data.buyerlist[0].buyerID);
                                 setClientName(data.buyerlist[0].name);
-                                if(data.buyerlist[0].companyID)
+                                if (data.buyerlist[0].companyID)
                                     setCompanyID(data.buyerlist[0].companyID);
-                                if(data.buyerlist[0].buildingID)
+                                if (data.buyerlist[0].buildingID)
                                     setBuildingID(data.buyerlist[0].buildingID);
                             }
                         case 401:
@@ -280,8 +281,8 @@ const AddOrder = (props) => {
             );
     }
     const getCodeList = (id) => {
-        let data={
-            'user_type' : en_categorieList[id]
+        let data = {
+            'user_type': en_categorieList[id]
         }
         setVisibleIndicator(true);
         AdminService.getCodeList(data)
@@ -291,17 +292,17 @@ const AddOrder = (props) => {
                     switch (response.data.code) {
                         case 200:
                             const data = response.data.data;
-                            codeList.splice(0,codeList.length);
-                            codes.splice(0,codes.length);
+                            codeList.splice(0, codeList.length);
+                            codes.splice(0, codes.length);
                             codeList.push('');
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.discountcodelist.map((item) =>
                                 codes.push(item.name)
                             )
                             setCodeList(data.discountcodelist);
-                            if(data.discountcodelist.length !== 0){
+                            if (data.discountcodelist.length !== 0) {
                                 setCodes(codes);
-                                setCodeID(data.discountcodelist[0].discountCodeID);
+                                setCodeID(data.discountcodelist[0].discount_codeID);
                             }
                         case 401:
                             authService.logout();
@@ -347,7 +348,7 @@ const AddOrder = (props) => {
                                     value={product}
                                 />
                                 {errorsProduct.length > 0 &&
-                                            <span className={classes.error}>{errorsProduct}</span>}
+                                    <span className={classes.error}>{errorsProduct}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
@@ -360,7 +361,7 @@ const AddOrder = (props) => {
                                     value={client}
                                 />
                                 {errorsClient.length > 0 &&
-                                            <span className={classes.error}>{errorsClient}</span>}
+                                    <span className={classes.error}>{errorsClient}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={2}>
@@ -399,6 +400,19 @@ const AddOrder = (props) => {
                                     <span className={classes.error}>{errorsPrice}</span>}
                             </Grid>
                         </Grid>
+                        <Grid item container alignItems="center" spacing={1}>
+                            <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
+                            <Grid xs item container direction="column">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={apartNumber || ''}
+                                    onChange={handleChangeApartNumber}
+                                />
+                                {errorsApartNumber.length > 0 &&
+                                    <span className={classes.error}>{errorsApartNumber}</span>}
+                            </Grid>
+                        </Grid>
                         <Grid item container alignItems="center" spacing={2}>
                             <Grid item><p className={classes.title}>VAT applicable</p></Grid>
                             <Grid xs item container>
@@ -424,26 +438,8 @@ const AddOrder = (props) => {
                                             <span className={classes.error}>{errorsVatFee}</span>}
                                     </Grid>
                                 </Grid>
-                            :
+                                :
                                 null
-                        }
-                        {
-                            priceType === 0 ?
-                                <Grid item container alignItems="center" spacing={1}>
-                                    <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
-                                    <Grid xs item container direction="column">
-                                        <TextField
-                                            className={classes.text}
-                                            variant="outlined"
-                                            value={apartNumber || ''}
-                                            onChange={handleChangeApartNumber}
-                                        />
-                                        {errorsApartNumber.length > 0 &&
-                                            <span className={classes.error}>{errorsApartNumber}</span>}
-                                    </Grid>
-                                </Grid>
-                            :
-                            null
                         }
                         <Grid xs={12} sm={6} item container direction="column" spacing={1}>
                             <Grid item><p className={classes.title}>Date de début</p></Grid>
