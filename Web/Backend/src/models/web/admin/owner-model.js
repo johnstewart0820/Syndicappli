@@ -46,13 +46,13 @@ var ownerModel = {
 function getOwnerList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, users.userID ID, users.phone phone, users.email email
+                    *, users.userID ID, users.phone phone, users.email email, user_relationship.relationID buildingID
                     FROM users
                     LEFT JOIN user_relationship USING ( userID ) 
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and users.invitation_status = "accepted" `
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? `
 
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
@@ -119,7 +119,7 @@ function getCountOwnerList(uid, data) {
                     LEFT JOIN buildings ON user_relationship.relationID = buildings.buildingID 
                     Left join companies using (companyID)
                     LEFT JOIN ( SELECT count( buildingID ) count, buildingID, userID FROM apartments LEFT JOIN buildings USING ( buildingID ) GROUP BY apartments.buildingID, apartments.userID ) s ON buildings.buildingID = s.buildingID and users.userID = s.userID
-                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? and users.invitation_status = "accepted" `
+                    WHERE users.usertype = "owner" and users.firstname like ? and users.permission = ? `
         
         search_key = '%' + data.search_key + '%'
         let params = [search_key, data.status];

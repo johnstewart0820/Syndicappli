@@ -41,8 +41,9 @@ var discountCodeModel = {
 function getDiscountCodeList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, if(DATE(end_date ) > CURRENT_DATE, "active", "expired") status, discount_codeID ID, if(end_date = "9999-12-31", "", end_date) end_date
-                    FROM discount_codes
+                    *, if(DATE(end_date ) > CURRENT_DATE, "active", "expired") status, d.discount_codeID ID, if(end_date = "9999-12-31", "", end_date) end_date
+                    FROM discount_codes d left join (select count(discount_codeID) count, discount_codeID from orders where permission = "active" or permission = "trash" group by discount_codeID) s
+                    ON d.discount_codeID = s.discount_codeID
                     WHERE permission = ? and name like ? `
 
         sort_column = Number(data.sort_column);
@@ -52,20 +53,20 @@ function getDiscountCodeList(uid, data) {
         let params = [data.status, search_key];
 
         if (sort_column === -1)
-            query += ' order by discount_codeID desc';
+            query += ' order by d.discount_codeID desc';
         else {
             if (sort_column === 0)
-                query += ' order by name ';
+                query += ' order by d.name ';
             else if (sort_column === 1)
-                query += ' order by user_type ';
+                query += ' order by d.user_type ';
             else if (sort_column === 2)
-                query += ' order by discount_type, discount_amount ';
+                query += ' order by d.discount_type, d.discount_amount ';
             else if (sort_column === 3)
-                query += ' order by start_date ';
+                query += ' order by d.start_date ';
             else if (sort_column === 4)
-                query += ' order by end_date ';
+                query += ' order by d.end_date ';
             else if (sort_column === 5)
-                query += ' order by end_date ';
+                query += ' order by s.count ';
             else if (sort_column === 6)
                 query += ' order by status ';
             query += data.sort_method;

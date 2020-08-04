@@ -154,12 +154,10 @@ function getOrder(uid, userdata, id) {
     return new Promise((resolve, reject) => {
         authHelper.hasOrderPermission(userdata, [code.EDIT_PERMISSION, code.SEE_PERMISSION]).then((response) => {
             orderModel.getOrder(uid, id).then((order) => {
-                if (order) {
-                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                            expiresIn: timer.TOKEN_EXPIRATION
-                        })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'order': order} })
-                }
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'order': order} })
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
