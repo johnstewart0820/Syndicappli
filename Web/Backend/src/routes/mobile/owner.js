@@ -37,6 +37,7 @@ router.post('/subAccount/:id', authMiddleware.checkToken, getOwner)
 router.delete('/subAccount/:id', authMiddleware.checkToken, deleteOwner)
 router.post('/invitation', acceptInvitation)
 router.post('/subAccount/:id/reinvite', authMiddleware.checkToken, reinviteOwner)
+router.get('/buildingListByOwner', authMiddleware.checkToken, getBuildingListByOwner)
 
 ///////////////////////////////////Profile/////////////////////////////
 
@@ -103,6 +104,24 @@ function getOwnerList(req, res){
     })
 }
 
+/**
+ * Function that get the owner list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getBuildingListByOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    ownerService.getBuildingListByOwner(userId, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 
 /**
  * Function that create owner
@@ -203,6 +222,5 @@ function reinviteOwner(req, res){
         res.json(err)
     })
 }
-
 
 module.exports = router

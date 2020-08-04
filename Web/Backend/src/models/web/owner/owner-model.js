@@ -125,7 +125,7 @@ function createOwner_info(uid, data) {
                         }
                     })
                 } else {
-                    reject({ message: message.COMPANY_ALREADY_EXIST });
+                    reject({ message: message.OWNER_ALREADY_EXIST });
                 }
             }
         })

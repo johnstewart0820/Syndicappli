@@ -25,7 +25,8 @@ var ownerService = {
     getOwner: getOwner,
     deleteOwner: deleteOwner,
     acceptInvitation: acceptInvitation,
-    reinviteOwner: reinviteOwner
+    reinviteOwner: reinviteOwner,
+    getBuildingListByOwner: getBuildingListByOwner
 }
 
 /**
@@ -42,6 +43,29 @@ function getOwnerList(uid, userdata, data) {
                 expiresIn: timer.TOKEN_EXPIRATION
             })
             resolve({ code: code.OK, message: '', data: { 'token': token, 'ownerlist': ownerList } })
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that get owner list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function getBuildingListByOwner(uid, userdata) {
+    return new Promise((resolve, reject) => {
+        ownerModel.getBuildingListByOwner(uid).then((ownerList) => {
+            let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                expiresIn: timer.TOKEN_EXPIRATION
+            })
+            resolve({ code: code.OK, message: '', data: { 'token': token, 'buildinglist': ownerList } })
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)
                 reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })

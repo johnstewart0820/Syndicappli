@@ -27,7 +27,8 @@ var ownerModel = {
     getOwner: getOwner,
     deleteOwner: deleteOwner,
     acceptInvitation: acceptInvitation,
-    reinviteOwner: reinviteOwner
+    reinviteOwner: reinviteOwner,
+    getBuildingListByOwner: getBuildingListByOwner
 }
 
 /**
@@ -40,6 +41,27 @@ var ownerModel = {
 function getOwnerList(uid) {
     return new Promise((resolve, reject) => {
         let query = `select * from users where created_by = ?`
+
+        db.query(query, [uid], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows);
+            }
+        })
+    })
+}
+
+/**
+ * get company list with filter key
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingListByOwner(uid) {
+    return new Promise((resolve, reject) => {
+        let query = `select * from users u left join user_relationship r on u.userID = r.userID and r.type="building" left join buildings b on r.relationID = b.buildingID and b.permission = "active" where u.userID = ?`
 
         db.query(query, [uid], (error, rows, fields) => {
             if (error) {
@@ -66,7 +88,6 @@ function createOwner_info(uid, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {
                 if (result.length == 0) {
-                    let owner = result
                     let randomPassword = randtoken.generate(15);
                     let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
@@ -75,28 +96,36 @@ function createOwner_info(uid, data) {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
-                            db.query(query, [owner.userID, "building", data.buildingID], (error, result, fields) => {
-                                if (error) {
-                                    reject({ message: message.INTERNAL_SERVER_ERROR });
-                                } else {
-                                    sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
-                                    .then((response) => {
-                                        resolve("OK")
-                                    })
-                                    .catch((err) => {
-                                        if(err.message.statusCode == code.BAD_REQUEST){
-                                            reject({ message: message.EMIL_IS_NOT_EXIST })
+                            let query = `Select * from ` + table.USERS + ` where email = ?`;
+                            db.query(query, [data.email], function (error, rows, fields) {
+                                if (error)
+                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                else {
+                                    let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
+                                    db.query(query, [rows[0].userID, "building", data.buildingID], (error, result, fields) => {
+                                        if (error) {
+                                            reject({ message: message.INTERNAL_SERVER_ERROR });
                                         } else {
-                                            reject({ message: message.EMIL_IS_NOT_EXIST })
+                                            sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
+                                            .then((response) => {
+                                                resolve("OK")
+                                            })
+                                            .catch((err) => {
+                                                if(err.message.statusCode == code.BAD_REQUEST){
+                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                                } else {
+                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                                }
+                                            })
                                         }
-                                    })
+                                    })    
                                 }
-                            })                              
+                            })
+                                                      
                         }
                     })
                 } else {
-                    reject({ message: message.COMPANY_ALREADY_EXIST });
+                    reject({ message: message.OWNER_ALREADY_EXIST });
                 }
             }
         })
@@ -114,7 +143,7 @@ function createOwner_info(uid, data) {
  */
 function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from users where userID = ?'
+        let query = 'Select * from users left join user_relationship r on users.userID = r.userID and r.type="building" where users.userID = ?'
         
         db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
@@ -192,7 +221,7 @@ function acceptInvitation(token) {
     })
   }
 
-/**
+  /**
  * resend email
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
@@ -219,7 +248,7 @@ function reinviteOwner(id) {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword, randomToken)
+                            sendMail(mail.TITLE_OWNER_CREATE, email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
                             .then((response) => {
                                 resolve("OK")
                             })
