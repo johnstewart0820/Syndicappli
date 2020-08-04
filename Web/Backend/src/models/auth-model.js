@@ -53,7 +53,14 @@ function login(authData) {
                             reject({ message: message.INVALID_PASSWORD })
                         } else {
                             if (result) {
-                                resolve(rows[0])
+                                let update_query = 'UPDATE ' + table.USERS + ' SET invitation_status = ? WHERE email = ?'
+                                db.query(update_query, ["accepted",authData.email], (error, result, fields) => {
+                                    if (error) {
+                                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                                    } else {
+                                        resolve(rows[0])
+                                    }
+                                })
                             } else {
                                 reject({ message: message.INVALID_PASSWORD })
                             }

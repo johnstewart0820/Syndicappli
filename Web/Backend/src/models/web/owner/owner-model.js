@@ -66,54 +66,33 @@ function createOwner_info(uid, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {
                 if (result.length == 0) {
+                    let owner = result
                     let randomPassword = randtoken.generate(15);
                     let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
-                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, firstname_1, lastname_1, owner_company_name, address, password, email, phone, status, invitation_status, permission, created_by, created_at, updated_at, token) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    db.query(query, ["owner", "Mr & Mrs", "subaccount", data.firstname, data.lastname, data.firstname_1, data.lastname_1, "","", password, data.email, data.phone, "active", "invited", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), randomToken], function (error, rows, fields)  {
+                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, firstname_1, lastname_1, owner_company_name, address, password, email, phone, status, permission, created_by, created_at, updated_at, token, invitation_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                    db.query(query, ["owner", "Mr & Mrs", "subaccount", data.firstname, data.lastname, data.firstname_1, data.lastname_1, "","", password, data.email, data.phone, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), randomToken, "invited"], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            let query = `select b.buildingID from users u left join user_relationship r on u.userID = r.userID and r.type="building" left join buildings b on r.relationID = b.buildingID where u.userID = ? and b.permission = "active" group by b.buildingID `
-                            db.query(query, [uid], (error, rows, fields) => {
-                                console.log('err: ', error)
-                                console.log('rows: ', rows)
+                            let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
+                            db.query(query, [owner.userID, "building", data.buildingID], (error, result, fields) => {
                                 if (error) {
                                     reject({ message: message.INTERNAL_SERVER_ERROR });
                                 } else {
-                                    let buildings = rows
-                                    let query = `select * from users where email = ?`
-                                    db.query(query, [data.email], async (error, rows, fields) => {
-                                        if (error) {
-                                            reject({ message: message.INTERNAL_SERVER_ERROR });
+                                    sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
+                                    .then((response) => {
+                                        resolve("OK")
+                                    })
+                                    .catch((err) => {
+                                        if(err.message.statusCode == code.BAD_REQUEST){
+                                            reject({ message: message.EMIL_IS_NOT_EXIST })
                                         } else {
-                                            let saID = rows[0].userID
-                                            if (buildings && buildings.length > 0) {
-                                                for (let i in buildings) {
-                                                    let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
-                                                    await db.query(query, [saID, "building", buildings[i].buildingID], (error, result, fields) => {
-                                                        if (error) {
-                                                            reject({ message: message.INTERNAL_SERVER_ERROR });
-                                                        }
-                                                    })                                                 
-                                                }
-                                            }
-                                            sendMail(mail.TITLE_SUBACCOUNT_INVITE, data.email, mail.TYPE_SUBACCOUNT_INVITE, randomPassword, randomToken)
-                                            .then((response) => {
-                                                resolve("OK")
-                                            })
-                                            .catch((err) => {
-                                                if(err.message.statusCode == code.BAD_REQUEST){
-                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
-                                                } else {
-                                                    reject({ message: err.message })
-                                                }
-                                            })
+                                            reject({ message: err.message })
                                         }
                                     })
                                 }
-                            })
-                            
+                            })                              
                         }
                     })
                 } else {
