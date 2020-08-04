@@ -302,9 +302,9 @@ function createUserInfo(uid, data, file) {
                                             })
                                             .catch((err) => {
                                                 if(err.message.statusCode == code.BAD_REQUEST){
-                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                                    resolve("OK")
                                                 } else {
-                                                    reject({ message: err.message })
+                                                    resolve("OK")
                                                 }
                                             })
                                     }

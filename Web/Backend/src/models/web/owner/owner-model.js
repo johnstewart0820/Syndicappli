@@ -110,7 +110,7 @@ function createOwner_info(uid, data) {
                                         if(err.message.statusCode == code.BAD_REQUEST){
                                             reject({ message: message.EMIL_IS_NOT_EXIST })
                                         } else {
-                                            reject({ message: err.message })
+                                            reject({ message: message.EMIL_IS_NOT_EXIST })
                                         }
                                     })
                                 }
