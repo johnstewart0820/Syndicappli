@@ -174,8 +174,10 @@ const OwnerEdit = (props) => {
     else setErrorsPhonenumber('');
     if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
     else setErrorsAddress('');
-    if (count === 0) { setErrorsLotsList('please check a Lot'); cnt++; }
-    else setErrorsLotsList('');
+    if(isSubAccount === false){
+      if (count === 0) { setErrorsLotsList('please check a Lot'); cnt++; }
+      else setErrorsLotsList('');
+    }else setErrorsLotsList('');
     if (cnt === 0) {
       updateOwner();
     }
@@ -235,6 +237,13 @@ const OwnerEdit = (props) => {
   }
   const handleChangeIsSubAccount = (event) => {
     setIsSubAccount(event.target.checked);
+    if (event.target.checked) {
+      setCount(0);
+      setVoteAmount(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
+      setApartNumber([]);
+      setLotsList([]);
+      setStateLots(!stateLots);
+    }
     if (isSubAccount)
       setIsMemberCouncil(!isSubAccount);
     else
@@ -689,7 +698,7 @@ const OwnerEdit = (props) => {
                     }}
                     badgeContent={
                       <div>
-                        <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessOwners === 'see' ? true : false)}/>
+                        <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessOwners === 'see' ? true : false)} />
                         <label htmlFor="img_front">
                           <EditOutlinedIcon className={classes.editAvatar} />
                         </label>
@@ -1041,7 +1050,7 @@ const OwnerEdit = (props) => {
                   <MyButton
                     name={"Ajouter un lot"}
                     bgColor="grey"
-                    onClick={handleClickAddLots}
+                    onClick={isSubAccount ? null : handleClickAddLots}
                     disabled={(accessOwners === 'see' ? true : false)}
                   />
                 </Grid>
