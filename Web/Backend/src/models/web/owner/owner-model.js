@@ -61,7 +61,7 @@ function getOwnerList(uid) {
  */
 function getBuildingListByOwner(uid) {
     return new Promise((resolve, reject) => {
-        let query = `select * from users u left join user_relationship r on u.userID = r.userID and r.type="building" left join buildings b on r.relationID = b.buildingID and b.permission = "active" where u.created_by = ?`
+        let query = `select * from users u left join user_relationship r on u.userID = r.userID and r.type="building" left join buildings b on r.relationID = b.buildingID and b.permission = "active" where u.userID = ?`
 
         db.query(query, [uid], (error, rows, fields) => {
             if (error) {

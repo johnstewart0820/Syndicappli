@@ -65,7 +65,7 @@ function getBuildingListByOwner(uid, userdata) {
             let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                 expiresIn: timer.TOKEN_EXPIRATION
             })
-            resolve({ code: code.OK, message: '', data: { 'token': token, 'ownerlist': ownerList } })
+            resolve({ code: code.OK, message: '', data: { 'token': token, 'buildinglist': ownerList } })
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)
                 reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
