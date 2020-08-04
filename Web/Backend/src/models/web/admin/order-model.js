@@ -43,23 +43,69 @@ var orderModel = {
 function getOrderList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, orderID ID
+                    *, orderID ID, 
+                    if (discount_codeID > 0, 
+                        if (discount_type = fixed, 
+                            if(vat_option="true", 
+                                if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
+                                if(price_type = "per_apartment", price * apartment_amount, price)) - discount_amount, 
+                            if(vat_option="true", 
+                                if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
+                                if(price_type = "per_apartment", price * apartment_amount, price)) / 100 * (100 - discount_amount)
+                        ),
+                        if(vat_option="true", 
+                                if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
+                                if(price_type = "per_apartment", price * apartment_amount, price))
+                    ) price_with_vat
                     FROM orders
                     WHERE permission = ? and buyer_type = ? and name like ? `
-
+        search_key = '%' + data.search_key + '%'
+        let params = [data.status, data.type, search_key]
+        if (data.type === "managers" ) {
+            if (data.companyID != -1) {
+                query += ` companyID = ? `
+                params.push(data.companyID)
+            }
+        } else if (data.type === "owners") {
+            if (data.companyID != -1) {
+                query += ` companyID = ? `
+                params.push(data.companyID)
+            }
+            if (data.buildingID != -1) {
+                query += ` buildingID = ? `
+                params.push(data.buildingID)
+            }
+        } else if (data.type === "buildings") {
+            if (data.companyID != -1) {
+                query += ` companyID = ? `
+                params.push(data.companyID)
+            }
+            if (data.buildingID != -1) {
+                query += ` buildingID = ? `
+                params.push(data.buildingID)
+            }
+        }
         sort_column = Number(data.sort_column);
         row_count = Number(data.row_count);
         page_num = Number(data.page_num);
-        search_key = '%' + data.search_key + '%'
-        let params = [data.status, data.type, search_key];
 
         if (sort_column === -1)
             query += ' order by orderID desc';
         else {
             if (sort_column === 0)
-                query += ' order by name ';
+                query += ' order by orderID ';
             else if (sort_column === 1)
-                query += ' order by price ';
+                query += ' order by buyer_name ';
+            else if (sort_column === 2)
+                query += ' order by start_date ';
+            else if (sort_column === 3)
+                query += ' order by price_with_vat ';
+            else if (sort_column === 4)
+                query += ' order by orderID ';
+            else if (sort_column === 5)
+                query += ' order by end_date ';
+            else if (sort_column === 6)
+                query += ' order by status ';
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
@@ -68,6 +114,56 @@ function getOrderList(uid, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 resolve(rows);
+            }
+        })
+    })
+}
+
+
+/**
+ * get count for building list for search filter
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCountOrderList(uid, data) {
+    return new Promise((resolve, reject) => {
+        let query = `SELECT
+        count(*) count
+        FROM orders
+        WHERE permission = ? and buyer_type = ? and name like ? `
+        search_key = '%' + data.search_key + '%'
+        let params = [data.status, data.type, search_key]   
+        if (data.type === "managers" ) {
+            if (data.companyID != -1) {
+                query += ` companyID = ? `
+                params.push(data.companyID)
+            }
+        } else if (data.type === "owners") {
+            if (data.companyID != -1) {
+                query += ` companyID = ? `
+                params.push(data.companyID)
+            }
+            if (data.buildingID != -1) {
+                query += ` buildingID = ? `
+                params.push(data.buildingID)
+            }
+        } else if (data.type === "buildings") {
+            if (data.companyID != -1) {
+                query += ` companyID = ? `
+                params.push(data.companyID)
+            }
+            if (data.buildingID != -1) {
+                query += ` buildingID = ? `
+                params.push(data.buildingID)
+            }
+        }
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows[0].count)
             }
         })
     })
@@ -85,17 +181,17 @@ function getBuyerList(uid, data) {
         let query
         if (data.buyer_type === "managers")
             query = `SELECT
-                    c.companyID buyerID, c.name
+                    c.companyID buyerID, c.companyID, c.name
                     FROM users u left join user_relationship r on u.userID = r.userID left join companies c on r.relationID = c.companyID
                     WHERE c.permission = "active" and u.userID = ? and r.type="company"`
         else if (data.buyer_type === "buildings")
             query = `Select
-                    b.buildingID buyerID, b.name
+                    b.buildingID buyerID, c.companyID, b.buildingID, b.name
                     FROM users u left join user_relationship r on u.userID = r.userID left join companies c on r.relationID = c.companyID left join buildings b on c.companyID = b.companyID
                     WHERE c.permission = "active" and b.permission = "active" and u.userID = ? and r.type="company"`
         else if (data.buyer_type === "owners")
             query = `SELECT
-                    s.userID buyerID, CONCAT(s.firstname,s.lastname) name
+                    s.userID buyerID, c.companyID, b.buildingID, CONCAT(s.firstname,s.lastname) name
                     FROM
                         users u
                         LEFT JOIN user_relationship r ON u.userID = r.userID
@@ -126,31 +222,7 @@ function getBuyerList(uid, data) {
     })
 }
 
-/**
- * get count for building list for search filter
- *
- * @author  Taras Hryts <streaming9663@gmail.com>
- * @param   object authData
- * @return  object If success returns object else returns message
- */
-function getCountOrderList(uid, data) {
-    return new Promise((resolve, reject) => {
-        let query = `SELECT
-                    count(*) count
-                    FROM orders
-                    WHERE permission = ? and buyer_type = ? and name like ? `
-        search_key = '%' + data.search_key + '%'
-        let params = [data.status, data.type, search_key];
 
-        db.query(query, params, (error, rows, fields) => {
-            if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR })
-            } else {
-                resolve(rows[0].count)
-            }
-        })
-    })
-}
 
 /**
  * get discount code list by type
@@ -213,8 +285,8 @@ function createOrder(uid, data) {
                                     if (data.discount_codeID > 0 && discount_codes[0].amount_of_use_per_user != -1 && rows[0].count + 1 > discount_codes[0].amount_of_use_per_user)
                                         reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
                                     else {
-                                        let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, buyerID, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                        db.query(query, [data.buyer_type, data.productID, data.buyerID, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                                        let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                        db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
                                             if (error) {
                                                 reject({ message: message.INTERNAL_SERVER_ERROR });
                                             } else {
