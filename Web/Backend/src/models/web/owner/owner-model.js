@@ -136,7 +136,7 @@ function createOwner_info(uid, data) {
  */
 function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from users where userID = ?'
+        let query = 'Select * from users left join user_relationship r left join users.userID = r.userID and r.type="building" where userID = ?'
         
         db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
