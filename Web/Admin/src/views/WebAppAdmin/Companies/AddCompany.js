@@ -173,9 +173,9 @@ const AddCompany = (props) => {
         formdata.set('account_holdername', accountname);
         formdata.set('account_address', accountaddress);
         formdata.set('account_IBAN', IBAN);
-        formdata.set('access_360cam', assemblies360);
-        formdata.set('access_webcam', assembliesWebcam);
-        formdata.set('access_audio', assembliesAudio);
+        formdata.set('access_360cam', assemblies360 ? 'true' : 'false');
+        formdata.set('access_webcam', assembliesWebcam ? 'true' : 'false');
+        formdata.set('access_audio', assembliesAudio ? 'true' : 'false');
         formdata.set('status', statusActive === true ? 'active' : 'inactive');
         formdata.set('logo', avatar === null ? '' : avatar);
 

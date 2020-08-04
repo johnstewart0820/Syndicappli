@@ -146,12 +146,12 @@ const handleChangeVatFee = (event) => {
     const requestData = {
         'buyer_type': en_categorieList[categorie],
         'billing_cycle': en_billingCycleList[billingCycle],
-        'renewal': renewal,
+        'renewal': renewal ? 'true' : 'false',
         'name': productName,
         'description': productDescription,
         'price_type': en_priceTypeList[priceType],
         'price': price,
-        'vat_option': vat_state,
+        'vat_option': vat_state ? 'true' : 'false',
         'vat_fee': vat_fee,
     }
     setVisibleIndicator(true);
