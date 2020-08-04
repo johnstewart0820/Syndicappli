@@ -11,6 +11,7 @@ import authService from '../../../../services/authService.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import SubAccountsTable from './components/SubAccountsTable';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
+import MySelect from 'components/MySelect';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -145,14 +146,22 @@ const SubAccounts = (props) => {
     window.location.replace("/login");
   }
   const classes = useStyles();
+  const [building, setBuilding] = useState(0);
+  const [buildings, setBuildings] = useState(['']);
+  const [buildingList, setBuildingList] = useState([]);
+  const [buildingID, setBuildingID] = useState(-1);
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
+  const [lastname1, setLastName1] = React.useState('');
+  const [firstname1, setFirstName1] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [mobile, setMobile] = React.useState('');
   const [address, setAddress] = React.useState('');
 
   const [errorsLastName, setErrorsLastName] = React.useState('');
   const [errorsFirstName, setErrorsFirstName] = React.useState('');
+  const [errorsLastName1, setErrorsLastName1] = React.useState('');
+  const [errorsFirstName1, setErrorsFirstName1] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsMobile, setErrorsMobile] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
@@ -165,6 +174,7 @@ const SubAccounts = (props) => {
   const [deleteId, setDeleteId] = useState(-1);
 
   useEffect(() => {
+    getBuildigs();
     getOwners();
   }, [])
   const handleChangeLastName = (event) => {
@@ -172,6 +182,12 @@ const SubAccounts = (props) => {
   }
   const handleChangeFirstName = (event) => {
     setFirstName(event.target.value);
+  }
+  const handleChangeLastName1 = (event) => {
+    setLastName1(event.target.value);
+  }
+  const handleChangeFirstName1 = (event) => {
+    setFirstName1(event.target.value);
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
@@ -188,6 +204,53 @@ const SubAccounts = (props) => {
   const handleChangeMobile = (event) => {
     setMobile(event.target.value);
   }
+  const handleChangeBuilding = (val) => {
+    setBuilding(val);
+    setBuildingID(buildingList[val].buildingID);
+  };
+  const getBuildigs = () => {
+    setVisibleIndicator(true);
+    OwnerService.getBuildingListByOwner()
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              buildings.splice(0, buildings.length)
+              data.buildinglist.map((item) => (
+                buildings.push(item.name)
+              )
+              );
+              setBuildingList(data.buildinglist);
+              if (data.buildinglist.length !== 0) {
+                setBuildings(buildings)
+                setBuildingID(data.buildinglist[0].buildingID);
+              }
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  useEffect(()=>{
+    for (let i = 0; i < buildingList.length; i++)
+    if (buildingList[i].buildingID === buildingID){
+      setBuilding(i);
+      console.log('client:',i);
+    }
+  },[buildingID]);
   const handleClickViewDetails = (id) => {
     setVisibleIndicator(true);
     OwnerService.getOwner(id, {})
@@ -206,6 +269,18 @@ const SubAccounts = (props) => {
                 setFirstName(data.owner.firstname);
               else
                 setFirstName('');
+              if (data.owner.lastname_1)
+                setLastName1(data.owner.lastname_1);
+              else
+                setLastName1('');
+              if (data.owner.firstname_1)
+                setFirstName1(data.owner.firstname_1);
+              else
+                setFirstName1('');
+              if (data.owner.address)
+                setAddress(data.owner.address);
+              else
+                setAddress('');
               if (data.owner.email)
                 setEmail(data.owner.email);
               else
@@ -214,6 +289,8 @@ const SubAccounts = (props) => {
                 setMobile(data.owner.phone);
               else
                 setMobile('');
+              if(data.owner.buildingID)
+                setBuildingID(data.owner.buildingID);
               break;
             case 401:
               authService.logout();
@@ -248,6 +325,18 @@ const SubAccounts = (props) => {
                 requestdata['firstname'] = data.owner.firstname;
               else
                 requestdata['firstname'] = '';
+              if (data.owner.lastname_1)
+                requestdata['lastname_1'] = data.owner.lastname_1;
+              else
+                requestdata['lastname_1'] = '';
+              if (data.owner.firstname_1)
+                requestdata['firstname_1'] = data.owner.firstname_1;
+              else
+                requestdata['firstname_1'] = '';
+              if (data.owner.buildingID)
+                requestdata['buildingID'] = data.owner.buildingID;
+              else
+                requestdata['buildingID'] = -1;
               if (data.owner.address)
                 requestdata['address'] = data.owner.address;
               else
@@ -348,6 +437,10 @@ const SubAccounts = (props) => {
     else setErrorsLastName('');
     if (firstname.length === 0) { setErrorsFirstName('please enter owner first name'); cnt++; }
     else setErrorsFirstName('');
+    if (lastname1.length === 0) { setErrorsLastName1('please enter owner last name'); cnt++; }
+    else setErrorsLastName1('');
+    if (firstname1.length === 0) { setErrorsFirstName1('please enter owner first name'); cnt++; }
+    else setErrorsFirstName1('');
     if (address.length === 0) { setErrorsAddress('please enter owner address'); cnt++; }
     else setErrorsAddress('');
     if (email.length === 0) { setErrorsEmail('please enter owner email'); cnt++; }
@@ -360,8 +453,12 @@ const SubAccounts = (props) => {
     let data = {
       'firstname': firstname,
       'lastname': lastname,
+      'firstname_1': firstname1,
+      'lastname_1': lastname1,
+      'address': address,
       'email': email,
-      'phone': mobile
+      'phone': mobile,
+      'buildingID': buildingID
     }
     setVisibleIndicator(true);
     OwnerService.createOwner(data)
@@ -454,7 +551,17 @@ const SubAccounts = (props) => {
         <div className={classes.body}>
           <Grid item container xs={12} sm={6} md={6} lg={5} xl={4} justify="flex-start" direction="column" spacing={4}>
             <Grid item></Grid>
-
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid xs={2} item ><p className={classes.backTitle}>Immeuble</p></Grid>
+              <Grid xs={10} item container direction="column" alignItems="stretch">
+                <MySelect
+                  color="gray"
+                  data={buildings}
+                  onChangeSelect={handleChangeBuilding}
+                  value={building}
+                />
+              </Grid>
+            </Grid>
             <Grid item container alignItems="center" spacing={1}>
               <Grid xs={2} item><p className={classes.backTitle}>Nom</p></Grid>
               <Grid xs={10} item container alignItems="stretch" direction="column">
@@ -479,6 +586,32 @@ const SubAccounts = (props) => {
                 />
                 {errorsFirstName.length > 0 &&
                   <span className={classes.error}>{errorsFirstName}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid xs={2} item><p className={classes.backTitle}>Nom 1</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={lastname1}
+                  onChange={handleChangeLastName1}
+                  fullWidth
+                />
+                {errorsLastName1.length > 0 &&
+                  <span className={classes.error}>{errorsLastName1}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid xs={2} item><p className={classes.backTitle}>Prénom 1</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={firstname1}
+                  onChange={handleChangeFirstName1}
+                  fullWidth
+                />
+                {errorsFirstName1.length > 0 &&
+                  <span className={classes.error}>{errorsFirstName1}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

@@ -123,9 +123,9 @@ const Login = (props) => {
                 localStorage.setItem("role_managers", profile.role_managers === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_managers));
                 localStorage.setItem("role_buildings", profile.role_buildings === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_buildings));
                 localStorage.setItem("role_owners", profile.role_owners === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_owners));
-                localStorage.setItem("role_orders", profile.role_orders === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
-                localStorage.setItem("role_products", profile.role_products === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
-                localStorage.setItem("role_discountcodes", profile.role_discountcodes === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
+                localStorage.setItem("role_orders", profile.role_orders === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_orders));
+                localStorage.setItem("role_products", profile.role_products === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_products));
+                localStorage.setItem("role_discountcodes", profile.role_discountcodes === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_discountcodes));
                 localStorage.setItem("role_users", profile.role_users === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_users));
                 localStorage.setItem("select", JSON.stringify(0));
                 history.push('/admin/dashboard');
@@ -157,7 +157,7 @@ const Login = (props) => {
                 localStorage.setItem("firstlogin", JSON.stringify("false"));
                 localStorage.setItem("usertype", JSON.stringify(profile.usertype));
                 localStorage.setItem("select", JSON.stringify(0));
-                if(profile.identity_card_back.length !== 0 || profile.identity_card_front.length !== 0){
+                if(!(profile.identity_card_front === null || profile.identity_card_front === "" || profile.identity_card_front === undefined)){
                   localStorage.setItem("role_addons", profile.role_addons === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
                   localStorage.setItem("role_assemblies", profile.role_assemblies === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
                   localStorage.setItem("role_chat", profile.role_chat === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));

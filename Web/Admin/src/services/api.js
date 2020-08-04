@@ -1,8 +1,8 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";
+const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";  
 // const API_URL = "https://syndic-backend.say-demo.com/api/";
-const API_URL = "http://192.168.105.38:3001/api/";
+// const API_URL = "http://192.168.105.38:3001/api/";
 class AdminService {
   //Login
   login(data) {
@@ -281,6 +281,9 @@ export class OwnerService {
   }
   acceptInvitation(data) {
     return axios.post(API_URL + 'web/owner/invitation', data, {});
+  }
+  getBuildingListByOwner() {
+    return axios.get(API_URL + 'web/owner/buildingListByOwner', { headers: authHeader() });
   }
 }
 
