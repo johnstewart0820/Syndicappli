@@ -274,6 +274,7 @@ const OrderEdit = (props) => {
                 setProducts(products);
                 setProductID(data.productlist[0].productID);
               }
+              break;
             case 401:
               authService.logout();
               history.push('/login');
@@ -318,6 +319,7 @@ const OrderEdit = (props) => {
                 if (data.buyerlist[0].buildingID)
                   setBuildingID(data.buyerlist[0].buildingID);
               }
+              break;
             case 401:
               authService.logout();
               history.push('/login');
@@ -357,6 +359,7 @@ const OrderEdit = (props) => {
                 setCodes(codes);
                 setCodeID(data.discountcodelist[0].discount_codeID);
               }
+              break;
             case 401:
               authService.logout();
               history.push('/login');

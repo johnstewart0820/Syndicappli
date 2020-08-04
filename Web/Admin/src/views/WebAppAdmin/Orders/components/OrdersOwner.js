@@ -207,6 +207,7 @@ const OrdersOwner = (props) => {
                 if (data.buyerlist[0].buildingID)
                   setBuildingID(data.buyerlist[0].buildingID);
               }
+              break;
             case 401:
               authService.logout();
               history.push('/login');

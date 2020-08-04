@@ -221,6 +221,7 @@ const AddOrder = (props) => {
                                 setProducts(products);
                                 setProductID(data.productlist[0].productID);
                             }
+                            break;
                         case 401:
                             authService.logout();
                             history.push('/login');
@@ -265,6 +266,7 @@ const AddOrder = (props) => {
                                 if (data.buyerlist[0].buildingID)
                                     setBuildingID(data.buyerlist[0].buildingID);
                             }
+                            break;
                         case 401:
                             authService.logout();
                             history.push('/login');
@@ -304,6 +306,7 @@ const AddOrder = (props) => {
                                 setCodes(codes);
                                 setCodeID(data.discountcodelist[0].discount_codeID);
                             }
+                            break;
                         case 401:
                             authService.logout();
                             history.push('/login');
