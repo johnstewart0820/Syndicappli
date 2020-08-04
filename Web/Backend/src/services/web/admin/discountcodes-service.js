@@ -9,7 +9,7 @@
  * @link      https://turing.ly/api/auth/
  */
 
-var discountCodesModel = require('../../../models/web/admin/discountCodes-model')
+var discountCodesModel = require('../../../models/web/admin/discountcodes-model')
 var jwt = require('jsonwebtoken')
 var message = require('../../../constants/message')
 var code = require('../../../constants/code')
