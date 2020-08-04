@@ -43,9 +43,9 @@ var orderModel = {
 function getOrderList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                    *, orderID ID, 
+                    *, orderID ID, if(end_date = "9999-12-31", "", end_date) end_date,
                     if (discount_codeID > 0, 
-                        if (discount_type = fixed, 
+                        if (discount_type = "fixed", 
                             if(vat_option="true", 
                                 if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
                                 if(price_type = "per_apartment", price * apartment_amount, price)) - discount_amount, 
@@ -58,30 +58,30 @@ function getOrderList(uid, data) {
                                 if(price_type = "per_apartment", price * apartment_amount, price))
                     ) price_with_vat
                     FROM orders
-                    WHERE permission = ? and buyer_type = ? and name like ? `
+                    WHERE permission = ? and buyer_type = ? and buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [data.status, data.type, search_key]
         if (data.type === "managers" ) {
             if (data.companyID != -1) {
-                query += ` companyID = ? `
+                query += ` and companyID = ? `
                 params.push(data.companyID)
             }
         } else if (data.type === "owners") {
             if (data.companyID != -1) {
-                query += ` companyID = ? `
+                query += ` and companyID = ? `
                 params.push(data.companyID)
             }
             if (data.buildingID != -1) {
-                query += ` buildingID = ? `
+                query += ` and buildingID = ? `
                 params.push(data.buildingID)
             }
         } else if (data.type === "buildings") {
             if (data.companyID != -1) {
-                query += ` companyID = ? `
+                query += ` and companyID = ? `
                 params.push(data.companyID)
             }
             if (data.buildingID != -1) {
-                query += ` buildingID = ? `
+                query += ` and buildingID = ? `
                 params.push(data.buildingID)
             }
         }
@@ -132,30 +132,30 @@ function getCountOrderList(uid, data) {
         let query = `SELECT
         count(*) count
         FROM orders
-        WHERE permission = ? and buyer_type = ? and name like ? `
+        WHERE permission = ? and buyer_type = ? and buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [data.status, data.type, search_key]   
         if (data.type === "managers" ) {
             if (data.companyID != -1) {
-                query += ` companyID = ? `
+                query += ` and companyID = ? `
                 params.push(data.companyID)
             }
         } else if (data.type === "owners") {
             if (data.companyID != -1) {
-                query += ` companyID = ? `
+                query += ` and companyID = ? `
                 params.push(data.companyID)
             }
             if (data.buildingID != -1) {
-                query += ` buildingID = ? `
+                query += ` and buildingID = ? `
                 params.push(data.buildingID)
             }
         } else if (data.type === "buildings") {
             if (data.companyID != -1) {
-                query += ` companyID = ? `
+                query += ` and companyID = ? `
                 params.push(data.companyID)
             }
             if (data.buildingID != -1) {
-                query += ` buildingID = ? `
+                query += ` and buildingID = ? `
                 params.push(data.buildingID)
             }
         }
@@ -267,14 +267,19 @@ function createOrder(uid, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR})
             } else {
                 let discount_codes = rows
-                data.discount_type = discount_codes[0].discount_type
-                data.discount_amount = discount_codes[0].discount_amount
+                if (discount_codes.length > 0) {
+                    data.discount_type = discount_codes[0].discount_type
+                    data.discount_amount = discount_codes[0].discount_amount
+                    data.amount_of_use = discount_codes[0].amount_of_use
+                    data.amount_of_use_per_user = discount_codes[0].amount_of_use_per_user
+                }
+
                 let query = `Select count(*) count from ` + table.ORDERS + ` where discount_codeID = ? and (permission = "active" or permission = "trash")`
                 db.query(query, [data.discount_codeID], (error, rows, fields) => {
                     if (error)
                         reject({ message: message.INTERNAL_SERVER_ERROR})
                     else {
-                        if (data.discount_codeID > 0 && discount_codes[0].amount_of_use != -1 && rows[0].count + 1 > discount_codes[0].amount_of_use)
+                        if (data.discount_codeID > 0 && data.amount_of_use != -1 && rows[0].count + 1 > data.amount_of_use)
                             reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE})
                         else {
                             let query = `Select count(*) count from ` + table.ORDERS + ` where discount_codeID = ? and (permission = "active" or permission = "trash") and buyerID = ? and buyer_type = ?`
@@ -282,7 +287,7 @@ function createOrder(uid, data) {
                                 if (error)
                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                 else {
-                                    if (data.discount_codeID > 0 && discount_codes[0].amount_of_use_per_user != -1 && rows[0].count + 1 > discount_codes[0].amount_of_use_per_user)
+                                    if (data.discount_codeID > 0 && data.amount_of_use_per_user != -1 && rows[0].count + 1 > data.amount_of_use_per_user)
                                         reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
                                     else {
                                         let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
@@ -299,7 +304,6 @@ function createOrder(uid, data) {
                         }
                     }
                 })
-                
             }
         })
     })
@@ -314,7 +318,7 @@ function createOrder(uid, data) {
  */
 function getOrder(uid, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from ' + table.PRODUCTS + ' where orderID = ?'
+        let query = 'Select * from ' + table.ORDERS + ' where orderID = ?'
 
         db.query(query, [ id ],   (error, rows, fields) => {
             if (error) {
@@ -323,6 +327,8 @@ function getOrder(uid, id) {
                 if (rows.length == 0) {
                     reject({ message: message.INTERNAL_SERVER_ERROR })
                 } else {
+                    if (rows[0].end_date === "9999-12-31")
+                        rows[0].end_date = ""
                     resolve(rows[0]);
                 }
             }
@@ -339,15 +345,59 @@ function getOrder(uid, id) {
  * @return  object If success returns object else returns message
  */
 function updateOrder(id, data) {
-    return new Promise(async (resolve, reject) => {
-        let query = `Update ` + table.PRODUCTS + ` set buyer_type = ?, billing_cycle = ?, renewal = ?, name = ?, description = ?, price_type = ?, price = ?, vat_option = ?, vat_fee = ?, updated_at = ? where orderID = ? `
-        db.query(query, [data.buyer_type, data.billing_cycle, data.renewal, data.name, data.description, data.price_type, data.price, data.vat_option, data.vat_fee, timeHelper.getCurrentTime(), id], function (error, result, fields) {
-            if (error) {
-                reject({ message: message.INTERNAL_SERVER_ERROR });
-            } else {
-                resolve("ok")
+    if (data.end_date === undefined || data.end_date === "" || data.end_date === null)
+            data.end_date = "9999-12-31"
+    let query = `Select * from ` + table.DISCOUNTCODES + ` where discount_codeID = ?`
+    db.query(query, [data.discount_codeID], (error, rows, fields)=> {
+        if (error) {
+            reject({ message: message.INTERNAL_SERVER_ERROR})
+        } else {
+            let discount_codes = rows
+            if (discount_codes.length > 0) {
+                data.discount_type = discount_codes[0].discount_type
+                data.discount_amount = discount_codes[0].discount_amount
+                data.amount_of_use = discount_codes[0].amount_of_use
+                data.amount_of_use_per_user = discount_codes[0].amount_of_use_per_user
             }
-        })
+            let query = `Select * from ` + table.ORDERS + ` where orderID = ?`
+            db.query(query, [id], (error, rows, fields) => {
+                if (error)
+                    reject({ message: message.INTERNAL_SERVER_ERROR})
+                else {
+                    let order = rows[0]
+                    let query = `Select count(*) count from ` + table.ORDERS + ` where discount_codeID = ? and (permission = "active" or permission = "trash")`
+                    db.query(query, [data.discount_codeID], (error, rows, fields) => {
+                        if (error)
+                            reject({ message: message.INTERNAL_SERVER_ERROR})
+                        else {
+                            if (data.discount_codeID > 0 && data.discount_codeID != order.discount_codeID && data.amount_of_use != -1 && rows[0].count + 1 > data.amount_of_use)
+                                reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE})
+                            else {
+                                let query = `Select count(*) count from ` + table.ORDERS + ` where discount_codeID = ? and (permission = "active" or permission = "trash") and buyerID = ? and buyer_type = ?`
+                                db.query(query, [data.discount_codeID, data.buyerID, data.buyer_type], (error, rows, fields) => {
+                                    if (error)
+                                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                                    else {
+                                        if (data.discount_codeID > 0 && data.discount_codeID != order.discount_codeID && data.amount_of_use_per_user != -1 && rows[0].count + 1 > data.amount_of_use_per_user)
+                                            reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
+                                        else {
+                                            let query = `Update ` + table.ORDERS + ` Set buyer_type = ?, productID = ?, companyID = ?, buildingID = ?, buyerID = ?, buyer_name = ?, billing_cycle = ?, renewal = ?, price_type = ?, price = ?, vat_option = ?, vat_fee = ?, apartment_amount = ?, start_date = ?, end_date = ?, payment_method = ?, discount_codeID = ?, discount_type = ?, discount_amount = ?, status = ?, updated_at = ? where orderID = ?`;
+                                            db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, timeHelper.getCurrentTime(), id], function (error, result, fields) {
+                                                if (error) {
+                                                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                } else {
+                                                    resolve("ok")
+                                                }
+                                            })
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }     
+            }) 
+        }
     })
 }
 
@@ -360,7 +410,7 @@ function updateOrder(id, data) {
  */
 function deleteOrder(uid, id, data) {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where orderID = ?'
+        let query = 'UPDATE ' + table.ORDERS + ' SET  permission = ?, deleted_by = ?, deleted_at = ? where orderID = ?'
   
         db.query(query, [ data.status, uid, timeHelper.getCurrentTime(), id ], (error, rows, fields) => {
             if (error) {
@@ -381,7 +431,7 @@ function deleteOrder(uid, id, data) {
  */
 function deleteAllOrder() {
     return new Promise((resolve, reject) => {
-        let query = 'UPDATE ' + table.PRODUCTS + ' SET  permission = "deleted" where  permission = "trash"'
+        let query = 'UPDATE ' + table.ORDERS + ' SET  permission = "deleted" where  permission = "trash"'
   
         db.query(query, [], (error, rows, fields) => {
             if (error) {
