@@ -88,7 +88,6 @@ function createOwner_info(uid, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR });
             } else {
                 if (result.length == 0) {
-                    let owner = result
                     let randomPassword = randtoken.generate(15);
                     let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
@@ -97,24 +96,32 @@ function createOwner_info(uid, data) {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
-                            let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
-                            db.query(query, [owner.userID, "building", data.buildingID], (error, result, fields) => {
-                                if (error) {
-                                    reject({ message: message.INTERNAL_SERVER_ERROR });
-                                } else {
-                                    sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
-                                    .then((response) => {
-                                        resolve("OK")
-                                    })
-                                    .catch((err) => {
-                                        if(err.message.statusCode == code.BAD_REQUEST){
-                                            reject({ message: message.EMIL_IS_NOT_EXIST })
+                            let query = `Select * from ` + table.USERS + ` where email = ?`;
+                            db.query(query, [data.email], function (error, rows, fields) {
+                                if (error)
+                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                else {
+                                    let query = `Insert into user_relationship (userID, type, relationID) values (?, ?, ?)`
+                                    db.query(query, [rows[0].userID, "building", data.buildingID], (error, result, fields) => {
+                                        if (error) {
+                                            reject({ message: message.INTERNAL_SERVER_ERROR });
                                         } else {
-                                            reject({ message: message.EMIL_IS_NOT_EXIST })
+                                            sendMail(mail.TITLE_OWNER_CREATE, data.email, mail.TYPE_OWNER_CREATE, randomPassword, randomToken)
+                                            .then((response) => {
+                                                resolve("OK")
+                                            })
+                                            .catch((err) => {
+                                                if(err.message.statusCode == code.BAD_REQUEST){
+                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                                } else {
+                                                    reject({ message: message.EMIL_IS_NOT_EXIST })
+                                                }
+                                            })
                                         }
-                                    })
+                                    })    
                                 }
-                            })                              
+                            })
+                                                      
                         }
                     })
                 } else {
