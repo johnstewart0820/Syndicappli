@@ -424,6 +424,22 @@ export class ManagerService {
   emptyTrashDecesion(status) {
     return axios.post(API_URL + 'web/manager/assembly/decesion/deleteAll', status, { headers: authHeader() });
   }
+      ///PostalVote Part
+      getPostalVoteList(data) {
+        return axios.post(API_URL + 'web/manager/assembly/posstalVoteList', data, { headers: authHeader() });
+      }
+      createPostalVote(data) {
+        return axios.post(API_URL + 'web/manager/assembly/postalVote', data, { headers: authHeader() });
+      }
+      getPostalVote(id, data) {
+        return axios.post(API_URL + 'web/manager/assembly/postalVote/' + id, data, { headers: authHeader() });
+      }
+      deletePostalVote(id) {
+        return axios.delete(API_URL + 'web/manager/assembly/postalVote/' + id, { headers: authHeader() });
+      }
+      emptyTrashPostalVotes(status) {
+        return axios.post(API_URL + 'web/manager/assembly/postalVote/deleteAll', status, { headers: authHeader() });
+      }
 }
 
 export default new AdminService();
