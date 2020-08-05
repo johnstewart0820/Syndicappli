@@ -53,12 +53,12 @@ const AddProducts = (props) => {
         else setErrorsCategorie('');
         if (billingCycle.length === 0) { setErrorsBillingCycle('please select billing cycle'); cnt++; }
         else setErrorsBillingCycle('');
-        if (!price) { setErrorsPrice('please enter price'); cnt++; }
+        if (price.length === 0 || price === '0') { setErrorsPrice('please enter price'); cnt++; }
         else setErrorsPrice('');
         if (priceType.length === 0) { setErrorsPriceType('please enter your price type'); cnt++; }
         else setErrorsPriceType('');
         if (vat_state === true) {
-            if (!vat_fee) { setErrorsVatFee('please enter VAT fee'); cnt++; }
+            if (vat_fee.length === 0 || vat_fee === '0') { setErrorsVatFee('please enter VAT fee'); cnt++; }
             else setErrorsVatFee('');
         }
         if (cnt === 0) {
@@ -111,7 +111,7 @@ const AddProducts = (props) => {
         setProductDescription(event.target.value);
     }
     const handleChangePrice = (event) => {
-        setPrice(+event.target.value);
+        setPrice(event.target.value);
     }
     const handleChangePriceType = (val) => {
         setPriceType(val);
@@ -129,7 +129,7 @@ const AddProducts = (props) => {
         setVatState(event.target.checked);
     }
     const handleChangeVatFee = (event) => {
-        setVatFee(+event.target.value);
+        setVatFee(event.target.value);
     }
     return (
         <Scrollbars style={{ height: '100vh' }}>
@@ -228,7 +228,8 @@ const AddProducts = (props) => {
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
-                                    value={price || ''}
+                                    value={price}
+                                    type="number"
                                     onChange={handleChangePrice}
                                     fullWidth
                                 />
@@ -253,7 +254,8 @@ const AddProducts = (props) => {
                                         <TextField
                                             className={classes.text}
                                             variant="outlined"
-                                            value={vat_fee || ''}
+                                            value={vat_fee}
+                                            type="number"
                                             onChange={handleChangeVatFee}
                                             fullWidth
                                         />

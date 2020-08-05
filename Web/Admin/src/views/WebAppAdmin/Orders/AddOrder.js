@@ -74,10 +74,10 @@ const AddOrder = (props) => {
             else setErrorsApartNumber('');
         }
         else setErrorsApartNumber('');
-        if (!price) { setErrorsPrice('please enter price'); cnt++; }
+        if (price === '0' || price.length === 0) { setErrorsPrice('please enter price'); cnt++; }
         else setErrorsPrice('');
         if (vat_state === true) {
-            if (!vat_fee) { setErrorsVatFee('please enter VAT fee'); cnt++; }
+            if (vat_fee === '0' || vat_fee.length === 0) { setErrorsVatFee('please enter VAT fee'); cnt++; }
             else setErrorsVatFee('');
         }
         if (cnt === 0) {
@@ -168,7 +168,7 @@ const AddOrder = (props) => {
         setVatState(event.target.checked);
     }
     const handleChangeVatFee = (event) => {
-        setVatFee(+event.target.value);
+        setVatFee(event.target.value);
     }
     const handleChangePriceType = (val) => {
         setPriceType(val);
@@ -180,7 +180,7 @@ const AddOrder = (props) => {
         setOrderStatus(val);
     }
     const handleChangePrice = (event) => {
-        setPrice(+event.target.value);
+        setPrice(event.target.value);
     }
     const handleChangeApartNumber = (event) => {
         setApartNumber(+event.target.value);
@@ -396,7 +396,8 @@ const AddOrder = (props) => {
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
-                                    value={price || ''}
+                                    value={price}
+                                    type='number'
                                     onChange={handleChangePrice}
                                 />
                                 {errorsPrice.length > 0 &&
@@ -433,7 +434,8 @@ const AddOrder = (props) => {
                                         <TextField
                                             className={classes.text}
                                             variant="outlined"
-                                            value={vat_fee || ''}
+                                            value={vat_fee}
+                                            type="number"
                                             onChange={handleChangeVatFee}
                                             fullWidth
                                         />

@@ -77,10 +77,10 @@ const OrderEdit = (props) => {
       else setErrorsApartNumber('');
     }
     else setErrorsApartNumber('');
-    if (!price) { setErrorsPrice('please enter price'); cnt++; }
+    if (price.length === 0 || price === '0') { setErrorsPrice('please enter price'); cnt++; }
     else setErrorsPrice('');
     if (vat_state === true) {
-      if (!vat_fee) { setErrorsVatFee('please enter VAT fee'); cnt++; }
+      if (vat_fee.length === 0 || vat_fee === '0') { setErrorsVatFee('please enter VAT fee'); cnt++; }
       else setErrorsVatFee('');
     }
     if (cnt === 0) {
@@ -213,7 +213,7 @@ const OrderEdit = (props) => {
     setVatState(event.target.checked);
   }
   const handleChangeVatFee = (event) => {
-    setVatFee(+event.target.value);
+    setVatFee(event.target.value);
   }
   const handleChangePriceType = (val) => {
     setPriceType(val);
@@ -226,7 +226,7 @@ const OrderEdit = (props) => {
     setOrderStatus(val);
   }
   const handleChangePrice = (event) => {
-    setPrice(+event.target.value);
+    setPrice(event.target.value);
   }
   const handleChangeApartNumber = (event) => {
     setApartNumber(+event.target.value);
@@ -490,7 +490,8 @@ const OrderEdit = (props) => {
                 <TextField
                   className={classes.text}
                   variant="outlined"
-                  value={price || ''}
+                  value={price}
+                  type="number"
                   onChange={handleChangePrice}
                 />
                 {errorsPrice.length > 0 &&
@@ -527,7 +528,8 @@ const OrderEdit = (props) => {
                     <TextField
                       className={classes.text}
                       variant="outlined"
-                      value={vat_fee || ''}
+                      value={vat_fee}
+                      type="number"
                       onChange={handleChangeVatFee}
                       fullWidth
                     />
