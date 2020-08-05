@@ -11,13 +11,13 @@ import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 import MyButton from 'components/MyButton';
 import { EditAssemblyStyles as useStyles } from './useStyles';
-import Informations from './views/Informations';
-import Documents from './views/Documents.js';
-import PostalVotes from './views/PostalVotes.js';
-import Minutes from './views/Minutes.js';
-import Resolutions from './views/Resolutions.js';
-import MeetingRoom from './views/MeetingRoom.js';
-import TimeSheet from './views/TimeSheet.js';
+import {Informations} from './views';
+import {Documents} from './views';
+import {PostalVotes} from './views';
+import {Minutes} from './views';
+import {Resolutions} from './views';
+import {MeetingRoom} from './views';
+import {TimeSheet} from './views';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -138,7 +138,7 @@ const AssemblyEdit = (props) => {
           <Tab xs={12} sm={4} label="Procès-verbal" {...a11yProps(6)} disableRipple />
         </Tabs>
       </div>
-      <div className={classes.body}>
+      <div >
         <TabPanel value={value} index={0}>
           <Informations />
         </TabPanel>

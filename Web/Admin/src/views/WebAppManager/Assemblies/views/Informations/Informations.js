@@ -84,7 +84,7 @@ const Informations = (props) => {
 
   }
   return (
-    <div>
+    <div className={classes.root}>
       {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }

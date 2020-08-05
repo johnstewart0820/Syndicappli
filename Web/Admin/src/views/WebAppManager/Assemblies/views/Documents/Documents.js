@@ -5,7 +5,7 @@ import authService from 'services/authService.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
-import { DocumentsStyles as useStyles } from './useStyles';
+import useStyles from './useStyles';
 import AdminService from 'services/api.js';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Badge from '@material-ui/core/Badge';
@@ -69,7 +69,7 @@ const Documents = (props) => {
 
     }
     return (
-        <div>
+        <div className={classes.root}>
             {
                 visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
             }

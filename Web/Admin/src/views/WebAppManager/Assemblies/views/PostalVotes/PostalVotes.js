@@ -3,16 +3,16 @@ import authService from 'services/authService.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
-import { DocumentsStyles as useStyles } from './useStyles';
+import useStyles from './useStyles';
 
-const Resolutions = (props) => {
+const PostalVotes = (props) => {
     const classes = useStyles();
     const { history } = props;
     const accessAssemblies = authService.getAccess('role_assemblies');
     const [visibleIndicator, setVisibleIndicator] = useState(false);
 
     return (
-        <div>
+        <div className={classes.root}>
             {
                 visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
             }
@@ -26,4 +26,4 @@ const Resolutions = (props) => {
     );
 };
 
-export default withRouter(Resolutions);
+export default withRouter(PostalVotes);
