@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
@@ -12,160 +12,112 @@ import AdminService from 'services/api.js';
 import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
 import { Scrollbars } from 'react-custom-scrollbars';
-
+import { Checkbox } from '@material-ui/core';
+const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const validateForm = (errors) => {
+  let valid = true;
+  Object.values(errors).forEach(
+    (val) => val.length > 0 && (valid = false)
+  );
+  return valid;
+}
 const AddResolution = (props) => {
   const classes = useStyles();
   const { history } = props;
-  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  let company = [];
-  const [companies, setCompanies] = React.useState('');
-  const [companyList, setCompanyList] = React.useState([]);
-  const [state, setState] = React.useState(false);
-  const [name, setName] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [accountHolder, setAccountHolder] = React.useState('');
-  const [accountAddress, setAccountAddress] = React.useState('');
-  const [accountIban, setAccountIban] = React.useState('');
-  const [addClefs, setAddClefs] = React.useState('');
-  const [clefList, setClefList] = React.useState([]);
-  const [companyID, setCompanyID] = React.useState(-1);
+  const [visibleIndicator, setVisibleIndicator] = useState(false);
 
-  const [errorsName, setErrorsName] = React.useState('');
-  const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsCompanies, setErrorsCompanies] = React.useState('');
-  const [errorsVote, setErrorsVote] = React.useState('');
-  const [count, setCount] = React.useState(0);
+  const [decesionName, setDecesionName] = useState('');
+  const [description, setDescription] = useState('');
+  const [vote, setVote] = useState(0);
+  const [votes, setVotes] = useState(['']);
+  const [calcMode, setCalcMode] = useState(0);
+  const calcModeList = ['majorité simple', 'majorité double', 'majorité absolue'];
+  const en_calcModeList = ['simple majority', 'double majority', 'absolute majority'];
+  const [result, setResult] = useState(0);
+  const resultList = ['adopté', 'rejeté', 'en attente'];
+  const en_resultList = ['adopted', 'rejected', 'on hold'];
+  const [externalSpeaker, setExternalSpeaker] = useState(false);
+  const [externalEmail, setExternalEmail] = useState('');
+  const [transfer, setTransfer] = useState(false);
+  const [emailNewUnion, setEmailNewUnion] = useState('');
 
-  const handleChangeCompanies = (val) => {
-    setCompanies(val);
-    setCompanyID(companyList[val].companyID);
-  };
-  const handleChangeName = (event) => {
-    setName(event.target.value);
-  };
-  const handleChangeAddress = (event) => {
-    setAddress(event.target.value);
-  };
-  const handleChangeAccountHolder = (event) => {
-    setAccountHolder(event.target.value);
-  };
-  const handleChangeAccountAddress = (event) => {
-    setAccountAddress(event.target.value);
-  };
-  const handleChangeAccountIban = (event) => {
-    setAccountIban(event.target.value);
-  };
-  const handleChangeAddClefs = (event) => {
-    setAddClefs(event.target.value);
-  };
-  const handleClickAddClef = (event) => {
-    if (addClefs !== '') {
-      setCount(count + 1);
-      clefList.push({ "name": addClefs });
-      setAddClefs('');
-      setClefList(clefList);
-    }
-  };
-  const handleClickRemoveClef = (num) => {
-    setCount(count - 1);
-    delete clefList[num];
-    clefList.splice(num, 1);
-    setClefList(clefList);
-    setState(!state);
-  };
+  const [errorsDecesionName, setErrorsDecesionName] = useState('');
+  const [errorsVote, setErrorsVote] = useState('');
+  const [errorsExternalEmail, setErrorsExternalEmail] = useState('');
+  const [errorsEmailNewUnion, setErrorsEmailNewUnion] = useState('');
 
+  const handleChangeDecesionName = (event) => {
+    setDecesionName(event.target.value);
+    setErrorsDecesionName('');
+  }
+  const handleChangeDescription = (event) => {
+    setDescription(event.target.value);
+  }
+  const handleChangeVote = (val) => {
+    setVote(val);
+  }
+  const handleChangeCalcMode = (val) => {
+    setCalcMode(val);
+  }
+  const handleChangeResult = (val) => {
+    setResult(val);
+  }
+  const handleChangeExternalSpeaker = (event) => {
+    setExternalSpeaker(event.target.checked);
+    setErrorsExternalEmail('');
+    setExternalEmail('');
+  }
+  const handleChangeExternalEmail = (event) => {
+    event.preventDefault();
+    let errorsMail =
+      validEmailRegex.test(event.target.value)
+        ? ''
+        : 'Email is not valid!';
+    setExternalEmail(event.target.value);
+    setErrorsExternalEmail(errorsMail);
+  }
+  const handleChangeTransfer = (event) => {
+    setTransfer(event.target.checked);
+    setErrorsEmailNewUnion('');
+    setEmailNewUnion('');
+  }
+  const handleChangeEmailNewUnion = (event) => {
+    event.preventDefault();
+    let errorsMail =
+      validEmailRegex.test(event.target.value)
+        ? ''
+        : 'Email is not valid!';
+    setEmailNewUnion(event.target.value);
+    setErrorsEmailNewUnion(errorsMail);
+  }
   const handleClose = () => {
     props.onCancel();
   };
   const handleClickAdd = () => {
     let cnt = 0;
-    if (name.length === 0) { setErrorsName('please enter your new building name'); cnt++; }
-    else setErrorsName('');
-    if (address.length === 0) { setErrorsAddress('please enter your building address'); cnt++; }
-    else setErrorsAddress('');
-    if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
-    else setErrorsCompanies('');
-    if (count === 0) { setErrorsVote('please add a vote branch'); cnt++; }
+    if (decesionName.length === 0) { setErrorsDecesionName('please enter decesion name'); cnt++; }
+    else setErrorsDecesionName('');
+    if (votes.length === 0) { setErrorsVote('please select vote branch'); cnt++; }
     else setErrorsVote('');
+    if (externalSpeaker) {
+      if (externalEmail.length === 0) { setErrorsExternalEmail('please enter external email'); cnt++; }
+      else {
+        if (!validateForm(errorsExternalEmail)) {setErrorsExternalEmail('Email is not valid!'); cnt++; }
+        else setErrorsExternalEmail('');
+      }
+    } else setErrorsExternalEmail('');
+    if (transfer) {
+      if (emailNewUnion.length === 0) { setErrorsEmailNewUnion('please enter email new union'); cnt++; }
+      else {
+        if (!validateForm(errorsEmailNewUnion)) {setErrorsEmailNewUnion('Email is not valid!'); cnt++; }
+        else setErrorsEmailNewUnion('');
+      }
+    } else setErrorsEmailNewUnion('');
     if (cnt === 0) {
-      createBuilding();
+      // createBuilding();
     }
   };
-  useEffect(() => {
-    getCompanies();
-  }, []);
-  const getCompanies = () => {
-    setVisibleIndicator(true);
-    AdminService.getCompanyListByUser()
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch (response.data.code) {
-            case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              company.push('');
-              data.companylist.map((item) => (
-                company.push(item.name)
-              )
-              );
-              setCompanyList([{ 'companyID': -1 },...data.companylist]);
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }
-  useEffect(() => {
-    setCompanyList(companyList);
-  }, [companyList])
-  const createBuilding = () => {
-    const requestData = {
-      'companyID': companyID,
-      'name': name,
-      'address': address,
-      'vote_branches': clefList,
-      'sepa_name': accountHolder,
-      'sepa_address': accountAddress,
-      'iban': accountIban
-    }
-    setVisibleIndicator(true);
-    AdminService.createBuilding(requestData)
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch (response.data.code) {
-            case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              props.onAdd();
-              handleClose();
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }
+
   return (
     <Scrollbars style={{ height: '100vh' }}>
       <div className={classes.root}>
@@ -174,136 +126,121 @@ const AddResolution = (props) => {
         }
         <div className={classes.paper} >
           <Grid container spacing={4} xs={12} item>
+            <Grid item container spacing={2}>
+              <Grid item><p className={classes.title}>Titre</p></Grid>
+              <Grid xs item container alignItems="stretch">
+                <TextField
+                  variant="outlined"
+                  value={decesionName}
+                  fullWidth
+                  onChange={handleChangeDecesionName}
+                />
+                {errorsDecesionName.length > 0 &&
+                  <span className={classes.error}>{errorsDecesionName}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container spacing={2} direction="column">
+              <Grid item><p className={classes.title}>Description</p></Grid>
+              <Grid item container alignItems="stretch" direction="column">
+                <TextField
+                  rows={5}
+                  multiline
+                  variant="outlined"
+                  value={description}
+                  fullWidth
+                  onChange={handleChangeDescription}
+                />
+              </Grid>
+            </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.title}>Cabinet</p></Grid>
+              <Grid item><p className={classes.title}>Clef de répartition</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <MySelect
                   color="gray"
-                  data={company}
-                  onChangeSelect={handleChangeCompanies}
-                  value={companies}
+                  data={votes}
+                  onChangeSelect={handleChangeVote}
+                  value={vote}
                 />
-                {errorsCompanies.length > 0 &&
-                  <span className={classes.error}>{errorsCompanies}</span>}
-              </Grid>
-            </Grid>
-            <Grid item container spacing={2}>
-              <Grid item><p className={classes.title}>Nom</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField
-                  rows={3}
-                  multiline
-                  variant="outlined"
-                  value={name}
-                  fullWidth
-                  onChange={handleChangeName}
-                />
-                {errorsName.length > 0 &&
-                  <span className={classes.error}>{errorsName}</span>}
-              </Grid>
-            </Grid>
-            <Grid item container spacing={2}>
-              <Grid item><p className={classes.title}>Adresse</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField
-                  rows={3}
-                  multiline
-                  variant="outlined"
-                  value={address}
-                  fullWidth
-                  onChange={handleChangeAddress}
-                />
-                {errorsAddress.length > 0 &&
-                  <span className={classes.error}>{errorsAddress}</span>}
+                {errorsVote.length > 0 &&
+                  <span className={classes.error}>{errorsVote}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.title}>Clefs de répartition</p></Grid>
+              <Grid item><p className={classes.title}>Type de majorité</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <MySelect
+                  color="gray"
+                  data={calcModeList}
+                  onChangeSelect={handleChangeCalcMode}
+                  value={calcMode}
+                />
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>Résultat</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <MySelect
+                  color="gray"
+                  data={resultList}
+                  onChangeSelect={handleChangeResult}
+                  value={result}
+                />
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>Intervenant externe</p></Grid>
+              <Grid item>
+                <Checkbox
+                  checked={externalSpeaker}
+                  onChange={handleChangeExternalSpeaker}
+                />
+              </Grid>
             </Grid>
             {
-              state !== null ?
-                <Grid item container direction="column">
-                  {
-                    clefList.map((clef, i) => (
-                      <Grid container spacing={4}>
-
-                        <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
-                          <Grid item>
-                            <RemoveCircleOutlineIcon
-                              className={classes.plus}
-                              onClick={() => handleClickRemoveClef(i)}
-                            />
-                          </Grid>
-                          <Grid item >
-                            <p className={classes.title}>{clef.name}</p>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    ))
-                  }
+              externalSpeaker ?
+                <Grid item container alignItems="center" spacing={2}>
+                  <Grid item><p className={classes.title}>Email intervenant</p></Grid>
+                  <Grid xs item container alignItems="stretch" direction="column">
+                    <TextField
+                      variant="outlined"
+                      value={externalEmail}
+                      fullWidth
+                      onChange={handleChangeExternalEmail}
+                    />
+                    {errorsExternalEmail.length > 0 &&
+                      <span className={classes.error}>{errorsExternalEmail}</span>}
+                  </Grid>
                 </Grid>
-                : null
+                :
+                null
             }
-            <Grid xs={6} item container direction="column">
-              <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
-                <Grid item>
-                  <AddCircleOutlineIcon
-                    className={classes.plus}
-                    onClick={handleClickAddClef}
-                  />
+            <Grid item container alignItems="center" spacing={2}>
+              <Grid item><p className={classes.title}>Transfert de mandat</p></Grid>
+              <Grid item>
+                <Checkbox
+                  checked={transfer}
+                  onChange={handleChangeTransfer}
+                />
+              </Grid>
+            </Grid>
+            {
+              transfer ?
+                <Grid item container alignItems="center" spacing={2}>
+                  <Grid item><p className={classes.title}>Email nouveau syndicat</p></Grid>
+                  <Grid xs item container alignItems="stretch" direction="column">
+                    <TextField
+                      variant="outlined"
+                      value={emailNewUnion}
+                      fullWidth
+                      onChange={handleChangeEmailNewUnion}
+                    />
+                    {errorsEmailNewUnion.length > 0 &&
+                      <span className={classes.error}>{errorsEmailNewUnion}</span>}
+                  </Grid>
                 </Grid>
-                <Grid xs item >
-                  <TextField
-                    variant="outlined"
-                    value={addClefs}
-                    onChange={handleChangeAddClefs}
-                  />
-                </Grid>
-              </Grid>
-              {errorsVote.length > 0 &&
-                <span className={classes.error}>{errorsVote}</span>}
-            </Grid>
-            <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.title}>Compte Bancaire - Prélèvement SEPA</p></Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.title}>Nom du titulaire du compte</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField
-                  variant="outlined"
-                  value={accountHolder}
-                  onChange={handleChangeAccountHolder}
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-            <Grid item container alignItems="flex-start" spacing={2}>
-              <Grid item><p className={classes.title}>Adresse</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField
-                  rows={3}
-                  multiline
-                  variant="outlined"
-                  value={accountAddress}
-                  onChange={handleChangeAccountAddress}
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.title}>IBAN</p></Grid>
-              <Grid xs item container alignItems="stretch">
-                <TextField
-                  variant="outlined"
-                  value={accountIban}
-                  onChange={handleChangeAccountIban}
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-            <Grid xs={12} item container direction="column" spacing={2}>
-
-            </Grid>
+                :
+                null
+            }
           </Grid>
           <div className={classes.footer}>
             <Grid container justify="space-between">
