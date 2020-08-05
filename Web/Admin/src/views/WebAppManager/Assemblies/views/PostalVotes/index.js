@@ -1,1 +1,1 @@
-export { default } from './PostalVotes';
+export { default } from './Main';
