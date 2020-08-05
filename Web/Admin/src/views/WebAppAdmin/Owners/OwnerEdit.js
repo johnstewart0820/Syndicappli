@@ -516,7 +516,7 @@ const OwnerEdit = (props) => {
               let apartmentId = [];
               if (!(ownerInfo.identity_card_front === null || ownerInfo.identity_card_front === '' || ownerInfo.identity_card_front === undefined))
                 urls.push(ownerInfo.identity_card_front);
-              if (!(ownerInfo.identity_card_back.length === null || ownerInfo.identity_card_back.length === '' || ownerInfo.identity_card_back.length === undefined))
+              if (!(ownerInfo.identity_card_back === null || ownerInfo.identity_card_back === '' || ownerInfo.identity_card_back === undefined))
                 urls.push(ownerInfo.identity_card_back);
               setIdcardUrls(urls);
               for (let i = 0; i < apartmentInfo.length; i++) {

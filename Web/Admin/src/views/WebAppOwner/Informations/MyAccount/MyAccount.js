@@ -350,7 +350,7 @@ const MyAccount = (props) => {
               let urls = [];
               if (!(profile.identity_card_front === null || profile.identity_card_front === '' || profile.identity_card_front === undefined))
                 urls.push(profile.identity_card_front);
-              if (!(profile.identity_card_back.length === null || profile.identity_card_back.length === '' || profile.identity_card_back.length === undefined))
+              if (!(profile.identity_card_back === null || profile.identity_card_back === '' || profile.identity_card_back === undefined))
                 urls.push(profile.identity_card_back);
               setIdcardUrls(urls);
               break;
