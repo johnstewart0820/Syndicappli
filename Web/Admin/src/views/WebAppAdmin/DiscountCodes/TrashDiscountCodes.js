@@ -59,7 +59,14 @@ const TrashDiscountCodes = (props) => {
                                 setTotalPage(1);
                             else
                                 setTotalPage(data.totalpage);
-                            setDataList(data.discountCodeslist);
+                            let list = data.discountCodeslist;
+                            for(let i = 0 ; i < list.length ; i++){
+                                if(list[i].discount_type === 'fixed')
+                                list[i].discount_amount = list[i].discount_amount + '€';
+                                if(list[i].discount_type === 'percentage')
+                                list[i].discount_amount = list[i].discount_amount + '%';
+                            }
+                            setDataList(list);
                             let codeID = [];
                             data.discountCodeslist.map((item, i) => (
                                 codeID[i] = item.discount_codeID
