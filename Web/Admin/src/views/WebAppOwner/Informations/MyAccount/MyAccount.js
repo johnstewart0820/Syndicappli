@@ -348,9 +348,9 @@ const MyAccount = (props) => {
               setAvatarUrl(profile.photo_url ? profile.photo_url : '');
               setAddress(profile.address ? profile.address : '');
               let urls = [];
-              if (profile.identity_card_front)
+              if (!(profile.identity_card_front === null || profile.identity_card_front === '' || profile.identity_card_front === undefined))
                 urls.push(profile.identity_card_front);
-              if (profile.identity_card_back)
+              if (!(profile.identity_card_back.length === null || profile.identity_card_back.length === '' || profile.identity_card_back.length === undefined))
                 urls.push(profile.identity_card_back);
               setIdcardUrls(urls);
               break;
