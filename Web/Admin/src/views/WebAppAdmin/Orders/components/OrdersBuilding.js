@@ -78,9 +78,7 @@ const OrdersBuilding = (props) => {
   useEffect(() => {
     getBuyerList();
   }, []);
-  useEffect(() => {
-    getOrdersBuilding();
-  }, [companyID]);
+
   const cellList = [
     { key: 'ID', field: 'Commande #' },
     { key: 'buyer_name', field: 'Client' },
@@ -93,7 +91,7 @@ const OrdersBuilding = (props) => {
   useEffect(() => {
     if (accessOrders !== 'denied')
     getOrdersBuilding();
-  }, [page_num, row_count, sort_column, sort_method, props.refresh]);
+  }, [page_num, row_count, sort_column, sort_method, props.refresh, companyID, buildingID]);
 
   const columns = [];
   for (let i = 0; i < 7; i++)
@@ -171,7 +169,11 @@ const OrdersBuilding = (props) => {
                 setTotalPage(1);
               else
                 setTotalPage(data.totalpage);
-              setDataList(data.orderlist);
+                let list = data.orderlist;
+                for(let i = 0 ; i < list.length ; i++){
+                  list[i].price_with_vat = list[i].price_with_vat + '€';
+                }
+                setDataList(list);
               break;
             case 401:
               authService.logout();

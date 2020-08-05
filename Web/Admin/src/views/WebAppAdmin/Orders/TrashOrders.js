@@ -120,7 +120,11 @@ const TrashOrders = (props) => {
                 setTotalPage(1);
               else
                 setTotalPage(data.totalpage);
-              setDataList(data.orderlist);
+                let list = data.orderlist;
+                for(let i = 0 ; i < list.length ; i++){
+                  list[i].price_with_vat = list[i].price_with_vat + '€';
+                }
+                setDataList(list);
               let orderID = [];
               data.orderlist.map((item, i) => (
                 orderID[i] = item.ID
