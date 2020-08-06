@@ -6,8 +6,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import MySelect from 'components/MySelect.js';
 import { AddResolutionStyles as useStyles } from './useStyles';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import AdminService from 'services/api.js';
 import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';

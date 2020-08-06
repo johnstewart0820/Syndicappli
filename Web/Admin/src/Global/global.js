@@ -10,7 +10,8 @@ const initialState = {
     type : '',
     ID : []
   },
-  postalID : 0
+  postalID : 0,
+  resolutionID: 0
 };
  
 const actions = {
@@ -34,6 +35,9 @@ const actions = {
     },
     setPostalID : (store, id)=>{
         store.setState({postalID: id});
+    },
+    setResolutionID : (store, id)=>{
+        store.setState({resolutionID: id});
     },
 };
  

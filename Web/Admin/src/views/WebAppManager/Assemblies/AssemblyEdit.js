@@ -20,6 +20,7 @@ import {MeetingRoom} from './views';
 import {TimeSheet} from './views';
 import EditPostalVote from './views/PostalVotes/EditPostalVote.js';
 import useGlobal from 'Global/global';
+import EditResolution from './views/Resolutions/EditResolution.js';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -65,6 +66,7 @@ const AssemblyEdit = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     globalActions.setPostalID(0);
+    globalActions.setResolutionID(0);
   };
   const handleClick = () => {
     history.goBack();
@@ -150,15 +152,20 @@ const AssemblyEdit = (props) => {
           <Documents />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <Resolutions />
+          {
+            globalState.resolutionID !== 0 ?
+              <EditResolution resolutionID={globalState.resolutionID}/>
+            :
+              <Resolutions />
+          }
         </TabPanel>
         <TabPanel value={value} index={3}>
           {
             globalState.postalID !== 0 ?
-          <EditPostalVote postalID={globalState.postalID}/>
-          :
-          <PostalVotes />
-}
+              <EditPostalVote postalID={globalState.postalID}/>
+            :
+              <PostalVotes />
+          }
         </TabPanel>
         <TabPanel value={value} index={4}>
           <TimeSheet />

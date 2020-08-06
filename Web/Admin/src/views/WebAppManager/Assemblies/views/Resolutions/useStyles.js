@@ -159,7 +159,7 @@ export const AddResolutionStyles = makeStyles(theme => ({
     color: 'gray'
   },
 }));
-export const ResolutionsStyles = makeStyles(theme => ({
+export const EditResolutionStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
       marginTop: 64,
@@ -185,59 +185,25 @@ export const ResolutionsStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2)
   },
-  doc_tip:{
-    [theme.breakpoints.up('xl')]: {
-      fontSize :13
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize :9
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize :6
-    },
-    textAlign: 'center'
+  item:{
+    marginTop: theme.spacing(5),
   },
-  doc_name:{
-    [theme.breakpoints.up('xl')]: {
-      fontSize :18
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize :13
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize :9
-    },
-    textAlign: 'center',
-    color: 'gray',
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
   },
-  close: {
-    cursor: 'pointer',
-    [theme.breakpoints.up('xl')]: {
-      width: 35,
-      height: 35,
-      marginRight: -28
-    },
-    [theme.breakpoints.down('lg')]: {
-      width: 25,
-      height: 25,
-      marginRight: -20
-    },
-    [theme.breakpoints.down('md')]: {
-      width: 18,
-      height: 18,
-      marginRight: -14
-    },
-    backgroundColor: '#eeeeee',
-    borderRadius: '50%',
-    color: '#212121',
-    padding: 3
-  },
+
+  input: {
+    display: 'none',
+  }, 
   div_indicator: {
     width: '100%',
     height: '100%',
     display: 'flex',
     position: 'fixed',
-    paddingLeft: '35%',
+    paddingLeft: '50%',
     alignItems: 'center',
     marginTop: '-60px',
     zIndex: 999,
@@ -245,119 +211,51 @@ export const ResolutionsStyles = makeStyles(theme => ({
   indicator: {
     color: 'gray'
   },
-  documents: {
+  backTitle:{
     cursor: 'pointer',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-    border: '1px solid rgba(112,112,112,0.43)',
-    borderRadius: 8,
     [theme.breakpoints.up('xl')]: {
-      width: 152,
-      height: 120,
-      marginTop: 20,
+      fontSize: 18,
     },
     [theme.breakpoints.down('lg')]: {
-      width: 106,
-      height: 84,
-      marginTop: 14,
+      fontSize: 13,
     },
     [theme.breakpoints.down('md')]: {
-      width: 74,
-      height: 59,
-      marginTop: 10,
+      fontSize: 9,
     },
   },
-  sizepng: {
+  itemTitle:{
     [theme.breakpoints.up('xl')]: {
-      width: 152,
-      height: 120,
+      fontSize: 25,
     },
     [theme.breakpoints.down('lg')]: {
-      width: 106,
-      height: 84,
+      fontSize: 18,
     },
     [theme.breakpoints.down('md')]: {
-      width: 74,
-      height: 59,
+      fontSize: 13,
     },
   },
-  size: {
-    [theme.breakpoints.up('xl')]: {
-      width: 53,
-      height: 65,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width: 37,
-      height: 46,
-    },
-    [theme.breakpoints.down('md')]: {
-      width: 26,
-      height: 32,
-    },
+  error:{
+      color: 'red',
+      [theme.breakpoints.up('xl')]: {
+        fontSize: 18,
+      },
+      [theme.breakpoints.down('lg')]: {
+        fontSize: 13,
+      },
+      [theme.breakpoints.down('md')]: {
+        fontSize: 9,
+      },
   },
-  uploadHelp: {
-    [theme.breakpoints.up('xl')]: {
-      fontSize: 20,
-      width: 330,
-      height: 58,
-    },
-    [theme.breakpoints.down('lg')]: {
-      fontSize: 14,
-      width: 231,
-      height: 41,
-    },
-    [theme.breakpoints.down('md')]: {
-      fontSize: 10,
-      width: 162,
-      height: 29,
-    },
-    color: 'gray',
-    textAlign: 'center'
-  },
-  plus:{
-    color: 'rgb(54,54,54,0.25)',
-    [theme.breakpoints.up('xl')]: {
-      width:88 , 
-      height: 88,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width:62 , 
-      height: 62,
-    },
-    [theme.breakpoints.down('md')]: {
-      width:43 , 
-      height: 43,
-    },
-  },
-  img: {
-    cursor: 'pointer',
-    alignItems: 'center',
-    justifyContent: 'center',
-    display: 'flex',
-    border: '1px dashed rgba(112,112,112,0.43)',
-    borderRadius: 8,
-    [theme.breakpoints.up('xl')]: {
-      width: 330,
-      height: 265,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width: 231,
-      height: 186,
-    },
-    [theme.breakpoints.down('md')]: {
-      width: 162,
-      height: 130,
-    },
-  },
-  input: {
-    display: 'none',
-    '&: hover':{
-      color: '#f00',
-	borderColor: '#f00',
-	borderStyle: 'solid',
-	boxShadow: 'inset 0 3px 4px #888',
-    }
-  }, 
+  headerTitle:{
+      [theme.breakpoints.up('xl')]: {
+        fontSize :35
+      },
+      [theme.breakpoints.down('lg')]: {
+        fontSize :25
+      },
+      [theme.breakpoints.down('md')]: {
+        fontSize :18
+      },
+  }
 }));
   export default useStyles;
