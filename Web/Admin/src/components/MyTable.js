@@ -356,11 +356,10 @@ export default function ProductTable(props) {
                     />
                   </IconButton>
                       &nbsp;&nbsp;
-                  <IconButton>
+                  <IconButton style={{ visibility: item.userID === globalState.ID ? 'hidden' : 'visible' }}>
                     <DeleteIcon
                       className={classes.editItem}
                       onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
-                      style={{ visibility: item.userID === globalState.ID ? 'hidden' : 'visible' }}
                     />
                   </IconButton>
                 </TableCell>
