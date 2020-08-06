@@ -44,7 +44,7 @@ const TrashResolutions = (props) => {
     let data = {
       'status': 'active'
     }
-    ManagerService.deleteDecesion(id, data)
+    ManagerService.deleteDecision(id, data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -53,7 +53,7 @@ const TrashResolutions = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success("Restored successfully!");
-              getTrashDecesions();
+              getTrashDecisions();
               break;
             case 401:
               authService.logout();
@@ -82,7 +82,7 @@ const TrashResolutions = (props) => {
     setSortMethod(direct);
   }
 
-  const getTrashDecesions = () => {
+  const getTrashDecisions = () => {
     const requestData = {
       'search_key': '',
       'page_num': page_num - 1,
@@ -92,7 +92,7 @@ const TrashResolutions = (props) => {
       'status': 'trash'
     }
     setVisibleIndicator(true);
-    ManagerService.getDecesionList(requestData)
+    ManagerService.getDecisionList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -119,7 +119,7 @@ const TrashResolutions = (props) => {
   }
 
   useEffect(() => {
-    getTrashDecesions();
+    getTrashDecisions();
   }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   return (

@@ -5,7 +5,7 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import { withRouter } from 'react-router-dom';
 import { EditPostalVoteStyles as useStyles } from './useStyles';
 import { Grid } from '@material-ui/core';
-import DecesionCard from './compoment/DecesionCard';
+import DecisionCard from './compoment/DecisionCard';
 const EditPostalVote = (props) => {
     const classes = useStyles();
     const { history } = props;
@@ -32,9 +32,9 @@ const EditPostalVote = (props) => {
                     </Grid>
                 </Grid>
 
-                <DecesionCard
-                    decesion_number={1}
-                    decesion_name={'Installation clôture'}
+                <DecisionCard
+                    decision_number={1}
+                    decision_name={'Installation clôture'}
                     description={'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae. Suspendisse vehicula laoreet ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae. Suspendisse vehicula laoreet ullamcorper. '}
                     calc_mode={'Majorité simple - Art. 24'}
                     vote_branch={'Clef 1'}
@@ -42,9 +42,9 @@ const EditPostalVote = (props) => {
                     vote_result={'Pour'}
                 />
 
-                <DecesionCard
-                    decesion_number={2}
-                    decesion_name={'Peinture parking'}
+                <DecisionCard
+                    decision_number={2}
+                    decision_name={'Peinture parking'}
                     description={'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae. Suspendisse vehicula laoreet ullamcorper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae. Suspendisse vehicula laoreet ullamcorper. '}
                     calc_mode={'Majorité simple - Art. 25'}
                     vote_branch={'Clef 2'}

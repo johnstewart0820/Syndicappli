@@ -56,7 +56,7 @@ const BootstrapInput = withStyles((theme) => ({
 }))(InputBase);
 const useStyles = makeStyles((theme,props)=>({
 
-    decesion: {
+    decision: {
       [theme.breakpoints.up('xl')]: {
           fontSize :20
         },
@@ -117,7 +117,7 @@ const useStyles = makeStyles((theme,props)=>({
         alignItems:'center'
     }
   }));
-const DecesionCard = (props) => {
+const DecisionCard = (props) => {
     const classes = useStyles();
     const { history } = props;
     const accessAssemblies = authService.getAccess('role_assemblies');
@@ -144,10 +144,10 @@ const DecesionCard = (props) => {
                     <Grid item>
                         <Grid item container spacing={2}>
                             <Grid item className={classes.flex}>
-                                <p className={classes.decesion}><b>Résolution n°{props.decesion_number} : </b></p>
+                                <p className={classes.decision}><b>Résolution n°{props.decision_number} : </b></p>
                             </Grid>
                             <Grid item className={classes.flex}>
-                                <p className={classes.decesion}>{props.decesion_name}</p>
+                                <p className={classes.decision}>{props.decision_name}</p>
                             </Grid>
                             <Grid item className={classes.flex}>
                                 <FormControl className={classes.margin}>
@@ -196,4 +196,4 @@ const DecesionCard = (props) => {
     );
 };
 
-export default withRouter(DecesionCard);
+export default withRouter(DecisionCard);

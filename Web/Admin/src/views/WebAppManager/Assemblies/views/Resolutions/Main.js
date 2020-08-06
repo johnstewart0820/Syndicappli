@@ -71,7 +71,7 @@ const Main = (props) => {
         setOpen(false);
     };
     const handleAdd = () => {
-        ToastsStore.success("Added New Decesion successfully!");
+        ToastsStore.success("Added New Decision successfully!");
         setRefresh(!refresh);
     };
     const handleClickAdd = () => {
@@ -93,7 +93,7 @@ const Main = (props) => {
             'status': 'trash',
             'list': globalState.trash.ID
         }
-        ManagerService.emptyTrashDecesion(data)
+        ManagerService.emptyTrashDecision(data)
             .then(
                 response => {
                     setVisibleIndicator(false);
@@ -170,7 +170,7 @@ const Main = (props) => {
                 openDelete={openDelete}
                 handleCloseDelete={handleCloseDelete}
                 handleDelete={handleDelete}
-                account={'decesion'}
+                account={'decision'}
             />
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>

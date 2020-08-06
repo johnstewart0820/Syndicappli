@@ -26,7 +26,7 @@ const AddResolution = (props) => {
   const { history } = props;
   const [visibleIndicator, setVisibleIndicator] = useState(false);
 
-  const [decesionName, setDecesionName] = useState('');
+  const [decisionName, setDecisionName] = useState('');
   const [description, setDescription] = useState('');
   const [vote, setVote] = useState(0);
   const [votes, setVotes] = useState(['']);
@@ -41,14 +41,14 @@ const AddResolution = (props) => {
   const [transfer, setTransfer] = useState(false);
   const [emailNewUnion, setEmailNewUnion] = useState('');
 
-  const [errorsDecesionName, setErrorsDecesionName] = useState('');
+  const [errorsDecisionName, setErrorsDecisionName] = useState('');
   const [errorsVote, setErrorsVote] = useState('');
   const [errorsExternalEmail, setErrorsExternalEmail] = useState('');
   const [errorsEmailNewUnion, setErrorsEmailNewUnion] = useState('');
 
-  const handleChangeDecesionName = (event) => {
-    setDecesionName(event.target.value);
-    setErrorsDecesionName('');
+  const handleChangeDecisionName = (event) => {
+    setDecisionName(event.target.value);
+    setErrorsDecisionName('');
   }
   const handleChangeDescription = (event) => {
     setDescription(event.target.value);
@@ -95,8 +95,8 @@ const AddResolution = (props) => {
   };
   const handleClickAdd = () => {
     let cnt = 0;
-    if (decesionName.length === 0) { setErrorsDecesionName('please enter decesion name'); cnt++; }
-    else setErrorsDecesionName('');
+    if (decisionName.length === 0) { setErrorsDecisionName('please enter decision name'); cnt++; }
+    else setErrorsDecisionName('');
     if (votes.length === 0) { setErrorsVote('please select vote branch'); cnt++; }
     else setErrorsVote('');
     if (externalSpeaker) {
@@ -131,12 +131,12 @@ const AddResolution = (props) => {
               <Grid xs item container alignItems="stretch">
                 <TextField
                   variant="outlined"
-                  value={decesionName}
+                  value={decisionName}
                   fullWidth
-                  onChange={handleChangeDecesionName}
+                  onChange={handleChangeDecisionName}
                 />
-                {errorsDecesionName.length > 0 &&
-                  <span className={classes.error}>{errorsDecesionName}</span>}
+                {errorsDecisionName.length > 0 &&
+                  <span className={classes.error}>{errorsDecisionName}</span>}
               </Grid>
             </Grid>
             <Grid item container spacing={2} direction="column">

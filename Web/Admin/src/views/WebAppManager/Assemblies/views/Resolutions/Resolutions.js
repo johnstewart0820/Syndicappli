@@ -45,12 +45,12 @@ const Resolutions = (props) => {
   
     const handleClickEdit = (id) => {
       console.log(id);
-      history.push('/manager/assembly/edit/' + props.match.params.id + '/decesion/' + id);
+      history.push('/manager/assembly/edit/' + props.match.params.id + '/decision/' + id);
       window.location.reload();
     }
     useEffect(() => {
       if (accessAssemblies !== 'denied')
-        getDecesions();
+        getDecisions();
     }, [page_num, row_count, sort_column, sort_method, props.refresh]);
   
     const handleChangeSelect = (value) => {
@@ -79,7 +79,7 @@ const Resolutions = (props) => {
       let data = {
         'status': 'trash'
       }
-      ManagerService.deleteDecesion(deleteId, data)
+      ManagerService.deleteDecision(deleteId, data)
         .then(
           response => {
             setVisibleIndicator(false);
@@ -88,7 +88,7 @@ const Resolutions = (props) => {
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
                 ToastsStore.success("Deleted successfully!");
-                getDecesions();
+                getDecisions();
                 break;
               case 401:
                 authService.logout();
@@ -105,7 +105,7 @@ const Resolutions = (props) => {
           }
         );
     }
-    const getDecesions = () => {
+    const getDecisions = () => {
       const requestData = {
         'search_key': '',
         'page_num': page_num - 1,
@@ -115,7 +115,7 @@ const Resolutions = (props) => {
         'status': 'active'
       }
       setVisibleIndicator(true);
-      ManagerService.getDecesionList(requestData)
+      ManagerService.getDecisionList(requestData)
         .then(
           response => {
             setVisibleIndicator(false);
@@ -166,7 +166,7 @@ const Resolutions = (props) => {
         openDelete={openDelete}
         handleCloseDelete={handleCloseDelete}
         handleDelete={handleDelete}
-        account={'decesion'}
+        account={'decision'}
       />
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>
