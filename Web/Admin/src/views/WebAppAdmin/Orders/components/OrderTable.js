@@ -11,7 +11,7 @@ import MyButton from 'components/MyButton';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
-
+import IconButton from '@material-ui/core/IconButton';
 const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
@@ -124,7 +124,7 @@ const useStyles = makeStyles({
       // color: '#363636'
     },
     '& .MuiTableCell-root': {
-      fontFamily:'Poppins',
+      fontFamily: 'Poppins',
       [theme.breakpoints.up('xl')]: {
         fontSize: 18,
         padding: 16
@@ -196,7 +196,7 @@ const useStyles = makeStyles({
   },
   downItem: {
     color: 'red',
-    '&:hover' :{
+    '&:hover': {
       cursor: 'pointer'
     },
     [theme.breakpoints.up('xl')]: {
@@ -211,7 +211,7 @@ const useStyles = makeStyles({
       width: 15,
       height: 19
     },
-},
+  },
   hide: {
     visibility: 'hidden'
   },
@@ -262,27 +262,27 @@ export default function ORderTable(props) {
   const handleClick = () => {
     props.onClick();
   }
-  const Value = (val)=>{
-    switch(val){
-      case 'active' : return 'actif'; 
-      case 'inactive' : return 'inactif'; 
-      case 'owner' : return 'Copropriétaire'; 
-      case 'subaccount' : return 'Sous-compte'; 
-      case 'member' : return 'member of the council'; 
-      default: return val; 
+  const Value = (val) => {
+    switch (val) {
+      case 'active': return 'actif';
+      case 'inactive': return 'inactif';
+      case 'owner': return 'Copropriétaire';
+      case 'subaccount': return 'Sous-compte';
+      case 'member': return 'member of the council';
+      default: return val;
     }
   }
   const handleClickEdit = (id) => {
-    if(props.type === 'owner'){
-      props.onClickEdit(items[id].ID,items[id].buildingID);
-    }else{
+    if (props.type === 'owner') {
+      props.onClickEdit(items[id].ID, items[id].buildingID);
+    } else {
       props.onClickEdit(items[id].ID);
     }
   }
   const handleClickDelete = (id) => {
-    if(props.type === 'owner'){
-      props.onClickDelete(items[id].ID,items[id].buildingID);
-    }else{
+    if (props.type === 'owner') {
+      props.onClickDelete(items[id].ID, items[id].buildingID);
+    } else {
       props.onClickDelete(items[id].ID);
     }
   }
@@ -304,7 +304,7 @@ export default function ORderTable(props) {
           </FormControl>
         </div>
       </Grid>
-      <Grid item container  style={{overflowX:'auto'}}>
+      <Grid item container style={{ overflowX: 'auto' }}>
         <Table className={classes.root}>
           <TableHead>
             <TableRow >
@@ -314,12 +314,12 @@ export default function ORderTable(props) {
                     <button
                       type="button"
                       onClick={() => Sort(i)}
-                      style={{display:'flex', alignItems:'center'}}
+                      style={{ display: 'flex', alignItems: 'center' }}
                     >
                       {cell.field}
-                    <img style={{width: "30px"}} src={direct[i]}></img>
+                      <img style={{ width: "30px" }} src={direct[i]}></img>
                     </button>
-                    
+
                   </TableCell>
                 ))
               }
@@ -331,11 +331,11 @@ export default function ORderTable(props) {
             {items.map((item, i) => (
               <TableRow key={i}>
                 {
-                  cells.map((cell,j) => {
+                  cells.map((cell, j) => {
                     const value = item[cell.key];
                     return (
-                      <TableCell 
-                        key={j} 
+                      <TableCell
+                        key={j}
                         onClick={() => handleClickEdit(i)}
                         disabled={(props.access === 'see' ? true : false)}
                       >
@@ -346,22 +346,26 @@ export default function ORderTable(props) {
                     );
                   })
                 }
-                <TableCell align="center" style={{justifyContent:'center'}}>
-                    <img src="/images/pdf.png" className={classes.downItem} onClick={()=>props.onClickDownload(item.ID)}></img>
+                <TableCell align="center" style={{ justifyContent: 'center' }}>
+                  <img src="/images/pdf.png" className={classes.downItem} onClick={() => props.onClickDownload(item.ID)}></img>
                 </TableCell>
                 <TableCell align="right">
-                  <EditIcon 
-                    className={classes.editItem} 
-                    onClick={() => handleClickEdit(i)} 
-                    disabled={(props.access === 'see' ? true : false)}
-                  />
+                  <IconButton>
+                    <EditIcon
+                      className={classes.editItem}
+                      onClick={() => handleClickEdit(i)}
+                      disabled={(props.access === 'see' ? true : false)}
+                    />
+                  </IconButton>
                       &nbsp;&nbsp;
-                  <DeleteIcon 
-                    className={classes.editItem} 
-                    onClick={() => handleClickDelete(i)}
-                    disabled={(props.access === 'see' ? true : false)}
-                    style={{visibility:item.ID === 1 ? 'hidden': 'visible'}}
-                  />
+                  <IconButton>
+                    <DeleteIcon
+                      className={classes.editItem}
+                      onClick={() => handleClickDelete(i)}
+                      disabled={(props.access === 'see' ? true : false)}
+                      style={{ visibility: item.ID === 1 ? 'hidden' : 'visible' }}
+                    />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -390,11 +394,11 @@ export default function ORderTable(props) {
       </Grid>
       <Grid item container className={classes.body} alignItems="center">
         <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
-          <MyButton 
-            name={props.leftBtn} 
-            color={"1"} 
-            onClick={handleClick} 
-            style={{visibility:props.leftBtn && props.access === 'edit' ? 'visible': 'hidden'}}
+          <MyButton
+            name={props.leftBtn}
+            color={"1"}
+            onClick={handleClick}
+            style={{ visibility: props.leftBtn && props.access === 'edit' ? 'visible' : 'hidden' }}
           />
         </Grid>
         <Grid xs={12} sm={6} item container direction="row-reverse">

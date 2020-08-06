@@ -3,56 +3,56 @@ import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { makeStyles  } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import theme from 'theme';
 import Grid from '@material-ui/core/Grid';
 import MyButton from './MyButton';
-
+import IconButton from '@material-ui/core/IconButton';
 const useStyles = makeStyles({
 
   root: {
     boxShadow: '0 3px 5px 2px rgba(128, 128, 128, .3)',
-    '& tbody tr:last-child td':{
+    '& tbody tr:last-child td': {
       borderBottom: 'none'
     },
-    '& tbody tr:last-child td:first-child':{
+    '& tbody tr:last-child td:first-child': {
       [theme.breakpoints.up('xl')]: {
         borderBottomLeftRadius: '30px',
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.between('lg', 'lg')]: {
         borderBottomLeftRadius: '21px',
       },
       [theme.breakpoints.down('md')]: {
         borderBottomLeftRadius: '15px',
       },
     },
-    '& tbody tr:last-child td:last-child':{
+    '& tbody tr:last-child td:last-child': {
       [theme.breakpoints.up('xl')]: {
         borderBottomRightRadius: '30px',
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.between('lg', 'lg')]: {
         borderBottomRightRadius: '21px',
       },
       [theme.breakpoints.down('md')]: {
         borderBottomRightRadius: '15px',
       },
     },
-    '& tbody tr:first-child td:first-child':{
+    '& tbody tr:first-child td:first-child': {
       [theme.breakpoints.up('xl')]: {
         borderTopLeftRadius: '30px',
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.between('lg', 'lg')]: {
         borderTopLeftRadius: '21px',
       },
       [theme.breakpoints.down('md')]: {
         borderTopLeftRadius: '15px',
       },
     },
-    '& tbody tr:first-child td:last-child':{
+    '& tbody tr:first-child td:last-child': {
       [theme.breakpoints.up('xl')]: {
         borderTopRightRadius: '30px',
       },
-      [theme.breakpoints.between('lg','lg')]: {
+      [theme.breakpoints.between('lg', 'lg')]: {
         borderTopRightRadius: '21px',
       },
       [theme.breakpoints.down('md')]: {
@@ -64,7 +64,7 @@ const useStyles = makeStyles({
       marginTop: 8,
       borderRadius: '30px',
     },
-    [theme.breakpoints.between('lg','lg')]: {
+    [theme.breakpoints.between('lg', 'lg')]: {
       marginBottom: 11,
       marginTop: 6,
       borderRadius: '21px',
@@ -80,17 +80,17 @@ const useStyles = makeStyles({
       // color: '#363636'
     },
     '& .MuiTableCell-root': {
-      fontFamily:'Poppins',
+      fontFamily: 'Poppins',
       [theme.breakpoints.up('xl')]: {
-        fontSize :18,
+        fontSize: 18,
         padding: 16
       },
-      [theme.breakpoints.between('lg','lg')]: {
-        fontSize :14,
+      [theme.breakpoints.between('lg', 'lg')]: {
+        fontSize: 14,
         padding: 11
       },
       [theme.breakpoints.down('md')]: {
-        fontSize :10,
+        fontSize: 10,
         padding: 8
       },
     }
@@ -98,7 +98,7 @@ const useStyles = makeStyles({
 
   editItem: {
     color: '#1499ff',
-    '&:hover' :{
+    '&:hover': {
       cursor: 'pointer'
     },
     [theme.breakpoints.up('xl')]: {
@@ -113,7 +113,7 @@ const useStyles = makeStyles({
       width: 11,
       height: 11
     },
-},
+  },
   hide: {
     visibility: 'hidden'
   },
@@ -122,49 +122,53 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ProductTable  (props)  {
-  const {onClickEdit, ...rest} = props;
+export default function ProductTable(props) {
+  const { onClickEdit, ...rest } = props;
 
   const classes = useStyles();
-  const [cells,setCells] = useState(props.cells);
+  const [cells, setCells] = useState(props.cells);
   const items = props.products;
 
-  return ( 
+  return (
     <div >
       <Grid container direction="column" spacing={6}>
         <Grid item></Grid>
-        <Grid item  style={{overflowX:'auto'}}>
+        <Grid item style={{ overflowX: 'auto' }}>
           <Table className={classes.root}>
             <TableHead />
             <TableBody>
               {items.map((item) => (
                 <TableRow key={item.ID}>
-                    <TableCell>
-                        <img src="/images/card.png"></img>
-                    </TableCell>
+                  <TableCell>
+                    <img src="/images/card.png"></img>
+                  </TableCell>
                   {
-                  cells.map((cell,i)=>{
-                    const value = item[cell.key];
-                    return(
-                    <TableCell key={cell.key}>
+                    cells.map((cell, i) => {
+                      const value = item[cell.key];
+                      return (
+                        <TableCell key={cell.key}>
 
-                      {value}
-                  </TableCell>);
-                  })
+                          {value}
+                        </TableCell>);
+                    })
                   }
                   <TableCell align="right">
-                      <EditIcon className={classes.editItem} onClick={()=>props.onClickEdit(item.ID)}/>
+                    <IconButton>
+                      <EditIcon className={classes.editItem} onClick={() => props.onClickEdit(item.ID)} />
+                    </IconButton>
                       &nbsp;&nbsp;
-                      <DeleteIcon className={classes.editItem} onClick={()=>props.onClickDelete(item.ID)}></DeleteIcon>
+                    <IconButton>
+                      <DeleteIcon className={classes.editItem} onClick={() => props.onClickDelete(item.ID)}></DeleteIcon>
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </Grid>  
-          <Grid xs={12} item container className={props.leftBtn ? classes.show : classes.hide} >
-            <MyButton name={props.leftBtn} color={"1"} onClick={()=>props.onClickAdd()}/>
-          </Grid>
+        </Grid>
+        <Grid xs={12} item container className={props.leftBtn ? classes.show : classes.hide} >
+          <MyButton name={props.leftBtn} color={"1"} onClick={() => props.onClickAdd()} />
+        </Grid>
       </Grid>
     </div>
   );

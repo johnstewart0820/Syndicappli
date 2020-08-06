@@ -12,7 +12,7 @@ import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
 import useGlobal from 'Global/global';
-
+import IconButton from '@material-ui/core/IconButton';
 const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
@@ -125,7 +125,7 @@ const useStyles = makeStyles({
       // color: '#363636'
     },
     '& .MuiTableCell-root': {
-      fontFamily:'Poppins',
+      fontFamily: 'Poppins',
       [theme.breakpoints.up('xl')]: {
         fontSize: 18,
         padding: 16
@@ -254,38 +254,38 @@ export default function ProductTable(props) {
   const handleClick = () => {
     props.onClick();
   }
-  const Value = (val)=>{
-    switch(val){
-      case 'active' : return 'actif'; 
-      case 'inactive' : return 'inactif'; 
-      case 'expired' : return 'expiré'; 
-      case 'owner' : return 'Copropriétaire'; 
-      case 'subaccount' : return 'Sous-compte'; 
-      case 'member' : return 'member of the council'; 
-      case 'managers' : return 'Gestionnaires'; 
-      case 'companies' : return 'Cabinets';
-      case 'owners' : return 'Copropriétaires'; 
-      case 'buildings' : return 'Immeubles'; 
-      case 'once' : return 'une fois'; 
-      case '2_months' : return '2 mois'; 
-      case '3_months' : return '3 mois'; 
-      case '6_months' : return '6 mois'; 
-      case '1_year' : return '1 an'; 
-      case 'all' : return 'tout le cycle'; 
-      default: return val; 
+  const Value = (val) => {
+    switch (val) {
+      case 'active': return 'actif';
+      case 'inactive': return 'inactif';
+      case 'expired': return 'expiré';
+      case 'owner': return 'Copropriétaire';
+      case 'subaccount': return 'Sous-compte';
+      case 'member': return 'member of the council';
+      case 'managers': return 'Gestionnaires';
+      case 'companies': return 'Cabinets';
+      case 'owners': return 'Copropriétaires';
+      case 'buildings': return 'Immeubles';
+      case 'once': return 'une fois';
+      case '2_months': return '2 mois';
+      case '3_months': return '3 mois';
+      case '6_months': return '6 mois';
+      case '1_year': return '1 an';
+      case 'all': return 'tout le cycle';
+      default: return val;
     }
   }
   const handleClickEdit = (id) => {
-    if(props.type === 'owner'){
-      props.onClickEdit(items[id].ID,items[id].buildingID);
-    }else{
+    if (props.type === 'owner') {
+      props.onClickEdit(items[id].ID, items[id].buildingID);
+    } else {
       props.onClickEdit(items[id].ID);
     }
   }
   const handleClickDelete = (id) => {
-    if(props.type === 'owner'){
-      props.onClickDelete(items[id].ID,items[id].buildingID);
-    }else{
+    if (props.type === 'owner') {
+      props.onClickDelete(items[id].ID, items[id].buildingID);
+    } else {
       props.onClickDelete(items[id].ID);
     }
   }
@@ -307,7 +307,7 @@ export default function ProductTable(props) {
           </FormControl>
         </div>
       </Grid>
-      <Grid item container style={{overflowX:'auto'}}>
+      <Grid item container style={{ overflowX: 'auto' }}>
         <Table className={classes.root}>
           <TableHead>
             <TableRow >
@@ -317,12 +317,12 @@ export default function ProductTable(props) {
                     <button
                       type="button"
                       onClick={() => Sort(i)}
-                      style={{display:'flex', alignItems:'center'}}
+                      style={{ display: 'flex', alignItems: 'center' }}
                     >
                       {cell.field}
-                    <img style={{width: "30px"}} src={direct[i]}></img>
+                      <img style={{ width: "30px" }} src={direct[i]}></img>
                     </button>
-                    
+
                   </TableCell>
                 ))
               }
@@ -333,11 +333,11 @@ export default function ProductTable(props) {
             {items.map((item, i) => (
               <TableRow key={i}>
                 {
-                  cells.map((cell,j) => {
+                  cells.map((cell, j) => {
                     const value = item[cell.key];
                     return (
-                      <TableCell 
-                        key={j} 
+                      <TableCell
+                        key={j}
                         onClick={() => handleClickEdit(i)}
                         disabled={(props.access === 'see' ? true : false)}
                       >
@@ -349,16 +349,20 @@ export default function ProductTable(props) {
                   })
                 }
                 <TableCell align="right">
-                  <EditIcon 
-                    className={classes.editItem} 
-                    onClick={() => handleClickEdit(i)} 
-                  />
+                  <IconButton>
+                    <EditIcon
+                      className={classes.editItem}
+                      onClick={() => handleClickEdit(i)}
+                    />
+                  </IconButton>
                       &nbsp;&nbsp;
-                  <DeleteIcon 
-                    className={classes.editItem} 
-                    onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
-                    style={{visibility:item.userID === globalState.ID ? 'hidden': 'visible'}}
-                  />
+                  <IconButton>
+                    <DeleteIcon
+                      className={classes.editItem}
+                      onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
+                      style={{ visibility: item.userID === globalState.ID ? 'hidden' : 'visible' }}
+                    />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -387,11 +391,11 @@ export default function ProductTable(props) {
       </Grid>
       <Grid item container className={classes.body} alignItems="center">
         <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
-          <MyButton 
-            name={props.leftBtn} 
-            color={"1"} 
-            onClick={handleClick} 
-            style={{visibility:props.leftBtn && props.access === 'edit' ? 'visible': 'hidden'}}
+          <MyButton
+            name={props.leftBtn}
+            color={"1"}
+            onClick={handleClick}
+            style={{ visibility: props.leftBtn && props.access === 'edit' ? 'visible' : 'hidden' }}
           />
         </Grid>
         <Grid xs={12} sm={6} item container direction="row-reverse">

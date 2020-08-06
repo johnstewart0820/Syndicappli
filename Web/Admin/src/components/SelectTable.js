@@ -12,7 +12,7 @@ import { Checkbox } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
-
+import IconButton from '@material-ui/core/IconButton';
 const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
@@ -125,7 +125,7 @@ const useStyles = makeStyles({
       // color: '#363636'
     },
     '& .MuiTableCell-root': {
-      fontFamily:'Poppins',
+      fontFamily: 'Poppins',
       [theme.breakpoints.up('xl')]: {
         fontSize: 18,
         padding: 16
@@ -344,7 +344,7 @@ export default function SelectTable(props) {
           </FormControl>
         </div>
       </Grid>
-      <Grid item container  style={{overflowX:'auto'}}>
+      <Grid item container style={{ overflowX: 'auto' }}>
         <Table className={classes.root}>
           <TableHead>
             <TableRow >
@@ -396,15 +396,19 @@ export default function SelectTable(props) {
                   })
                 }
                 <TableCell align="right">
-                  <EditIcon
-                    className={classes.editItem}
-                    onClick={() => handleClickEdit(i)}
-                  />
+                  <IconButton>
+                    <EditIcon
+                      className={classes.editItem}
+                      onClick={() => handleClickEdit(i)}
+                    />
+                  </IconButton>
                       &nbsp;&nbsp;
-                  <DeleteIcon
-                    className={classes.editItem}
-                    onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
-                  />
+                  <IconButton>
+                    <DeleteIcon
+                      className={classes.editItem}
+                      onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
+                    />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
