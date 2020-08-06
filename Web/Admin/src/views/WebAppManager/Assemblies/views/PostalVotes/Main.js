@@ -170,7 +170,7 @@ const Main = (props) => {
                 openDelete={openDelete}
                 handleCloseDelete={handleCloseDelete}
                 handleDelete={handleDelete}
-                account={'decesion'}
+                account={'decision'}
             />
             <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
         </div>
