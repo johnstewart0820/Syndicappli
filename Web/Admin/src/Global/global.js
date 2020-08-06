@@ -10,6 +10,7 @@ const initialState = {
     type : '',
     ID : []
   },
+  postalID : 0
 };
  
 const actions = {
@@ -30,6 +31,9 @@ const actions = {
     },
     setTrash : (store, trash)=>{
         store.setState({trash: trash});
+    },
+    setPostalID : (store, id)=>{
+        store.setState({postalID: id});
     },
 };
  

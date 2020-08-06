@@ -18,6 +18,8 @@ import {Minutes} from './views';
 import {Resolutions} from './views';
 import {MeetingRoom} from './views';
 import {TimeSheet} from './views';
+import EditPostalVote from './views/PostalVotes/EditPostalVote.js';
+import useGlobal from 'Global/global';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -57,10 +59,12 @@ const AssemblyEdit = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
+  const [globalState, globalActions] = useGlobal();
   const [title, steTitle] = useState('AG du Vendredi 12 Janvier 2020');
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    globalActions.setPostalID(0);
   };
   const handleClick = () => {
     history.goBack();
@@ -149,7 +153,12 @@ const AssemblyEdit = (props) => {
           <Resolutions />
         </TabPanel>
         <TabPanel value={value} index={3}>
+          {
+            globalState.postalID !== 0 ?
+          <EditPostalVote postalID={globalState.postalID}/>
+          :
           <PostalVotes />
+}
         </TabPanel>
         <TabPanel value={value} index={4}>
           <TimeSheet />

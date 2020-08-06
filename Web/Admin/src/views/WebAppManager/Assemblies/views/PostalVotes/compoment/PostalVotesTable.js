@@ -273,18 +273,10 @@ export default function PostalVotesTable(props) {
     }
   }
   const handleClickEdit = (id) => {
-    if(props.type === 'owner'){
-      props.onClickEdit(items[id].ID,items[id].buildingID);
-    }else{
       props.onClickEdit(items[id].ID);
-    }
   }
   const handleClickDelete = (id) => {
-    if(props.type === 'owner'){
-      props.onClickDelete(items[id].ID,items[id].buildingID);
-    }else{
       props.onClickDelete(items[id].ID);
-    }
   }
   return (
     <Grid item container direction="column" spacing={2}>
@@ -360,7 +352,6 @@ export default function PostalVotesTable(props) {
                     className={classes.editItem} 
                     onClick={() => handleClickDelete(i)}
                     disabled={(props.access === 'see' ? true : false)}
-                    style={{visibility:item.ID === 1 ? 'hidden': 'visible'}}
                   />
                 </TableCell>
               </TableRow>

@@ -22,6 +22,7 @@ const Resolutions = (props) => {
     const accessAssemblies = authService.getAccess('role_assemblies');
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
     const classes = useStyles();
+    const [globalState, globalActions] = useGlobal();
     const [openDelete, setOpenDelete] = React.useState(false);
     const [deleteId, setDeleteId] = React.useState(-1);
     const [dataList, setDataList] = useState([]);
@@ -42,9 +43,7 @@ const Resolutions = (props) => {
         columns[i] = 'asc';
 
     const handleClickEdit = (id) => {
-        console.log(id);
-        history.push('/manager/assembly/edit/' + props.match.params.id + '/postalvote/' + id);
-        window.location.reload();
+        globalActions.setPostalID(id);
     }
     useEffect(() => {
         if (accessAssemblies !== 'denied')
