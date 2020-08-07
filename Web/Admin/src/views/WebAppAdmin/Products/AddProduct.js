@@ -269,7 +269,7 @@ const AddProducts = (props) => {
                     </Grid>
                     <div className={classes.footer}>
                         <Grid container justify="space-between">
-                            <MyButton name={"Creer"} color={"1"} onClick={handleCreate} />
+                            <MyButton name={"Créer"} color={"1"} onClick={handleCreate} />
                             <MyButton name={"Annuler"} bgColor="grey" onClick={handleClose} />
                         </Grid>
                     </div>
