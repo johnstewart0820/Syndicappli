@@ -666,7 +666,7 @@ const CompaniesEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Telephone</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs={5} item container alignItems="stretch" direction="column">
                 <TextField
                   className={classes.text}

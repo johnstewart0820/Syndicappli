@@ -259,7 +259,7 @@ const AddCompany = (props) => {
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={2}>
-                            <Grid item><p className={classes.title}>Telephone</p></Grid>
+                            <Grid item><p className={classes.title}>Téléphone</p></Grid>
                             <Grid xs item container alignItems="stretch">
                                 <TextField
                                     className={classes.text}
