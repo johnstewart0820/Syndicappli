@@ -676,7 +676,7 @@ const AddOwner = (props) => {
                                                                             />
                                                                         </Grid>
                                                                     </Grid>
-                                                                    <Grid item><p className={classes.title}>Clefs de répartition du lot</p></Grid>
+                                                                    <Grid item><p className={classes.title}>Clé de répartition du lot</p></Grid>
 
                                                                     <Grid item container direction="column" spacing={2} >
                                                                         {

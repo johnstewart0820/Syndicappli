@@ -218,7 +218,7 @@ const AddBuilding = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.title}>Clefs de répartition</p></Grid>
+              <Grid item><p className={classes.title}>Clé de répartition</p></Grid>
             </Grid>
             {
               state !== null ?

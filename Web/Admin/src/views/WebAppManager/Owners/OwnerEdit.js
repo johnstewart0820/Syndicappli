@@ -986,7 +986,7 @@ const OwnerEdit = (props) => {
                                       />
                                     </Grid>
                                   </Grid>
-                                  <Grid item><p className={classes.itemTitle}>Clefs de répartition du lot</p></Grid>
+                                  <Grid item><p className={classes.itemTitle}>Clé de répartition du lot</p></Grid>
 
                                   <Grid item container direction="column" spacing={2} >
                                     {

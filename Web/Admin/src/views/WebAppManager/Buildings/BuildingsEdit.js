@@ -285,7 +285,7 @@ const BuildingsEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.itemTitle}>Clefs de répartition</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Clé de répartition</p></Grid>
             </Grid>
             {
               state !== null ?
