@@ -627,7 +627,7 @@ const CompaniesEdit = (props) => {
             </Grid>
             <Grid item container direction="column" spacing={2} justify="space-between">
               <Grid item container direction="row" justify="space-between">
-                <Grid item><p className={classes.itemTitle}>Coordonnees</p></Grid>
+                <Grid item><p className={classes.itemTitle}>Coordonnées</p></Grid>
                 <Grid item>
                   <p className={classes.itemTitle}><b>Nombre de gestionnaires : </b>{managerCount}</p>
                 </Grid>
