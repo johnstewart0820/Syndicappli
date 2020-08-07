@@ -287,7 +287,7 @@ const AddCompany = (props) => {
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={2}>
-                            <Grid item><p className={classes.title}>VAT Intracommunautaire</p></Grid>
+                            <Grid item><p className={classes.title}>N° TVA intracommunautaire</p></Grid>
                             <Grid xs item container alignItems="stretch">
                                 <TextField
                                     className={classes.text}

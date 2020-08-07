@@ -707,7 +707,7 @@ const CompaniesEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container direction="column" spacing={2}>
-              <Grid item container><p className={classes.itemTitle}>VAT Intracommunautaire</p></Grid>
+              <Grid item container><p className={classes.itemTitle}>N° TVA intracommunautaire</p></Grid>
               <Grid item xs={5} item container alignItems="stretch">
                 <TextField
                   className={classes.text}
