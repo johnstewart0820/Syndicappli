@@ -24,6 +24,7 @@ import {
   Owners as ManagerOwners,
   Addons as ManagerAddons,
   Assemblies as ManagerAssemblies,
+  Events as ManagerEvents
 } from './views/WebAppManager';
 import {
   Addons as OwnerAddons,
@@ -50,6 +51,7 @@ import DiscountCodesEdit from 'views/WebAppAdmin/DiscountCodes/DiscountCodesEdit
 import ManagerBuildingEdit from './views/WebAppManager/Buildings/BuildingsEdit';
 import ManagerOwnerEdit from './views/WebAppManager/Owners/OwnerEdit';
 import ManagerAssemblyEdit from './views/WebAppManager/Assemblies/AssemblyEdit';
+import ManagerEventEdit from './views/WebAppManager/Events/EventEdit';
 import TeamMemberEdit from './views/WebAppManager/Team/TeamMemberEdit';
 import ManagerHelp from 'views/WebAppManager/Help';
 import ManagerInvoices from './views/WebAppManager/Informations/Invoices';
@@ -378,6 +380,18 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/manager/assemblies/edit/:id"
+      />
+      <RouteWithLayout
+        component={ManagerEvents}
+        exact
+        layout={MainLayout}
+        path="/manager/events"
+      />
+      <RouteWithLayout
+        component={ManagerEventEdit}
+        exact
+        layout={MainLayout}
+        path="/manager/events/edit/:id"
       />
       <RouteWithLayout
         component={DashboardView}
