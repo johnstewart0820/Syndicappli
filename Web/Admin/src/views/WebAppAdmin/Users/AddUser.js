@@ -402,7 +402,7 @@ const AddUser = (props) => {
                             />
                         </Grid>
                         <Grid xs={6} item container direction="column">
-                            <p className={classes.title}>Prodults</p>
+                            <p className={classes.title}>Produits</p>
                             <MySelect
                                 color="gray"
                                 data={permissionList}

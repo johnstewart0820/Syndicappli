@@ -544,7 +544,7 @@ const UserEdit = (props) => {
                 </Grid>
                 <Grid item container sm={3}></Grid>
                 <Grid sm={3} item container direction="column">
-                  <p className={classes.itemTitle}>Prodults</p>
+                  <p className={classes.itemTitle}>Produits</p>
                   <MySelect
                     color="#9f9f9f"
                     data={permissionList}
