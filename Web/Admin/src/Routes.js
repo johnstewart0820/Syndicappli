@@ -28,6 +28,7 @@ import {
 import {
   Addons as OwnerAddons,
   Assemblies as OwnerAssemblies,
+  Events as OwnerEvents
 } from './views/WebAppOwner';
 //Admin import
 import Login from './views/WebAppAdmin/SignIn/Login';
@@ -261,7 +262,7 @@ const Routes = () => {
         path="/owner/assemblies"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={OwnerEvents}
         exact
         layout={MainLayout}
         path="/owner/events"
