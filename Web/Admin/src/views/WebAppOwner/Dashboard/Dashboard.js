@@ -101,7 +101,7 @@ const Dashboard = (props) => {
             <Budget title="IMMEUBLES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
             </Grid>
             <Grid item lg={3} sm={6} xl={3} xs={12}>
-            <Budget title="COPROPRIETAIRES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
+            <Budget title="Copropriétaires" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"}/>
             </Grid>
           </Grid>
         </Grid>
