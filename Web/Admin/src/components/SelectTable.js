@@ -297,7 +297,7 @@ export default function SelectTable(props) {
       case 'inactive': return 'inactif';
       case 'owner': return 'Copropriétaire';
       case 'subaccount': return 'Sous-compte';
-      case 'member': return 'member of the council';
+      case 'member': return 'Membre du Conseil Syndical';
       default: return val;
     }
   }

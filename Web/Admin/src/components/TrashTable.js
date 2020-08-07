@@ -249,7 +249,7 @@ export default function TrashTable(props) {
       case 'expired' : return 'expiré'; 
       case 'owner' : return 'Copropriétaire'; 
       case 'subaccount' : return 'Sous-compte'; 
-      case 'member' : return 'member of the council'; 
+      case 'member' : return 'Membre du Conseil Syndical'; 
       case 'managers' : return 'Gestionnaires'; 
       case 'companies' : return 'Cabinets'; 
       case 'owners' : return 'Copropriétaires'; 

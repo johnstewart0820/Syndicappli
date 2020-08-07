@@ -38,7 +38,7 @@ const TrashOwners = (props) => {
   const [sort_method, setSortMethod] = useState('asc');
   const [role, setRole] = useState(0);
   const selectList = [20, 50, 100, 200, -1];
-  const roleList = ['Tout', 'Copropriétaire', 'Sous-compte', 'member of the council'];
+  const roleList = ['Tout', 'Copropriétaire', 'Sous-compte', 'Membre du Conseil Syndical'];
   const owner_role = ['all', 'owner', 'subaccount', 'member'];
 
   const handleChangeBuildings = (val) => {
