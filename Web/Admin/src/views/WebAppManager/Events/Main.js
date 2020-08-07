@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import MyButton from '../../../components/MyButton';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
-import AddAG from './AddAG';
+import AddEvent from './AddEvent';
 import { withRouter } from 'react-router-dom';
 import authService from '../../../services/authService.js';
 import useStyles from './useStyles';
@@ -13,11 +13,11 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
-import Assemblies from './Assemblies';
-import TrashAssemblies from './TrashAssemblies';
+import Events from './Events';
+import TrashEvents from './TrashEvents';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import AdminService from 'services/api.js';
+import { ManagerService as Service} from 'services/api.js';
 import useGlobal from 'Global/global';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -50,6 +50,7 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
+const ManagerService = new Service();
 const Main = (props) => {
   const { history } = props;
   const token = authService.getToken();
@@ -57,7 +58,7 @@ const Main = (props) => {
     window.location.replace("/login");
   }
   const [globalState, globalActions] = useGlobal();
-  const accessAssemblies = authService.getAccess('role_assemblies');
+  const accessEvents = authService.getAccess('role_events');
   const [value, setValue] = React.useState(0);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -71,16 +72,16 @@ const Main = (props) => {
     setOpen(false);
   };
   const handleAdd = () => {
-    ToastsStore.success("Added New AG successfully!");
+    ToastsStore.success("Added New Event successfully!");
     setRefresh(!refresh);
   };
   const handleClickAdd = () => {
-    if (accessAssemblies !== 'edit') {
+    if (accessEvents !== 'edit') {
       setOpen(true);
     }
   };
-  const handleClickEmptyTrashAG = () => {
-    if(globalState.trash.type === 'AG' && globalState.trash.ID.length != 0)       
+  const handleClickEmptyTrashEvent = () => {
+    if(globalState.trash.type === 'event' && globalState.trash.ID.length != 0)       
     setOpenDelete(true);
   };
   const handleCloseDelete = () => {
@@ -93,7 +94,7 @@ const Main = (props) => {
       'status': 'trash',
       'list' : globalState.trash.ID
     }
-    AdminService.emptyTrashAG(data)
+    ManagerService.emptyTrashEvent(data)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -131,17 +132,17 @@ const Main = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
               <Typography variant="h2" className={classes.titleText}>
-                <b>Assemblées Générales</b>
+                <b>Événements</b>
               </Typography>
             </Grid>
           </Grid>
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
               <MyButton
-                name={value === 0 ? "Nouvelle AG" : "Vider la Poubelle"}
+                name={value === 0 ? "Nouvel événement" : "Vider la Poubelle"}
                 color={"1"}
-                onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashAG}
-                style={{ visibility: accessAssemblies !== 'edit' ? 'visible' : 'hidden' }}
+                onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashEvent}
+                style={{ visibility: accessEvents !== 'edit' ? 'visible' : 'hidden' }}
               />
               <Dialog
                 open={open}
@@ -152,9 +153,9 @@ const Main = (props) => {
               >
                 <Grid item container className={classes.padding} justify="space-between">
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
-                  <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouvelle Assemblée Générale</h2></Grid>
+                  <Grid item><h2 id="transition-modal-title" className={classes.modalTitle}>Nouvel événement</h2></Grid>
                 </Grid>
-                <AddAG onCancel={handleClose} onAdd={handleAdd} />
+                <AddEvent onCancel={handleClose} onAdd={handleAdd} />
               </Dialog>
             </Grid>
           </Grid>
@@ -168,24 +169,24 @@ const Main = (props) => {
             }
           }}
         >
-          <Tab xs={12} sm={4} label="Assemblées Générales" {...a11yProps(0)} className={classes.tabTitle} disableRipple />
+          <Tab xs={12} sm={4} label="Événements" {...a11yProps(0)} className={classes.tabTitle} disableRipple />
           <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} disableRipple />
         </Tabs>
 
       </div>
       <div className={classes.body}>
         <TabPanel value={value} index={0}>
-          <Assemblies refresh={refresh} />
+          <Events refresh={refresh} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <TrashAssemblies refresh={refresh} />
+          <TrashEvents refresh={refresh} />
         </TabPanel>
       </div>
       <DeleteConfirmDialog
         openDelete={openDelete}
         handleCloseDelete={handleCloseDelete}
         handleDelete={handleDelete}
-        account={'AG'}
+        account={'event'}
       />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>

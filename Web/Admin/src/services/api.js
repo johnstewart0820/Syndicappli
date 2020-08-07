@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";  
-const API_URL = "https://syndic-backend.say-demo.com/api/";
+const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";  
+// const API_URL = "https://syndic-backend.say-demo.com/api/";
 // const API_URL = "http://192.168.105.38:3001/api/";
 // const API_URL = process.env.REACT_APP_API_URL;
 class AdminService {
@@ -407,22 +407,41 @@ export class ManagerService {
   getCard(id) {
     return axios.get(API_URL + 'web/manager/payment/' + id, { headers: authHeader() });
   }
+  //Event Part
+  getEventList(data) {
+    return axios.post(API_URL + 'web/manager/eventList', data, { headers: authHeader() });
+  }
+  createEvent(data) {
+    return axios.post(API_URL + 'web/manager/event', data, { headers: authHeader() });
+  }
+  updateEvent(id, data) {
+    return axios.put(API_URL + 'web/manager/event/' + id, data, { headers: authHeader() });
+  }
+  getEvent(id) {
+    return axios.get(API_URL + 'web/manager/event/' + id, { headers: authHeader() });
+  }
+  deleteEvent(id, status) {
+    return axios.post(API_URL + 'web/manager/event/' + id + '/delete', status, { headers: authHeader() });
+  }
+  emptyTrashEvent(status) {
+    return axios.post(API_URL + 'web/manager/trash/event/deleteAll', status, { headers: authHeader() });
+  }
   //Assembly Part
-    ///Decesion Part
-  getDecesionList(data) {
-    return axios.post(API_URL + 'web/manager/assembly/decesionList', data, { headers: authHeader() });
+    ///Decision Part
+  getDecisionList(data) {
+    return axios.post(API_URL + 'web/manager/assembly/DecisionList', data, { headers: authHeader() });
   }
-  createDecesion(data) {
-    return axios.post(API_URL + 'web/manager/assembly/decesion', data, { headers: authHeader() });
+  createDecision(data) {
+    return axios.post(API_URL + 'web/manager/assembly/Decision', data, { headers: authHeader() });
   }
-  getDecesion(id, data) {
-    return axios.post(API_URL + 'web/manager/assembly/decesion/' + id, data, { headers: authHeader() });
+  getDecision(id, data) {
+    return axios.post(API_URL + 'web/manager/assembly/Decision/' + id, data, { headers: authHeader() });
   }
-  deleteDecesion(id) {
-    return axios.delete(API_URL + 'web/manager/assembly/decesion/' + id, { headers: authHeader() });
+  deleteDecision(id) {
+    return axios.delete(API_URL + 'web/manager/assembly/Decision/' + id, { headers: authHeader() });
   }
-  emptyTrashDecesion(status) {
-    return axios.post(API_URL + 'web/manager/assembly/decesion/deleteAll', status, { headers: authHeader() });
+  emptyTrashDecision(status) {
+    return axios.post(API_URL + 'web/manager/assembly/Decision/deleteAll', status, { headers: authHeader() });
   }
       ///PostalVote Part
       getPostalVoteList(data) {
