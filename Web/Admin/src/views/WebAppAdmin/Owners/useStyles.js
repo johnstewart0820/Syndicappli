@@ -321,6 +321,23 @@ export const EditOwnerStyles = makeStyles(theme => ({
       height: 27,
     },
   },
+  minus:{
+    color: 'white',
+    backgroundColor: 'red',
+    borderRadius: '50%',
+    [theme.breakpoints.up('xl')]: {
+      width:54 , 
+      height: 54,
+    },
+    [theme.breakpoints.down('lg')]: {
+      width:38 , 
+      height: 38,
+    },
+    [theme.breakpoints.down('md')]: {
+      width:27 , 
+      height: 27,
+    },
+  },
   size: {
     [theme.breakpoints.up('xl')]: {
       width: 214,

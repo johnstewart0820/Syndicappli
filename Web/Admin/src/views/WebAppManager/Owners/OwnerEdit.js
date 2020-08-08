@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -18,6 +18,11 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import { ManagerService as Service } from '../../../services/api.js';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
@@ -44,56 +49,58 @@ const OwnerEdit = (props) => {
     window.location.replace("/login");
   }
   const accessOwners = authService.getAccess('role_owners');
-  const [state, setState] = React.useState(false);
+  const [state, setState] = useState(false);
   const classes = useStyles();
 
   const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
 
-  const [companyID, setCompanyID] = React.useState(-1);
-  const [suspendState, setSuspendState] = React.useState('Suspendre le compte');
-  const [openDelete, setOpenDelete] = React.useState(false);
-  const [deleteId, setDeleteId] = React.useState(-1);
-  const [building, setBuilding] = React.useState([]);
-  const [buildings, setBuildings] = React.useState('');
-  const [buildingList, setBuildingList] = React.useState([]);
-  const [buildingID, setBuildingID] = React.useState(-1);
+  const [companyID, setCompanyID] = useState(-1);
+  const [suspendState, setSuspendState] = useState('Suspendre le compte');
+  const [openDelete, setOpenDelete] = useState(false);
+  const [deleteId, setDeleteId] = useState(-1);
+  const [openDelete1, setOpenDelete1] = useState(false);
+  const [removeBranchID, setRemoveBranchID] = useState(-1);
+  const [building, setBuilding] = useState([]);
+  const [buildings, setBuildings] = useState('');
+  const [buildingList, setBuildingList] = useState([]);
+  const [buildingID, setBuildingID] = useState(-1);
 
-  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [isSubAccount, setIsSubAccount] = React.useState(false);
-  const [isMemberCouncil, setIsMemberCouncil] = React.useState(false);
-  const [avatarurl, setAvatarUrl] = React.useState("");
-  const [avatar, setAvatar] = React.useState(null);
-  const [idcardurls, setIdcardUrls] = React.useState([]);
-  const [idcards, setIdcards] = React.useState([]);
-  const [ownerTitle, setOwnerTitle] = React.useState(0);
-  const [lastname, setLastName] = React.useState('');
-  const [firstname, setFirstName] = React.useState('');
-  const [lastname1, setLastName1] = React.useState('');
-  const [firstname1, setFirstName1] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [phonenumber, setPhoneNumber] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [apartNumber, setApartNumber] = React.useState([]);
-  const [companyName, setCompanyName] = React.useState('');
+  const [visibleIndicator, setVisibleIndicator] = useState(false);
+  const [isSubAccount, setIsSubAccount] = useState(false);
+  const [isMemberCouncil, setIsMemberCouncil] = useState(false);
+  const [avatarurl, setAvatarUrl] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [idcardurls, setIdcardUrls] = useState([]);
+  const [idcards, setIdcards] = useState([]);
+  const [ownerTitle, setOwnerTitle] = useState(0);
+  const [lastname, setLastName] = useState('');
+  const [firstname, setFirstName] = useState('');
+  const [lastname1, setLastName1] = useState('');
+  const [firstname1, setFirstName1] = useState('');
+  const [email, setEmail] = useState('');
+  const [phonenumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState('');
+  const [apartNumber, setApartNumber] = useState([]);
+  const [companyName, setCompanyName] = useState('');
 
-  const [errorsBuildings, setErrorsBuildings] = React.useState('');
-  const [errorsOwnerTitle, setErrorsOwnerTitle] = React.useState('');
-  const [errorsLastname, setErrorsLastname] = React.useState('');
-  const [errorsFirstname, setErrorsFirstname] = React.useState('');
-  const [errorsLastname1, setErrorsLastname1] = React.useState('');
-  const [errorsFirstname1, setErrorsFirstname1] = React.useState('');
-  const [errorsEmail, setErrorsEmail] = React.useState('');
-  const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
-  const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsCompanyName, setErrorsCompanyName] = React.useState('');
-  const [errorsLotsList, setErrorsLotsList] = React.useState('');
+  const [errorsBuildings, setErrorsBuildings] = useState('');
+  const [errorsOwnerTitle, setErrorsOwnerTitle] = useState('');
+  const [errorsLastname, setErrorsLastname] = useState('');
+  const [errorsFirstname, setErrorsFirstname] = useState('');
+  const [errorsLastname1, setErrorsLastname1] = useState('');
+  const [errorsFirstname1, setErrorsFirstname1] = useState('');
+  const [errorsEmail, setErrorsEmail] = useState('');
+  const [errorsPhonenumber, setErrorsPhonenumber] = useState('');
+  const [errorsAddress, setErrorsAddress] = useState('');
+  const [errorsCompanyName, setErrorsCompanyName] = useState('');
+  const [errorsLotsList, setErrorsLotsList] = useState('');
 
-  const [lotsList, setLotsList] = React.useState([]);
-  const [stateLots, setStateLots] = React.useState(false);
-  const [buildingVote, setBuildingVote] = React.useState([]);
-  const [voteAmount, setVoteAmount] = React.useState(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
+  const [lotsList, setLotsList] = useState([]);
+  const [stateLots, setStateLots] = useState(false);
+  const [buildingVote, setBuildingVote] = useState([]);
+  const [voteAmount, setVoteAmount] = useState(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
   let voteLists = [];
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = useState(0);
   const handleClick = () => {
     history.goBack();
   };
@@ -130,10 +137,10 @@ const OwnerEdit = (props) => {
     else setErrorsPhonenumber('');
     if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
     else setErrorsAddress('');
-    if(isSubAccount === false){
+    if (isSubAccount === false) {
       if (count === 0) { setErrorsLotsList('please check a Lot'); cnt++; }
       else setErrorsLotsList('');
-    }else setErrorsLotsList('');
+    } else setErrorsLotsList('');
     if (cnt === 0) {
       updateOwner();
     }
@@ -254,23 +261,8 @@ const OwnerEdit = (props) => {
     setStateLots(!stateLots);
   }
   const handleClickRemoveLot = (num) => {
-    setCount(count - 1);
-    delete lotsList[num];
-    lotsList.splice(num, 1);
-
-    let voteamount = [...voteAmount];
-    delete voteamount[num];
-    voteamount.splice(num, 1);
-    setVoteAmount(voteamount);
-
-    let apartment = [...apartNumber];
-    delete apartment[num];
-    apartment.splice(num, 1);
-    setApartNumber(apartment);
-
-    setLotsList(lotsList);
-    setStateLots(!stateLots);
-    console.log('lotsList:', lotsList)
+    setOpenDelete1(true);
+    setRemoveBranchID(num);
   }
   useEffect(() => {
     if (accessOwners !== 'denied') {
@@ -614,6 +606,29 @@ const OwnerEdit = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
+  const handleCloseDelete1 = () => {
+    setOpenDelete1(false);
+  };
+
+  const handleDelete1 = () => {
+    handleCloseDelete1();
+    setCount(count - 1);
+    delete lotsList[removeBranchID];
+    lotsList.splice(removeBranchID, 1);
+
+    let voteamount = [...voteAmount];
+    delete voteamount[removeBranchID];
+    voteamount.splice(removeBranchID, 1);
+    setVoteAmount(voteamount);
+
+    let apartment = [...apartNumber];
+    delete apartment[removeBranchID];
+    apartment.splice(removeBranchID, 1);
+    setApartNumber(apartment);
+
+    setLotsList(lotsList);
+    setStateLots(!stateLots);
+  }
   const handleClickDeleteOwner = () => {
     setOpenDelete(true);
   }
@@ -1014,7 +1029,7 @@ const OwnerEdit = (props) => {
                               </Grid>
                               <Grid item>
                                 <RemoveCircleOutlineIcon
-                                  className={classes.plus}
+                                  className={classes.minus}
                                   onClick={accessOwners === 'see' ? null : () => handleClickRemoveLot(i)}
                                 />
                               </Grid>
@@ -1079,6 +1094,27 @@ const OwnerEdit = (props) => {
         handleDelete={handleDelete}
         account={'owner'}
       />
+      <Dialog
+        open={openDelete1}
+        onClose={handleCloseDelete1}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Delete Vote Branch
+    </DialogTitle>
+        <DialogContent>
+          Êtes-vous sur de vouloir supprimer les informations du lot ?
+    </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDelete1} color="primary">
+            Cancel
+      </Button>
+          <Button onClick={handleDelete1} color="primary">
+            Delete
+      </Button>
+        </DialogActions>
+      </Dialog>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
