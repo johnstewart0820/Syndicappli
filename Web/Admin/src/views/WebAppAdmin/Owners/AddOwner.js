@@ -182,7 +182,7 @@ const AddOwner = (props) => {
     }
     const handleChangeApartNumber = (event, i) => {
         let apartment = [...apartNumber];
-        apartment[i] = +event.target.value;
+        apartment[i] = event.target.value;
         setApartNumber(apartment);
     }
     const handleChangeVoteAmount = (event, i, j) => {
@@ -706,7 +706,7 @@ const AddOwner = (props) => {
                                                                             <TextField
                                                                                 className={classes.text}
                                                                                 variant="outlined"
-                                                                                value={apartNumber[i] || ""}
+                                                                                value={apartNumber[i]}
                                                                                 onChange={(event) => handleChangeApartNumber(event, i)}
                                                                                 style={{ width: 100 }}
                                                                             />
