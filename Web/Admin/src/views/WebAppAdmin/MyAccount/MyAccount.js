@@ -13,7 +13,7 @@ import AdminService from '../../../services/api.js';
 import authService from '../../../services/authService.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
-
+import MuiPhoneNumber from 'material-ui-phone-number';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -262,8 +262,8 @@ const MyAccount = (props) => {
   const handleChangeConfirmPassword = (event) => {
     setConfirmPassword(event.target.value);
   }
-  const handleChangePhone = (event) => {
-    setPhone(event.target.value);
+  const handleChangePhone = (val) => {
+    setPhone(val);
   }
   const handleChangeOldPassword = (event) => {
     setOldPassword(event.target.value);
@@ -481,7 +481,8 @@ const MyAccount = (props) => {
               <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField
+                  <MuiPhoneNumber 
+                    defaultCountry='fr'
                     variant="outlined"
                     value={phone}
                     onChange={handleChangePhone}

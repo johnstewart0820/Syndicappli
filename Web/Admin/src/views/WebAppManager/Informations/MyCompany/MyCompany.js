@@ -12,7 +12,7 @@ import { withRouter } from 'react-router-dom';
 import { ManagerService as Service } from '../../../../services/api.js';
 import authService from '../../../../services/authService.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import MuiPhoneNumber from 'material-ui-phone-number';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -278,8 +278,8 @@ const MyCompany = (props) => {
     setEmail(event.target.value);
     setErrorsEmail(errorsMail);
   }
-  const handleChangePhone = (event) => {
-    setPhone(event.target.value);
+  const handleChangePhone = (val) => {
+    setPhone(val);
   }
   const handleLoadFront = (event) => {
     if (event.target.files[0] !== undefined) {
@@ -475,7 +475,8 @@ const MyCompany = (props) => {
                 <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
-                    <TextField
+                    <MuiPhoneNumber 
+                      defaultCountry='fr'
                       id="outlined-basic"
                       variant="outlined"
                       value={phone}

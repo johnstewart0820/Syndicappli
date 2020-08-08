@@ -12,6 +12,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from 'services/authService';
 import { withRouter } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars';
+import MuiPhoneNumber from 'material-ui-phone-number';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
     "image/apng",
@@ -117,8 +118,8 @@ const AddProvider = (props) => {
         setEmail(event.target.value);
         setErrorsEmail(errorsMail);
     }
-    const handleChangePhoneNumber = (event) => {
-        setPhoneNumber(event.target.value);
+    const handleChangePhoneNumber = (val) => {
+        setPhoneNumber(val);
     }
     const handleChangeCompanies = (val) => {
         setCompanies(val);
@@ -337,7 +338,8 @@ const AddProvider = (props) => {
                         <Grid item container justify="space-between" alignItems="center">
                             <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
                             <Grid xs={6} item container>
-                                <TextField
+                                <MuiPhoneNumber 
+                                    defaultCountry='fr'
                                     className={classes.text}
                                     variant="outlined"
                                     value={phonenumber}

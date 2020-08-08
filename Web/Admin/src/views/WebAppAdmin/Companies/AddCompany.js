@@ -11,7 +11,7 @@ import authService from 'services/authService';
 import { withRouter } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { Scrollbars } from 'react-custom-scrollbars';
-
+import MuiPhoneNumber from 'material-ui-phone-number';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
     "image/apng",
@@ -96,8 +96,8 @@ const AddCompany = (props) => {
         setErrorsEmail(errorsMail);
     }
 
-    const handleChangePhone = (event) => {
-        setPhone(event.target.value);
+    const handleChangePhone = (val) => {
+        setPhone(val);
     }
 
     const handleChangeSiret = (event) => {
@@ -262,7 +262,8 @@ const AddCompany = (props) => {
                         <Grid item container alignItems="center" spacing={2}>
                             <Grid item><p className={classes.title}>Téléphone</p></Grid>
                             <Grid xs item container alignItems="stretch">
-                                <TextField
+                                <MuiPhoneNumber 
+                                    defaultCountry='fr'
                                     className={classes.text}
                                     variant="outlined"
                                     value={phone}

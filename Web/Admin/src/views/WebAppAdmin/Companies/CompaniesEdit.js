@@ -20,6 +20,7 @@ import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from '../../../services/authService.js';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
+import MuiPhoneNumber from 'material-ui-phone-number';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -160,8 +161,8 @@ const CompaniesEdit = (props) => {
     setErrorsEmail(errorsMail);
   }
 
-  const handleChangePhone = (event) => {
-    setPhone(event.target.value);
+  const handleChangePhone = (val) => {
+    setPhone(val);
   }
 
   const handleChangeSiret = (event) => {
@@ -669,7 +670,8 @@ const CompaniesEdit = (props) => {
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs={5} item container alignItems="stretch" direction="column">
-                <TextField
+                <MuiPhoneNumber 
+                  defaultCountry='fr'
                   className={classes.text}
                   variant="outlined"
                   value={phone}

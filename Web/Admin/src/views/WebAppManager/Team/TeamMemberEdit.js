@@ -16,6 +16,7 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
+import MuiPhoneNumber from 'material-ui-phone-number';
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
@@ -262,8 +263,8 @@ const TeamMemberEdit = (props) => {
     setEmail(event.target.value);
     setErrorsEmail(errorsMail);
   }
-  const handleChangePhoneNumber = (event) => {
-    setPhoneNumber(event.target.value);
+  const handleChangePhoneNumber = (val) => {
+    setPhoneNumber(val);
   }
 
   const handleChangeBuildings = async (val) => {
@@ -678,7 +679,8 @@ const TeamMemberEdit = (props) => {
                 <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
                 <Grid xs item container alignItems="stretch" direction="column">
                   <Grid item>
-                    <TextField
+                    <MuiPhoneNumber
+                      defaultCountry='fr'
                       className={classes.text}
                       variant="outlined"
                       value={phonenumber}

@@ -23,6 +23,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import MuiPhoneNumber from 'material-ui-phone-number';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -290,8 +291,8 @@ const OwnerEdit = (props) => {
     setEmail(event.target.value);
     setErrorsEmail(errorsMail);
   }
-  const handleChangePhoneNumber = (event) => {
-    setPhoneNumber(event.target.value);
+  const handleChangePhoneNumber = (val) => {
+    setPhoneNumber(val);
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
@@ -905,7 +906,8 @@ const OwnerEdit = (props) => {
                 <Grid item container alignItems="center" spacing={1}>
                   <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
                   <Grid xs item container>
-                    <TextField
+                    <MuiPhoneNumber 
+                      defaultCountry='fr'
                       className={classes.text}
                       variant="outlined"
                       value={phonenumber}

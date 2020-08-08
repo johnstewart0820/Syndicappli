@@ -15,7 +15,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import IdCard from 'components/IdCard';
 import useGlobal from 'Global/global';
-
+import MuiPhoneNumber from 'material-ui-phone-number';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -302,8 +302,8 @@ const MyAccount = (props) => {
     setEmail(event.target.value);
     setErrorsEmail(errorsMail);
   }
-  const handleChangePhone = (event) => {
-    setPhone(event.target.value);
+  const handleChangePhone = (val) => {
+    setPhone(val);
   }
   const handleChangeOldPassword = (event) => {
     setOldPassword(event.target.value);
@@ -579,7 +579,8 @@ const MyAccount = (props) => {
               <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField
+                  <MuiPhoneNumber 
+                    defaultCountry='fr'
                     id="outlined-basic"
                     variant="outlined"
                     value={phone}

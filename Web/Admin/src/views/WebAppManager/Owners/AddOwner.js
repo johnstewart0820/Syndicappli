@@ -14,6 +14,7 @@ import authService from 'services/authService';
 import { withRouter } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import MuiPhoneNumber from 'material-ui-phone-number';
 const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
@@ -231,8 +232,8 @@ const AddOwner = (props) => {
         setEmail(event.target.value);
         setErrorsEmail(errorsMail);
     }
-    const handleChangePhoneNumber = (event) => {
-        setPhoneNumber(event.target.value);
+    const handleChangePhoneNumber = (val) => {
+        setPhoneNumber(val);
     }
     const handleChangeAddress = (event) => {
         setAddress(event.target.value);
@@ -604,7 +605,8 @@ const AddOwner = (props) => {
                         <Grid item container alignItems="center" spacing={1}>
                             <Grid item><p className={classes.title}>Téléphone</p></Grid>
                             <Grid xs item container direction="column">
-                                <TextField
+                                <MuiPhoneNumber
+                                    defaultCountry='fr'
                                     className={classes.text}
                                     variant="outlined"
                                     value={phonenumber}

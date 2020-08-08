@@ -15,6 +15,7 @@ import { EditUserStyles as useStyles } from './useStyles';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
+import MuiPhoneNumber from 'material-ui-phone-number';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -199,8 +200,8 @@ const UserEdit = (props) => {
     setEmail(event.target.value);
     setErrorsEmail(errorsMail);
   }
-  const handleChangePhoneNumber = (event) => {
-    setPhoneNumber(event.target.value);
+  const handleChangePhoneNumber = (val) => {
+    setPhoneNumber(val);
   }
   const handleChangeCompanies = async (val) => {
     if (val !== null) {
@@ -470,7 +471,8 @@ const UserEdit = (props) => {
               <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs={12} sm={6} item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <TextField
+                  <MuiPhoneNumber 
+                    defaultCountry='fr'
                     className={classes.text}
                     variant="outlined"
                     value={phonenumber}
