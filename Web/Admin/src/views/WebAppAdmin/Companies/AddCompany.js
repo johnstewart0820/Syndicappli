@@ -101,7 +101,8 @@ const AddCompany = (props) => {
     }
 
     const handleChangeSiret = (event) => {
-        setSiret(event.target.value);
+        if(event.target.value.length < 15)
+            setSiret(event.target.value);
     }
 
     const handleChangeVat = (event) => {
@@ -280,6 +281,7 @@ const AddCompany = (props) => {
                                     variant="outlined"
                                     value={siret}
                                     onChange={handleChangeSiret}
+                                    type="number"
                                     fullWidth
                                 />
                                 {errorsSiret.length > 0 &&

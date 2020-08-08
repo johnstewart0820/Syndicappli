@@ -165,6 +165,7 @@ const CompaniesEdit = (props) => {
   }
 
   const handleChangeSiret = (event) => {
+    if(event.target.value.length < 15)
     setSiret(event.target.value);
   }
 
@@ -699,6 +700,7 @@ const CompaniesEdit = (props) => {
                   variant="outlined"
                   value={siret}
                   onChange={handleChangeSiret}
+                  type="number"
                   fullWidth
                   disabled={(accessCompanies === 'see' ? true : false)}
                 />
