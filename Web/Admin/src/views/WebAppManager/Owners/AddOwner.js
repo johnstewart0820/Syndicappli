@@ -588,7 +588,7 @@ const AddOwner = (props) => {
                                     <span className={classes.error}>{errorsAddress}</span>}
                             </Grid>
                         </Grid>
-                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                        <Grid item container alignItems="center" spacing={1}>
                             <Grid item ><p className={classes.title}>Email</p></Grid>
                             <Grid xs item container direction="column">
                                 <TextField
@@ -601,7 +601,7 @@ const AddOwner = (props) => {
                                     <span className={classes.error}>{errorsEmail}</span>}
                             </Grid>
                         </Grid>
-                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                        <Grid item container alignItems="center" spacing={1}>
                             <Grid item><p className={classes.title}>Téléphone</p></Grid>
                             <Grid xs item container direction="column">
                                 <TextField
