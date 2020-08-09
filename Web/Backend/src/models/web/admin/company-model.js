@@ -144,7 +144,13 @@ function createCompany(uid, data, file) {
                                         if (error) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR })
                                         } else {
-                                            resolve("ok")
+                                            db.query(user_relation_query, [1, "company", companyID], (error, rows, fields) => {
+                                                if (error) {
+                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                                } else {
+                                                    resolve("ok")
+                                                }
+                                            })
                                         }
                                     })
                                 }
