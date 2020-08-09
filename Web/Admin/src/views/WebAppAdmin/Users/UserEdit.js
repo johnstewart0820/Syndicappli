@@ -243,6 +243,16 @@ const UserEdit = (props) => {
   const handleChangeUsersPermission = (val) => {
     setUsersPermission(val);
   }
+  const handleClickSetAsDefault = (val) => {
+    setCompaniesPermission(val);
+    setManagersPermission(val);
+    setBuildingsPermission(val);
+    setOwnersPermission(val);
+    setOrdersPermission(val);
+    setDiscountodesPermission(val);
+    setProductsPermission(val);
+    setUsersPermission(val);
+  }
   const handleLoadFront = (event) => {
     if (event.target.files[0] !== undefined) {
       if (validFileType(event.target.files[0])) {
@@ -471,7 +481,7 @@ const UserEdit = (props) => {
               <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs={12} sm={6} item container alignItems="stretch" direction="column">
                 <Grid item>
-                  <MuiPhoneNumber 
+                  <MuiPhoneNumber
                     defaultCountry='fr'
                     className={classes.text}
                     variant="outlined"
@@ -500,7 +510,6 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid item container sm={3}></Grid>
                 <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Gestionnaires</p>
                   <MySelect
@@ -511,7 +520,7 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid item container sm={3}></Grid>
+                <Grid item container sm={6}></Grid>
                 <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Immeubles</p>
                   <MySelect
@@ -522,7 +531,6 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid item container sm={3}></Grid>
                 <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Copropriétaires</p>
                   <MySelect
@@ -533,7 +541,7 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid item container sm={3}></Grid>
+                <Grid item container sm={6}></Grid>
                 <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Commandes</p>
                   <MySelect
@@ -544,7 +552,6 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid item container sm={3}></Grid>
                 <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Produits</p>
                   <MySelect
@@ -555,7 +562,7 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid item container sm={3}></Grid>
+                <Grid item container sm={6}></Grid>
                 <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Codes Promo</p>
                   <MySelect
@@ -566,7 +573,6 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
-                <Grid item container sm={3}></Grid>
                 <Grid sm={3} item container direction="column">
                   <p className={classes.itemTitle}>Utilisateurs</p>
                   <MySelect
@@ -577,6 +583,17 @@ const UserEdit = (props) => {
                     disabled={(accessUsers === 'see' ? true : false)}
                   />
                 </Grid>
+              </Grid>
+            </Grid>
+            <Grid item container spacing={1}>
+              <Grid item>
+                <MyButton name={'Définir comme "Voir"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(0)} />
+              </Grid>
+              <Grid item>
+                <MyButton name={'Définir comme "Editer"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(1)} />
+              </Grid>
+              <Grid item>
+                <MyButton name={'Définir comme "Refusé"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(2)} />
               </Grid>
             </Grid>
           </Grid>

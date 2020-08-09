@@ -177,6 +177,21 @@ const AddTeamMember = (props) => {
     const handleChangePaymentMethodsPermission = (val) => {
         setPaymentMethodsPermission(val);
     }
+    const handleClickSetAsDefault = (val) => {
+        setAddonsPermission(val);
+        setAnnouncementsPermission(val);
+        setAssembliesPermission(val);
+        setBuildingsPermission(val);
+        setChatPermission(val);
+        setCompanyPermission(val);
+        setEventsPermission(val);
+        setIncidentsPermission(val);
+        setInvoicesPermission(val);
+        setOwnersPermission(val);
+        setPaymentMethodsPermission(val);
+        setProvidersPermission(val);
+        setTeamPermission(val);
+    }
     useEffect(() => {
         getCompanies();
     }, [])
@@ -557,6 +572,17 @@ const AddTeamMember = (props) => {
                                 onChangeSelect={handleChangePaymentMethodsPermission}
                                 value={paymentMethodsPermission}
                             />
+                        </Grid>
+                        <Grid item container spacing={1}>
+                            <Grid item>
+                                <MyButton name={'Définir comme "Voir"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(0)} />
+                            </Grid>
+                            <Grid item>
+                                <MyButton name={'Définir comme "Editer"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(1)} />
+                            </Grid>
+                            <Grid item>
+                                <MyButton name={'Définir comme "Refusé"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(2)} />
+                            </Grid>
                         </Grid>
                     </Grid>
                     <div className={classes.footer}>

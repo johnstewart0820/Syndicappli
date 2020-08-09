@@ -157,6 +157,16 @@ const AddUser = (props) => {
     useEffect(() => {
         getCompanies();
     }, []);
+    const handleClickSetAsDefault = (val) => {
+        setCompaniesPermission(val);
+        setManagersPermission(val);
+        setBuildingsPermission(val);
+        setOwnersPermission(val);
+        setOrdersPermission(val);
+        setDiscountodesPermission(val);
+        setProductsPermission(val);
+        setUsersPermission(val);
+    }
     const getCompanies = () => {
         setVisibleIndicator(true);
         AdminService.getCompanyListByUser()
@@ -432,6 +442,17 @@ const AddUser = (props) => {
                                 onChangeSelect={handleChangeUsersPermission}
                                 value={usersPermission}
                             />
+                        </Grid>
+                        <Grid item container spacing={1}>
+                            <Grid item>
+                                <MyButton name={'Définir comme "Voir"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(0)} />
+                            </Grid>
+                            <Grid item>
+                                <MyButton name={'Définir comme "Editer"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(1)} />
+                            </Grid>
+                            <Grid item>    
+                                <MyButton name={'Définir comme "Refusé"'} bgColor={"#00C9FF"} onClick={() => handleClickSetAsDefault(2)} />
+                            </Grid>
                         </Grid>
                     </Grid>
                     <div className={classes.footer}>
