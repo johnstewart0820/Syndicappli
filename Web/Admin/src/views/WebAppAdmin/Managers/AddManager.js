@@ -370,7 +370,7 @@ const AddManager = (props) => {
                                     data={company}
                                     onChangeSelect={handleChangeCompanies}
                                     value={companies}
-                                    width="80%"
+                                    width="100%"
                                 />
                                 {errorsCompanies.length > 0 &&
                                     <span className={classes.error}>{errorsCompanies}</span>}
@@ -384,7 +384,7 @@ const AddManager = (props) => {
                                     no={'No buildings found'}
                                     all={suggestions}
                                     onSelected={handleChangeBuildings}
-                                    width="80%"
+                                    width="100%"
                                 />
                                 {errorsBuildings.length > 0 &&
                                     <span className={classes.error}>{errorsBuildings}</span>}
@@ -392,60 +392,60 @@ const AddManager = (props) => {
                         </Grid>
                         <Grid item container justify="space-between" alignItems="center">
                             <Grid xs={3} item container><p className={classes.title}>Nom</p></Grid>
-                            <Grid xs={6} item container>
+                            <Grid xs={9} item container>
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
                                     value={lastname}
                                     onChange={handleChangeLastName}
+                                    fullWidth
                                 />
                                 {errorsLastname.length > 0 &&
                                     <span className={classes.error}>{errorsLastname}</span>}
                             </Grid>
-                            <Grid xs={3} item></Grid>
                         </Grid>
                         <Grid item container justify="space-between" alignItems="center">
                             <Grid xs={3} item container><p className={classes.title}>Prénom</p></Grid>
-                            <Grid xs={6} item container>
+                            <Grid xs={9} item container>
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
                                     value={firstname}
                                     onChange={handleChangeFirstName}
+                                    fullWidth
                                 />
                                 {errorsFirstname.length > 0 &&
                                     <span className={classes.error}>{errorsFirstname}</span>}
                             </Grid>
-                            <Grid xs={3} item></Grid>
                         </Grid>
                         <Grid item container justify="space-between" alignItems="center">
                             <Grid xs={3} item container><p className={classes.title}>Email</p></Grid>
-                            <Grid xs={6} item container>
+                            <Grid xs={9} item container>
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
                                     value={email}
                                     onChange={handleChangeEmail}
+                                    fullWidth
                                 />
                                 {errorsEmail.length > 0 &&
                                     <span className={classes.error}>{errorsEmail}</span>}
                             </Grid>
-                            <Grid xs={3} item></Grid>
                         </Grid>
                         <Grid item container justify="space-between" alignItems="center">
                             <Grid xs={3} item container><p className={classes.title}>Téléphone</p></Grid>
-                            <Grid xs={6} item container>
+                            <Grid xs={9} item container>
                                 <MuiPhoneNumber
                                     defaultCountry='fr'
                                     className={classes.text}
                                     variant="outlined"
                                     value={phonenumber}
                                     onChange={handleChangePhoneNumber}
+                                    fullWidth
                                 />
                                 {errorsPhonenumber.length > 0 &&
                                     <span className={classes.error}>{errorsPhonenumber}</span>}
                             </Grid>
-                            <Grid xs={3} item></Grid>
                         </Grid>
                         <Grid xs={12} item container direction="column" >
                             <p className={classes.title}>Photo</p>

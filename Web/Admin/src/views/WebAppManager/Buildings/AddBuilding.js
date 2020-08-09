@@ -158,12 +158,10 @@ const AddBuilding = (props) => {
         }
         <div className={classes.paper} >
           <Grid container spacing={4}>
-            <Grid item container spacing={2}>
+            <Grid item container spacing={2} alignItems="center">
               <Grid item><p className={classes.title}>Nom</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField
-                  rows={3}
-                  multiline
                   variant="outlined"
                   value={name}
                   fullWidth
@@ -175,7 +173,7 @@ const AddBuilding = (props) => {
             </Grid>
             <Grid item container spacing={2}>
               <Grid item><p className={classes.title}>Adresse</p></Grid>
-              <Grid xs item container alignItems="stretch">
+              <Grid item container alignItems="stretch">
                 <TextField
                   rows={3}
                   multiline

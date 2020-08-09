@@ -446,32 +446,34 @@ const AddOrder = (props) => {
                                 :
                                 null
                         }
-                        <Grid xs={12} sm={6} item container direction="column" spacing={1}>
-                            <Grid item><p className={classes.title}>Date de début</p></Grid>
-                            <Grid xs item container>
-                                <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={startDate}
-                                    onChange={handleChangeStartDate}
-                                    type="date"
-                                    fullWidth
-                                />
-                                {errorsStartDate.length > 0 &&
-                                    <span className={classes.error}>{errorsStartDate}</span>}
+                        <Grid item container justify="space-between">
+                            <Grid xs={12} sm={6} item container direction="column" spacing={1}>
+                                <Grid item><p className={classes.title}>Date de début</p></Grid>
+                                <Grid xs item container>
+                                    <TextField
+                                        className={classes.text}
+                                        variant="outlined"
+                                        value={startDate}
+                                        onChange={handleChangeStartDate}
+                                        type="date"
+                                        fullWidth
+                                    />
+                                    {errorsStartDate.length > 0 &&
+                                        <span className={classes.error}>{errorsStartDate}</span>}
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid xs={12} sm={6} item container direction="column" spacing={1}>
-                            <Grid item ><p className={classes.title}>Date de fin</p></Grid>
-                            <Grid xs item container>
-                                <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={endDate}
-                                    onChange={handleChangeEndDate}
-                                    type="date"
-                                    fullWidth
-                                />
+                            <Grid xs={12} sm={6} item container direction="column" spacing={1}>
+                                <Grid item ><p className={classes.title}>Date de fin</p></Grid>
+                                <Grid xs item container>
+                                    <TextField
+                                        className={classes.text}
+                                        variant="outlined"
+                                        value={endDate}
+                                        onChange={handleChangeEndDate}
+                                        type="date"
+                                        fullWidth
+                                    />
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>

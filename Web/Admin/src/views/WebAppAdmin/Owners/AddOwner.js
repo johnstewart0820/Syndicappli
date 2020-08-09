@@ -462,7 +462,7 @@ const AddOwner = (props) => {
                 {
                     visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
                 }
-                <div className={classes.paper} sm={12}>
+                <div className={classes.paper} xs={12}>
                     <Grid container spacing={2} >
                         <Grid item container alignItems="center" spacing={1}>
                             <Grid item><p className={classes.title}>Cabinet</p></Grid>
@@ -472,7 +472,7 @@ const AddOwner = (props) => {
                                     data={company}
                                     onChangeSelect={handleChangeCompanies}
                                     value={companies}
-                                    width="50%"
+                                    width="100%"
                                 />
                                 {errorsCompanies.length > 0 &&
                                     <span className={classes.error}>{errorsCompanies}</span>}
@@ -486,7 +486,7 @@ const AddOwner = (props) => {
                                     data={building}
                                     onChangeSelect={handleChangeBuildings}
                                     value={buildings}
-                                    width="50%"
+                                    width="100%"
                                 />
                                 {errorsBuildings.length > 0 &&
                                     <span className={classes.error}>{errorsBuildings}</span>}
@@ -500,7 +500,7 @@ const AddOwner = (props) => {
                                     data={titleList}
                                     onChangeSelect={handleChangeOwnerTitle}
                                     value={ownerTitle}
-                                    width="50%"
+                                    width="100%"
                                 />
                                 {errorsOwnerTitle.length > 0 &&
                                     <span className={classes.error}>{errorsOwnerTitle}</span>}
@@ -516,6 +516,7 @@ const AddOwner = (props) => {
                                             variant="outlined"
                                             value={companyName}
                                             onChange={handleChangeCompanyName}
+                                            fullWidth
                                         />
                                         {errorsCompanyName.length > 0 &&
                                             <span className={classes.error}>{errorsCompanyName}</span>}
@@ -524,7 +525,7 @@ const AddOwner = (props) => {
                                 :
                                 ownerTitle === 3 || ownerTitle === 6 ?
                                     <Grid item container spacing={1}>
-                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item container alignItems="center" spacing={1}>
                                             <Grid item><p className={classes.title}>Nom</p></Grid>
                                             <Grid xs item container direction="column">
                                                 <TextField
@@ -532,12 +533,13 @@ const AddOwner = (props) => {
                                                     variant="outlined"
                                                     value={lastname}
                                                     onChange={handleChangeLastName}
+                                                    fullWidth
                                                 />
                                                 {errorsLastname.length > 0 &&
                                                     <span className={classes.error}>{errorsLastname}</span>}
                                             </Grid>
                                         </Grid>
-                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item container alignItems="center" spacing={1}>
                                             <Grid item><p className={classes.title}>Prénom</p></Grid>
                                             <Grid xs item container direction="column">
                                                 <TextField
@@ -545,12 +547,13 @@ const AddOwner = (props) => {
                                                     variant="outlined"
                                                     value={firstname}
                                                     onChange={handleChangeFirstName}
+                                                    fullWidth
                                                 />
                                                 {errorsFirstname.length > 0 &&
                                                     <span className={classes.error}>{errorsFirstname}</span>}
                                             </Grid>
                                         </Grid>
-                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item container alignItems="center" spacing={1}>
                                             <Grid item><p className={classes.title}>Nom</p></Grid>
                                             <Grid xs item container direction="column">
                                                 <TextField
@@ -558,12 +561,13 @@ const AddOwner = (props) => {
                                                     variant="outlined"
                                                     value={lastname1}
                                                     onChange={handleChangeLastName1}
+                                                    fullWidth
                                                 />
                                                 {errorsLastname1.length > 0 &&
                                                     <span className={classes.error}>{errorsLastname1}</span>}
                                             </Grid>
                                         </Grid>
-                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item container alignItems="center" spacing={1}>
                                             <Grid item><p className={classes.title}>Prénom</p></Grid>
                                             <Grid xs item container direction="column">
                                                 <TextField
@@ -571,6 +575,7 @@ const AddOwner = (props) => {
                                                     variant="outlined"
                                                     value={firstname1}
                                                     onChange={handleChangeFirstName1}
+                                                    fullWidth
                                                 />
                                                 {errorsFirstname1.length > 0 &&
                                                     <span className={classes.error}>{errorsFirstname1}</span>}
@@ -579,7 +584,7 @@ const AddOwner = (props) => {
                                     </Grid>
                                     :
                                     <Grid item container spacing={1}>
-                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item container alignItems="center" spacing={1}>
                                             <Grid item><p className={classes.title}>Nom</p></Grid>
                                             <Grid xs item container direction="column">
                                                 <TextField
@@ -587,12 +592,13 @@ const AddOwner = (props) => {
                                                     variant="outlined"
                                                     value={lastname}
                                                     onChange={handleChangeLastName}
+                                                    fullWidth
                                                 />
                                                 {errorsLastname.length > 0 &&
                                                     <span className={classes.error}>{errorsLastname}</span>}
                                             </Grid>
                                         </Grid>
-                                        <Grid xs={6} item container alignItems="center" spacing={1}>
+                                        <Grid item container alignItems="center" spacing={1}>
                                             <Grid item><p className={classes.title}>Prénom</p></Grid>
                                             <Grid xs item container direction="column">
                                                 <TextField
@@ -600,6 +606,7 @@ const AddOwner = (props) => {
                                                     variant="outlined"
                                                     value={firstname}
                                                     onChange={handleChangeFirstName}
+                                                    fullWidth
                                                 />
                                                 {errorsFirstname.length > 0 &&
                                                     <span className={classes.error}>{errorsFirstname}</span>}
@@ -633,6 +640,7 @@ const AddOwner = (props) => {
                                     variant="outlined"
                                     value={email}
                                     onChange={handleChangeEmail}
+                                    fullWidth
                                 />
                                 {errorsEmail.length > 0 &&
                                     <span className={classes.error}>{errorsEmail}</span>}
@@ -647,6 +655,7 @@ const AddOwner = (props) => {
                                     variant="outlined"
                                     value={phonenumber}
                                     onChange={handleChangePhoneNumber}
+                                    fullWidth
                                 />
                                 {errorsPhonenumber.length > 0 &&
                                     <span className={classes.error}>{errorsPhonenumber}</span>}

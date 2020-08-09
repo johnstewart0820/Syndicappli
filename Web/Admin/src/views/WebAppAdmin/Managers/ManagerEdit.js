@@ -103,7 +103,7 @@ const ManagerEdit = (props) => {
                 company.push(item.name)
               )
               );
-              setCompanyList([ ...data.companylist]);
+              setCompanyList([...data.companylist]);
               break;
             case 401:
               authService.logout();
@@ -141,10 +141,10 @@ const ManagerEdit = (props) => {
               setBuildingList(data.buildinglist);
               setSuggestions(buildings1);
               for (let i = 0; i < companyList.length; i++)
-              if (companyID === companyList[i].companyID) {
-                setCompanies(i);
-                break;
-              }
+                if (companyID === companyList[i].companyID) {
+                  setCompanies(i);
+                  break;
+                }
               break;
             case 401:
               authService.logout();
@@ -197,7 +197,7 @@ const ManagerEdit = (props) => {
                 setSuspendState('Suspendre le compte');
               else if (profile.status === 'inactive')
                 setSuspendState('Restaurer le compte');
-              buildingID.splice(0,buildingID.length)
+              buildingID.splice(0, buildingID.length)
               data.buildinglist.map((item, i) => (
                 buildingID[i] = item.relationID
               )
@@ -256,7 +256,7 @@ const ManagerEdit = (props) => {
                 setSuspendState('Suspendre le compte');
               else if (profile.status === 'inactive')
                 setSuspendState('Restaurer le compte');
-              buildingID.splice(0,buildingID.length)
+              buildingID.splice(0, buildingID.length)
               data.buildinglist.map((item, i) => (
                 buildingID[i] = item.relationID
               )
@@ -278,7 +278,7 @@ const ManagerEdit = (props) => {
         }
       );
   }, [buildingList]);
-  useEffect(()=>{
+  useEffect(() => {
     let buildings = [];
     for (let i = 0; i < mulitID.length; i++)
       for (let j = 0; j < buildingList.length; j++)
@@ -287,7 +287,7 @@ const ManagerEdit = (props) => {
           break;
         }
     setBuildings(buildings);
-  },[mulitID])
+  }, [mulitID])
   const handleClick = () => {
     history.goBack();
   };
@@ -639,7 +639,7 @@ const ManagerEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessManagers === 'see' ? true : false)}/>
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessManagers === 'see' ? true : false)} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
@@ -918,11 +918,11 @@ const ManagerEdit = (props) => {
         </div>
       </Grid>
       <DeleteConfirmDialog
-                openDelete={openDelete}
-                handleCloseDelete={handleCloseDelete}
-                handleDelete={handleDelete}
-                account={'manager'}
-            />
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'manager'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );

@@ -291,6 +291,7 @@ const AddUser = (props) => {
                                     variant="outlined"
                                     value={lastname}
                                     onChange={handleChangeLastName}
+                                    fullWidth
                                 />
                                 {errorsLastname.length > 0 &&
                                     <span className={classes.error}>{errorsLastname}</span>}
@@ -305,6 +306,7 @@ const AddUser = (props) => {
                                     variant="outlined"
                                     value={firstname}
                                     onChange={handleChangeFirstName}
+                                    fullWidth
                                 />
                                 {errorsFirstname.length > 0 &&
                                     <span className={classes.error}>{errorsFirstname}</span>}
@@ -318,6 +320,7 @@ const AddUser = (props) => {
                                     variant="outlined"
                                     value={email}
                                     onChange={handleChangeEmail}
+                                    fullWidth
                                 />
                                 {errorsEmail.length > 0 &&
                                     <span className={classes.error}>{errorsEmail}</span>}
@@ -332,6 +335,7 @@ const AddUser = (props) => {
                                     variant="outlined"
                                     value={phonenumber}
                                     onChange={handleChangePhoneNumber}
+                                    fullWidth
                                 />
                                 {errorsPhonenumber.length > 0 &&
                                     <span className={classes.error}>{errorsPhonenumber}</span>}

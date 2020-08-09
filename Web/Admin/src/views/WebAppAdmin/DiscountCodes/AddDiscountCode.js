@@ -8,7 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import AdminService from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
 const AddDiscountCode = (props) => {
     const classes = useStyles();
@@ -16,11 +16,11 @@ const AddDiscountCode = (props) => {
 
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
     const CategorieList = ['Cabinets', 'Copropriétaires', 'Immeubles'];
-    const en_categorieList = ['companies','owners','buildings'];
+    const en_categorieList = ['companies', 'owners', 'buildings'];
     const discountTypeList = ['fixe', 'pourcentage'];
     const en_discountTypeList = ['fixed', 'percentage'];
     const billingCyclesList = ['une fois', '2 mois', '3 mois', '6 mois', '1 an', 'tout le cycle'];
-    const en_billingCycleList = ['once','2_months','3_months', '6_months', '1_year', 'all'];
+    const en_billingCycleList = ['once', '2_months', '3_months', '6_months', '1_year', 'all'];
     const [categorie, setCategorie] = React.useState(0);
     const [codeName, setCodeName] = React.useState('');
     const [startDate, setStartDate] = React.useState('');
@@ -56,13 +56,13 @@ const AddDiscountCode = (props) => {
         const requestData = {
             'user_type': en_categorieList[categorie],
             'name': codeName,
-            'start_date' : startDate,
-            'end_date' : endDate,
-            'discount_type' : en_discountTypeList[discountType],
-            'discount_amount' : disocuntAmount,
-            'amount_of_use' : maxAmountOfUse.length === 0 ? -1 : maxAmountOfUse,
-            'amount_of_use_per_user' : maxAmountOfUsePerUser.length === 0 ? -1 : maxAmountOfUsePerUser,
-            'billing_cycle': en_billingCycleList[billingCycles], 
+            'start_date': startDate,
+            'end_date': endDate,
+            'discount_type': en_discountTypeList[discountType],
+            'discount_amount': disocuntAmount,
+            'amount_of_use': maxAmountOfUse.length === 0 ? -1 : maxAmountOfUse,
+            'amount_of_use_per_user': maxAmountOfUsePerUser.length === 0 ? -1 : maxAmountOfUsePerUser,
+            'billing_cycle': en_billingCycleList[billingCycles],
         }
         setVisibleIndicator(true);
         AdminService.createDiscountCode(requestData)
@@ -151,32 +151,34 @@ const AddDiscountCode = (props) => {
                                     <span className={classes.error}>{errorsCodeName}</span>}
                             </Grid>
                         </Grid>
-                        <Grid xs={12} sm={6} item container spacing={1} direction="column">
-                            <Grid item><p className={classes.title}>Date de début</p></Grid>
-                            <Grid xs item container>
-                                <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={startDate}
-                                    onChange={handleChangeStartDate}
-                                    type="date"
-                                    fullWidth
-                                />
-                                {errorsStartDate.length > 0 &&
-                                    <span className={classes.error}>{errorsStartDate}</span>}
+                        <Grid  item container justify="space-between">
+                            <Grid xs={12} sm={6} item container spacing={1} direction="column">
+                                <Grid item><p className={classes.title}>Date de début</p></Grid>
+                                <Grid xs item container>
+                                    <TextField
+                                        className={classes.text}
+                                        variant="outlined"
+                                        value={startDate}
+                                        onChange={handleChangeStartDate}
+                                        type="date"
+                                        fullWidth
+                                    />
+                                    {errorsStartDate.length > 0 &&
+                                        <span className={classes.error}>{errorsStartDate}</span>}
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid xs={12} sm={6} item container spacing={1} direction="column">
-                            <Grid item ><p className={classes.title}>Date de fin</p></Grid>
-                            <Grid xs item container>
-                                <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={endDate}
-                                    onChange={handleChangeEndDate}
-                                    type="date"
-                                    fullWidth
-                                />
+                            <Grid xs={12} sm={6} item container spacing={1} direction="column">
+                                <Grid item ><p className={classes.title}>Date de fin</p></Grid>
+                                <Grid xs item container>
+                                    <TextField
+                                        className={classes.text}
+                                        variant="outlined"
+                                        value={endDate}
+                                        onChange={handleChangeEndDate}
+                                        type="date"
+                                        fullWidth
+                                    />
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
