@@ -58,10 +58,15 @@ const AddBuilding = (props) => {
   const handleChangeAddClefs = (event) => {
     setAddClefs(event.target.value);
   };
+  const handleChangeAddDescription = (event, id) => {
+    let list = [...clefList];
+    list[id].description = event.target.value;
+    setClefList(list);
+  };
   const handleClickAddClef = (event) => {
     if (addClefs !== '') {
       setCount(count + 1);
-      clefList.push({ "name": addClefs });
+      clefList.push({ "name": addClefs , "description" : ''});
       setAddClefs('');
       setClefList(clefList);
     }
@@ -109,7 +114,7 @@ const AddBuilding = (props) => {
                 company.push(item.name)
               )
               );
-              setCompanyList([{ 'companyID': -1 },...data.companylist]);
+              setCompanyList([{ 'companyID': -1 }, ...data.companylist]);
               break;
             case 401:
               authService.logout();
@@ -203,7 +208,7 @@ const AddBuilding = (props) => {
             </Grid>
             <Grid item container spacing={2}>
               <Grid item><p className={classes.title}>Adresse</p></Grid>
-              <Grid  item container alignItems="stretch">
+              <Grid item container alignItems="stretch">
                 <TextField
                   rows={3}
                   multiline
@@ -221,20 +226,32 @@ const AddBuilding = (props) => {
             </Grid>
             {
               state !== null ?
-                <Grid item container direction="column">
+                <Grid item container direction="column" spacing={4}>
                   {
                     clefList.map((clef, i) => (
-                      <Grid container spacing={4}>
+                      <Grid key={i} item container spacing={1} direction="column">
 
-                        <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
+                        <Grid xs={6} item container justify="space-between" alignItems="center">
+                          <Grid item >
+                            <p className={classes.title}>{clef.name}</p>
+                          </Grid>
                           <Grid item>
                             <RemoveCircleOutlineIcon
                               className={classes.plus}
                               onClick={() => handleClickRemoveClef(i)}
                             />
                           </Grid>
+                        </Grid>
+                        <Grid xs={6} item container justify="space-between" alignItems="center">
                           <Grid item >
-                            <p className={classes.title}>{clef.name}</p>
+                            <p className={classes.title}>Libellé</p>
+                          </Grid>
+                          <Grid item >
+                            <TextField
+                              variant="outlined"
+                              value={clef.description}
+                              onChange={(event) => handleChangeAddDescription(event, i)}
+                            />
                           </Grid>
                         </Grid>
                       </Grid>
@@ -243,24 +260,28 @@ const AddBuilding = (props) => {
                 </Grid>
                 : null
             }
-            <Grid xs={6} item container direction="column">
-              <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
-                <Grid item>
-                  <AddCircleOutlineIcon
-                    className={classes.plus}
-                    onClick={handleClickAddClef}
-                  />
-                </Grid>
-                <Grid xs item >
-                  <TextField
-                    variant="outlined"
-                    value={addClefs}
-                    onChange={handleChangeAddClefs}
-                  />
+            <Grid item container spacing={4}>
+              <Grid item container direction="column" spacing={1}>
+                <Grid xs={6} item container direction="column" >
+                  <Grid item container direction="row-reverse" justify="space-between" alignItems="center" spacing={1}>
+                    <Grid item>
+                      <AddCircleOutlineIcon
+                        className={classes.plus}
+                        onClick={handleClickAddClef}
+                      />
+                    </Grid>
+                    <Grid xs item >
+                      <TextField
+                        variant="outlined"
+                        value={addClefs}
+                        onChange={handleChangeAddClefs}
+                      />
+                    </Grid>
+                  </Grid>
+                  {errorsVote.length > 0 &&
+                    <span className={classes.error}>{errorsVote}</span>}
                 </Grid>
               </Grid>
-              {errorsVote.length > 0 &&
-                <span className={classes.error}>{errorsVote}</span>}
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p className={classes.title}>Compte Bancaire - Prélèvement SEPA</p></Grid>

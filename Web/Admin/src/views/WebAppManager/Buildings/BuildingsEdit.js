@@ -10,12 +10,12 @@ import { withRouter } from 'react-router-dom';
 import { EditBuildingStyles as useStyles } from './useStyles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import {ManagerService as Service} from '../../../services/api.js';
+import { ManagerService as Service } from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 const ManagerService = new Service();
 const BuildingsEdit = (props) => {
   const { history } = props;
-  const token = authService.getToken();    
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
@@ -73,14 +73,19 @@ const BuildingsEdit = (props) => {
   };
   const handleClickAddClef = (event) => {
     if (addClefs !== '') {
-      setCount(count+1);
-      clefList.push({ "vote_branch_name": addClefs });
+      setCount(count + 1);
+      clefList.push({ "vote_branch_name": addClefs, "description": '' });
       setAddClefs('');
       setClefList(clefList);
     }
   };
+  const handleChangeAddDescription = (event, id) => {
+    let list = [...clefList];
+    list[id].description = event.target.value;
+    setClefList(list);
+  };
   const handleClickRemoveClef = (num) => {
-    setCount(count-1);
+    setCount(count - 1);
     delete clefList[num];
     clefList.splice(num, 1);
     setClefList(clefList);
@@ -115,7 +120,7 @@ const BuildingsEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
@@ -142,11 +147,11 @@ const BuildingsEdit = (props) => {
       .then(
         response => {
           setVisibleIndicator(false);
-          switch(response.data.code){
+          switch (response.data.code) {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              company.splice(0,company.length)
+              company.splice(0, company.length)
               data.companylist.map((item) => (
                 company.push(item.name)
               )
@@ -180,7 +185,7 @@ const BuildingsEdit = (props) => {
         .then(
           response => {
             setVisibleIndicator(false);
-            switch(response.data.code){
+            switch (response.data.code) {
               case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
@@ -289,20 +294,33 @@ const BuildingsEdit = (props) => {
             </Grid>
             {
               state !== null ?
-                <Grid item container direction="column">
+                <Grid item container direction="column" spacing={4}>
                   {
                     clefList.map((clef, i) => (
-                      <Grid key={i} container spacing={5}>
+                      <Grid key={i} item container spacing={1} direction="column">
 
-                        <Grid xs={6} item container justify="space-between" direction="row-reverse" alignItems="center">
+                        <Grid xs={6} item container justify="space-between" alignItems="center">
                           <Grid item >
+                            <p className={classes.title} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
+                          </Grid>
+                          <Grid item>
                             <RemoveCircleOutlineIcon
                               className={classes.plus}
-                              onClick={accessBuildings === 'see'? null:() => handleClickRemoveClef(i)}
+                              onClick={accessBuildings === 'see' ? null : () => handleClickRemoveClef(i)}
                             />
                           </Grid>
-                          <Grid item xs={6} >
-                            <p className={classes.itemTitle} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
+                        </Grid>
+                        <Grid xs={6} item container justify="space-between" alignItems="center" spacing={1}>
+                          <Grid item >
+                            <p className={classes.title}>Libellé</p>
+                          </Grid>
+                          <Grid xs item >
+                            <TextField
+                              variant="outlined"
+                              value={clef.description}
+                              onChange={(event) => handleChangeAddDescription(event, i)}
+                              disabled={accessBuildings === 'see' ? true : false}
+                            />
                           </Grid>
                         </Grid>
                       </Grid>
@@ -311,25 +329,29 @@ const BuildingsEdit = (props) => {
                 </Grid>
                 : null
             }
-          <Grid xs={6} item container direction="column">
-            <Grid item container direction="row-reverse" alignItems="center" spacing={2}>
-              <Grid item>
-                <AddCircleOutlineIcon
-                  className={classes.plus}
-                  onClick={accessBuildings === 'see'? null:handleClickAddClef}
-                />
+            <Grid item container spacing={4}>
+              <Grid item container direction="column" spacing={1}>
+                <Grid xs={6} item container direction="column" >
+                  <Grid item container direction="row-reverse" justify="space-between" alignItems="center" spacing={1}>
+                    <Grid item>
+                      <AddCircleOutlineIcon
+                        className={classes.plus}
+                        onClick={accessBuildings === 'see' ? null : handleClickAddClef}
+                      />
+                    </Grid>
+                    <Grid xs item >
+                      <TextField
+                        variant="outlined"
+                        value={addClefs}
+                        onChange={handleChangeAddClefs}
+                        disabled={accessBuildings === 'see' ? true : false}
+                      />
+                    </Grid>
+                  </Grid>
+                  {errorsVote.length > 0 &&
+                    <span className={classes.error}>{errorsVote}</span>}
+                </Grid>
               </Grid>
-              <Grid xs item >
-                <TextField
-                  variant="outlined"
-                  value={addClefs}
-                  onChange={handleChangeAddClefs}
-                  disabled={(accessBuildings === 'see' ? true : false)}
-                />
-              </Grid>
-            </Grid>
-              {errorsVote.length > 0 &&
-            <span className={classes.error}>{errorsVote}</span>}
             </Grid>
             <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
               <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickAdd} disabled={(accessBuildings === 'see' ? true : false)} />

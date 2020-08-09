@@ -322,6 +322,7 @@ export const EditOwnerStyles = makeStyles(theme => ({
     },
   },
   minus:{
+    cursor: 'pointer',
     color: 'white',
     backgroundColor: 'red',
     borderRadius: '50%',
