@@ -694,7 +694,7 @@ const AddOwner = (props) => {
                                                                             lot.map((vote1, j) => {
                                                                                 return (
                                                                                     <Grid key={j} item container alignItems="center" spacing={2}>
-                                                                                        <Grid item><p className={classes.title}>{vote1.vote_branch_name}</p></Grid>
+                                                                                        <Grid item><p className={classes.title}>{vote1.vote_branch_name} - {vote1.description}</p></Grid>
                                                                                         <Grid item >
                                                                                             <TextField
                                                                                                 className={classes.text}
