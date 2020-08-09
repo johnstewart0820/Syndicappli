@@ -192,13 +192,13 @@ function createBuilding(uid, data) {
                     } else {
                         if (rows.length > 0) {
                             let buildingID = rows[0].buildingID
-                            query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
+                            query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, description, created_by, created_at, updated_at) values ?'
                             let user_relation_query = 'Insert into ' + table.USER_RELATIONSHIP + ' (userID, type, relationID) values (?, ?, ?)'
                             let vote_branches = []
                             let item
                             for (var i = 0; i < data.vote_branches.length; i++) {
                                 item = data.vote_branches[i]
-                                vote_branches.push([buildingID, item.name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
+                                vote_branches.push([buildingID, item.name, item.description, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
                             }
                             db.query(query, [vote_branches], (error, rows, fields) => {
                                 if (error) {
@@ -265,7 +265,7 @@ function updateBuilding(uid, id, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 let delete_vote_query = 'Delete from ' + table.VOTE_BUILDING_BRANCH + ' where buildingID = ?'
-                query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
+                query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, description, created_by, created_at, updated_at) values ?'
                 db.query(delete_vote_query, [id],  (error, rows, fields) => {
                     if (error) {
                         reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -274,7 +274,7 @@ function updateBuilding(uid, id, data) {
                         let item
                         for ( var i = 0 ; i < data.vote_branches.length ; i++){
                             item = data.vote_branches[i]
-                            vote_branches.push([id, item.vote_branch_name, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
+                            vote_branches.push([id, item.vote_branch_name, item.description, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
                         }
                         db.query(query, [vote_branches],  (error, rows, fields) => {
                             if (error) {
