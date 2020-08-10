@@ -294,7 +294,7 @@ export default function TrashTable(props) {
             <TableRow >
               {
                 cells.map((cell, i) => (
-                  <TableCell key={i}>
+                  <TableCell key={i} style={{width: 100/(props.columns.length + 1) + '%'}}>
                     <button
                       type="button"
                       onClick={() => Sort(i)}
@@ -319,6 +319,7 @@ export default function TrashTable(props) {
                       <TableCell
                         key={j}
                         disabled={(props.access === 'see' ? true : false)}
+                        style={{width: 100/(props.columns.length + 1) + '%'}}
                       >
                         {
                           Value(value)
