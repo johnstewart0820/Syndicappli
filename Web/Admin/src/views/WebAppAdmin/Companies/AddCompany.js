@@ -101,7 +101,7 @@ const AddCompany = (props) => {
     }
 
     const handleChangeSiret = (event) => {
-        if(event.target.value.length < 15)
+        if (event.target.value.length < 15)
             setSiret(event.target.value);
     }
 
@@ -229,11 +229,10 @@ const AddCompany = (props) => {
                                     <span className={classes.error}>{errorsName}</span>}
                             </Grid>
                         </Grid>
-                        <Grid item container direction="column" spacing={2}>
+                        <Grid item container spacing={2}>
                             <Grid item><p className={classes.title}>Coordonnées</p></Grid>
-                            <Grid xs item container alignItems="stretch">
+                            <Grid item container alignItems="stretch">
                                 <TextField
-                                    className={classes.text}
                                     multiline
                                     variant="outlined"
                                     value={address}
@@ -261,7 +260,7 @@ const AddCompany = (props) => {
                         <Grid item container alignItems="center" spacing={2}>
                             <Grid item><p className={classes.title}>Téléphone</p></Grid>
                             <Grid xs item container alignItems="stretch">
-                                <MuiPhoneNumber 
+                                <MuiPhoneNumber
                                     defaultCountry='fr'
                                     className={classes.text}
                                     variant="outlined"

@@ -277,7 +277,7 @@ const BuildingsEdit = (props) => {
             </Grid>
             <Grid item container direction="column" spacing={2}>
               <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
+              <Grid  item container alignItems="stretch" direction="column">
                 <TextField
                   multiline
                   variant="outlined"
