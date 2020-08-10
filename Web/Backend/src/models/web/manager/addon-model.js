@@ -23,7 +23,8 @@ var code = require('../../../constants/code')
 
 var addonModel = {
     getAddonsByBuildingID: getAddonsByBuildingID,
-    getAddon: getAddon
+    getAddon: getAddon,
+    buyAddon: buyAddon,
 }
 
 /**
@@ -70,5 +71,72 @@ function getAddon() {
         })
     })
 }
+
+/**
+ * buy addon
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function buyAddon(uid, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'select * from discount_codes where permission = "active" and discount_codeID = ? and user_type="companies"'
+        if (data.discount_codeID > 0) {
+            db.query(query, [data.discount_codeID], (error, rows, fields) => {
+                if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                    if (rows.length == 0) 
+                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                    else {
+                        let amount_of_use = rows[0].amount_of_use
+                        let amount_of_use_per_user = rows[0].amount_of_use_per_user
+                        let query = `Select count(*) count from ` + table.ORDERS + ` where discount_codeID = ? and (permission = "active" or permission = "trash")`
+                        db.query(query, [data.discount_codeID], (error, rows, fields) => {
+                            if (error)
+                                reject({ message: message.INTERNAL_SERVER_ERROR})
+                            else {
+                                if (data.discount_codeID > 0 && amount_of_use != -1 && rows[0].count + 1 > amount_of_use)
+                                    reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE})
+                                else {
+                                    let query = `Select count(*) count from ` + table.ORDERS + ` where discount_codeID = ? and (permission = "active" or permission = "trash") and buyerID = ? and buyer_type = ?`
+                                    db.query(query, [data.discount_codeID, data.companyID, "managers"], (error, rows, fields) => {
+                                        if (error)
+                                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                                        else {
+                                            if (data.discount_codeID > 0 && amount_of_use_per_user != -1 && rows[0].count + 1 > amount_of_use_per_user)
+                                                reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
+                                            else {
+                                                let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                                db.query(query, ["managers", data.productID, data.companyID, data.buildingID, data.companyID, data.company_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                                                    if (error) {
+                                                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                    } else {
+                                                        resolve("ok")
+                                                    }
+                                                })
+                                            }
+                                        }
+                                    })
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        } else {
+            let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+            db.query(query, ["managers", data.productID, data.companyID, data.buildingID, data.companyID, data.company_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                } else {
+                    resolve("ok")
+                }
+            })
+        }
+    })
+}
+
 
 module.exports = addonModel

@@ -33,35 +33,35 @@ function sendMail(title, email, type, token, randomToken) {
                 from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
                 to: email,
                 subject: title,
-                html: `${emailContent.body}` + `${token}` + `${emailContent.body1}`
+                html: `${emailContent.body}` + `${emailContent.url}` + `${emailContent.body1}` + `${token}` + `${emailContent.body2}`
             }
         } else if (type == emailType.TYPE_SUBACCOUNT_INVITE){
             data = {
                 from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
                 to: email,
                 subject: title,
-                html: `${emailContent.body}` + `${token}` + `${emailContent.body2}`
+                html: `${emailContent.body}` + `${emailContent.url}` + `${emailContent.body1}` + `${token}` + `${emailContent.body2}`
             }
         } else if (type == emailType.TYPE_ADMIN_CREATE) {
             data = {
                 from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
                 to: email,
                 subject: title,
-                html: `${emailContent.body}` + `${token}` + `${emailContent.body2}`
+                html: `${emailContent.body}` + `${emailContent.url}` + `${emailContent.body1}` + `${token}` + `${emailContent.body2}`
             }
         } else if (type == emailType.TYPE_MANAGER_CREATE) {
             data = {
                 from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
                 to: email,
                 subject: title,
-                html: `${emailContent.body}`  + `${token}` + `${emailContent.body2}`
+                html: `${emailContent.body}`  + `${emailContent.url}` + `${emailContent.body1}` + `${token}` + `${emailContent.body2}`
             }
         } else if (type == emailType.TYPE_OWNER_CREATE) {
             data = {
                 from: "Syndicappli Support Team <" + process.env.EMAIL_USER + ">",
                 to: email,
                 subject: title,
-                html: `${emailContent.body}` + `${token}` + `${emailContent.body2}`
+                html: `${emailContent.body}` + `${emailContent.url}` + `${emailContent.body1}` + `${token}` + `${emailContent.body2}`
             }
         } 
         

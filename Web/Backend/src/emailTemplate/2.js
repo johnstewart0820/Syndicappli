@@ -2,7 +2,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 module.exports = {
-    url: process.env.DEVELOPMENT_ENDPOINT + '/invitation?token=',
+    url: process.env.DEVELOPMENT_ENDPOINT + '/login',
     body: `
         <html>
             <body>
@@ -12,7 +12,7 @@ module.exports = {
                     </div>
                     <div style="width: 100%;text-align: center;margin-top: 20px;">
                         <span style="font-size: 12px;font-weight: 500;"><a href="`,
-    body1:`">Accept Invtation</a> </span>
+    body1:`">Click here to login</a> </span>
                     </div>
                     <div style="width: 100%;text-align: center;margin-top: 20px;">
                         <span style="font-size: 12px;font-weight: 500;">Your Password is: <b>`,
