@@ -162,9 +162,9 @@ const AddBuilding = (props) => {
                 <Grid item container direction="column" spacing={4}>
                   {
                     clefList.map((clef, i) => (
-                      <Grid key={i} item container spacing={1} direction="column">
-                        <Grid item>
-                          <Grid xs={6} item container justify="space-between" alignItems="center">
+                      <Grid key={i} item container direction="column">
+                        <Grid item xs={6}>
+                          <Grid item container justify="space-between" alignItems="center">
                             <Grid item >
                               <p className={classes.title}>{clef.name}</p>
                             </Grid>
@@ -176,16 +176,17 @@ const AddBuilding = (props) => {
                             </Grid>
                           </Grid>
                         </Grid>
-                        <Grid item>
-                          <Grid xs={6} item container justify="space-between" alignItems="center">
+                        <Grid item xs={6}>
+                          <Grid item container justify="space-between" alignItems="center" spacing={1}>
                             <Grid item >
                               <p className={classes.title}>Libellé</p>
                             </Grid>
-                            <Grid item >
+                            <Grid xs item >
                               <TextField
                                 variant="outlined"
                                 value={clef.description}
                                 onChange={(event) => handleChangeAddDescription(event, i)}
+                                fullWidth
                               />
                             </Grid>
                           </Grid>

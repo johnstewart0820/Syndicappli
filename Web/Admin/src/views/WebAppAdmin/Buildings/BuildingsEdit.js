@@ -298,11 +298,11 @@ const BuildingsEdit = (props) => {
                 <Grid item container direction="column" spacing={4}>
                   {
                     clefList.map((clef, i) => (
-                      <Grid key={i} item container spacing={1} direction="column">
-                        <Grid item>
-                          <Grid xs={6} item container justify="space-between" alignItems="center">
+                      <Grid key={i} item container direction="column">
+                        <Grid item xs={6}>
+                          <Grid item container justify="space-between" alignItems="center">
                             <Grid item >
-                              <p className={classes.title} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
+                              <p className={classes.itemTitle} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
                             </Grid>
                             <Grid item>
                               <RemoveCircleOutlineIcon
@@ -312,10 +312,10 @@ const BuildingsEdit = (props) => {
                             </Grid>
                           </Grid>
                         </Grid>
-                        <Grid item>
-                          <Grid xs={6} item container justify="space-between" alignItems="center" spacing={1}>
+                        <Grid item xs={6}>
+                          <Grid item container justify="space-between" alignItems="center" spacing={1}>
                             <Grid item >
-                              <p className={classes.title}>Libellé</p>
+                              <p className={classes.itemTitle}>Libellé</p>
                             </Grid>
                             <Grid xs item >
                               <TextField
@@ -323,10 +323,14 @@ const BuildingsEdit = (props) => {
                                 value={clef.description}
                                 onChange={(event) => handleChangeAddDescription(event, i)}
                                 disabled={accessBuildings === 'see' ? true : false}
+                                fullWidth
                               />
                             </Grid>
                           </Grid>
                         </Grid>
+                        <Grid item xs={6}>
+                          <p className={classes.itemTitle}>{clef.total ? clef.total : 0} tantièmes</p>
+                        </Grid>  
                       </Grid>
                     ))
                   }

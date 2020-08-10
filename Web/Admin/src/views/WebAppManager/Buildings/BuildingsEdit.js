@@ -39,7 +39,7 @@ const BuildingsEdit = (props) => {
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
   const [errorsVote, setErrorsVote] = React.useState('');
   const [count, setCount] = React.useState(0);
-
+  const [cntLot, setCntLot] = React.useState(0);
   const [companies, setCompanies] = React.useState(0);
   const [company, setCompany] = React.useState(['']);
   const handleClick = () => {
@@ -298,30 +298,36 @@ const BuildingsEdit = (props) => {
                   {
                     clefList.map((clef, i) => (
                       <Grid key={i} item container spacing={1} direction="column">
-
-                        <Grid xs={6} item container justify="space-between" alignItems="center">
-                          <Grid item >
-                            <p className={classes.title} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
-                          </Grid>
-                          <Grid item>
-                            <RemoveCircleOutlineIcon
-                              className={classes.plus}
-                              onClick={accessBuildings === 'see' ? null : () => handleClickRemoveClef(i)}
-                            />
+                        <Grid item xs={6}>
+                          <Grid item container justify="space-between" alignItems="center">
+                            <Grid item >
+                              <p className={classes.title} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
+                            </Grid>
+                            <Grid item>
+                              <RemoveCircleOutlineIcon
+                                className={classes.plus}
+                                onClick={accessBuildings === 'see' ? null : () => handleClickRemoveClef(i)}
+                              />
+                            </Grid>
                           </Grid>
                         </Grid>
-                        <Grid xs={6} item container justify="space-between" alignItems="center" spacing={1}>
-                          <Grid item >
-                            <p className={classes.title}>Libellé</p>
+                        <Grid item xs={6}>
+                          <Grid item container justify="space-between" alignItems="center" spacing={1}>
+                            <Grid item >
+                              <p className={classes.title}>Libellé</p>
+                            </Grid>
+                            <Grid xs item >
+                              <TextField
+                                variant="outlined"
+                                value={clef.description}
+                                onChange={(event) => handleChangeAddDescription(event, i)}
+                                disabled={accessBuildings === 'see' ? true : false}
+                              />
+                            </Grid>
                           </Grid>
-                          <Grid xs item >
-                            <TextField
-                              variant="outlined"
-                              value={clef.description}
-                              onChange={(event) => handleChangeAddDescription(event, i)}
-                              disabled={accessBuildings === 'see' ? true : false}
-                            />
-                          </Grid>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <p className={classes.itemTitle}>{clef.total ? clef.total : 0} tantièmes</p>
                         </Grid>
                       </Grid>
                     ))

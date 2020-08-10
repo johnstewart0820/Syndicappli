@@ -935,7 +935,7 @@ const OwnerEdit = (props) => {
                   onChange={handleChangeAddress}
                   multiline
                   disabled={(accessOwners === 'see' ? true : false)}
-                  fullWidth
+                  style={{width:'50%'}}
                 />
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
