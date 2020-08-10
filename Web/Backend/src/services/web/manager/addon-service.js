@@ -32,16 +32,11 @@ var addonService = {
 function getAddonsByBuildingID(uid, userdata ,data) {
     return new Promise((resolve, reject) => {
         authHelper.hasAddonPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
-            addonModel.getAddonList(uid, data).then((addonList) => {
-                if (addonList) {
-                    addonModel.getCountAddonList(uid, data).then((addonCount) => {
-                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                            expiresIn: timer.TOKEN_EXPIRATION
-                        })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(addonCount / Number(data.row_count)), 'addonlist': addonList, 'totalcount': addonCount} })
-                    })
-
-                }
+            addonModel.getAddonsByBuildingID(data).then((addonList) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'addonlist': addonList } })
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
