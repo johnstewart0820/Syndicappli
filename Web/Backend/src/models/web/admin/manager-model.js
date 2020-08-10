@@ -286,27 +286,32 @@ function getManager(uid, id) {
                     if (error) {
                       reject({ message: message.INTERNAL_SERVER_ERROR })
                     } else {
-                      let response = result[0]
-                      response['companyID'] = rows[0].companyID
-                      let query = 'Select * from ' + table.ROLE + ' where userID = ?'
-                      db.query(query, [id], (error, roles, fields) => {
-                          if (error) {
-                              reject({ message: message.INTERNAL_SERVER_ERROR })
-                          } else {
-                              
-                              for (let i = 0 ; i < roles.length ; i++ ) {
-                                  response[roles[i].role_name] = roles[i].permission
-                              }
-                              let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
-                              db.query(query, [id], (error, rows1, fields) => {
-                                if (error) {
-                                  reject({ message: message.INTERNAL_SERVER_ERROR});
-                                } else {
-                                  resolve({user: response, buildingList: rows1})
+                      if (rows.length == 0)
+                        reject({ message: message.INTERNAL_SERVER_ERROR})
+                      else {
+                        let response = result[0]
+                        response['companyID'] = rows[0].companyID
+                        let query = 'Select * from ' + table.ROLE + ' where userID = ?'
+                        db.query(query, [id], (error, roles, fields) => {
+                            if (error) {
+                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                            } else {
+                                
+                                for (let i = 0 ; i < roles.length ; i++ ) {
+                                    response[roles[i].role_name] = roles[i].permission
                                 }
-                              })
-                          }
-                      })
+                                let query = 'Select * from ' + table.USER_RELATIONSHIP + ' where userID = ?'
+                                db.query(query, [id], (error, rows1, fields) => {
+                                  if (error) {
+                                    reject({ message: message.INTERNAL_SERVER_ERROR});
+                                  } else {
+                                    resolve({user: response, buildingList: rows1})
+                                  }
+                                })
+                            }
+                        })
+                      }
+                      
                     }
                   })
                   
