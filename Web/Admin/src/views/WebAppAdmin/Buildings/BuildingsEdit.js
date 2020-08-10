@@ -75,7 +75,7 @@ const BuildingsEdit = (props) => {
   const handleClickAddClef = (event) => {
     if (addClefs !== '') {
       setCount(count + 1);
-      clefList.push({ "vote_branch_name": addClefs , "description" : ''});
+      clefList.push({ "vote_branch_name": addClefs, "description": '' });
       setAddClefs('');
       setClefList(clefList);
     }
@@ -299,29 +299,32 @@ const BuildingsEdit = (props) => {
                   {
                     clefList.map((clef, i) => (
                       <Grid key={i} item container spacing={1} direction="column">
-
-                        <Grid xs={6} item container justify="space-between" alignItems="center">
-                          <Grid item >
-                            <p className={classes.title} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
-                          </Grid>
-                          <Grid item>
-                            <RemoveCircleOutlineIcon
-                              className={classes.plus}
-                              onClick={accessBuildings === 'see' ? null : () => handleClickRemoveClef(i)}
-                            />
+                        <Grid item>
+                          <Grid xs={6} item container justify="space-between" alignItems="center">
+                            <Grid item >
+                              <p className={classes.title} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
+                            </Grid>
+                            <Grid item>
+                              <RemoveCircleOutlineIcon
+                                className={classes.plus}
+                                onClick={accessBuildings === 'see' ? null : () => handleClickRemoveClef(i)}
+                              />
+                            </Grid>
                           </Grid>
                         </Grid>
-                        <Grid xs={6} item container justify="space-between" alignItems="center" spacing={1}>
-                          <Grid item >
-                            <p className={classes.title}>Libellé</p>
-                          </Grid>
-                          <Grid xs item >
-                            <TextField
-                              variant="outlined"
-                              value={clef.description}
-                              onChange={(event) => handleChangeAddDescription(event, i)}
-                              disabled={accessBuildings === 'see' ? true : false}
-                            />
+                        <Grid item>
+                          <Grid xs={6} item container justify="space-between" alignItems="center" spacing={1}>
+                            <Grid item >
+                              <p className={classes.title}>Libellé</p>
+                            </Grid>
+                            <Grid xs item >
+                              <TextField
+                                variant="outlined"
+                                value={clef.description}
+                                onChange={(event) => handleChangeAddDescription(event, i)}
+                                disabled={accessBuildings === 'see' ? true : false}
+                              />
+                            </Grid>
                           </Grid>
                         </Grid>
                       </Grid>
