@@ -75,7 +75,7 @@ router.post('/trash/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
  * addon api
  */
 router.post('/addonsByBuildingID', authMiddleware.checkToken, getAddonsByBuildingID)
-
+router.get('/addon', authMiddleware.checkToken, getAddon)
 /**
  * Function that get profile data
  *
@@ -608,6 +608,24 @@ function getAddonsByBuildingID(req, res) {
     let userdata = req.decoded.userdata
     let data = req.body
     addonService.getAddonsByBuildingID(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get Addon
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAddon(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    addonService.getAddon(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

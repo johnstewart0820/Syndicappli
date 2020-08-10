@@ -23,6 +23,7 @@ var code = require('../../../constants/code')
 
 var addonModel = {
     getAddonsByBuildingID: getAddonsByBuildingID,
+    getAddon: getAddon
 }
 
 /**
@@ -46,5 +47,28 @@ function getAddonsByBuildingID(data) {
     })
 }
 
+/**
+ * get addon
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getAddon() {
+    return new Promise((resolve, reject) => {
+        let query = 'Select * from products where name = "Pack modules" and permission = "active"'
+        
+        db.query(query, [], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if (rows.length > 0)
+                    resolve(rows[0])
+                else
+                    resolve(rows)
+            }
+        })
+    })
+}
 
 module.exports = addonModel
