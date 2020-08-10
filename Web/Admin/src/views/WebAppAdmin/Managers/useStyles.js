@@ -181,6 +181,7 @@ export const AddManagerStyles = makeStyles(theme => ({
       display: 'none'
   },
   img: {
+    objectFit:'cover',
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
@@ -420,6 +421,7 @@ export const EditManagerStyles = makeStyles(theme => ({
     },
   },
   img: {
+    objectFit:'cover',
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',

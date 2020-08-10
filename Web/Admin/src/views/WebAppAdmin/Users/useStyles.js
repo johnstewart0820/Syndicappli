@@ -162,11 +162,13 @@ export const AddUserStyles = makeStyles(theme => ({
       display: 'none'
   },
   img: {
+    objectFit:'cover',
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
       display: 'flex',
       border: '1px dashed rgba(112,112,112,0.43)',
+      objectFit:'cover',
       borderRadius: 8,
       [theme.breakpoints.up('xl')]: {
         width: 116,

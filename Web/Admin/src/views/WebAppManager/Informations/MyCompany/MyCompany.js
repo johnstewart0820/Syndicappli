@@ -188,6 +188,7 @@ const useStyles = makeStyles(theme => ({
     color: 'gray'
   },
   img: {
+    objectFit:'cover',
     cursor: 'pointer',
     alignItems: 'center',
     justifyContent: 'center',

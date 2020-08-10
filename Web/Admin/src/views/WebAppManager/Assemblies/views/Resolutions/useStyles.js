@@ -103,6 +103,7 @@ export const AddResolutionStyles = makeStyles(theme => ({
       display: 'none'
   },
   img: {
+    objectFit:'cover',
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',

@@ -95,6 +95,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 4, 3),
   },
   size: {
+    objectFit:'cover',
     [theme.breakpoints.up('xl')]: {
       width: 214,
       height: 214,

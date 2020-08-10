@@ -165,6 +165,7 @@ export const AddCompanyStyles = makeStyles(theme => ({
       display: 'none'
   },
   img: {
+    objectFit:'cover',
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
@@ -390,6 +391,7 @@ export const EditCompanyStyles = makeStyles(theme => ({
       },
   },
   img: {
+    objectFit:'cover',
     cursor: 'pointer',
     alignItems: 'center',
     justifyContent: 'center',
@@ -522,6 +524,7 @@ export const AddBuildingStyles = makeStyles(theme => ({
       display: 'none'
   },
   img: {
+    objectFit:'cover',
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
@@ -621,6 +624,7 @@ export const AddManagerStyles = makeStyles(theme => ({
       display: 'none'
   },
   img: {
+    objectFit:'cover',
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',

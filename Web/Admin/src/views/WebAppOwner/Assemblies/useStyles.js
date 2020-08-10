@@ -276,6 +276,7 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
       display: 'none'
   },
   img: {
+    objectFit:'cover',
       cursor: 'pointer',
       alignItems: 'center',
       justifyContent: 'center',
@@ -515,6 +516,7 @@ export const EditTeamMemberStyles = makeStyles(theme => ({
     },
   },
   img: {
+    objectFit:'cover',
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',

@@ -74,7 +74,7 @@ const Main = props => {
       <main className={classes.content}>
         {children}
       </main>
-      <ScrollButton scrollStepInPx="5"/>
+      <ScrollButton scrollStepInPx="1"/>
     </div>
   );
 };
