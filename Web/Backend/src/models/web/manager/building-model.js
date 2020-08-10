@@ -204,12 +204,27 @@ function getManagerBuilding(uid, id) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                getManagerCompanyListByUser(uid).then((result) => {
+                getManagerCompanyListByUser(uid).then((result1) => {
                     db.query(vote_query, [id], (error, rows1, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR});
                         } else {
-                            resolve({building: rows, companyList: result, votelist: rows1})
+                            let query = 'select sum(v.amount) as total, v.voteID from vote_amount_of_parts v group by v.voteID'
+                            db.query(query, [], (error, result, fields) => {
+                                if (error) {
+                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                } else {
+                                    for (var i in result) {
+                                        for (var j in rows1) {
+                                            rows1[j].total = 0
+                                            if (result[i].voteID === rows1[j].voteID)
+                                                rows1[j].total = result[i].total
+                                        }
+                                    }
+                                    resolve({building: rows, companyList: result1, votelist: rows1})
+                                }
+                            })
+                            
                         }
                     })
                 })
