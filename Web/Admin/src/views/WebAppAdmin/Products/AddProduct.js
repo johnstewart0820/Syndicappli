@@ -201,7 +201,6 @@ const AddProducts = (props) => {
                                     value={productDescription}
                                     onChange={handleChangeProductDescription}
                                     multiline
-                                    rows={5}
                                     fullWidth
                                 />
                                 {errorsProductDescription.length > 0 &&

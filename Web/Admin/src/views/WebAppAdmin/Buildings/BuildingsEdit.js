@@ -279,7 +279,6 @@ const BuildingsEdit = (props) => {
               <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid xs={12} item container alignItems="stretch" direction="column">
                 <TextField
-                  rows={5}
                   multiline
                   variant="outlined"
                   value={address}
@@ -385,7 +384,6 @@ const BuildingsEdit = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      rows={3}
                       multiline
                       variant="outlined"
                       value={accountAddress}

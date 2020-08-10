@@ -138,7 +138,6 @@ const EditResolution = (props) => {
                         <Grid item><p className={classes.title}>Description</p></Grid>
                         <Grid item container alignItems="stretch" direction="column">
                             <TextField
-                                rows={5}
                                 multiline
                                 variant="outlined"
                                 value={description}

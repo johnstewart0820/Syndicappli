@@ -309,7 +309,6 @@ const PaymentMethods = (props) => {
                     <TextField
                       id="outlined-basic"
                       className={classes.text}
-                      rows={3}
                       multiline
                       variant="outlined"
                       value={accountAddress}

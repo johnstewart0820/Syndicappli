@@ -140,7 +140,6 @@ const ModulePayment = (props) => {
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
                       className={classes.text}
-                      rows={3}
                       multiline
                       variant="outlined"
                       value={accountaddress}

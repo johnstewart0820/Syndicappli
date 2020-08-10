@@ -234,7 +234,6 @@ const AddCompany = (props) => {
                             <Grid xs item container alignItems="stretch">
                                 <TextField
                                     className={classes.text}
-                                    rows={3}
                                     multiline
                                     variant="outlined"
                                     value={address}
@@ -321,7 +320,6 @@ const AddCompany = (props) => {
                             <Grid xs item container alignItems="stretch">
                                 <TextField
                                     className={classes.text}
-                                    rows={3}
                                     multiline
                                     variant="outlined"
                                     value={accountaddress}

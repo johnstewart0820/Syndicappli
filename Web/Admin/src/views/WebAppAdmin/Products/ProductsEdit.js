@@ -270,7 +270,6 @@ const handleChangeVatFee = (event) => {
                   value={productDescription}
                   onChange={handleChangeProductDescription}
                   multiline
-                  rows={5}
                   disabled={(accessProducts === 'see' ? true : false)}
                 />
                 {errorsProductDescription.length > 0 &&

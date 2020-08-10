@@ -638,7 +638,7 @@ const CompaniesEdit = (props) => {
                 <Grid xs={5} item container alignItems="stretch" direction="column">
                   <TextField
                     className={classes.text}
-                    rows={3} multiline
+                    multiline
                     variant="outlined"
                     value={address}
                     onChange={handleChangeAddress}
@@ -886,7 +886,6 @@ const CompaniesEdit = (props) => {
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
                       className={classes.text}
-                      rows={3}
                       multiline
                       variant="outlined"
                       value={accountaddress}

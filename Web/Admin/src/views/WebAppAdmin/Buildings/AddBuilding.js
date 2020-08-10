@@ -210,7 +210,6 @@ const AddBuilding = (props) => {
               <Grid item><p className={classes.title}>Adresse</p></Grid>
               <Grid item container alignItems="stretch">
                 <TextField
-                  rows={3}
                   multiline
                   variant="outlined"
                   value={address}
@@ -301,7 +300,6 @@ const AddBuilding = (props) => {
               <Grid item><p className={classes.title}>Adresse</p></Grid>
               <Grid xs item container alignItems="stretch">
                 <TextField
-                  rows={3}
                   multiline
                   variant="outlined"
                   value={accountAddress}

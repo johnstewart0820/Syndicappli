@@ -448,7 +448,6 @@ const MyCompany = (props) => {
                       value={address}
                       onChange={handleChangeAddress}
                       multiline
-                      rows={5}
                       fullWidth
                     />
                   </Grid>

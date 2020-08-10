@@ -108,7 +108,6 @@ const AddAG = (props) => {
                             <Grid item container direction="column">
                                 <TextField
                                     multiline
-                                    rows={5}
                                     variant="outlined"
                                     value={description}
                                     onChange={handleChangeDescription}

@@ -590,7 +590,6 @@ const AddOwner = (props) => {
                                     onChange={handleChangeAddress}
                                     multiline
                                     fullWidth
-                                    rows={5}
                                 />
                                 {errorsAddress.length > 0 &&
                                     <span className={classes.error}>{errorsAddress}</span>}

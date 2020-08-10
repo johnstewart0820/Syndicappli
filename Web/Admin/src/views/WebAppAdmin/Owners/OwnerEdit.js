@@ -933,7 +933,6 @@ const OwnerEdit = (props) => {
                   value={address}
                   onChange={handleChangeAddress}
                   multiline
-                  rows={10}
                   disabled={(accessOwners === 'see' ? true : false)}
                   fullWidth
                 />
