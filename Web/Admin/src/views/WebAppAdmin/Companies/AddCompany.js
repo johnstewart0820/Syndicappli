@@ -131,7 +131,7 @@ const AddCompany = (props) => {
         else setErrorsEmail('');
         if (phone.length === 0) { setErrorsPhone('please enter your phone number'); cnt++; }
         else setErrorsPhone('');
-        if (siret.length === 0) { setErrorsSiret('please enter your company SIRET'); cnt++; }
+        if (siret.length !== 14) { setErrorsSiret('please check your company SIRET'); cnt++; }
         else setErrorsSiret('');
         if (statusActive === false && statusInActive === false) { setErrorsStatus('please select company status'); cnt++; }
         else setErrorsStatus('');
