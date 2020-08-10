@@ -20,6 +20,7 @@ const adminService = require('../../services/web/manager/admin-service')
 const buildingService = require('../../services/web/manager/building-service')
 const managerService = require('../../services/web/manager/manager-service')
 const ownerService = require('../../services/web/manager/owner-service')
+const addonService = require('../../services/web/manager/addon-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
@@ -69,6 +70,11 @@ router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo
 router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
 router.post('/trash/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
+
+/**
+ * addon api
+ */
+router.post('/addonsByBuildingID', authMiddleware.checkToken, getAddonsByBuildingID)
 
 /**
  * Function that get profile data
@@ -582,6 +588,26 @@ function deleteAllOwner(req, res) {
     let userdata = req.decoded.userdata
     let data = req.body
     ownerService.deleteAllOwner(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+/////////////////////Addon//////////////////////////
+
+/**
+ * Function that get Addons by building ID and companyID
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAddonsByBuildingID(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    addonService.getAddonsByBuildingID(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
