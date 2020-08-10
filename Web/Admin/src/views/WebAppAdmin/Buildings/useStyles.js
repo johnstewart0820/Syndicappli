@@ -150,7 +150,8 @@ export const AddBuildingStyles = makeStyles(theme => ({
         },
       },
       '& .MuiOutlinedInput-multiline':{
-        padding: 0
+        padding: 0,
+        lineHeight: 'normal'
       },
       '& p':{
           marginBottom: 0
@@ -250,7 +251,8 @@ export const EditBuildingStyles = makeStyles(theme => ({
       // width: '100%'
     },
     '& .MuiOutlinedInput-multiline':{
-      padding: 0
+      padding: 0,
+      lineHeight: 'normal'
     },
     '& .MuiOutlinedInput-input':{
       [theme.breakpoints.up('xl')]: {

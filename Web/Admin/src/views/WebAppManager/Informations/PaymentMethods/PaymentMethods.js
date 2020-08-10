@@ -45,8 +45,9 @@ const useStyles = makeStyles(theme => ({
         fontSize: 11,
       },
     },
-    '& .MuiOutlinedInput-multiline': {
-      padding: 0
+    '& .MuiOutlinedInput-multiline':{
+      padding: 0,
+      lineHeight: 'normal'
     },
     '& p': {
       marginBottom: 0

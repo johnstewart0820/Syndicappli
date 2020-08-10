@@ -238,7 +238,8 @@ export const AddProductStyles = makeStyles(theme => ({
   },
   root: {
     '& .MuiOutlinedInput-multiline':{
-      padding: 0
+      padding: 0,
+      lineHeight: 'normal'
     },
     '& .MuiOutlinedInput-input':{
       [theme.breakpoints.up('xl')]: {
@@ -321,7 +322,8 @@ export const EditProductStyles = makeStyles(theme => ({
       paddingRight: theme.spacing(2),
     },
     '& .MuiOutlinedInput-multiline':{
-      padding: 0
+      padding: 0,
+      lineHeight: 'normal'
     },
   '& .MuiOutlinedInput-input':{
       [theme.breakpoints.up('xl')]: {

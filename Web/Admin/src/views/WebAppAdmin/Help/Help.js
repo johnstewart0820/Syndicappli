@@ -18,8 +18,9 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(2),
     },
-    '& .MuiOutlinedInput-multiline': {
-      padding: 0
+    '& .MuiOutlinedInput-multiline':{
+      padding: 0,
+      lineHeight: 'normal'
     },
     '& .MuiOutlinedInput-input': {
       [theme.breakpoints.up('xl')]: {

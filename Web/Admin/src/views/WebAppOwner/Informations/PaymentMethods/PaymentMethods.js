@@ -42,7 +42,8 @@ import {makeStyles} from '@material-ui/styles';
       },
     },
     '& .MuiOutlinedInput-multiline':{
-      padding: 0
+      padding: 0,
+      lineHeight: 'normal'
     },
     '& p':{
       marginBottom: 0

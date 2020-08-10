@@ -78,7 +78,8 @@ export const AddResolutionStyles = makeStyles(theme => ({
         },
       },
       '& .MuiOutlinedInput-multiline':{
-        padding: 0
+        padding: 0,
+        lineHeight: 'normal'
       },
       '& p':{
           marginBottom: 0
