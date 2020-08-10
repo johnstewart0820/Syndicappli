@@ -78,6 +78,7 @@ const AddOwner = (props) => {
     const [errorsAddress, setErrorsAddress] = React.useState('');
     const [errorsCompanyName, setErrorsCompanyName] = React.useState('');
     const [errorsVoteLists, setErrorsVoteLists] = React.useState('');
+    const [errorsLot, setErrorsLot] = React.useState('');
 
     const [lotsList, setLotsList] = React.useState([]);
     const [stateLots, setStateLots] = React.useState(false);
@@ -95,8 +96,6 @@ const AddOwner = (props) => {
         getBuildings();
     }, [companyID]);
     const handleCreate = () => {
-        if (apartNumber.length !== 0 && voteAmount.length !== 0)
-            setCount(count + 1);
         let cnt = 0;
         if (ownerTitle === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
         else setErrorsOwnerTitle('');
@@ -132,8 +131,12 @@ const AddOwner = (props) => {
         if (isSubAccount === false) {
             if (count === 0) { setErrorsVoteLists('please add a lot at least'); cnt++; }
             else setErrorsVoteLists('');
-        } else
+            if(apartNumber.length === 0){setErrorsLot('please input a lot'); cnt++;}
+            else setErrorsLot('');
+        } else{
             setErrorsVoteLists('');
+            setErrorsLot('');
+        }
         if (cnt === 0) {
             createOwner();
         }
@@ -255,6 +258,7 @@ const AddOwner = (props) => {
         setBuildingID(buildingList[val].buildingID);
     };
     const handleClickAddLots = (event) => {
+        setCount(count + 1);
         lotsList.push(buildingVote);
         setLotsList(lotsList);
         setStateLots(!stateLots);
@@ -712,14 +716,16 @@ const AddOwner = (props) => {
                                                                 <Grid item container direction="column" spacing={3}>
                                                                     <Grid item container alignItems="center" spacing={2}>
                                                                         <Grid item><p className={classes.title}>Lot</p></Grid>
-                                                                        <Grid xs item container>
+                                                                        <Grid  item container direction="column">
                                                                             <TextField
                                                                                 className={classes.text}
                                                                                 variant="outlined"
-                                                                                value={apartNumber[i]}
+                                                                                value={apartNumber[i] || ''}
                                                                                 onChange={(event) => handleChangeApartNumber(event, i)}
                                                                                 style={{ width: 100 }}
                                                                             />
+                                                                            {errorsLot.length > 0 &&
+                                                                                <span className={classes.error}>{errorsLot}</span>}
                                                                         </Grid>
                                                                     </Grid>
                                                                     <Grid item><p className={classes.title}>Clé de répartition du lot</p></Grid>

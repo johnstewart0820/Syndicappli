@@ -95,6 +95,7 @@ const OwnerEdit = (props) => {
   const [errorsAddress, setErrorsAddress] = useState('');
   const [errorsCompanyName, setErrorsCompanyName] = useState('');
   const [errorsLotsList, setErrorsLotsList] = useState('');
+  const [errorsLot, setErrorsLot] = useState('');
 
   const [lotsList, setLotsList] = useState([]);
   const [stateLots, setStateLots] = useState(false);
@@ -106,8 +107,6 @@ const OwnerEdit = (props) => {
     history.goBack();
   };
   const handleClickSave = () => {
-    if (apartNumber.length !== 0 && voteAmount.length !== 0)
-      setCount(count + 1);
     let cnt = 0;
     if (ownerTitle === 0) { setErrorsOwnerTitle('please enter owner title'); cnt++; }
     else setErrorsOwnerTitle('');
@@ -139,9 +138,14 @@ const OwnerEdit = (props) => {
     if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
     else setErrorsAddress('');
     if (isSubAccount === false) {
-      if (count === 0) { setErrorsLotsList('please check a Lot'); cnt++; }
+      if (count === 0) { setErrorsLotsList('please add a Lot at least'); cnt++; }
       else setErrorsLotsList('');
-    } else setErrorsLotsList('');
+      if (apartNumber.length === 0) { setErrorsLot('please input a Lot'); cnt++; }
+      else setErrorsLot('');
+    } else {
+      setErrorsLotsList('');
+      setErrorsLot('');
+    }
     if (cnt === 0) {
       updateOwner();
     }
@@ -257,6 +261,7 @@ const OwnerEdit = (props) => {
     setBuildingID(buildingList[val].buildingID);
   };
   const handleClickAddLots = (event) => {
+    setCount(count+1);
     lotsList.push(buildingVote);
     setLotsList(lotsList);
     setStateLots(!stateLots);
@@ -995,11 +1000,13 @@ const OwnerEdit = (props) => {
                                       <TextField
                                         className={classes.text}
                                         variant="outlined"
-                                        value={apartNumber[i]}
+                                        value={apartNumber[i] || ''}
                                         onChange={(event) => handleChangeApartNumber(event, i)}
                                         style={{ width: 100 }}
                                         disabled={(accessOwners === 'see' ? true : false)}
                                       />
+                                      {errorsLot.length > 0 &&
+                  <span className={classes.error}>{errorsLot}</span>}
                                     </Grid>
                                   </Grid>
                                   <Grid item><p className={classes.itemTitle}>Clé de répartition du lot</p></Grid>
