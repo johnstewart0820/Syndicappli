@@ -350,17 +350,18 @@ export default function ProductTable(props) {
                   })
                 }
                 <TableCell align="right">
-                  <IconButton>
+                  <IconButton onClick={() => handleClickEdit(i)}>
                     <EditIcon
                       className={classes.editItem}
-                      onClick={() => handleClickEdit(i)}
                     />
                   </IconButton>
                       &nbsp;&nbsp;
-                  <IconButton style={{ visibility: item.userID === globalState.ID ? 'hidden' : 'visible' }}>
+                  <IconButton 
+                    onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
+                    style={{ visibility: item.userID === globalState.ID ? 'hidden' : 'visible' }}
+                  >
                     <DeleteIcon
-                      className={classes.editItem}
-                      onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
+                      className={classes.editItem}    
                     />
                   </IconButton>
                 </TableCell>

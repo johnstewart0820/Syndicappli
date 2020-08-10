@@ -396,17 +396,15 @@ export default function SelectTable(props) {
                   })
                 }
                 <TableCell align="right">
-                  <IconButton>
+                  <IconButton onClick={() => handleClickEdit(i)}>
                     <EditIcon
                       className={classes.editItem}
-                      onClick={() => handleClickEdit(i)}
                     />
                   </IconButton>
                       &nbsp;&nbsp;
-                  <IconButton>
+                  <IconButton onClick={props.access === 'see' ? null : () => handleClickDelete(i)}>
                     <DeleteIcon
                       className={classes.editItem}
-                      onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
                     />
                   </IconButton>
                 </TableCell>

@@ -261,7 +261,7 @@ const OwnerEdit = (props) => {
     setBuildingID(buildingList[val].buildingID);
   };
   const handleClickAddLots = (event) => {
-    setCount(count+1);
+    setCount(count + 1);
     lotsList.push(buildingVote);
     setLotsList(lotsList);
     setStateLots(!stateLots);
@@ -1006,7 +1006,7 @@ const OwnerEdit = (props) => {
                                         disabled={(accessOwners === 'see' ? true : false)}
                                       />
                                       {errorsLot.length > 0 &&
-                  <span className={classes.error}>{errorsLot}</span>}
+                                        <span className={classes.error}>{errorsLot}</span>}
                                     </Grid>
                                   </Grid>
                                   <Grid item><p className={classes.itemTitle}>Clé de répartition du lot</p></Grid>
