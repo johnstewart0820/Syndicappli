@@ -247,9 +247,9 @@ function getBuilding(uid) {
                             if (error) {
                                 reject({ message: message.INTERNAL_SERVER_ERROR })
                             } else {
-                                for (var i in result) {
-                                    for (var j in rows1) {
-                                        rows1[j].total = 0
+                                for (var j in rows1) {
+                                    rows1[j].total = 0
+                                    for (var i in result) {
                                         if (result[i].voteID === rows1[j].voteID)
                                             rows1[j].total = result[i].total
                                     }
