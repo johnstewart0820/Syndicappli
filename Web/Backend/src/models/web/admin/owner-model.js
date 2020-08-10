@@ -60,7 +60,7 @@ function getOwnerList(uid, data) {
         search_key = '%' + data.search_key + '%'
         let params = [search_key, data.status];
         if (data.role !== "all") {
-            if (data.role === "member") {
+            if (data.role === "owner") {
                 query += 'and (users.owner_role = ? or users.owner_role = ?) '
                 params.push('owner', 'member')
             } else {
@@ -129,7 +129,7 @@ function getCountOwnerList(uid, data) {
         search_key = '%' + data.search_key + '%'
         let params = [search_key, data.status];
         if (data.role !== "all") {
-            if (data.role === "member") {
+            if (data.role === "owner") {
                 query += 'and (users.owner_role = ? or users.owner_role = ?) '
                 params.push('owner', 'member')
             } else {
