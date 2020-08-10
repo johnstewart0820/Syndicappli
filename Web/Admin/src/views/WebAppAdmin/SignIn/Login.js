@@ -3,7 +3,7 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import { withRouter } from 'react-router-dom';
 import useStyles from './useStyles';
 import Grid from '@material-ui/core/Grid';
-import MyButton from 'components/MyButton';
+import {Button} from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import AdminService from '../../../services/api.js';
@@ -32,7 +32,11 @@ const Login = (props) => {
   const [password, setPassword] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsPassword, setErrorsPassword] = React.useState('');
-
+  document.onkeydown = function(e){
+    if(document.getElementById('login')){
+      handleClickButton();
+    }
+  }
   const handleChangeEmail = (event) => {
     event.preventDefault();
     let errorsMail =
@@ -123,9 +127,9 @@ const Login = (props) => {
                 localStorage.setItem("role_managers", profile.role_managers === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_managers));
                 localStorage.setItem("role_buildings", profile.role_buildings === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_buildings));
                 localStorage.setItem("role_owners", profile.role_owners === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_owners));
-                localStorage.setItem("role_orders", profile.role_orders === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
-                localStorage.setItem("role_products", profile.role_products === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
-                localStorage.setItem("role_discountcodes", profile.role_discountcodes === undefined ? JSON.stringify('denied'): JSON.stringify('denied'));
+                localStorage.setItem("role_orders", profile.role_orders === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_orders));
+                localStorage.setItem("role_products", profile.role_products === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_products));
+                localStorage.setItem("role_discountcodes", profile.role_discountcodes === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_discountcodes));
                 localStorage.setItem("role_users", profile.role_users === undefined ? JSON.stringify('denied'): JSON.stringify(profile.role_users));
                 localStorage.setItem("select", JSON.stringify(0));
                 history.push('/admin/dashboard');
@@ -268,7 +272,9 @@ const Login = (props) => {
               <Grid xs={1} item></Grid>
             </Grid>
             <Grid item container justify="center">
-              <MyButton name={"Se connecter"} color="1" onClick={handleClickButton} />
+              <Button className={classes.button1} onClick={handleClickButton} id="login">
+                    Se Connecter
+              </Button>  
             </Grid>
           </Grid>
           <Grid item container xs={1} sm={2} md={4}></Grid>
