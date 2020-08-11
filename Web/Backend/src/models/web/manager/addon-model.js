@@ -25,6 +25,8 @@ var addonModel = {
     getAddonsByBuildingID: getAddonsByBuildingID,
     getAddon: getAddon,
     buyAddon: buyAddon,
+    getDiscountCodeListByType:getDiscountCodeListByType,
+    getDiscountCode: getDiscountCode,
 }
 
 /**
@@ -57,16 +59,13 @@ function getAddonsByBuildingID(data) {
  */
 function getAddon() {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from products where name = "Pack modules" and permission = "active"'
+        let query = 'Select * from products where name = "Pack de Modules" and permission = "active"'
         
         db.query(query, [], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                if (rows.length > 0)
-                    resolve(rows[0])
-                else
-                    resolve(rows)
+                resolve(rows)
             }
         })
     })
@@ -138,5 +137,57 @@ function buyAddon(uid, data) {
     })
 }
 
+/**
+ * get discount code list by type
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getDiscountCodeListByType(data) {
+    return new Promise((resolve, reject) => {
+        if (data.user_type === "managers")
+            data.user_type = "companies"
+        let query = `SELECT
+                    discount_codeID, name
+                    FROM discount_codes
+                    WHERE permission = "active" and user_type = ?`
+
+        db.query(query, [data.user_type], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows)
+            }
+        })
+    })
+}
+
+/**
+ * get discountCode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getDiscountCode(uid, id) {
+    return new Promise((resolve, reject) => {
+        let query = 'Select * from ' + table.DISCOUNTCODES + ' where discount_codeID = ?'
+
+        db.query(query, [ id ],   (error, rows, fields) => {
+            if (error) {
+                 reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if (rows.length == 0) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                    if (rows[0].end_date === "9999-12-31")
+                        rows[0].end_date = ""
+                    resolve(rows[0]);
+                }
+            }
+        })
+    })
+}
 
 module.exports = addonModel

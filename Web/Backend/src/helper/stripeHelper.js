@@ -16,10 +16,29 @@ const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const stripeHelper = {
+    createSource: createSource,
     createCustomer: createCustomer,
     createCustomerSource: createCustomerSource,
     createCharge: createCharge,
     sendStripeEmail: sendStripeEmail
+}
+
+function createSource(iban, account_holder_name) {
+    return new Promise((resolve, reject) => {
+        stripe.sources.create({
+            type: 'sepa_debit',
+            sepa_debit: {iban: iban},
+            currency: 'eur',
+            owner: {
+              name: account_holder_name,
+            },
+          }).then((source) => {
+            resolve(source)
+          }).catch((err) => {
+              console.log('createSource error == ', err)
+              reject(err)
+          });
+    });
 }
 
 function createCustomer(email) {
@@ -83,3 +102,5 @@ function sendStripeEmail(amount, receipt_email, currency = 'usd') {
         }
     });
 }
+
+module.exports = stripeHelper

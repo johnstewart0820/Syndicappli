@@ -233,8 +233,8 @@ function getBuyerList(uid, data) {
  */
 function getDiscountCodeListByType(data) {
     return new Promise((resolve, reject) => {
-        if (data.user_type === "companies")
-            data.user_type = "managers"
+        if (data.user_type === "managers")
+            data.user_type = "companies"
         let query = `SELECT
                     discount_codeID, name
                     FROM discount_codes

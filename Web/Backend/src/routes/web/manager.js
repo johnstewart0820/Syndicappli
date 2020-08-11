@@ -77,6 +77,8 @@ router.post('/trash/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
 router.post('/addonsByBuildingID', authMiddleware.checkToken, getAddonsByBuildingID)
 router.get('/addon', authMiddleware.checkToken, getAddon)
 router.post('/buyAddon', authMiddleware.checkToken, buyAddon)
+router.post('/discountCodeListByType', authMiddleware.checkToken, getDiscountCodeListByType)
+router.get('/discountCode/:id', authMiddleware.checkToken, getDiscountCode)
 /**
  * Function that get profile data
  *
@@ -646,6 +648,46 @@ function buyAddon(req, res) {
     let userdata = req.decoded.userdata
     let data = req.body
     addonService.buyAddon(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get the buyer list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getDiscountCodeListByType(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    addonService.getDiscountCodeListByType(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get discountcode
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getDiscountCode(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    addonService.getDiscountCode(userId, userdata, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
