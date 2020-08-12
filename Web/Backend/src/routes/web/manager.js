@@ -38,7 +38,8 @@ router.post('/profile', authMiddleware.checkToken, upload.single('avatar'), upda
  */
 router.get('/mycompany', authMiddleware.checkToken, getCompany)
 router.post('/mycompany', authMiddleware.checkToken, upload.single('logo'), updateCompany)
-
+router.put('/bank', authMiddleware.checkToken, updateBankInformation)
+router.post('/bank', authMiddleware.checkToken, getBankInformation)
 /**
  * building api
  */
@@ -182,6 +183,43 @@ function updateCompany(req, res) {
         res.json(err)
     });
 }
+
+/**
+ * Function that get bank information
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getBankInformation(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    adminService.getBankInformation(userId, userdata, req.body).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+
+/**
+ * Function that updates bank information
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateBankInformation(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    adminService.updateBankInformation(userId, userdata, req.body).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+
 
 
 /////////////////////////////////////////////////Building///////////////////////////////////////

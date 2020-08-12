@@ -15,12 +15,15 @@ var message = require('../../../constants/message')
 var code = require('../../../constants/code')
 var key = require('../../../config/key-config')
 var timer  = require('../../../constants/timer')
+var authHelper = require('../../../helper/authHelper')
 
 var webService = {
     getProfile: getProfile,
     updateProfile: updateProfile,
     getCompany: getCompany,
-    updateCompany: updateCompany
+    updateCompany: updateCompany,
+    getBankInformation: getBankInformation,
+    updateBankInformation: updateBankInformation,
 }
 
 
@@ -125,6 +128,66 @@ function updateCompany(uid, data, file, userdata) {
                 reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
             else
                 reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that updates Bank Information of company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function getBankInformation(uid, userdata, data) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasPaymentPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
+            adminWebModel.getBankInformation(data).then((data) => {
+                if (data) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: '', data: { 'token': token, 'bank': data} })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((err) => {
+            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that updates Bank Information of company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function updateBankInformation(uid, userdata, data) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasPaymentPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            adminWebModel.updateBankInformation(data).then((data) => {
+                if (data) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: message.COMPANY_UPDATE_SUCCESSFULLY, data: { 'token': token} })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((err) => {
+            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
         })
     })
 }

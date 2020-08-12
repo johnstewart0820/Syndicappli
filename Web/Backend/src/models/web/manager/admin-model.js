@@ -20,7 +20,9 @@ var adminModel = {
     getProfile: getProfile,
     updateProfile: updateProfile,
     getCompany: getCompany,
-    updateCompany: updateCompany
+    updateCompany: updateCompany,
+    updateBankInformation: updateBankInformation,
+    getBankInformation: getBankInformation
 }
 
 /**
@@ -195,6 +197,48 @@ function updateCompany(uid, data, file) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 resolve("OK")
+            }
+        })
+    })
+}
+
+/**
+ * update Bank Information of company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateBankInformation(data) {
+    return new Promise((resolve, reject) => {
+        let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where companyID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, data.companyID]
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({message: message.INTERNAL_SERVER_ERROR})
+            } else {
+                resolve("OK")
+            }
+        })
+    })
+}
+
+/**
+ * get bank information
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBankInformation(data) {
+    return new Promise((resolve, reject) => {
+        let query = 'Select account_holdername, account_address, account_IBAN from ' + table.COMPANIES + ' where companyID = ?';
+        params = [data.companyID]
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({message: message.INTERNAL_SERVER_ERROR})
+            } else {
+                resolve(rows[0])
             }
         })
     })
