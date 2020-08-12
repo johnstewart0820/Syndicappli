@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";  
-// const API_URL = "https://syndic-backend.say-demo.com/api/";
+// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";  
+const API_URL = "https://syndic-backend.say-demo.com/api/";
 // const API_URL = "http://192.168.105.38:3001/api/";
 // const API_URL = process.env.REACT_APP_API_URL;
 class AdminService {
@@ -258,6 +258,22 @@ export class ManagerService {
   }
   getMyCompany() {
     return axios.get(API_URL + 'web/manager/mycompany', { headers: authHeader() });
+  }
+  //Addon Part
+  getAddonsByBuildingID(data) {
+    return axios.post(API_URL + 'web/manager/addonsByBuildingID', data, { headers: authHeader() });
+  }
+  getAddon() {
+    return axios.get(API_URL + 'web/manager/addon', { headers: authHeader() });
+  }
+  buyAddon(data) {
+    return axios.post(API_URL + 'web/manager/buyAddon', data, { headers: authHeader() });
+  }
+  getDiscountCode(id) {
+    return axios.get(API_URL + 'web/manager/discountCode/' + id, { headers: authHeader() });
+  }
+  getDiscountCodesList(data) {
+    return axios.post(API_URL + 'web/manager/discountCodeListByType', data, { headers: authHeader() });
   }
   //Building Part
   getBuildingList(data) {
