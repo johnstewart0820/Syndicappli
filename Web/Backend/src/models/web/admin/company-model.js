@@ -511,7 +511,7 @@ function updateCard(id, data, uid) {
  */
 function deleteCard(id) {
     return new Promise((resolve, reject) => {
-        let query = `delete from cards where id = ?`
+        let query = `delete from cards where cardID = ?`
         db.query(query, [id], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })

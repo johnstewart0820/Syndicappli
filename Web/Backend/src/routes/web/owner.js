@@ -18,6 +18,7 @@ var router = express.Router()
 const authMiddleware = require('../../middleware/auth-middleware')
 const ownerService = require('../../services/web/owner/owner-service')
 const adminService = require('../../services/web/owner/account-service')
+const cardService = require('../../services/web/owner/card-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
@@ -38,6 +39,15 @@ router.delete('/subAccount/:id', authMiddleware.checkToken, deleteOwner)
 router.post('/invitation', acceptInvitation)
 router.post('/subAccount/:id/reinvite', authMiddleware.checkToken, reinviteOwner)
 router.get('/buildingListByOwner', authMiddleware.checkToken, getBuildingListByOwner)
+
+/**
+ * card api
+ */
+router.post('/cardList', authMiddleware.checkToken, getCardList)
+router.post('/card', authMiddleware.checkToken, createCard)
+router.get('/card/:id', authMiddleware.checkToken, getCard)
+router.put('/card/:id', authMiddleware.checkToken, updateCard)
+router.delete('/card/:id', authMiddleware.checkToken, deleteCard)
 
 ///////////////////////////////////Profile/////////////////////////////
 
@@ -217,6 +227,103 @@ function reinviteOwner(req, res){
     let userdata = req.decoded.userdata
     let id = req.params.id
     ownerService.reinviteOwner(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+///////////////////////Card//////////////////////
+/**
+ * Function that get card list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCardList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    cardService.getCardList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that create card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    cardService.createCard(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    cardService.getCard(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    cardService.updateCard(userId, userdata, id, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    cardService.deleteCard(userId, userdata, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
