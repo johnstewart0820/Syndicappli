@@ -38,7 +38,7 @@ var cardModel = {
  */
 function getCardList(data) {
     return new Promise((resolve, reject) => {
-        let query = `select ca.* from cards ca left join companies c on ca.companyID = c.companyID where c.companyID = ?`
+        let query = `select ca.*, ca.cardID ID from cards ca left join companies c on ca.companyID = c.companyID where c.companyID = ?`
         db.query(query, [data.companyID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })

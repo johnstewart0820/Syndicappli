@@ -843,7 +843,7 @@ function getCard(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    cardService.createCard(userId, userdata, id).then((result) => {
+    cardService.getCard(userId, userdata, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
@@ -882,7 +882,7 @@ function deleteCard(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let id = req.params.id
-    cardService.updateCard(userId, userdata, id).then((result) => {
+    cardService.deleteCard(userId, userdata, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

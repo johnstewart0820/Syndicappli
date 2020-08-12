@@ -36,7 +36,7 @@ var invoiceModel = {
 function getInvoiceOrder(data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
-                        o.orderID,
+                        o.orderID as ID,
                         b.name building_name,
                         o.start_date,
                         o.price,
@@ -76,7 +76,7 @@ function getInvoiceAddon(data) {
         let params = []
         if (data.buildingID == -1) {
             query = `SELECT
-                        o.orderID,
+                        o.orderID as ID,
                         b.name building_name,
                         o.start_date,
                         o.price,
@@ -93,7 +93,7 @@ function getInvoiceAddon(data) {
             params = [data.companyID]
         } else {
             query = `SELECT
-                        o.orderID,
+                        o.orderID as ID,
                         b.name building_name,
                         o.start_date,
                         o.price,
@@ -104,7 +104,7 @@ function getInvoiceAddon(data) {
                         LEFT JOIN buildings b ON o.buildingID = b.buildingID 
                     WHERE
                         o.companyID = ?
-                        AND o.buildilngID = ?
+                        AND o.buildingID = ?
                         AND o.buyer_type = "managers" 
                         AND o.permission = "active" 
                         AND p.name = "Pack de Modules"`
