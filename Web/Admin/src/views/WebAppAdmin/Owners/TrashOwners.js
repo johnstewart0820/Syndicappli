@@ -218,7 +218,14 @@ const Owners = (props) => {
                 setTotalPage(1);
               else
                 setTotalPage(data.totalpage);
-              setDataList(data.ownerlist);
+              let list = data.ownerlist;
+              for(let i = 0 ; i < list.length ; i++){
+                if(list[i].owner_company_name){
+                  if(list[i].owner_company_name.length !== 0)
+                    list[i].lastname = list[i].owner_company_name;
+                }
+              }
+              setDataList(list);
               let ownerID = [];
               data.ownerlist.map((item, i) => (
                 ownerID[i] = item.ID
