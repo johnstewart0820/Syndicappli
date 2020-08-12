@@ -101,6 +101,19 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize: 9,
     },
+    div_indicator: {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      position: 'fixed',
+      paddingLeft: '50%',
+      alignItems: 'center',
+      marginTop: '-60px',
+      zIndex: 999,
+    },
+    indicator: {
+      color: 'gray'
+    },
 },
 }));
 
