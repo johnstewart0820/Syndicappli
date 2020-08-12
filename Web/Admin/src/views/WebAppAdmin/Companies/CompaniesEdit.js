@@ -21,6 +21,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from '../../../services/authService.js';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import MuiPhoneNumber from 'material-ui-phone-number';
+import SEPA from 'sepa';
+import BankCard from './BankCard';
+import validator from 'card-validator';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -53,7 +56,9 @@ const CompaniesEdit = (props) => {
 
   const [openAddManager, setOpenAddManager] = React.useState(false);
   const [openAddBuilding, setOpenAddBuilding] = React.useState(false);
-
+  const [openDelete, setOpenDelete] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
@@ -112,7 +117,9 @@ const CompaniesEdit = (props) => {
   const [errorsPhone, setErrorsPhone] = React.useState('');
   const [errorsSiret, setErrorsSiret] = React.useState('');
   const [errorsStatus, setErrorsStatus] = React.useState('');
-
+  const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
+  const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
+  const [errorsIBAN, setErrorsIBAN] = useState('');
   const buildingCellList = [
     { key: 'name', field: 'Nom' },
     { key: 'address', field: 'Adresse' },
@@ -123,7 +130,8 @@ const CompaniesEdit = (props) => {
     buildingColumns[i] = 'asc';
 
   const [cardDataList, setCardDataList] = useState([]);
-
+  const [deleteId, setDeleteId] = useState(-1);
+  const [state, setState] = useState({ method: 'add', buttonText: 'Ajouter', pos: -1 });
   useEffect(() => {
     if (accessCompanies !== 'denied' && accessBuildings !== 'denied')
       getBuildings();
@@ -166,8 +174,8 @@ const CompaniesEdit = (props) => {
   }
 
   const handleChangeSiret = (event) => {
-    if(event.target.value.length < 15)
-    setSiret(event.target.value);
+    if (event.target.value.length < 15)
+      setSiret(event.target.value);
   }
 
   const handleChangeVat = (event) => {
@@ -183,6 +191,12 @@ const CompaniesEdit = (props) => {
   }
 
   const handleChangeIBAN = (event) => {
+    if (!SEPA.validateIBAN(event.target.value))
+      setErrorsIBAN('please enter correct IBAN');
+    else
+      setErrorsIBAN('');
+    if (event.target.value.length === 0)
+      setErrorsIBAN('');
     setIBAN(event.target.value);
   }
 
@@ -206,9 +220,6 @@ const CompaniesEdit = (props) => {
   }
   const handleClickAddBuilding = () => {
     setOpenAddBuilding(true);
-  }
-  const handleClickAddCard = () => {
-
   }
   const handleAddManager = () => {
     ToastsStore.success("Added New Manager successfully!");
@@ -291,17 +302,54 @@ const CompaniesEdit = (props) => {
   }
 
   useEffect(() => {
-    console.log('b');
-    getCardDataList();
-  }, []);
-  const getCardDataList = () => {
-    setCardDataList([
-      { ID: 1, card_digits: 'MasterCard-6914', card_name: 'MonSyndic', expiry_date: 'Exp. 12/2021' },
-      { ID: 2, card_digits: 'MasterCard-6914', card_name: 'MonSyndic', expiry_date: 'Exp. 12/2021' },
-      { ID: 3, card_digits: 'MasterCard-6914', card_name: 'MonSyndic', expiry_date: 'Exp. 12/2021' },
-    ])
-  };
-  const cardCellList = [{ key: 'card_digits', field: '' }, { key: 'card_name', field: '' }, { key: 'expiry_date', field: '' }]
+    getCards();
+  }, [refresh]);
+  const cardCellList = [
+    { key: 'secure_code', field: '' },
+    { key: 'name', field: '' },
+    { key: 'expiry_date', field: '' }
+  ];
+  const getCards = () => {
+    const requestData = {
+      'companyID': props.match.params.id
+    }
+    setVisibleIndicator(true);
+    AdminService.getCardList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              let list = data.cardlist;
+              for (let i = 0; i < list.length; i++) {
+                let numberValidation = validator.number(list[i].card_number);
+                if (numberValidation.isPotentiallyValid) {
+                  if (numberValidation.card) {
+                    list[i].secure_code = numberValidation.card.niceType + '-' + list[i].secure_code;
+                  } else
+                    list[i].secure_code = list[i].secure_code;
+                } else
+                  list[i].secure_code = list[i].secure_code;
+              }
+              setCardDataList(list);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   useEffect(() => {
     if (accessCompanies === 'denied') {
       // setOpenDialog(true);
@@ -560,6 +608,140 @@ const CompaniesEdit = (props) => {
         }
       );
   }
+  const handleClickUpdateBankInfo = () => {
+    let cnt = 0;
+    if (accountaddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
+    else setErrorsAccountAddress('');
+    if (accountname.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
+    else setErrorsAccountHolder('');
+    if (IBAN.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
+    else setErrorsIBAN('');
+    if (cnt === 0) {
+      let requestData = {
+        'account_holdername': accountname,
+        'account_address': accountaddress,
+        'account_IBAN': IBAN
+      }
+      setVisibleIndicator(true);
+      AdminService.updateBankInfo(props.match.params.id, requestData)
+        .then(
+          response => {
+            setVisibleIndicator(false);
+            switch (response.data.code) {
+              case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                ToastsStore.success(response.data.message);
+                break;
+              case 401:
+                authService.logout();
+                history.push('/login');
+                window.location.reload();
+                break;
+              default:
+                ToastsStore.error(response.data.message);
+            }
+          },
+          error => {
+            ToastsStore.error("Can't connect to the server!");
+            setVisibleIndicator(false);
+          }
+        );
+    }
+  }
+  const handleClickDeleteBankInfo = () => {
+    let requestData = {
+      'account_holdername': '',
+      'account_address': '',
+      'account_IBAN': ''
+    }
+    setVisibleIndicator(true);
+    AdminService.updateBankInfo(props.match.params.id, requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success(response.data.message);
+              setAccountAddress('');
+              setAccountName('');
+              setIBAN('');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleAdd = () => {
+    ToastsStore.success("Added New Card successfully!");
+    setRefresh(!refresh);
+  };
+  const handleUpdate = () => {
+    ToastsStore.success("Updated successfully!");
+    setRefresh(!refresh);
+  };
+  const handleClickAddCard = () => {
+    let tmpState = { method: 'add', buttonText: 'Ajouter', pos: -1 };
+    setState(tmpState);
+    setOpen(true);
+  }
+  const handleClickEditCard = (id) => {
+    let tmpState = { method: 'edit', buttonText: 'Mettre à jour', pos: id };
+    setState(tmpState);
+    setOpen(true);
+  }
+  const handleClickDeleteCard = (id) => {
+    setOpenDelete(true);
+    setDeleteId(id);
+  }
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleDelete = () => {
+    handleCloseDelete();
+    setDeleteId(-1);
+    setVisibleIndicator(true);
+    AdminService.deleteCard(deleteId)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              ToastsStore.success("Deleted Successfully!");
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              setRefresh(!refresh);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   return (
     <div className={classes.root}>
       {
@@ -616,7 +798,7 @@ const CompaniesEdit = (props) => {
                   }}
                   badgeContent={
                     <div>
-                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessCompanies === 'see' ? true : false)}/>
+                      <input className={classes.input} accept="image/*" type="file" id="img_front" onChange={handleLoadFront} disabled={(accessCompanies === 'see' ? true : false)} />
                       <label htmlFor="img_front">
                         <EditOutlinedIcon className={classes.editAvatar} />
                       </label>
@@ -670,7 +852,7 @@ const CompaniesEdit = (props) => {
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Téléphone</p></Grid>
               <Grid xs={5} item container alignItems="stretch" direction="column">
-                <MuiPhoneNumber 
+                <MuiPhoneNumber
                   defaultCountry='fr'
                   className={classes.text}
                   variant="outlined"
@@ -793,7 +975,7 @@ const CompaniesEdit = (props) => {
                 <span className={classes.error}>{errorsStatus}</span>}
             </Grid>
             <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessCompanies === 'see' ? true : false)}/>
+              <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessCompanies === 'see' ? true : false)} />
             </Grid>
           </Grid>
         </div>
@@ -855,8 +1037,27 @@ const CompaniesEdit = (props) => {
               products={cardDataList}
               cells={cardCellList}
               leftBtn="Ajouter uno  carte"
-              onClick={handleClickAddCard}
+              onClickEdit={handleClickEditCard}
+              onClickDelete={handleClickDeleteCard}
+              onClickAdd={handleClickAddCard}
             />
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              classes={{ paper: classes.paper }}
+            >
+              <Grid item container className={classes.padding} justify="space-between">
+                <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
+                <Grid item>
+                  <h2 id="transition-modal-title" className={classes.modalTitle}>
+                    {state.method === 'add' ? "Ajouter Carte" : "Mettre à jour Carte"}
+                  </h2>
+                </Grid>
+              </Grid>
+              <BankCard onCancel={handleClose} onAdd={handleAdd} onUpdate={handleUpdate} state={state} />
+            </Dialog>
           </Grid>
         </Grid>
         <div>
@@ -877,6 +1078,8 @@ const CompaniesEdit = (props) => {
                       fullWidth
                       disabled={(accessCompanies === 'see' ? true : false)}
                     />
+                    {errorsAccountHolder.length > 0 &&
+                      <span className={classes.error}>{errorsAccountHolder}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -893,6 +1096,8 @@ const CompaniesEdit = (props) => {
                       fullWidth
                       disabled={(accessCompanies === 'see' ? true : false)}
                     />
+                    {errorsAccountAddress.length > 0 &&
+                      <span className={classes.error}>{errorsAccountAddress}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -908,13 +1113,29 @@ const CompaniesEdit = (props) => {
                       fullWidth
                       disabled={(accessCompanies === 'see' ? true : false)}
                     />
+                    {errorsIBAN.length > 0 &&
+                      <span className={classes.error}>{errorsIBAN}</span>}
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accessCompanies === 'see' ? true : false)}/></Grid>
-              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accessCompanies === 'see' ? true : false)}/>  </Grid>
+              <Grid item>
+                <MyButton
+                  name={"Editer le mandat"}
+                  color={"1"}
+                  disabled={(accessCompanies === 'see' ? true : false)}
+                  onClick={handleClickUpdateBankInfo}
+                />
+              </Grid>
+              <Grid item>
+                <MyButton
+                  name={"Supprimer"}
+                  bgColor="grey"
+                  disabled={(accessCompanies === 'see' ? true : false)}
+                  onClick={handleClickDeleteBankInfo}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </div>
@@ -957,7 +1178,12 @@ const CompaniesEdit = (props) => {
         handleDelete={handleManagerDelete}
         account={'manager'}
       />
-
+      <DeleteConfirmDialog
+        openDelete={openDelete}
+        handleCloseDelete={handleCloseDelete}
+        handleDelete={handleDelete}
+        account={'card'}
+      />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
