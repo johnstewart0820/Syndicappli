@@ -139,14 +139,14 @@ export default function ProductTable(props) {
             <TableBody>
               {items.map((item) => (
                 <TableRow key={item.ID}>
-                  <TableCell>
+                  <TableCell  onClick={() => props.onClickEdit(item.ID)}>
                     <img src="/images/card.png"></img>
                   </TableCell>
                   {
                     cells.map((cell, i) => {
                       const value = item[cell.key];
                       return (
-                        <TableCell key={cell.key}>
+                        <TableCell key={cell.key}  onClick={() => props.onClickEdit(item.ID)}>
 
                           {value}
                         </TableCell>);
@@ -164,6 +164,16 @@ export default function ProductTable(props) {
                 </TableRow>
               ))}
             </TableBody>
+            <TableFooter className={items.length === 0 ? classes.show : classes.hide}>
+              {
+                items.length === 0 ?
+                  <TableRow>
+                    <TableCell colSpan="100%" style={{ textAlign: 'center' }}>{'Aucune donnée trouvée'}</TableCell>
+                  </TableRow>
+                  :
+                  null
+              }
+            </TableFooter>
           </Table>
         </Grid>
         <Grid xs={12} item container className={props.leftBtn ? classes.show : classes.hide} >

@@ -164,18 +164,33 @@ const Login = (props) => {
                 localStorage.setItem("usertype", JSON.stringify(profile.usertype));
                 localStorage.setItem("select", JSON.stringify(0));
                 if (!(profile.identity_card_front === null || profile.identity_card_front === "" || profile.identity_card_front === undefined)) {
-                  localStorage.setItem("role_addons", profile.role_addons === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_addons));
-                  localStorage.setItem("role_assemblies", profile.role_assemblies === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
-                  localStorage.setItem("role_chat", profile.role_chat === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
-                  localStorage.setItem("role_events", profile.role_events === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
-                  localStorage.setItem("role_incidents", profile.role_incidents === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
-                  localStorage.setItem("idcard_state", JSON.stringify('true'));
+                  if(profile.owner_role === 'subaccount'){
+                    localStorage.setItem("role_addons", JSON.stringify('edit'));
+                    localStorage.setItem("role_assemblies", JSON.stringify('denied'));
+                    localStorage.setItem("role_chat", JSON.stringify('edit'));
+                    localStorage.setItem("role_events", JSON.stringify('edit'));
+                    localStorage.setItem("role_incidents", JSON.stringify('edit'));
+                    localStorage.setItem("role_payments", JSON.stringify('edit'));
+                    localStorage.setItem("role_invoices", JSON.stringify('edit'));
+                    localStorage.setItem("idcard_state", JSON.stringify('true'));
+                  }else{
+                    localStorage.setItem("role_addons", JSON.stringify('edit'));
+                    localStorage.setItem("role_assemblies", JSON.stringify('edit'));
+                    localStorage.setItem("role_chat", JSON.stringify('edit'));
+                    localStorage.setItem("role_events", JSON.stringify('edit'));
+                    localStorage.setItem("role_incidents", JSON.stringify('edit'));
+                    localStorage.setItem("role_payments", JSON.stringify('edit'));
+                    localStorage.setItem("role_invoices", JSON.stringify('edit'));
+                    localStorage.setItem("idcard_state", JSON.stringify('true'));
+                  }
                 } else {
                   localStorage.setItem("role_addons", JSON.stringify('denied'));
                   localStorage.setItem("role_assemblies", JSON.stringify('denied'));
                   localStorage.setItem("role_chat", JSON.stringify('denied'));
                   localStorage.setItem("role_events", JSON.stringify('denied'));
                   localStorage.setItem("role_incidents", JSON.stringify('denied'));
+                  localStorage.setItem("role_payments", JSON.stringify('denied'));
+                  localStorage.setItem("role_invoices", JSON.stringify('denied'));
                   localStorage.setItem("idcard_state", JSON.stringify('false'));
                 }
                 history.push("/owner/dashboard");

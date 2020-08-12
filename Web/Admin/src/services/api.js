@@ -1,8 +1,5 @@
 import axios from 'axios';
 import authHeader from './authHeader';
-// const API_URL = "https://syndic-backend.syndicappli-proto.fr/api/";  
-// const API_URL = "https://syndic-backend.say-demo.com/api/";
-// const API_URL = "http://192.168.105.38:3001/api/";
 const API_URL = process.env.REACT_APP_API_URL;
 class AdminService {
   //Login
@@ -74,6 +71,28 @@ class AdminService {
   }
   emptyTrashCompany(status) {
     return axios.post(API_URL + 'web/admin/trash/company/deleteAll', status, { headers: authHeader() });
+  }
+  updateBankInfo(id, data) {
+    return axios.put(API_URL + 'web/admin/company/' + id + '/bank', data, { headers: authHeader() });
+  }
+  deleteBankInfo(id, data) {
+    return axios.put(API_URL + 'web/admin/company/' + id, data, { headers: authHeader() });
+  }
+  //Card Part
+  getCardList(data) {
+    return axios.post(API_URL + 'web/admin/cardList', data, { headers: authHeader() });
+  }
+  createCard(data) {
+    return axios.post(API_URL + 'web/admin/card', data, { headers: authHeader() });
+  }
+  updateCard(id, data) {
+    return axios.put(API_URL + 'web/admin/card/' + id, data, { headers: authHeader() });
+  }
+  getCard(id) {
+    return axios.get(API_URL + 'web/admin/card/' + id, { headers: authHeader() });
+  }
+  deleteCard(id) {
+    return axios.delete(API_URL + 'web/admin/card/' + id, { headers: authHeader() });
   }
   //Building Part
   getBuildingList(data) {
@@ -242,6 +261,23 @@ export class OwnerService {
   getBuildingListByOwner() {
     return axios.get(API_URL + 'web/owner/buildingListByOwner', { headers: authHeader() });
   }
+  //Payment Part
+  //Card Part
+  getCardList(data) {
+    return axios.post(API_URL + 'web/owner/cardList', data, { headers: authHeader() });
+  }
+  createCard(data) {
+    return axios.post(API_URL + 'web/owner/card', data, { headers: authHeader() });
+  }
+  updateCard(id, data) {
+    return axios.put(API_URL + 'web/owner/card/' + id, data, { headers: authHeader() });
+  }
+  getCard(id) {
+    return axios.get(API_URL + 'web/owner/card/' + id, { headers: authHeader() });
+  }
+  deleteCard(id) {
+    return axios.delete(API_URL + 'web/owner/card/' + id, { headers: authHeader() });
+  }
 }
 
 export class ManagerService {
@@ -258,6 +294,13 @@ export class ManagerService {
   }
   getMyCompany() {
     return axios.get(API_URL + 'web/manager/mycompany', { headers: authHeader() });
+  }
+  //Invoice Part
+  getInvoiceSubscription(data) {
+    return axios.post(API_URL + 'web/manager/invoice_order', data, { headers: authHeader() });
+  }
+  getInvoiceAddon(data) {
+    return axios.post(API_URL + 'web/manager/invoice_addon', data, { headers: authHeader() });
   }
   //Addon Part
   getAddonsByBuildingID(data) {
@@ -346,17 +389,28 @@ export class ManagerService {
     return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
   }
   //PaymentMethod Part
-  deleteCard(id, status) {
-    return axios.post(API_URL + 'web/manager/payment/' + id + '/delete', status, { headers: authHeader() });
+  //Card Part
+  getCardList(data) {
+    return axios.post(API_URL + 'web/manager/cardList', data, { headers: authHeader() });
   }
   createCard(data) {
-    return axios.post(API_URL + 'web/manager/payment', data, { headers: authHeader() });
+    return axios.post(API_URL + 'web/manager/card', data, { headers: authHeader() });
   }
   updateCard(id, data) {
-    return axios.put(API_URL + 'web/manager/payment/' + id, data, { headers: authHeader() });
+    return axios.put(API_URL + 'web/manager/card/' + id, data, { headers: authHeader() });
   }
   getCard(id) {
-    return axios.get(API_URL + 'web/manager/payment/' + id, { headers: authHeader() });
+    return axios.get(API_URL + 'web/manager/card/' + id, { headers: authHeader() });
+  }
+  deleteCard(id) {
+    return axios.delete(API_URL + 'web/manager/card/' + id, { headers: authHeader() });
+  }
+  //Bank Information Part
+  updateBankInfo(data) {
+    return axios.put(API_URL + 'web/manager/bank', data, { headers: authHeader() });
+  }
+  getBankInfo(data) {
+    return axios.post(API_URL + 'web/manager/bank' , data, { headers: authHeader() });
   }
   //Event Part
   getEventList(data) {

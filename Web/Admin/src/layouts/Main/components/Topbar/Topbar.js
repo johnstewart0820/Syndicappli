@@ -223,6 +223,12 @@ const Topbar = props => {
     history.push('/manager/payment-methods');
     window.location.reload();
   }
+  const handleClickOwnerPayment = () => {
+    localStorage.setItem("select", JSON.stringify(-1));
+    setAnchorEl(null);
+    history.push('/owner/payment-methods');
+    window.location.reload();
+  }
   const handleClickOwnerMyAccount = () => {
     localStorage.setItem("select", JSON.stringify(-1));
     setAnchorEl(null);
@@ -405,6 +411,13 @@ const Topbar = props => {
                         <img src="/images/sub_accounts.png" alt="image" />
                       </ListItemIcon>
                       <ListItemText className={classes.menu_item}>Sous comptes</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleClickOwnerPayment} >
+                      <ListItemIcon>
+                        <img src="/images/payment.png" alt="image" />
+                      </ListItemIcon>
+                      <ListItemText className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
                     </MenuItem>
                     <Divider />
                     <MenuItem onClick={handleClickLogout}>
