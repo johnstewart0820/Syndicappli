@@ -54,9 +54,16 @@ router.post('/trash/user/deleteAll', authMiddleware.checkToken, deleteAllUser)
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
 router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
 router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), updateCompany)
+router.put('/company/:id/bank', authMiddleware.checkToken, updateBankInformation)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
 router.post('/company/:id/delete', authMiddleware.checkToken, deleteCompany)
 router.post('/trash/company/deleteAll', authMiddleware.checkToken, deleteAllCompany)
+
+router.post('/cardList', authMiddleware.checkToken, getCardList)
+router.post('/card', authMiddleware.checkToken, createCard)
+router.get('/card/:id', authMiddleware.checkToken, getCard)
+router.put('/card/:id', authMiddleware.checkToken, updateCard)
+router.delete('/card/:id', authMiddleware.checkToken, deleteCard)
 
 /**
  * building api
@@ -348,6 +355,25 @@ function updateCompany(req, res) {
 }
 
 /**
+ * Function that updates bank information
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateBankInformation(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let companyID = req.params.id
+    companyService.updateBankInformation(companyID, userId, userdata, req.body).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+
+/**
  * Function that gets company
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
@@ -405,7 +431,101 @@ function deleteAllCompany(req, res) {
     })
 }
 
+/**
+ * Function that get card list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCardList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    companyService.getCardList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 
+/**
+ * Function that create card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    companyService.createCard(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    companyService.createCard(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    companyService.updateCard(userId, userdata, id, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    companyService.updateCard(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 /////////////////////////////////////////////////Building///////////////////////////////////////
 /**
  * Function that get company list by user

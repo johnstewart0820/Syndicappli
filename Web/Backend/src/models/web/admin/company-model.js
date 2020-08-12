@@ -22,9 +22,16 @@ var companyModel = {
     getCountCompanyList: getCountCompanyList,
     createCompany: createCompany,
     updateCompany: updateCompany,
+    updateBankInformation: updateBankInformation,
     getCompany: getCompany,
     deleteCompany: deleteCompany,
-    deleteAllCompany: deleteAllCompany
+    deleteAllCompany: deleteAllCompany,
+
+    getCardList: getCardList,
+    createCard: createCard,
+    getCard: getCard,
+    updateCard: updateCard,
+    deleteCard: deleteCard,
 }
 
 
@@ -74,7 +81,17 @@ function getCompanyList(uid, data) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows);
+                result = []
+                for (var i in rows) {
+                    var sign = false;
+                    for (var j in result) {
+                        if (rows[i].ID == result[j].ID)
+                            sign = true;
+                    }
+                    if (sign == false)
+                        result.push(rows[i])
+                }
+                resolve(result);
             }
         })
     })
@@ -89,7 +106,7 @@ function getCompanyList(uid, data) {
  */
 function getCountCompanyList(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = `select count(*) as cnt
+        let query = `select c.companyID ID
                     from ` + table.COMPANIES + ` c
                     left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
                     left join ` + table.USERS + ` u on u.userID = ur.userID 
@@ -100,7 +117,17 @@ function getCountCompanyList(uid, data) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows[0].cnt)
+                result = []
+                for (var i in rows) {
+                    var sign = false;
+                    for (var j in result) {
+                        if (rows[i].ID == result[j].ID)
+                            sign = true;
+                    }
+                    if (sign == false)
+                        result.push(rows[i])
+                }
+                resolve(result.length)
             }
         })
     })
@@ -189,11 +216,11 @@ function updateCompany(companyID, uid, data, file) {
                     let query
                     let params = []
                     if (file_name == "") {
-                        query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, account_holdername = ?, account_address = ?, account_IBAN = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
-                        params = [data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), companyID]
+                        query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
+                        params = [data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), companyID]
                     } else {
-                        query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, account_holdername = ?, account_address = ?, account_IBAN = ?, logo_url = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
-                        params = [data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), companyID]
+                        query = 'UPDATE ' + table.COMPANIES + ' SET name = ?, address = ?, email = ?, phone = ?, SIRET = ?, VAT = ?, logo_url = ?, access_360cam = ?, access_webcam = ?, access_audio = ?, status = ?, updated_by = ?, updated_at = ? WHERE companyID = ?'
+                        params = [data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), companyID]
                     }
                     db.query(query, params, (error, rows, fields) => {
                         if (error) {
@@ -203,6 +230,27 @@ function updateCompany(companyID, uid, data, file) {
                         }
                     })
                 }
+            }
+        })
+    })
+}
+
+/**
+ * update Bank Information of company
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateBankInformation(companyID, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where companyID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, companyID]
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({message: message.INTERNAL_SERVER_ERROR})
+            } else {
+                resolve("OK")
             }
         })
     })
@@ -373,5 +421,105 @@ function deleteAllCompany(data) {
     })
 }
 
+
+/**
+ * get card list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCardList(data) {
+    return new Promise((resolve, reject) => {
+        let query = `select ca.* from cards ca left join companies c on ca.companyID = c.companyID where c.companyID = ?`
+        db.query(query, [data.companyID], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows)
+            }
+        })
+    })
+}
+
+/**
+ * create card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function createCard(data, uid) {
+    return new Promise((resolve, reject) => {
+        let query = `Insert into cards (companyID, card_number, expiry_date, name, secure_code, created_by, created_at) values (?, ?, ?, ?, ?, ?, ?)`
+        db.query(query, [data.companyID, data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime()], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("OK")
+            }
+        })
+    })
+}
+
+/**
+ *  get card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getCard(id) {
+    return new Promise((resolve, reject) => {
+        let query = `Select * from cards where cardID = ?`
+        db.query(query, [id], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows[0])
+            }
+        })
+    })
+}
+
+/**
+ *  update card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateCard(id, data, uid) {
+    return new Promise((resolve, reject) => {
+        let query = `update cards set card_number = ?, expiry_date = ?, name = ?, secure_code = ?, updated_by = ?, updated_at = ? where cardID = ?`
+        db.query(query, [data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime(), id], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("OK")
+            }
+        })
+    })
+}
+
+/**
+ *  update card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function deleteCard(id) {
+    return new Promise((resolve, reject) => {
+        let query = `delete from cards where id = ?`
+        db.query(query, [id], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve("OK")
+            }
+        })
+    })
+}
 
 module.exports = companyModel
