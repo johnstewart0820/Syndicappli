@@ -70,26 +70,19 @@ const InvoiceAddons = (props) => {
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [dataList, setDataList] = useState([]);
   const [building, setBuilding] = useState(0);
-  const [buildings, setBuildings] = useState([]);
-  const [buildingID, setBuildingID] = useState(-1);
+  const [buildings, setBuildings] = useState(['']);
+  const [buildingID, setBuildingID] = useState(-2);
   const [companyID, setCompanyID] = useState(-1);
-  const [buildingList, setBuildingList] = useState([]);
+  const [buildingList, setBuildingList] = useState(['']);
   const cellList = [
-    { key: 'addon_bundle_name', field: 'Produit' },
-    { key: 'building', field: 'Immeuble' },
-    { key: 'purchase_date', field: 'Date' },
-    { key: 'invoice_total', field: 'Montant' },
+    { key: 'product_name', field: 'Produit' },
+    { key: 'building_name', field: 'Immeuble' },
+    { key: 'start_date', field: 'Date' },
+    { key: 'price', field: 'Montant' },
   ];
   const handleClickEdit = (id) => {
     console.log(id);
     // history.push('/manager/buildings/edit/'+id);
-  }
-  const getDataList = () => {
-    setDataList([
-      { ID: 1, addon_bundle_name: 'Pack modules', building: 'Résidence les Pinsons bleus', purchase_date: '12/03/2020', invoice_total: '4.90€ TTC' },
-      { ID: 21, addon_bundle_name: 'Pack modules', building: '7 rue Berlioz, 75012 Paris', purchase_date: '12/03/2020', invoice_total: '4.90€ TTC' },
-      { ID: 23, addon_bundle_name: 'Pack modules', building: '33 avenue du Général de Gaulle,78200 Meaux', purchase_date: '12/03/2020', invoice_total: '4.90€ TTC' },
-    ])
   }
   useEffect(() => {
     if (accessInvoices !== 'denied') {
@@ -102,10 +95,41 @@ const InvoiceAddons = (props) => {
   }, [companyID]);
   useEffect(() => {
     if (accessInvoices !== 'denied') {
-      if (buildingID !== -1)
-        getDataList();
+      if(companyID !== -1)
+        getInvoices();
     }
-  }, [buildingID])
+  }, [buildingID]);
+  const getInvoices = () => {
+    let requestDate = {
+      'companyID' : companyID,
+      'buildingID' : buildingID
+    }
+    setVisibleIndicator(true);
+    ManagerService.getInvoiceAddon(requestDate)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              setDataList(data.invoice);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   const getCompanies = () => {
     setVisibleIndicator(true);
     ManagerService.getCompanyListByUser()
@@ -156,17 +180,16 @@ const InvoiceAddons = (props) => {
               const data = response.data.data;
               buildingList.splice(0, buildingList.length);
               buildings.splice(0, buildings.length)
-              buildingList.push('')
+              buildings.push('Tout');
               localStorage.setItem("token", JSON.stringify(data.token));
               data.buildinglist.map((item) => (
                 buildings.push(item.name)
               )
               );
-              setBuildingList(data.buildinglist);
+              setBuildingList([{'buildingID':-1},...data.buildinglist]);
               if (data.buildinglist.length !== 0) {
                 setBuildings(buildings);
-                setBuildingID(data.buildinglist[0].buildingID);
-                // setBuildingName(data.buildinglist[0].name);
+                setBuildingID(-1);
               }
               break;
             case 401:

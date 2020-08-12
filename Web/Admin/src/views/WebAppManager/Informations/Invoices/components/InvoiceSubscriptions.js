@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {ToastsContainer, ToastsContainerPosition, ToastsStore} from 'react-toasts';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import InvoiceTable from '../../../../../components/InvoiceTable';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import {  withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import authService from '../../../../../services/authService.js';
 import { makeStyles } from '@material-ui/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { ManagerService as Service } from 'services/api';
 
+const ManagerService = new Service();
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -33,6 +34,19 @@ const useStyles = makeStyles(theme => ({
       minHeight: 29
     },
   },
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
 
   close: {
     cursor: 'pointer',
@@ -40,49 +54,111 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const InvoiceSubscriptions = (props) => {
-  const {history}=props;
-  const token = authService.getToken();    
+  const { history } = props;
+  const token = authService.getToken();
   if (!token) {
     window.location.replace("/login");
   }
- 
+
   const classes = useStyles();
+  const accessInvoices = authService.getAccess('role_invoices');
+  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const [dataList, setDataList] = useState([]);
-  const cellList = [ 
-    {key : 'subscription_name' , field : 'Produit'}, 
-    {key : 'amount_apartments' , field : 'Nombre de lots'},
-    {key : 'price_per_apart' , field : 'Prix par lot'},
-    {key : 'date' , field : 'Date'},
-    {key : 'invoice_total' , field : 'Montant'},
+  const [companyID, setCompanyID] = useState(-1);
+  const cellList = [
+    { key: 'product_name', field: 'Produit' },
+    { key: 'apartment_amount', field: 'Nombre de lots' },
+    { key: 'price', field: 'Prix par lot' },
+    { key: 'start_date', field: 'Date' },
+    { key: 'total_amount', field: 'Montant' },
   ];
   const handleClickEdit = (id) => {
     console.log(id);
     // history.push('/manager/buildings/edit/'+id);
   }
-
   useEffect(() => {
-    getDataList();
-  }, []);
-  const getDataList = () => {
-    setDataList([
-      { ID: 1, subscription_name: 'Abonnement mensuel', amount_apartments: '10.000', price_per_apart: '0.40cts HT', date: 'du 12/03/2020 au 12/04/2020', invoice_total: '4000€ HT'},
-      { ID: 21, subscription_name: 'Abonnement mensuel', amount_apartments: '10.000', price_per_apart: '0.40cts HT', date: 'du 12/02/2020 au 12/03/2020', invoice_total: '4000€ HT'},
-      { ID: 23, subscription_name: 'Abonnement mensuel', amount_apartments: '10.000', price_per_apart: '0.40cts HT', date: 'du 12/01/2020 au 12/02/2020', invoice_total: '4000€ HT'},
-    ])
+    if (accessInvoices !== 'denied') {
+      getCompanies();
+    }
+  }, [accessInvoices]);
+  useEffect(() => {
+    if (companyID !== -1)
+      getInvoices();
+  }, [companyID]);
+  const getCompanies = () => {
+    setVisibleIndicator(true);
+    ManagerService.getCompanyListByUser()
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                setCompanyID(item.companyID)
+              )
+              );
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
-
-
+  const getInvoices = () => {
+    let requestDate = {
+      'companyID': companyID
+    }
+    setVisibleIndicator(true);
+    ManagerService.getInvoiceSubscription(requestDate)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              setDataList(data.invoicelist);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   return (
-    <div >
+    <div>
+      {
+        visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
+      }
       <div className={classes.tool}>
-      </div> 
-        <InvoiceTable 
-          products={dataList} 
-          cells={cellList} 
-          onClickEdit={handleClickEdit}
-          columns={5}
-        />
-      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
+      </div>
+      <InvoiceTable
+        products={dataList}
+        cells={cellList}
+        onClickEdit={handleClickEdit}
+        columns={5}
+      />
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
   );
 };
