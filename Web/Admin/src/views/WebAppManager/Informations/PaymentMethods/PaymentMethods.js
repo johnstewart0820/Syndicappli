@@ -14,6 +14,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import BankCard from './BankCard';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import SEPA from 'sepa';
+import validator from 'card-validator';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -45,7 +47,7 @@ const useStyles = makeStyles(theme => ({
         fontSize: 11,
       },
     },
-    '& .MuiOutlinedInput-multiline':{
+    '& .MuiOutlinedInput-multiline': {
       padding: 0,
       lineHeight: 'normal'
     },
@@ -127,6 +129,17 @@ const useStyles = makeStyles(theme => ({
       fontSize: 14
     },
   },
+  sepaItemTitle: {
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 18,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 13,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 9,
+    },
+  },
   padding: {
     padding: theme.spacing(2, 4, 3),
   },
@@ -147,13 +160,17 @@ const PaymentMethods = (props) => {
   const [open, setOpen] = useState(false);
   const [accountHolder, setAccountHolder] = useState('');
   const [accountAddress, setAccountAddress] = useState('');
-  const [accountIban, setAccountIban] = useState('');
-  const [dataList, setDataList] = useState([]);
+  const [accountIban, setAccountIBAN] = useState('');
+  const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
+  const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
+  const [errorsIBAN, setErrorsIBAN] = useState('');
+  const [cardDataList, setCardDataList] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [visibleIndicator, setVisibleIndicator] = useState(false);
   const [deleteId, setDeleteId] = useState(-1);
-  const [state, setState] = useState({method:'add', buttonText: 'Ajouter', pos:-1});
+  const [companyID, setCompanyID] = useState(-1);
+  const [state, setState] = useState({ method: 'add', buttonText: 'Ajouter', pos: -1, companyID: -1 });
   const handleChangeAccountHolder = (event) => {
     setAccountHolder(event.target.value);
   };
@@ -161,18 +178,105 @@ const PaymentMethods = (props) => {
     setAccountAddress(event.target.value);
   };
   const handleChangeAccountIban = (event) => {
-    setAccountIban(event.target.value);
+    if (!SEPA.validateIBAN(event.target.value))
+      setErrorsIBAN('please enter correct IBAN');
+    else
+      setErrorsIBAN('');
+    if (event.target.value.length === 0)
+      setErrorsIBAN('');
+    setAccountIBAN(event.target.value);
   };
   useEffect(() => {
-    getDataList();
+    if (accesspayments !== 'denied') {
+      getCompanies();
+    }
+  }, [accesspayments]);
+  useEffect(() => {
+    let tmpState = { method: 'add', buttonText: 'Ajouter', pos: -1, companyID: companyID };
+    setState(tmpState);
+    if (companyID !== -1) {
+      getCards();
+    }
+  }, [companyID]);
+  useEffect(() => {
+    getCards();
   }, [refresh]);
-  const getDataList = () => {
-    setDataList([
-      { ID: 1, card_digits: 'MasterCard-6914', card_name: 'MonSyndic', expiry_date: 'Exp. 12/2021' },
-      { ID: 2, card_digits: 'MasterCard-6914', card_name: 'MonSyndic', expiry_date: 'Exp. 12/2021' },
-      { ID: 3, card_digits: 'MasterCard-6914', card_name: 'MonSyndic', expiry_date: 'Exp. 12/2021' },
-    ])
-  };
+  const cardCellList = [
+    { key: 'secure_code', field: '' },
+    { key: 'name', field: '' },
+    { key: 'expiry_date', field: '' }
+  ];
+  const getCompanies = () => {
+    setVisibleIndicator(true);
+    ManagerService.getCompanyListByUser()
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              data.companylist.map((item) => (
+                setCompanyID(item.companyID)
+              )
+              );
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getCards = () => {
+    const requestData = {
+      'companyID': companyID
+    }
+    setVisibleIndicator(true);
+    ManagerService.getCardList(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              let list = data.cardlist;
+              for (let i = 0; i < list.length; i++) {
+                let numberValidation = validator.number(list[i].card_number);
+                if (numberValidation.isPotentiallyValid) {
+                  if (numberValidation.card) {
+                    list[i].secure_code = numberValidation.card.niceType + '-' + list[i].secure_code;
+                  } else
+                    list[i].secure_code = list[i].secure_code;
+                } else
+                  list[i].secure_code = list[i].secure_code;
+              }
+              setCardDataList(list);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   const handleClose = () => {
     setOpen(false);
   };
@@ -185,12 +289,12 @@ const PaymentMethods = (props) => {
     setRefresh(!refresh);
   };
   const handleClickAddCard = () => {
-    let tmpState = {method:'add',buttonText: 'Ajouter', pos: -1};
+    let tmpState = { method: 'add', buttonText: 'Ajouter', pos: -1, companyID: companyID };
     setState(tmpState);
     setOpen(true);
   }
   const handleClickEditCard = (id) => {
-    let tmpState = {method:'edit',buttonText: 'Mettre à jour', pos: id};
+    let tmpState = { method: 'edit', buttonText: 'Mettre à jour', pos: id, companyID: companyID };
     setState(tmpState);
     setOpen(true);
   }
@@ -234,7 +338,103 @@ const PaymentMethods = (props) => {
         }
       );
   }
-  const cellList = [{ key: 'card_digits', field: '' }, { key: 'card_name', field: '' }, { key: 'expiry_date', field: '' }]
+  const handleClickUpdateBankInfo = () => {
+    let cnt = 0;
+    if (accountAddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
+    else setErrorsAccountAddress('');
+    if (accountHolder.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
+    else setErrorsAccountHolder('');
+    if (accountIban.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
+    else setErrorsIBAN('');
+    if(cnt === 0){
+      window.Stripe.setPublishableKey('pk_test_51HEthNHgsqnVJgIV6rOYtsghGogygy02fGaBgqkdHjWhNVX6iWM7tajkEjTBUj7AEPlIHAmBYrJMtU6NFLosx11U00TA0sB3wL');
+      const ibanInfo = {
+      }
+      window.Stripe.createSource(ibanInfo,{
+        type: 'sepa_debit',
+        currency: 'eur',
+        owner: {
+          name: 'Jenny Rosen',
+        }
+      }, handleResponse);
+    }
+  }
+  const handleResponse = (req, res) => {
+    if(res.error){
+
+    }else if(res.source){
+        updateBank();
+    }
+  }
+  const updateBank = () => {
+    let requestData = {
+      'account_holdername': accountHolder,
+      'account_address': accountAddress,
+      'account_IBAN': accountIban,
+      'companyID': companyID
+    }
+    setVisibleIndicator(true);
+    ManagerService.updateBankInfo(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success(response.data.message);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const handleClickDeleteBankInfo = () => {
+    let requestData = {
+      'account_holdername': '',
+      'account_address': '',
+      'account_IBAN': '',
+      'companyID': companyID
+    }
+    setVisibleIndicator(true);
+    ManagerService.updateBankInfo(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success(response.data.message);
+              setAccountAddress('');
+              setAccountHolder('');
+              setAccountIBAN('');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   return (
     <div className={classes.root}>
       {
@@ -256,8 +456,8 @@ const PaymentMethods = (props) => {
           </Grid>
           <Grid item sm={7}>
             <MyTableCard
-              products={dataList}
-              cells={cellList}
+              products={cardDataList}
+              cells={cardCellList}
               leftBtn="Ajouter uno  carte"
               onClickEdit={handleClickEditCard}
               onClickDelete={handleClickDeleteCard}
@@ -274,11 +474,11 @@ const PaymentMethods = (props) => {
                 <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
                 <Grid item>
                   <h2 id="transition-modal-title" className={classes.modalTitle}>
-                    {state.method === 'add' ?  "Ajouter Carte" : "Mettre à jour Carte"}
+                    {state.method === 'add' ? "Ajouter Carte" : "Mettre à jour Carte"}
                   </h2>
                 </Grid>
               </Grid>
-              <BankCard onCancel={handleClose} onAdd={handleAdd} onUpdate={handleUpdate} state={state}/>
+              <BankCard onCancel={handleClose} onAdd={handleAdd} onUpdate={handleUpdate} state={state} />
             </Dialog>
           </Grid>
         </Grid>
@@ -293,13 +493,14 @@ const PaymentMethods = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      id="outlined-basic"
                       className={classes.text}
                       variant="outlined"
                       value={accountHolder}
                       onChange={handleChangeAccountHolder}
                       disabled={(accesspayments === 'see' ? true : false)}
                     />
+                    {errorsAccountHolder.length > 0 &&
+                      <span className={classes.error}>{errorsAccountHolder}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -308,7 +509,6 @@ const PaymentMethods = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      id="outlined-basic"
                       className={classes.text}
                       multiline
                       variant="outlined"
@@ -316,6 +516,8 @@ const PaymentMethods = (props) => {
                       onChange={handleChangeAccountAddress}
                       disabled={(accesspayments === 'see' ? true : false)}
                     />
+                    {errorsAccountAddress.length > 0 &&
+                      <span className={classes.error}>{errorsAccountAddress}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -324,20 +526,35 @@ const PaymentMethods = (props) => {
                 <Grid xs item container direction="row-reverse">
                   <Grid item container alignItems="stretch" direction="column">
                     <TextField
-                      id="outlined-basic"
                       className={classes.text}
                       variant="outlined"
                       value={accountIban}
                       onChange={handleChangeAccountIban}
                       disabled={(accesspayments === 'see' ? true : false)}
                     />
+                    {errorsIBAN.length > 0 &&
+                      <span className={classes.error}>{errorsIBAN}</span>}
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item container justify="space-between" spacing={1}>
-              <Grid item><MyButton name={"Editer le mandat"} color={"1"} disabled={(accesspayments === 'see' ? true : false)} /></Grid>
-              <Grid item><MyButton name={"Supprimer"} bgColor="grey" disabled={(accesspayments === 'see' ? true : false)} />  </Grid>
+              <Grid item>
+                <MyButton
+                  name={"Editer le mandat"}
+                  color={"1"}
+                  disabled={(accesspayments === 'see' ? true : false)}
+                  onClick={handleClickUpdateBankInfo}
+                />
+              </Grid>
+              <Grid item>
+                <MyButton
+                  name={"Supprimer"}
+                  bgColor="grey"
+                  disabled={(accesspayments === 'see' ? true : false)}
+                  onClick={handleClickDeleteBankInfo}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </div>

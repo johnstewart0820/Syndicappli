@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import MySelect from 'components/MySelect';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { makeStyles } from '@material-ui/styles';
-import { ManagerService as Service } from 'services/api';
+import {ManagerService as Service} from 'services/api';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
@@ -144,6 +144,7 @@ const BankCard = (props) => {
   const [cardNumber, setCardNumber] = React.useState('');
   const [cardHolderName, setCardHolderName] = React.useState('');
   const [expirationDate, setExpirationDate] = React.useState('');
+  const [Date, setDate] = React.useState('');
   const [cryptogram, setCryptogram] = React.useState('');
   const [focus, setFocus] = React.useState('');
 
@@ -170,18 +171,25 @@ const BankCard = (props) => {
     if (cryptogram.length === 0) { setErrorsCryptogram('please enter cryptogram'); cnt++; }
     else setErrorsCryptogram('');
     if (cnt === 0) {
-      if (props.state.method === 'add')
-        createCard();
-      else if (props.state.method === 'edit')
-        updateCard();
+      window.Stripe.setPublishableKey('pk_test_51HEthNHgsqnVJgIV6rOYtsghGogygy02fGaBgqkdHjWhNVX6iWM7tajkEjTBUj7AEPlIHAmBYrJMtU6NFLosx11U00TA0sB3wL');
+      const exp_month = expirationDate.split('/')[0];
+      const exp_year = expirationDate.split('/')[1];
+      const cardInfo = {
+          number: cardNumber,
+          exp_month: exp_month,
+          exp_year: exp_year,
+          cvc: cryptogram,
+      }
+      window.Stripe.createToken(cardInfo, handleResponse);
     }
   }
   const createCard = () => {
     const requestData = {
       'card_number': cardNumber,
-      'card_holder_name': cardHolderName,
-      'expiration_date': expirationDate,
-      'cryptogram': cryptogram
+      'name': cardHolderName,
+      'expiry_date': Date,
+      'secure_code': cryptogram,
+      'companyID' : props.state.companyID
     }
     setVisibleIndicator(true);
     ManagerService.createCard(requestData)
@@ -210,12 +218,27 @@ const BankCard = (props) => {
         }
       );
   }
+  const handleResponse = (req, res) => {
+    if(res.error){
+      if(res.error.code === 'invalid_number' || res.error.code === 'incorrect_number')
+        setErrorsCardNumber(res.error.message);
+      if(res.error.code === 'incorrect_cvc' || res.error.code === 'invalid_cvc')
+        setErrorsCryptogram(res.error.message);
+      if(res.error.code === 'invalid_expiry_month' || res.error.code === 'invalid_expiry_year')
+        setErrorsExpirationDate(res.error.message);
+    }else if(res.id){
+      if (props.state.method === 'add')
+        createCard();
+      else if (props.state.method === 'edit')
+        updateCard();
+    }
+  }
   const updateCard = () => {
     const requestData = {
       'card_number': cardNumber,
-      'card_holder_name': cardHolderName,
-      'expiration_date': expirationDate,
-      'cryptogram': cryptogram
+      'name': cardHolderName,
+      'expiry_date': Date,
+      'secure_code': cryptogram
     }
     setVisibleIndicator(true);
     ManagerService.updateCard(props.state.pos, requestData)
@@ -255,9 +278,12 @@ const BankCard = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               setCardNumber(data.card.card_number);
-              setCardHolderName(data.card.card_holder_name);
-              setExpirationDate(data.card.expiration_date);
-              setCryptogram(data.card.cryptogram);
+              setCardHolderName(data.card.name);
+              setDate(data.card.expiry_date);
+              setCryptogram(data.card.secure_code);
+              const exp_month = data.card.expiry_date.split('-')[1];
+              const exp_year = data.card.expiry_date.split('-')[0];
+              setExpirationDate(exp_month + '/' + exp_year%100);
               break;
             case 401:
               authService.logout();
@@ -285,7 +311,10 @@ const BankCard = (props) => {
     setCardHolderName(event.target.value);
   }
   const handleChangeExpirationDate = (event) => {
-    setExpirationDate(event.target.value);
+    const exp_month = event.target.value.split('-')[1];
+    const exp_year = event.target.value.split('-')[0];
+    setDate(event.target.value);
+    setExpirationDate(exp_month + '/' + exp_year%100);
   }
   const handleChangeCryptogram = (event) => {
     if (Number.isInteger(Number(event.target.value))) {
@@ -356,11 +385,10 @@ const BankCard = (props) => {
                 <TextField
                   name="expiry"
                   variant="outlined"
-                  value={expirationDate}
+                  value={Date}
                   onChange={handleChangeExpirationDate}
                   onFocus={handleInputFocus}
                   type="date"
-                  format={'DD/MM'}
                   fullWidth
                 />
                 {errorsExpirationDate.length > 0 &&
