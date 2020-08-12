@@ -35,7 +35,23 @@ var invoiceModel = {
  */
 function getInvoiceOrder(data) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from orders where buyerID = ? and buyer_type = "managers" and permission = "active" and productID not in (select productID from products where name = "Pack de Modules")'
+        let query = `SELECT
+                        o.orderID,
+                        b.name building_name,
+                        o.start_date,
+                        o.price,
+                        p.name product_name,
+                        o.apartment_amount,
+                        o.apartment_amount * o.price total_amount
+                    FROM
+                        orders o
+                        LEFT JOIN products p ON o.productID = p.productID
+                        LEFT JOIN buildings b ON o.buildingID = b.buildingID 
+                    WHERE
+                        o.buyerID = ?
+                        AND o.buyer_type = "managers" 
+                        AND o.permission = "active" 
+                        AND p.name not like "Pack de Modules"`
 
         db.query(query, [data.companyID], (error, rows, fields) => {
             if (error) {
@@ -59,10 +75,39 @@ function getInvoiceAddon(data) {
         let query
         let params = []
         if (data.buildingID == -1) {
-            query = 'Select * from orders where companyID = ?  and buyer_type = "managers" and permission = "active" and productID in (select productID from products where name = "Pack de Modules")'
+            query = `SELECT
+                        o.orderID,
+                        b.name building_name,
+                        o.start_date,
+                        o.price,
+                        p.name product_name
+                    FROM
+                        orders o
+                        LEFT JOIN products p ON o.productID = p.productID
+                        LEFT JOIN buildings b ON o.buildingID = b.buildingID 
+                    WHERE
+                        o.companyID = ?
+                        AND o.buyer_type = "managers" 
+                        AND o.permission = "active" 
+                        AND p.name = "Pack de Modules"`
             params = [data.companyID]
         } else {
-            query = 'Select * from orders where companyID = ? and buildingID = ? and buyer_type = "managers" and permission = "active" and productID in (select productID from products where name = "Pack de Modules")'
+            query = `SELECT
+                        o.orderID,
+                        b.name building_name,
+                        o.start_date,
+                        o.price,
+                        p.name product_name
+                    FROM
+                        orders o
+                        LEFT JOIN products p ON o.productID = p.productID
+                        LEFT JOIN buildings b ON o.buildingID = b.buildingID 
+                    WHERE
+                        o.companyID = ?
+                        AND o.buildilngID = ?
+                        AND o.buyer_type = "managers" 
+                        AND o.permission = "active" 
+                        AND p.name = "Pack de Modules"`
             params = [data.companyID, data.buildingID]
         }
 
