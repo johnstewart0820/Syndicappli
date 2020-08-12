@@ -108,7 +108,7 @@ function buyAddon(uid, data) {
                                                 reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
                                             else {
                                                 let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                                db.query(query, ["managers", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                                                db.query(query, ["managers", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
                                                     if (error) {
                                                         reject({ message: message.INTERNAL_SERVER_ERROR });
                                                     } else {
@@ -126,7 +126,7 @@ function buyAddon(uid, data) {
             })
         } else {
             let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-            db.query(query, ["managers", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+            db.query(query, ["managers", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
                 if (error) {
                     reject({ message: message.INTERNAL_SERVER_ERROR });
                 } else {

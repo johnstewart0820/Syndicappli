@@ -10,7 +10,9 @@
  */
 
 var timer_functions = {
-    getCurrentTime:getCurrentTime
+    getCurrentTime:getCurrentTime,
+    getCurrentDate: getCurrentDate,
+    getNextYearDate: getNextYearDate,
 }
 
 function getCurrentTime(){
@@ -43,6 +45,40 @@ function getCurrentTime(){
     }
 
     return String(currentYear + "-" + currentMonth + "-" + currentDate + " " + currentHour + ":" + currentMinute + ":" + currentSecond)
+}
+
+function getCurrentDate(){
+    var current = new Date();
+    var currentYear = current.getFullYear();
+    var currentMonth = current.getMonth();
+    var currentDate = current.getDate();
+
+    if((currentMonth + 1) < 10){
+        currentMonth = "0" + (currentMonth + 1)
+    }
+
+    if(currentDate < 10){
+        currentDate = "0" + currentDate
+    }
+
+    return String(currentYear + "-" + currentMonth + "-" + currentDate)
+}
+
+function getNextYearDate(){
+    var current = new Date();
+    var currentYear = current.getFullYear() + 1;
+    var currentMonth = current.getMonth();
+    var currentDate = current.getDate();
+
+    if((currentMonth + 1) < 10){
+        currentMonth = "0" + (currentMonth + 1)
+    }
+
+    if(currentDate < 10){
+        currentDate = "0" + currentDate
+    }
+
+    return String(currentYear + "-" + currentMonth + "-" + currentDate)
 }
 
 module.exports = timer_functions
