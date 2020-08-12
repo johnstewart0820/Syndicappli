@@ -59,10 +59,10 @@ function getInvoiceAddon(data) {
         let query
         let params = []
         if (data.buildingID == -1) {
-            query = 'Select * from orders where companyID = ?  and buyer_type = "managers" and permission = "active"'
+            query = 'Select * from orders where companyID = ?  and buyer_type = "managers" and permission = "active" and productID in (select productID from products where name = "Pack de Modules")'
             params = [data.companyID]
         } else {
-            query = 'Select * from orders where companyID = ? and buildingID = ? and buyer_type = "managers" and permission = "active"'
+            query = 'Select * from orders where companyID = ? and buildingID = ? and buyer_type = "managers" and permission = "active" and productID in (select productID from products where name = "Pack de Modules")'
             params = [data.companyID, data.buildingID]
         }
 
