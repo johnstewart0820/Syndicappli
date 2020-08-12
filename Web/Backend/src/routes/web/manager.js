@@ -22,6 +22,7 @@ const managerService = require('../../services/web/manager/manager-service')
 const ownerService = require('../../services/web/manager/owner-service')
 const addonService = require('../../services/web/manager/addon-service')
 const invoiceService = require('../../services/web/manager/invoice-service')
+const cardService = require('../../services/web/manager/card-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
@@ -86,6 +87,16 @@ router.get('/discountCode/:id', authMiddleware.checkToken, getDiscountCode)
  */
 router.post('/invoice_addon', authMiddleware.checkToken, getInvoiceAddon)
 router.post('/invoice_order', authMiddleware.checkToken, getInvoiceOrder)
+
+
+/**
+ * card api
+ */
+router.post('/cardList', authMiddleware.checkToken, getCardList)
+router.post('/card', authMiddleware.checkToken, createCard)
+router.get('/card/:id', authMiddleware.checkToken, getCard)
+router.put('/card/:id', authMiddleware.checkToken, updateCard)
+router.delete('/card/:id', authMiddleware.checkToken, deleteCard)
 
 /**
  * Function that get profile data
@@ -737,6 +748,103 @@ function getInvoiceAddon(req, res){
     let userdata = req.decoded.userdata
     let data = req.body
     invoiceService.getInvoiceAddon(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+///////////////////////Card//////////////////////
+/**
+ * Function that get card list
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCardList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    cardService.getCardList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that create card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    cardService.createCard(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    cardService.createCard(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    cardService.updateCard(userId, userdata, id, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete card
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteCard(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    cardService.updateCard(userId, userdata, id).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
