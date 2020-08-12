@@ -22,6 +22,7 @@ const authHelper = {
     hasUserPermission: hasUserPermission,
     hasTeamPermission: hasTeamPermission,
     hasAddonPermission: hasAddonPermission,
+    hasInvoicePermission: hasInvoicePermission,
 }
 
 function hasCompanyPermission(userdata, permission){
@@ -200,6 +201,25 @@ function hasAddonPermission(userdata, permission){
         let status = false
         for (i in permission) {
             if (userdata.role_addons == permission[i]){
+                status = true
+                break
+            } else {
+                continue
+            }
+        }
+        if(status == true){
+            resolve("true")
+        }else{
+            reject({ message: message.HAS_NO_PERMISSION })
+        }
+    })
+}
+
+function hasInvoicePermission(userdata, permission){
+    return new Promise((resolve, reject) => {
+        let status = false
+        for (i in permission) {
+            if (userdata.role_invoices == permission[i]){
                 status = true
                 break
             } else {

@@ -21,6 +21,7 @@ const buildingService = require('../../services/web/manager/building-service')
 const managerService = require('../../services/web/manager/manager-service')
 const ownerService = require('../../services/web/manager/owner-service')
 const addonService = require('../../services/web/manager/addon-service')
+const invoiceService = require('../../services/web/manager/invoice-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
@@ -79,6 +80,13 @@ router.get('/addon', authMiddleware.checkToken, getAddon)
 router.post('/buyAddon', authMiddleware.checkToken, buyAddon)
 router.post('/discountCodeListByType', authMiddleware.checkToken, getDiscountCodeListByType)
 router.get('/discountCode/:id', authMiddleware.checkToken, getDiscountCode)
+
+/**
+ * invoice api
+ */
+router.post('/invoice_addon', authMiddleware.checkToken, getInvoiceAddon)
+router.post('/invoice_order', authMiddleware.checkToken, getInvoiceOrder)
+
 /**
  * Function that get profile data
  *
@@ -688,6 +696,47 @@ function getDiscountCode(req, res){
     let userdata = req.decoded.userdata
     let id = req.params.id
     addonService.getDiscountCode(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/////////////////////////Invoice/////////////////////////
+/**
+ * Function that get order Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getInvoiceOrder(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    invoiceService.getInvoiceOrder(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getInvoiceAddon(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    invoiceService.getInvoiceAddon(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
