@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MyButton from 'components/MyButton';
 import authService from 'services/authService.js';
@@ -167,6 +166,7 @@ const PaymentMethods = (props) => {
   const [cardDataList, setCardDataList] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openSEPADelete, setOpenSEPADelete] = useState(false);
   const [visibleIndicator, setVisibleIndicator] = useState(false);
   const [deleteId, setDeleteId] = useState(-1);
   const [companyID, setCompanyID] = useState(-1);
@@ -346,60 +346,57 @@ const PaymentMethods = (props) => {
     else setErrorsAccountHolder('');
     if (accountIban.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
     else setErrorsIBAN('');
-    if(cnt === 0){
-      window.Stripe.setPublishableKey('pk_test_51HEthNHgsqnVJgIV6rOYtsghGogygy02fGaBgqkdHjWhNVX6iWM7tajkEjTBUj7AEPlIHAmBYrJMtU6NFLosx11U00TA0sB3wL');
-      const ibanInfo = {
+    if (!SEPA.validateIBAN(accountIban)) {
+      setErrorsIBAN('please enter correct IBAN');
+      cnt++;
+    }
+    if (cnt === 0) {
+      let requestData = {
+        'account_holdername': accountHolder,
+        'account_address': accountAddress,
+        'account_IBAN': accountIban,
+        'companyID': companyID
       }
-      window.Stripe.createSource(ibanInfo,{
-        type: 'sepa_debit',
-        currency: 'eur',
-        owner: {
-          name: 'Jenny Rosen',
-        }
-      }, handleResponse);
-    }
-  }
-  const handleResponse = (req, res) => {
-    if(res.error){
-
-    }else if(res.source){
-        updateBank();
-    }
-  }
-  const updateBank = () => {
-    let requestData = {
-      'account_holdername': accountHolder,
-      'account_address': accountAddress,
-      'account_IBAN': accountIban,
-      'companyID': companyID
-    }
-    setVisibleIndicator(true);
-    ManagerService.updateBankInfo(requestData)
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch (response.data.code) {
-            case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              ToastsStore.success('Updated Successfully');
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
+      setVisibleIndicator(true);
+      ManagerService.updateBankInfo(requestData)
+        .then(
+          response => {
+            setVisibleIndicator(false);
+            switch (response.data.code) {
+              case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                ToastsStore.success('Updated Successfully');
+                setErrorsAccountAddress('');
+                setErrorsAccountHolder('');
+                setErrorsIBAN('');
+                break;
+              case 401:
+                authService.logout();
+                history.push('/login');
+                window.location.reload();
+                break;
+              default:
+                ToastsStore.error(response.data.message);
+            }
+          },
+          error => {
+            ToastsStore.error("Can't connect to the server!");
+            setVisibleIndicator(false);
           }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
+        );
+    }
   }
   const handleClickDeleteBankInfo = () => {
+    if (accountIban.length !== 0) {
+      setOpenSEPADelete(true);
+    }
+  }
+  const handleCloseSEPADelete = () => {
+    setOpenSEPADelete(false);
+  };
+  const handleSEPADelete = () => {
+    handleCloseSEPADelete();
     let requestData = {
       'account_holdername': '',
       'account_address': '',
@@ -419,6 +416,9 @@ const PaymentMethods = (props) => {
               setAccountAddress('');
               setAccountHolder('');
               setAccountIBAN('');
+              setErrorsAccountAddress('');
+              setErrorsAccountHolder('');
+              setErrorsIBAN('');
               break;
             case 401:
               authService.logout();
@@ -564,6 +564,12 @@ const PaymentMethods = (props) => {
         handleCloseDelete={handleCloseDelete}
         handleDelete={handleDelete}
         account={'card'}
+      />
+      <DeleteConfirmDialog
+        openDelete={openSEPADelete}
+        handleCloseDelete={handleCloseSEPADelete}
+        handleDelete={handleSEPADelete}
+        account={'bank information'}
       />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>

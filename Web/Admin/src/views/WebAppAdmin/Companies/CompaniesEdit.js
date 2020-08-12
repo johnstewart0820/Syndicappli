@@ -57,6 +57,7 @@ const CompaniesEdit = (props) => {
   const [openAddManager, setOpenAddManager] = React.useState(false);
   const [openAddBuilding, setOpenAddBuilding] = React.useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openSEPADelete, setOpenSEPADelete] = useState(false);
   const [open, setOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [name, setName] = useState('');
@@ -616,6 +617,10 @@ const CompaniesEdit = (props) => {
     else setErrorsAccountHolder('');
     if (IBAN.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
     else setErrorsIBAN('');
+    if(!SEPA.validateIBAN(IBAN)){
+      setErrorsIBAN('please enter correct IBAN');
+      cnt++; 
+    }
     if (cnt === 0) {
       let requestData = {
         'account_holdername': accountname,
@@ -632,6 +637,9 @@ const CompaniesEdit = (props) => {
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
                 ToastsStore.success('Updated Successfully');
+                setErrorsAccountAddress('');
+                setErrorsAccountHolder('');
+                setErrorsIBAN('');
                 break;
               case 401:
                 authService.logout();
@@ -650,39 +658,9 @@ const CompaniesEdit = (props) => {
     }
   }
   const handleClickDeleteBankInfo = () => {
-    let requestData = {
-      'account_holdername': '',
-      'account_address': '',
-      'account_IBAN': ''
+    if(IBAN.length !== 0){
+      setOpenSEPADelete(true);
     }
-    setVisibleIndicator(true);
-    AdminService.updateBankInfo(props.match.params.id, requestData)
-      .then(
-        response => {
-          setVisibleIndicator(false);
-          switch (response.data.code) {
-            case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              ToastsStore.success('Deleted Successfully');
-              setAccountAddress('');
-              setAccountName('');
-              setIBAN('');
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
   }
   const handleClose = () => {
     setOpen(false);
@@ -712,6 +690,48 @@ const CompaniesEdit = (props) => {
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
+  const handleCloseSEPADelete = () => {
+    setOpenSEPADelete(false);
+  };
+  const handleSEPADelete = () => {
+    handleCloseSEPADelete();
+    let requestData = {
+      'account_holdername': '',
+      'account_address': '',
+      'account_IBAN': ''
+    }
+    setVisibleIndicator(true);
+    AdminService.updateBankInfo(props.match.params.id, requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success('Deleted Successfully');
+              setAccountAddress('');
+              setAccountName('');
+              setIBAN('');
+              setErrorsAccountAddress('');
+              setErrorsAccountHolder('');
+              setErrorsIBAN('');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   const handleDelete = () => {
     handleCloseDelete();
     setDeleteId(-1);
@@ -1183,6 +1203,12 @@ const CompaniesEdit = (props) => {
         handleCloseDelete={handleCloseDelete}
         handleDelete={handleDelete}
         account={'card'}
+      />
+      <DeleteConfirmDialog
+        openDelete={openSEPADelete}
+        handleCloseDelete={handleCloseSEPADelete}
+        handleDelete={handleSEPADelete}
+        account={'bank information'}
       />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
