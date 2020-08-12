@@ -92,7 +92,7 @@ function createOwner_info(uid, data) {
                     let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
                     let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, firstname_1, lastname_1, owner_company_name, address, password, email, phone, status, permission, created_by, created_at, updated_at, token, invitation_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    db.query(query, ["owner", "Mr & Mrs", "subaccount", data.firstname, data.lastname, data.firstname_1, data.lastname_1, "","", password, data.email, data.phone, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), randomToken, "invited"], function (error, rows, fields)  {
+                    db.query(query, ["owner", "Mr & Mrs", "subaccount", data.firstname, data.lastname, data.firstname_1, data.lastname_1, "",data.address, password, data.email, data.phone, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), randomToken, "invited"], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
