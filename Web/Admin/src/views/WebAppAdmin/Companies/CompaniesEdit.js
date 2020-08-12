@@ -631,7 +631,7 @@ const CompaniesEdit = (props) => {
               case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
-                ToastsStore.success(response.data.message);
+                ToastsStore.success('Updated Successfully');
                 break;
               case 401:
                 authService.logout();
@@ -664,7 +664,7 @@ const CompaniesEdit = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              ToastsStore.success(response.data.message);
+              ToastsStore.success('Deleted Successfully');
               setAccountAddress('');
               setAccountName('');
               setIBAN('');
