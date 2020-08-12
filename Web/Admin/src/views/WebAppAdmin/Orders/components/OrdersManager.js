@@ -226,10 +226,12 @@ const OrdersManager = (props) => {
       );
   }
   return (
-    <Grid item container spacing={3} direction="column">
-      {
+    <div>
+            {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
+    <Grid  container spacing={3} direction="column">
+
       <Grid item></Grid>
       <Grid item container spacing={2} direction="row-reverse" >
         <Grid item>
@@ -315,6 +317,7 @@ const OrdersManager = (props) => {
       />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </Grid>
+    </div>
   );
 };
 

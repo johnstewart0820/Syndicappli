@@ -10,7 +10,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
 import authService from 'services/authService';
-import { getConfigFileParsingDiagnostics } from 'typescript';
+import 'react-credit-cards/es/styles-compiled.css';
+import 'react-credit-cards/lib/styles.scss';
+import Cards from 'react-credit-cards';
 const useStyles = makeStyles(theme => ({
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -30,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 30
   },
   root: {
-    '& .MuiOutlinedInput-multiline':{
+    '& .MuiOutlinedInput-multiline': {
       padding: 0,
       lineHeight: 'normal'
     },
@@ -71,7 +73,7 @@ const useStyles = makeStyles(theme => ({
     display: 'none'
   },
   img: {
-    objectFit:'cover',
+    objectFit: 'cover',
     cursor: 'pointer',
     alignItems: 'center',
     justifyContent: 'center',
@@ -143,6 +145,7 @@ const BankCard = (props) => {
   const [cardHolderName, setCardHolderName] = React.useState('');
   const [expirationDate, setExpirationDate] = React.useState('');
   const [cryptogram, setCryptogram] = React.useState('');
+  const [focus, setFocus] = React.useState('');
 
   const [errorsCardNumber, setErrorsCardNumber] = React.useState('');
   const [errorsCardHolderName, setErrorsCardHolderName] = React.useState('');
@@ -151,11 +154,11 @@ const BankCard = (props) => {
   const handleClose = () => {
     props.onCancel();
   };
-  useEffect(()=>{
-    if(props.state.method === 'edit'){
+  useEffect(() => {
+    if (props.state.method === 'edit') {
       getCard(props.state.pos);
     }
-  },[props.state]);
+  }, [props.state]);
   const handleProcess = () => {
     let cnt = 0;
     if (cardNumber.length === 0) { setErrorsCardNumber('please enter card number'); cnt++; }
@@ -175,10 +178,10 @@ const BankCard = (props) => {
   }
   const createCard = () => {
     const requestData = {
-      'card_number' : cardNumber,
-      'card_holder_name' : cardHolderName,
-      'expiration_date' : expirationDate,
-      'cryptogram' : cryptogram
+      'card_number': cardNumber,
+      'card_holder_name': cardHolderName,
+      'expiration_date': expirationDate,
+      'cryptogram': cryptogram
     }
     setVisibleIndicator(true);
     ManagerService.createCard(requestData)
@@ -209,10 +212,10 @@ const BankCard = (props) => {
   }
   const updateCard = () => {
     const requestData = {
-      'card_number' : cardNumber,
-      'card_holder_name' : cardHolderName,
-      'expiration_date' : expirationDate,
-      'cryptogram' : cryptogram
+      'card_number': cardNumber,
+      'card_holder_name': cardHolderName,
+      'expiration_date': expirationDate,
+      'cryptogram': cryptogram
     }
     setVisibleIndicator(true);
     ManagerService.updateCard(props.state.pos, requestData)
@@ -241,38 +244,42 @@ const BankCard = (props) => {
         }
       );
   };
-  const getCard = (id)=>{
+  const getCard = (id) => {
     setVisibleIndicator(true);
-      ManagerService.getCard(id)
-        .then(
-          response => {
-            setVisibleIndicator(false);
-            switch(response.data.code){
-              case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                setCardNumber(data.card.card_number);
-                setCardHolderName(data.card.card_holder_name);
-                setExpirationDate(data.card.expiration_date);
-                setCryptogram(data.card.cryptogram);
-                break;
-              case 401:
-                authService.logout();
-                history.push('/login');
-                window.location.reload();
-                break;
-              default:
-                ToastsStore.error(response.data.message);
-            }
-          },
-          error => {
-            ToastsStore.error("Can't connect to the server!");
-            setVisibleIndicator(false);
+    ManagerService.getCard(id)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              setCardNumber(data.card.card_number);
+              setCardHolderName(data.card.card_holder_name);
+              setExpirationDate(data.card.expiration_date);
+              setCryptogram(data.card.cryptogram);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
-        );
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
   const handleChangeCardNumber = (event) => {
-    setCardNumber(event.target.value);
+    if (Number.isInteger(Number(event.target.value))) {
+      if (event.target.value.length <= 16){
+        setCardNumber(event.target.value);
+      }
+    }
   }
   const handleChangeCardHolderName = (event) => {
     setCardHolderName(event.target.value);
@@ -281,10 +288,16 @@ const BankCard = (props) => {
     setExpirationDate(event.target.value);
   }
   const handleChangeCryptogram = (event) => {
-    setCryptogram(event.target.value);
+    if (Number.isInteger(Number(event.target.value))) {
+      if (event.target.value.length <= 4)
+        setCryptogram(event.target.value);
+    }
+  }
+  const handleInputFocus = (e) => {
+    setFocus(e.target.name);
   }
   return (
-    <Scrollbars style={{ height: '50vh' }}>
+    <Scrollbars style={{ height: '80vh' }}>
       <div className={classes.root}>
         {
           visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
@@ -292,12 +305,24 @@ const BankCard = (props) => {
         <div className={classes.paper} sm={12}>
           <Grid container spacing={3} >
             <Grid item container alignItems="center" spacing={1}>
+              <Cards
+                cvc={cryptogram}
+                expiry={expirationDate}
+                focused={focus}
+                name={cardHolderName}
+                number={cardNumber}
+              />
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.title}>Numéro de carte</p></Grid>
               <Grid xs item container direction="column">
                 <TextField
+                  name="number"
+                  type="tel"
                   variant="outlined"
                   value={cardNumber}
                   onChange={handleChangeCardNumber}
+                  onFocus={handleInputFocus}
                   fullWidth
                 />
                 {errorsCardNumber.length > 0 &&
@@ -305,12 +330,20 @@ const BankCard = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
+              <Grid item style={{ visibility: 'hidden' }}><p className={classes.title}>Numéro de carte</p></Grid>
+              <Grid xs item container direction="column">
+                <p className={classes.title}>E.g.: 49..., 51..., 36..., 37...</p>
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.title}>Nom du titulaire</p></Grid>
               <Grid xs item container direction="column">
                 <TextField
+                  name="name"
                   variant="outlined"
                   value={cardHolderName}
                   onChange={handleChangeCardHolderName}
+                  onFocus={handleInputFocus}
                   fullWidth
                 />
                 {errorsCardHolderName.length > 0 &&
@@ -321,10 +354,13 @@ const BankCard = (props) => {
               <Grid item><p className={classes.title}>Date expiration</p></Grid>
               <Grid item container>
                 <TextField
+                  name="expiry"
                   variant="outlined"
                   value={expirationDate}
                   onChange={handleChangeExpirationDate}
+                  onFocus={handleInputFocus}
                   type="date"
+                  format={'DD/MM'}
                   fullWidth
                 />
                 {errorsExpirationDate.length > 0 &&
@@ -335,9 +371,11 @@ const BankCard = (props) => {
               <Grid item ><p className={classes.title}>Cryptogramme</p></Grid>
               <Grid item container>
                 <TextField
+                  name="cvc"
                   variant="outlined"
                   value={cryptogram}
                   onChange={handleChangeCryptogram}
+                  onFocus={handleInputFocus}
                   fullWidth
                 />
                 {errorsCryptogram.length > 0 &&

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import MenuIcon from '@material-ui/icons/Menu';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import theme from 'theme';
 import Pagination from '@material-ui/lab/Pagination';
@@ -12,7 +13,10 @@ import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
 import useGlobal from 'Global/global';
-
+import IconButton from '@material-ui/core/IconButton';
+import TableItemSelect from './TableItemSelect';
+import RootRef from "@material-ui/core/RootRef";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
@@ -125,7 +129,7 @@ const useStyles = makeStyles({
       // color: '#363636'
     },
     '& .MuiTableCell-root': {
-      fontFamily:'Poppins',
+      fontFamily: 'Poppins',
       [theme.breakpoints.up('xl')]: {
         fontSize: 18,
         padding: 16
@@ -138,14 +142,6 @@ const useStyles = makeStyles({
         fontSize: 10,
         padding: 8
       },
-      // [theme.breakpoints.between('sm', 'sm')]: {
-      //   fontSize: 10,
-      //   padding: 6
-      // },
-      // [theme.breakpoints.down('sm')]: {
-      //   fontSize: 8,
-      //   padding: 5
-      // },
     }
   },
   body: {
@@ -173,16 +169,6 @@ const useStyles = makeStyles({
         width: 33,
         height: 33,
       },
-      // [theme.breakpoints.down('md')]: {
-      //   fontSize: 11,
-      //   width: '23 !important',
-      //   height: '23 !important'
-      // },
-      // [theme.breakpoints.down('sm')]: {
-      //   fontSize: 8,
-      //   width: 16,
-      //   height:16
-      // },
     }
   },
   editItem: {
@@ -190,6 +176,21 @@ const useStyles = makeStyles({
     '&:hover': {
       cursor: 'pointer'
     },
+    [theme.breakpoints.up('xl')]: {
+      width: 23,
+      height: 23
+    },
+    [theme.breakpoints.down('lg')]: {
+      width: 16,
+      height: 16
+    },
+    [theme.breakpoints.down('md')]: {
+      width: 11,
+      height: 11
+    },
+  },
+  menu: {
+    color: '#1499ff',
     [theme.breakpoints.up('xl')]: {
       width: 23,
       height: 23
@@ -222,13 +223,69 @@ export default function ResolutionTable(props) {
       tempDirect[i] = '/images/sort_down.png';
   }
   const [cells] = useState(props.cells);
-  const items = props.products;
   const footer = props.footerItems ? props.footerItems : [];
   const [direct, setDirect] = React.useState(tempDirect);
-
+  const [votes, setVotes] = useState(['']);
+  const calcModeList = ['majorité simple', 'majorité double', 'majorité absolue'];
+  const en_calcModeList = ['simple majority', 'double majority', 'absolute majority'];
+  const resultList = ['adopté', 'rejeté', 'en attente'];
+  const en_resultList = ['adopted', 'rejected', 'on hold'];
   const dataList = [20, 50, 100, 200, "all"];
-
+  const [items, setItems] = useState([
+    { ID: 1, name: 'asd1', title: 'asdf1', vote_branch: 'vote1', calc_mode: 'simple1', result: 'ok1' },
+    { ID: 2, name: 'asd2', title: 'asdf2', vote_branch: 'vote2', calc_mode: 'simple2', result: 'ok2' },
+    { ID: 3, name: 'asd3', title: 'asdf3', vote_branch: 'vote3', calc_mode: 'simple3', result: 'ok3' },
+    { ID: 4, name: 'asd4', title: 'asdf4', vote_branch: 'vote4', calc_mode: 'simple4', result: 'ok4' },
+  ]);
   const [value, setValue] = React.useState(0);
+  const [result, setResult] = useState(Array.from({ length: 1000 }, () => 0));
+  const [vote, setVote] = useState(Array.from({ length: 1000 }, () => 0));
+  const [calcMode, setCalcMode] = useState(Array.from({ length: 1000 }, () => 0));
+
+  // fake data generator
+  useEffect(() => {
+    setItems(items)
+    console.log('items:', items);
+  }, [items])
+
+  // a little function to help us with reordering the result
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
+
+  const getItemStyle = (isDragging, draggableStyle) => ({
+    // styles we need to apply on draggables
+    ...draggableStyle,
+
+    ...(isDragging && {
+      background: "rgb(235,235,235)"
+    })
+  });
+
+  const getListStyle = isDraggingOver => ({
+    //background: isDraggingOver ? 'lightblue' : 'lightgrey',
+  });
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+    let items1 = reorder(
+      items,
+      result.source.index,
+      result.destination.index
+    );
+    // items.splice(0,items.length);
+    // setItems([])
+    setItems(items1)
+    console.log('items1:', items1)
+  }
+
+
+
   const handleChange = (event) => {
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
@@ -254,41 +311,28 @@ export default function ResolutionTable(props) {
   const handleClick = () => {
     props.onClick();
   }
-  const Value = (val)=>{
-    switch(val){
-      case 'active' : return 'actif'; 
-      case 'inactive' : return 'inactif'; 
-      case 'expired' : return 'expiré'; 
-      case 'owner' : return 'Copropriétaire'; 
-      case 'subaccount' : return 'Sous-compte'; 
-      case 'member' : return 'member of the council'; 
-      case 'managers' : return 'Gestionnaires'; 
-      case 'companies' : return 'Cabinets';
-      case 'owners' : return 'Copropriétaires'; 
-      case 'buildings' : return 'Immeubles'; 
-      case 'once' : return 'une fois'; 
-      case '2_months' : return '2 mois'; 
-      case '3_months' : return '3 mois'; 
-      case '6_months' : return '6 mois'; 
-      case '1_year' : return '1 an'; 
-      case 'all' : return 'tout le cycle'; 
-      default: return val; 
-    }
-  }
   const handleClickEdit = (id) => {
-    if(props.type === 'owner'){
-      props.onClickEdit(items[id].ID,items[id].buildingID);
-    }else{
-      props.onClickEdit(items[id].ID);
-    }
+    props.onClickEdit(items[id].ID);
   }
   const handleClickDelete = (id) => {
-    if(props.type === 'owner'){
-      props.onClickDelete(items[id].ID,items[id].buildingID);
-    }else{
-      props.onClickDelete(items[id].ID);
-    }
+    props.onClickDelete(items[id].ID);
   }
+  const handleChangeVote = (val, i) => {
+    let select = [...vote];
+    select[i] = val;
+    setVote(select);
+  }
+  const handleChangeCalcMode = (val, id) => {
+    let select = [...calcMode];
+    select[id] = val;
+    setCalcMode(select);
+  }
+  const handleChangeResult = (val, i) => {
+    let select = [...result];
+    select[i] = val;
+    setResult(select);
+  }
+
   return (
     <Grid container direction="column" spacing={2}>
       <Grid item container direction="row-reverse">
@@ -307,7 +351,7 @@ export default function ResolutionTable(props) {
           </FormControl>
         </div>
       </Grid>
-      <Grid item container style={{overflowX:'auto'}}>
+      <Grid item container style={{ overflowX: 'auto' }}>
         <Table className={classes.root}>
           <TableHead>
             <TableRow >
@@ -317,52 +361,101 @@ export default function ResolutionTable(props) {
                     <button
                       type="button"
                       onClick={() => Sort(i)}
-                      style={{display:'flex', alignItems:'center'}}
+                      style={{ display: 'flex', alignItems: 'center' }}
                     >
                       {cell.field}
-                    <img style={{width: "30px"}} src={direct[i]}></img>
+                      <img style={{ width: "30px" }} src={direct[i]}></img>
                     </button>
-                    
+
                   </TableCell>
                 ))
               }
               <TableCell align="right"></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {items.map((item, i) => (
-              <TableRow key={i}>
-                {
-                  cells.map((cell,j) => {
-                    const value = item[cell.key];
-                    return (
-                      <TableCell 
-                        key={j} 
-                        onClick={() => handleClickEdit(i)}
-                        disabled={(props.access === 'see' ? true : false)}
-                      >
-                        {
-                          Value(value)
-                        }
-                      </TableCell>
-                    );
-                  })
-                }
-                <TableCell align="right">
-                  <EditIcon 
-                    className={classes.editItem} 
-                    onClick={() => handleClickEdit(i)} 
-                  />
-                      &nbsp;&nbsp;
-                  <DeleteIcon 
-                    className={classes.editItem} 
-                    onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
-                    style={{visibility:item.userID === globalState.ID ? 'hidden': 'visible'}}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <RootRef rootRef={provided.innerRef}>
+                  <TableBody style={getListStyle(snapshot.isDraggingOver)}>
+                    {items.map((item, i) => (
+                      <Draggable key={item.ID} draggableId={`${item.ID}`} index={i}>
+                        {(provided, snapshot) => (
+                          <TableRow
+                            style={getItemStyle(
+                              snapshot.isDragging,
+                              provided.draggableProps.style
+                            )}
+                            ref={provided.innerRef}
+                          >
+                            <TableCell onClick={() => handleClickEdit(item.ID)}>
+                              {item.ID}
+                            </TableCell>
+                            <TableCell onClick={() => handleClickEdit(item.ID)}>
+                              {item.name}
+                            </TableCell>
+                            <TableCell>
+                              <TableItemSelect
+                                color="gray"
+                                data={votes}
+                                onChangeSelect={handleChangeVote}
+                                value={vote[i]}
+                                pos={i}
+                                width="100%"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TableItemSelect
+                                color="gray"
+                                data={calcModeList}
+                                onChangeSelect={handleChangeCalcMode}
+                                value={calcMode[i]}
+                                pos={i}
+                                width="100%"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TableItemSelect
+                                color="gray"
+                                data={resultList}
+                                onChangeSelect={handleChangeResult}
+                                pos={i}
+                                value={result[i]}
+                                width="100%"
+                              />
+                            </TableCell>
+                            <TableCell align="right">
+                              <IconButton
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <MenuIcon className={classes.menu} />
+                              </IconButton>
+                                  &nbsp;&nbsp;
+                              <IconButton>
+                                <EditIcon
+                                  className={classes.editItem}
+                                  onClick={() => handleClickEdit(item.ID)}
+                                />
+                              </IconButton>
+                                  &nbsp;&nbsp;
+                              <IconButton>
+                                <DeleteIcon
+                                  className={classes.editItem}
+                                  onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
+                                />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </TableBody>
+                </RootRef>
+              )}
+            </Droppable>
+          </DragDropContext>
           <TableFooter className={(props.tblFooter === 'true' || items.length === 0) ? classes.show : classes.hide}>
             {
               items.length === 0 ?
@@ -387,11 +480,11 @@ export default function ResolutionTable(props) {
       </Grid>
       <Grid item container className={classes.body} alignItems="center">
         <Grid xs={12} sm={6} item container className={props.leftBtn ? classes.show : classes.hide} >
-          <MyButton 
-            name={props.leftBtn} 
-            color={"1"} 
-            onClick={handleClick} 
-            style={{visibility:props.leftBtn && props.access === 'edit' ? 'visible': 'hidden'}}
+          <MyButton
+            name={props.leftBtn}
+            color={"1"}
+            onClick={handleClick}
+            style={{ visibility: props.leftBtn && props.access === 'edit' ? 'visible' : 'hidden' }}
           />
         </Grid>
         <Grid xs={12} sm={6} item container direction="row-reverse">

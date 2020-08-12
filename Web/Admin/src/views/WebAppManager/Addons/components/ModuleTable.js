@@ -91,7 +91,7 @@ export default function ModuleTable  (props)  {
               <TableRow >
                 {
                   cells.map((cell,i)=>(
-                    <TableCell key={i}>
+                    <TableCell key={i} style={{width: 100/(props.columns) + '%'}}>
                       <b>{cell.field}</b>
                     </TableCell>
                   ))
@@ -100,15 +100,15 @@ export default function ModuleTable  (props)  {
             </TableHead>
             <TableBody>
               {items.map((item,i) => (
-                <TableRow key={item.ID}>
+                <TableRow key={i}>
                   {
                   cells.map((cell)=>{
                     const value = item[cell.key];
                     return(
-                    <TableCell  key={cell.key}>
-
-                      {value}
-                  </TableCell>);
+                      <TableCell  key={cell.key} style={{width: 100/(props.columns) + '%'}}>
+                        {value}
+                      </TableCell>
+                    );
                   })
                   }
                 </TableRow>

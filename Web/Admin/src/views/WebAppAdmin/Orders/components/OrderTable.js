@@ -220,7 +220,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ORderTable(props) {
+export default function OrderTable(props) {
   const classes = useStyles();
   const [direction, setDirection] = useState(props.columns);
   const tempDirection = props.columns;
@@ -310,7 +310,7 @@ export default function ORderTable(props) {
             <TableRow >
               {
                 cells.map((cell, i) => (
-                  <TableCell key={i}>
+                  <TableCell key={i} style={{width: 100/(props.columns.length + 1) + '%'}}>
                     <button
                       type="button"
                       onClick={() => Sort(i)}
@@ -338,6 +338,7 @@ export default function ORderTable(props) {
                         key={j}
                         onClick={() => handleClickEdit(i)}
                         disabled={(props.access === 'see' ? true : false)}
+                        style={{width: 100/(props.columns.length + 1) + '%'}}
                       >
                         {
                           Value(value)
@@ -350,20 +351,15 @@ export default function ORderTable(props) {
                   <img src="/images/pdf.png" className={classes.downItem} onClick={() => props.onClickDownload(item.ID)}></img>
                 </TableCell>
                 <TableCell align="right">
-                  <IconButton>
+                  <IconButton onClick={() => handleClickEdit(i)}>
                     <EditIcon
                       className={classes.editItem}
-                      onClick={() => handleClickEdit(i)}
-                      disabled={(props.access === 'see' ? true : false)}
                     />
                   </IconButton>
                       &nbsp;&nbsp;
-                  <IconButton>
+                  <IconButton onClick={() => handleClickDelete(i)} disabled={(props.access === 'see' ? true : false)}>
                     <DeleteIcon
                       className={classes.editItem}
-                      onClick={() => handleClickDelete(i)}
-                      disabled={(props.access === 'see' ? true : false)}
-                      style={{ visibility: item.ID === 1 ? 'hidden' : 'visible' }}
                     />
                   </IconButton>
                 </TableCell>

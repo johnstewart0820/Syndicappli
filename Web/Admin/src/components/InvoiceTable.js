@@ -112,7 +112,7 @@ export default function InvoiceTable  (props)  {
               <TableRow >
                 {
                   cells.map((cell,i)=>(
-                    <TableCell key={i}>
+                    <TableCell key={i}  style={{width: 100/(props.columns + 1) + '%'}}>
                       {cell.field}
                     </TableCell>
                   ))
@@ -127,7 +127,7 @@ export default function InvoiceTable  (props)  {
                   cells.map((cell)=>{
                     const value = item[cell.key];
                     return(
-                    <TableCell  key={cell.key}>
+                    <TableCell  key={cell.key}  style={{width: 100/(props.columns + 1) + '%'}}>
 
                       {value}
                   </TableCell>);

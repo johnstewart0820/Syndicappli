@@ -1,7 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
-import {withRouter} from 'react-router-dom';
 const useStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -101,12 +100,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ModuleCard = (props) => {
-  const {history} = props;
   const classes = useStyles();
   
   return (
     <div className={classes.body}>
-        <Grid xs={11} container direction="column" justify="center" alignItems="center" spacing={4}>
+        <Grid xs={11} item container direction="column" justify="center" alignItems="center" spacing={4}>
             <Grid item>
                 <p className={classes.headerTitle}><b>{props.title}</b></p>
             </Grid>
@@ -121,4 +119,4 @@ const ModuleCard = (props) => {
   );
 };
 
-export default withRouter(ModuleCard);
+export default ModuleCard;

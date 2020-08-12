@@ -89,86 +89,9 @@ const useStyles = makeStyles(theme => ({
   close: {
     cursor: 'pointer',
     color: 'gray'
-  }
-}));
-
-export const AddTeamMemberStyles = makeStyles(theme => ({
-  paper: {
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: 5,
-      padding: theme.spacing(2, 4, 3),
   },
-  footer: {
-    [theme.breakpoints.up('xl')]: {
-      paddingTop: 89,
-    },
-    [theme.breakpoints.down('lg')]: {
-      paddingTop: 62,
-    },
-    [theme.breakpoints.down('md')]: {
-      paddingTop: 43,
-    },
-    paddingBottom: 30
-  },
-  root: {
-      '& .MuiOutlinedInput-input':{
-        [theme.breakpoints.up('xl')]: {
-          padding: '17px 25px',
-          fontSize: 22,
-        },
-        [theme.breakpoints.down('lg')]: {
-          padding: '12px 18px',
-          fontSize: 15,
-        },
-        [theme.breakpoints.down('md')]: {
-          padding: '8px 13px',
-          fontSize: 11,
-        },
-      },
-      '& p':{
-          marginBottom: 0
-      },
-  },
-  plus:{
-    color: '#707070',
-    [theme.breakpoints.up('xl')]: {
-      width:31 , 
-      height: 31,
-    },
-    [theme.breakpoints.down('lg')]: {
-      width:22 , 
-      height: 22,
-    },
-    [theme.breakpoints.down('md')]: {
-      width:15 , 
-      height: 15,
-    },
-  },
-  input: {
-      display: 'none'
-  },
-  img: {
-    objectFit:'cover',
-      cursor: 'pointer',
-      alignItems: 'center',
-      justifyContent: 'center',
-      display: 'flex',
-      border: '1px dashed rgba(112,112,112,0.43)',
-      borderRadius: 8,
-      [theme.breakpoints.up('xl')]: {
-        width: 116,
-        height: 92,
-      },
-      [theme.breakpoints.down('lg')]: {
-        width: 81,
-        height: 64,
-      },
-      [theme.breakpoints.down('md')]: {
-        width: 57,
-        height: 45,
-      },
-  },
-  title:{
+  error:{
+    color: 'red',
     [theme.breakpoints.up('xl')]: {
       fontSize: 18,
     },
@@ -178,20 +101,9 @@ export const AddTeamMemberStyles = makeStyles(theme => ({
     [theme.breakpoints.down('md')]: {
       fontSize: 9,
     },
-  },
-  error:{
-      color: 'red',
-      [theme.breakpoints.up('xl')]: {
-        fontSize: 18,
-      },
-      [theme.breakpoints.down('lg')]: {
-        fontSize: 13,
-      },
-      [theme.breakpoints.down('md')]: {
-        fontSize: 9,
-      },
-  }
+},
 }));
+
 export const ModulePaymentStyles = makeStyles(theme => ({
   root: {
     [theme.breakpoints.up('xl')]: {
@@ -345,6 +257,18 @@ export const ModulePaymentStyles = makeStyles(theme => ({
       [theme.breakpoints.down('md')]: {
         fontSize :18
       },
+  },
+    backTitle:{
+    cursor: 'pointer',
+    [theme.breakpoints.up('xl')]: {
+      fontSize: 18,
+    },
+    [theme.breakpoints.down('lg')]: {
+      fontSize: 13,
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 9,
+    },
   },
   price:{
     [theme.breakpoints.up('xl')]: {

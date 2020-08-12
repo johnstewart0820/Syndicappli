@@ -348,7 +348,7 @@ const AddOrder = (props) => {
                                     color="gray"
                                     data={products}
                                     onChangeSelect={handleChangeProduct}
-                                    value={product}
+                                    value={product || ''}
                                 />
                                 {errorsProduct.length > 0 &&
                                     <span className={classes.error}>{errorsProduct}</span>}
@@ -503,7 +503,7 @@ const AddOrder = (props) => {
                                     color="gray"
                                     data={codes}
                                     onChangeSelect={handleChangeCode}
-                                    value={code}
+                                    value={code || ''}
                                 />
                             </Grid>
                         </Grid>

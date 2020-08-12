@@ -369,7 +369,7 @@ const Routes = () => {
         component={ManagerAddonsPayment}
         exact
         layout={MainLayout}
-        path="/manager/addons/payment"
+        path="/manager/addons/payment/:id"
       />
       <RouteWithLayout
         component={ManagerAssemblies}

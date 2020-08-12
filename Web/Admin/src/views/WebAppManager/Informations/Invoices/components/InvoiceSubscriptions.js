@@ -80,6 +80,7 @@ const InvoiceSubscriptions = (props) => {
           products={dataList} 
           cells={cellList} 
           onClickEdit={handleClickEdit}
+          columns={5}
         />
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT}/>
     </div>
