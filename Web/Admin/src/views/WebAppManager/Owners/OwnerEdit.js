@@ -61,8 +61,8 @@ const OwnerEdit = (props) => {
   const [deleteId, setDeleteId] = useState(-1);
   const [openDelete1, setOpenDelete1] = useState(false);
   const [removeBranchID, setRemoveBranchID] = useState(-1);
-  const [building, setBuilding] = useState([]);
-  const [buildings, setBuildings] = useState('');
+  const [building, setBuilding] = useState(['']);
+  const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
   const [buildingID, setBuildingID] = useState(-1);
 
@@ -326,17 +326,19 @@ const OwnerEdit = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
+              building.splice(0, building.length)
               data.buildinglist.map((item) => (
                 building.push(item.name)
               )
               );
+              buildingList.push(...data.buildinglist);
+              setBuildingList(...data.buildinglist);
               setBuilding(building);
               setBuildingID(params.get('buildingID'));
               for (let i = 0; i < data.buildinglist.length; i++)
                 if (data.buildinglist[i].buildingID == params.get('buildingID')) {
                   setBuildings(i);
                 }
-              setBuildingList(...data.buildinglist);
 
               break;
             case 401:
