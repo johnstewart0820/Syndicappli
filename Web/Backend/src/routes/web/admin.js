@@ -131,7 +131,9 @@ router.get('/order/:id', authMiddleware.checkToken, getOrder)
 router.put('/order/:id', authMiddleware.checkToken, updateOrder)
 router.post('/order/:id/delete', authMiddleware.checkToken, deleteOrder)
 router.post('/trash/order/deleteAll', authMiddleware.checkToken, deleteAllOrder)
-
+router.post('/downloadInvoiceCompany', authMiddleware.checkToken, downloadInvoiceOrder)
+router.post('/downloadInvoiceOwner', authMiddleware.checkToken, downloadInvoiceOwner)
+router.post('/downloadInvoiceBuilding', authMiddleware.checkToken, downloadInvoiceCompany)
 /**
  * Function that get profile data
  *
@@ -1378,6 +1380,66 @@ function deleteAllOrder(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     orderService.deleteAllOrder(userId, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadInvoiceOrder(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.downloadInvoiceOrder(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadInvoiceOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.downloadInvoiceOwner(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadInvoiceCompany(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.downloadInvoiceCompany(userId, userdata, data, res).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

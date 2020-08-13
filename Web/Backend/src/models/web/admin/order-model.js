@@ -20,6 +20,9 @@ const {sendMail} = require('../../../helper/mailHelper')
 var mail = require('../../../constants/mail')
 var randtoken = require('rand-token');
 var code = require('../../../constants/code')
+const orderTemplate = require('../../../invoiceTemplate/order')
+const ownerTemplate = require('../../../invoiceTemplate/owner')
+const pdf = require('html-pdf');
 
 var orderModel = {
     getOrderList: getOrderList,
@@ -30,7 +33,10 @@ var orderModel = {
     deleteOrder: deleteOrder,
     deleteAllOrder: deleteAllOrder,
     getBuyerList: getBuyerList,
-    getDiscountCodeListByType: getDiscountCodeListByType
+    getDiscountCodeListByType: getDiscountCodeListByType,
+    downloadInvoiceOrder: downloadInvoiceOrder,
+    downloadInvoiceOwner: downloadInvoiceOwner,
+    downloadInvoiceBuilding: downloadInvoiceBuilding
 }
 
 /**
@@ -454,4 +460,91 @@ function deleteAllOrder() {
         })
     })
   }
+
+  /**
+ * download invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function downloadInvoiceOrder(data, res) {
+    return new Promise((resolve, reject) => {
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+                     from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ?`
+        db.query(query, [data.orderID], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                data = rows[0]
+                options = {format: "A3"}
+                pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
+                    if (err) return res.send(err);
+                    res.type('pdf');
+                    res.end(buffer, 'binary');
+                });
+            }
+        })
+        
+
+    })
+}
+
+/**
+ * download invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function downloadInvoiceBuilding(data, res) {
+    return new Promise((resolve, reject) => {
+        let query = `Select b.name name, b.address address, b.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+                     from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ? and o.buyer_type = "buildings"`
+        db.query(query, [data.orderID], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                data = rows[0]
+                options = {format: "A3"}
+                pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
+                    if (err) return res.send(err);
+                    res.type('pdf');
+                    res.end(buffer, 'binary');
+                });
+            }
+        })
+        
+
+    })
+}
+
+/**
+ * download invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function downloadInvoiceOwner(data, res) {
+    return new Promise((resolve, reject) => {
+        let query = `Select ow.name name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
+                     from orders o left join owners ow on o.buyerID = ow.ownerID left join products p on o.productID = p.productID where o.orderID = ?`
+        db.query(query, [data.orderID], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                data = rows[0]
+                options = {format: "A3"}
+                pdf.create(ownerTemplate(data), options).toBuffer(function (err, buffer) {
+                    if (err) return res.send(err);
+                    res.type('pdf');
+                    res.end(buffer, 'binary');
+                });
+            }
+        })
+        
+
+    })
+}
 module.exports = orderModel

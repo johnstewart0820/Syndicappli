@@ -25,7 +25,10 @@ var orderService = {
     deleteOrder: deleteOrder,
     deleteAllOrder: deleteAllOrder,
     getBuyerList: getBuyerList,
-    getDiscountCodeListByType: getDiscountCodeListByType
+    getDiscountCodeListByType: getDiscountCodeListByType,
+    downloadInvoiceOrder: downloadInvoiceOrder,
+    downloadInvoiceOwner: downloadInvoiceOwner,
+    downloadInvoiceBuilding: downloadInvoiceBuilding
 }
 
 /**
@@ -257,4 +260,84 @@ function deleteAllOrder(uid, userdata) {
     })
 }
 
+/**
+ * Function that download invoice order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function downloadInvoiceOrder(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
+            orderModel.downloadInvoiceOrder(data, res).then((invoiceList) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'invoicelist': invoiceList } })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that download invoice order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function downloadInvoiceOwner(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
+            orderModel.downloadInvoiceOwner(data, res).then((invoiceList) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'invoicelist': invoiceList } })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that download invoice order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function downloadInvoiceBuilding(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
+            orderModel.downloadInvoiceBuilding(data, res).then((invoiceList) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'invoicelist': invoiceList } })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
 module.exports = orderService
