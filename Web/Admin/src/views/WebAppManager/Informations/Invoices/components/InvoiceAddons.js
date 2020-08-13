@@ -80,9 +80,28 @@ const InvoiceAddons = (props) => {
     { key: 'start_date', field: 'Date' },
     { key: 'price', field: 'Montant' },
   ];
-  const handleClickEdit = (id) => {
-    console.log(id);
-    // history.push('/manager/buildings/edit/'+id);
+  const handleClickDownload = (id) => {
+    let requestDate = {
+      'orderID': id,
+    }
+    let year = new Date().getFullYear();
+    let month = new Date().getMonth() + 1;
+    let date1 = new Date().getDate();
+    let date = year + '_' + month + '_' + date1;
+    setVisibleIndicator(true);
+    ManagerService.downloadInvoiceAddon(requestDate)
+      .then(
+        ({ data }) => {
+          setVisibleIndicator(false);
+          const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.setAttribute('download', 'Invoice(' + date + ').pdf');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+      );
   }
   useEffect(() => {
     if (accessInvoices !== 'denied') {
@@ -95,14 +114,14 @@ const InvoiceAddons = (props) => {
   }, [companyID]);
   useEffect(() => {
     if (accessInvoices !== 'denied') {
-      if(companyID !== -1)
+      if (companyID !== -1)
         getInvoices();
     }
   }, [buildingID]);
   const getInvoices = () => {
     let requestDate = {
-      'companyID' : companyID,
-      'buildingID' : buildingID
+      'companyID': companyID,
+      'buildingID': buildingID
     }
     setVisibleIndicator(true);
     ManagerService.getInvoiceAddon(requestDate)
@@ -186,7 +205,7 @@ const InvoiceAddons = (props) => {
                 buildings.push(item.name)
               )
               );
-              setBuildingList([{'buildingID':-1},...data.buildinglist]);
+              setBuildingList([{ 'buildingID': -1 }, ...data.buildinglist]);
               if (data.buildinglist.length !== 0) {
                 setBuildings(buildings);
                 setBuildingID(-1);
@@ -235,7 +254,7 @@ const InvoiceAddons = (props) => {
         <InvoiceTable
           products={dataList}
           cells={cellList}
-          onClickEdit={handleClickEdit}
+          onClickDownload={handleClickDownload}
           columns={4}
         />
       </div>

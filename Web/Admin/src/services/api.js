@@ -214,6 +214,10 @@ class AdminService {
   emptyTrashOrder(status) {
     return axios.post(API_URL + 'web/admin/trash/order/deleteAll', status, { headers: authHeader() });
   }
+  downloadInvoiceOrder(data) {
+    return axios.post(API_URL + 'web/admin/downloadInvoiceOrder', data, { headers: authHeader() ,responseType: 'blob'});
+  }
+
   getBuyerList(data) {
     return axios.post(API_URL + 'web/admin/buyerList',data, { headers: authHeader() });
   }
@@ -301,6 +305,12 @@ export class ManagerService {
   }
   getInvoiceAddon(data) {
     return axios.post(API_URL + 'web/manager/invoice_addon', data, { headers: authHeader() });
+  }
+  downloadInvoiceSubscription(data) {
+    return axios.post(API_URL + 'web/manager/downloadInvoiceOrder', data, { headers: authHeader() ,responseType: 'blob'});
+  }
+  downloadInvoiceAddon(data) {
+    return axios.post(API_URL + 'web/manager/downloadInvoiceAddon', data, { headers: authHeader() ,responseType: 'blob'});
   }
   //Addon Part
   getAddonsByBuildingID(data) {

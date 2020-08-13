@@ -134,7 +134,7 @@ export default function InvoiceTable(props) {
                 })
               }
               <TableCell align="center" style={{ justifyContent: 'center' }}>
-                <img src="/images/pdf.png" className={classes.editItem} onClick={() => props.onClickEdit(item.ID)}></img>
+                <img src="/images/pdf.png" className={classes.editItem} onClick={() => props.onClickDownload(item.ID)}></img>
               </TableCell>
             </TableRow>
           ))}
