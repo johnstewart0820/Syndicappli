@@ -262,14 +262,18 @@ export default function OrderTable(props) {
   const handleClick = () => {
     props.onClick();
   }
-  const Value = (val) => {
+  const Value = (val, cell_pos) => {
     switch (val) {
       case 'active': return 'actif';
       case 'inactive': return 'inactif';
       case 'owner': return 'Copropriétaire';
       case 'subaccount': return 'Sous-compte';
       case 'member': return 'Membre du Conseil Syndical';
-      default: return val;
+      default:
+        if (cell_pos === 5) {
+          if (val === '') return '-';
+        }
+        return val;
     }
   }
   const handleClickEdit = (id) => {
@@ -310,7 +314,7 @@ export default function OrderTable(props) {
             <TableRow >
               {
                 cells.map((cell, i) => (
-                  <TableCell key={i} style={{width: 100/(props.columns.length + 1) + '%'}}>
+                  <TableCell key={i} style={{ width: 100 / (props.columns.length + 1) + '%' }}>
                     <button
                       type="button"
                       onClick={() => Sort(i)}
@@ -338,10 +342,10 @@ export default function OrderTable(props) {
                         key={j}
                         onClick={() => handleClickEdit(i)}
                         disabled={(props.access === 'see' ? true : false)}
-                        style={{width: 100/(props.columns.length + 1) + '%'}}
+                        style={{ width: 100 / (props.columns.length + 1) + '%' }}
                       >
                         {
-                          Value(value)
+                          Value(value, j)
                         }
                       </TableCell>
                     );
@@ -350,15 +354,15 @@ export default function OrderTable(props) {
                 <TableCell align="center" style={{ justifyContent: 'center' }}>
                   <img src="/images/pdf.png" className={classes.downItem} onClick={() => props.onClickDownload(item.ID)}></img>
                 </TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => handleClickEdit(i)}>
-                    <EditIcon
+                <TableCell align="right" style={{ display: 'flex' }}>
+                  <IconButton onClick={() => handleClickDelete(i)} disabled={(props.access === 'see' ? true : false)}>
+                    <DeleteIcon
                       className={classes.editItem}
                     />
                   </IconButton>
-                      &nbsp;&nbsp;
-                  <IconButton onClick={() => handleClickDelete(i)} disabled={(props.access === 'see' ? true : false)}>
-                    <DeleteIcon
+                  &nbsp;&nbsp;
+                  <IconButton onClick={() => handleClickEdit(i)}>
+                    <EditIcon
                       className={classes.editItem}
                     />
                   </IconButton>

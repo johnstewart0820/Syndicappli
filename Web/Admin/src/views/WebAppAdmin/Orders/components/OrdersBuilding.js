@@ -101,7 +101,27 @@ const OrdersBuilding = (props) => {
     window.location.reload();
   };
   const handleClickDownload = (id) => {
-
+    let requestDate = {
+      'orderID' : id,
+    }
+    let year = new Date().getFullYear();
+    let month = new Date().getMonth() + 1;
+    let date1 = new Date().getDate();
+    let date = year + '_' + month + '_' + date1 ;
+    setVisibleIndicator(true);
+    AdminService.downloadInvoiceBuilding(requestDate)
+      .then(
+        ({data}) => {
+          setVisibleIndicator(false);
+              const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+              const link = document.createElement('a');
+              link.href = downloadUrl;
+              link.setAttribute('download', 'Invoice('+date+').pdf'); 
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+          }
+      );
   }
   const handleClickDelete = (id) => {
     setOpenDelete(true);
