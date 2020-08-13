@@ -56,7 +56,7 @@ const OwnerEdit = (props) => {
   const [deleteId, setDeleteId] = useState(-1);
   const [removeBranchID, setRemoveBranchID] = useState(-1);
   const [suspendState, setSuspendState] = useState('Suspendre le compte');
-  const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
+  const titleList = ['', 'Mr', 'Mme', 'Mr & Mme', 'Company', 'Indivision', 'PACS'];
 
   const [company, setCompany] = useState(['']);
   const [companies, setCompanies] = useState(0);
@@ -484,7 +484,7 @@ const OwnerEdit = (props) => {
               if (ownerInfo.usertype === 'Company') {
                 setCompanyName(ownerInfo.owner_company_name);
               }
-              if (ownerInfo.usertype === 'Mr & Mrs' || ownerInfo.usertype === 'PACS') {
+              if (ownerInfo.usertype === 'Mr & Mme' || ownerInfo.usertype === 'PACS') {
                 setFirstName(ownerInfo.firstname);
                 setLastName(ownerInfo.lastname);
                 setFirstName1(ownerInfo.firstname_1);
