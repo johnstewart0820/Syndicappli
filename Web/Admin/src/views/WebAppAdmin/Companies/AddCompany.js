@@ -13,6 +13,7 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import { Scrollbars } from 'react-custom-scrollbars';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import SEPA from 'sepa';
+import { isInteger, isNumber } from 'validate.js';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
     "image/apng",
@@ -104,8 +105,12 @@ const AddCompany = (props) => {
     }
 
     const handleChangeSiret = (event) => {
-        if (event.target.value.length < 15)
-            setSiret(event.target.value);
+        if(event.target.value[event.target.value.length-1] === '.')
+            return;
+        if(Number.isInteger(Number(event.target.value))){
+            if (event.target.value.length < 15)
+                setSiret(event.target.value);
+        }
     }
 
     const handleChangeVat = (event) => {
@@ -300,7 +305,7 @@ const AddCompany = (props) => {
                                     variant="outlined"
                                     value={siret}
                                     onChange={handleChangeSiret}
-                                    type="number"
+                                    type="tel"
                                     fullWidth
                                 />
                                 {errorsSiret.length > 0 &&

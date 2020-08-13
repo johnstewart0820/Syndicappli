@@ -175,8 +175,12 @@ const CompaniesEdit = (props) => {
   }
 
   const handleChangeSiret = (event) => {
-    if (event.target.value.length < 15)
-      setSiret(event.target.value);
+    if (event.target.value[event.target.value.length - 1] === '.')
+      return;
+    if (Number.isInteger(Number(event.target.value))) {
+      if (event.target.value.length < 15)
+        setSiret(event.target.value);
+    }
   }
 
   const handleChangeVat = (event) => {
@@ -617,9 +621,9 @@ const CompaniesEdit = (props) => {
     else setErrorsAccountHolder('');
     if (IBAN.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
     else setErrorsIBAN('');
-    if(!SEPA.validateIBAN(IBAN)){
+    if (!SEPA.validateIBAN(IBAN)) {
       setErrorsIBAN('please enter correct IBAN');
-      cnt++; 
+      cnt++;
     }
     if (cnt === 0) {
       let requestData = {
@@ -658,7 +662,7 @@ const CompaniesEdit = (props) => {
     }
   }
   const handleClickDeleteBankInfo = () => {
-    if(IBAN.length !== 0){
+    if (IBAN.length !== 0) {
       setOpenSEPADelete(true);
     }
   }
@@ -904,7 +908,7 @@ const CompaniesEdit = (props) => {
                   variant="outlined"
                   value={siret}
                   onChange={handleChangeSiret}
-                  type="number"
+                  type="tel"
                   fullWidth
                   disabled={(accessCompanies === 'see' ? true : false)}
                 />
