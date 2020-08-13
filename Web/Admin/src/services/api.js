@@ -214,10 +214,15 @@ class AdminService {
   emptyTrashOrder(status) {
     return axios.post(API_URL + 'web/admin/trash/order/deleteAll', status, { headers: authHeader() });
   }
-  downloadInvoiceOrder(data) {
-    return axios.post(API_URL + 'web/admin/downloadInvoiceOrder', data, { headers: authHeader() ,responseType: 'blob'});
+  downloadInvoiceCompany(data) {
+    return axios.post(API_URL + 'web/admin/downloadInvoiceCompany', data, { headers: authHeader() ,responseType: 'blob'});
   }
-
+  downloadInvoiceBuilding(data) {
+    return axios.post(API_URL + 'web/admin/downloadInvoiceBuilding', data, { headers: authHeader() ,responseType: 'blob'});
+  }
+  downloadInvoiceOwner(data) {
+    return axios.post(API_URL + 'web/admin/downloadInvoiceOwner', data, { headers: authHeader() ,responseType: 'blob'});
+  }
   getBuyerList(data) {
     return axios.post(API_URL + 'web/admin/buyerList',data, { headers: authHeader() });
   }
