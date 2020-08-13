@@ -46,6 +46,7 @@ return `
                	width: 50%;
                	float: left;
                }
+               
             </style>
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
           <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
@@ -103,6 +104,7 @@ return `
                 </tbody>
             </table>
         </div>
+        <div id="pageFooter"><p>Syndicappli-66 avenue des Champs Elysees 75008 Paris - Societe par actions simplifiee au capital de 2000,00 Euros immatriculee au RCS de Paris sous le numero 123 456 789 R.C.S Paris - Siren 123 456 789 - Siret 123456789123</p></div>
        </body>
     </html>
     `;

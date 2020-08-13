@@ -477,7 +477,7 @@ function downloadInvoiceOrder(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3"}
+                options = {format: "A3", "footer": {"height": "28mm"}}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
@@ -506,7 +506,7 @@ function downloadInvoiceBuilding(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3"}
+                options = {format: "A3", "footer": {"height": "28mm"}}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
@@ -535,7 +535,7 @@ function downloadInvoiceOwner(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3"}
+                options = {format: "A3", "footer": {"height": "28mm"}}
                 pdf.create(ownerTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
