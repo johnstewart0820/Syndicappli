@@ -211,12 +211,22 @@ function getBuyerList(uid, data) {
                     WHERE
                         c.permission = "active" 
                         AND b.permission = "active" 
-                        AND u.userID = ? group by s.userID and r.type="company"`
+                        AND u.userID = ? and r.type="company"`
         db.query(query, [uid], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows);
+                result = []
+                for (var i in rows) {
+                    var sign = false;
+                    for (var j in result) {
+                        if (rows[i].buyerID == result[j].buyerID)
+                            sign = true;
+                    }
+                    if (sign == false)
+                        result.push(rows[i])
+                }
+                resolve(result);
             }
         })
     })

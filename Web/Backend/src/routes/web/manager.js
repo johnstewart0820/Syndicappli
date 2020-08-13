@@ -88,8 +88,8 @@ router.get('/discountCode/:id', authMiddleware.checkToken, getDiscountCode)
  */
 router.post('/invoice_addon', authMiddleware.checkToken, getInvoiceAddon)
 router.post('/invoice_order', authMiddleware.checkToken, getInvoiceOrder)
-
-
+router.post('/downloadInvoiceAddon', authMiddleware.checkToken, downloadInvoiceAddon)
+router.post('/downloadInvoiceOrder', authMiddleware.checkToken, downloadInvoiceOrder)
 /**
  * card api
  */
@@ -786,6 +786,46 @@ function getInvoiceAddon(req, res){
     let userdata = req.decoded.userdata
     let data = req.body
     invoiceService.getInvoiceAddon(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadInvoiceOrder(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    invoiceService.downloadInvoiceOrder(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadInvoiceAddon(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    invoiceService.downloadInvoiceAddon(userId, userdata, data, res).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

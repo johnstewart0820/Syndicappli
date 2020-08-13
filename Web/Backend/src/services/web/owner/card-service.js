@@ -35,23 +35,19 @@ var cardService = {
  */
 function getCardList(uid, userdata, data) {
     return new Promise((resolve, reject) => {
-        authHelper.hasPaymentPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
-            cardModel.getCardList(data).then((result) => {
-                if (result) {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
+        cardModel.getCardList(data).then((result) => {
+            if (result) {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
 
-                    resolve({ code: code.OK, message: '', data: { 'token': token, 'cardlist': result } })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'cardlist': result } })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
         })
     })
 }
@@ -65,23 +61,19 @@ function getCardList(uid, userdata, data) {
  */
 function createCard(uid, userdata, data) {
     return new Promise((resolve, reject) => {
-        authHelper.hasPaymentPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            cardModel.createCard(data, uid).then((result) => {
-                if (result) {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
+        cardModel.createCard(data, uid).then((result) => {
+            if (result) {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
 
-                    resolve({ code: code.OK, message: message.CARD_ADD_SUCCESSFULLY, data: { 'token': token } })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
+                resolve({ code: code.OK, message: message.CARD_ADD_SUCCESSFULLY, data: { 'token': token } })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
         })
     })
 }
@@ -95,23 +87,19 @@ function createCard(uid, userdata, data) {
  */
 function getCard(uid, userdata, id) {
     return new Promise((resolve, reject) => {
-        authHelper.hasPaymentPermission(userdata, [code.SEE_PERMISSION,code.EDIT_PERMISSION]).then((response) => {
-            cardModel.getCard(id).then((result) => {
-                if (result) {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
+        cardModel.getCard(id).then((result) => {
+            if (result) {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
 
-                    resolve({ code: code.OK, message: '', data: { 'token': token, 'card': result } })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'card': result } })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
         })
     })
 }
@@ -125,23 +113,19 @@ function getCard(uid, userdata, id) {
  */
 function updateCard(uid, userdata, id, data) {
     return new Promise((resolve, reject) => {
-        authHelper.hasPaymentPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            cardModel.updateCard(id, data, uid).then((result) => {
-                if (result) {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
+        cardModel.updateCard(id, data, uid).then((result) => {
+            if (result) {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
 
-                    resolve({ code: code.OK, message: message.CARD_UPDATE_SUCCESSFULLY, data: { 'token': token } })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
+                resolve({ code: code.OK, message: message.CARD_UPDATE_SUCCESSFULLY, data: { 'token': token } })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
         })
     })
 }
@@ -155,24 +139,21 @@ function updateCard(uid, userdata, id, data) {
  */
 function deleteCard(uid, userdata, id) {
     return new Promise((resolve, reject) => {
-        authHelper.hasPaymentPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            cardModel.deleteCard(id).then((result) => {
-                if (result) {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
+        cardModel.deleteCard(id).then((result) => {
+            if (result) {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
 
-                    resolve({ code: code.OK, message: '', data: { 'token': token, 'card': result } })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
-            })
-        }).catch((error) => {
-            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'card': result } })
+            }
+        }).catch((err) => {
+            if (err.message === message.INTERNAL_SERVER_ERROR)
+                reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+            else
+                reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
         })
+    
     })
 }
 

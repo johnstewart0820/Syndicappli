@@ -38,8 +38,8 @@ var cardModel = {
  */
 function getCardList(data) {
     return new Promise((resolve, reject) => {
-        let query = `select ca.*, ca.cardID ID from cards ca left join companies c on ca.companyID = c.companyID where c.companyID = ?`
-        db.query(query, [data.companyID], (error, rows, fields) => {
+        let query = `select ca.*, ca.cardID ID from cards ca left join users o on ca.ownerID = o.userID where o.userID = ?`
+        db.query(query, [data.ownerID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -58,8 +58,8 @@ function getCardList(data) {
  */
 function createCard(data, uid) {
     return new Promise((resolve, reject) => {
-        let query = `Insert into cards (companyID, card_number, expiry_date, name, secure_code, created_by, created_at) values (?, ?, ?, ?, ?, ?, ?)`
-        db.query(query, [data.companyID, data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime()], (error, rows, fields) => {
+        let query = `Insert into cards (ownerID, card_number, expiry_date, name, secure_code, created_by, created_at) values (?, ?, ?, ?, ?, ?, ?)`
+        db.query(query, [data.ownerID, data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime()], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
