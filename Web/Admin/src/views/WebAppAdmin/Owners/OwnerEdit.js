@@ -480,7 +480,7 @@ const OwnerEdit = (props) => {
                 if (companyList[i].companyID == ownerInfo.companyID) {
                   setCompanies(i);
                 }
-              setOwnerTitle(titleList.indexOf(ownerInfo.usertype));
+              setOwnerTitle(en_titleList.indexOf(ownerInfo.usertype));
               if (ownerInfo.usertype === 'Company') {
                 setCompanyName(ownerInfo.owner_company_name);
               }

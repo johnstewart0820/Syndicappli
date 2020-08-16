@@ -37,7 +37,7 @@ const AddOwner = (props) => {
     const classes = useStyles();
     const [state, setState] = React.useState(false);
     const titleList = ['', 'Mr', 'Mme', 'Mr et Mme', 'Société', 'Indivision', 'PACS'];
-    const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
+    const en_titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
     let company = [''];
     const [companies, setCompanies] = React.useState(0);
     const [companyList, setCompanyList] = React.useState([]);
