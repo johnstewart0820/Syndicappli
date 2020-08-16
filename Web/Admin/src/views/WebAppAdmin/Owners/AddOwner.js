@@ -36,8 +36,8 @@ const AddOwner = (props) => {
     const { history } = props;
     const classes = useStyles();
     const [state, setState] = React.useState(false);
-    const titleList = ['', 'Mr', 'Mme', 'Mr et Mme', 'Company', 'Indivision', 'PACS'];
-
+    const titleList = ['', 'Mr', 'Mme', 'Mr et Mme', 'Société', 'Indivision', 'PACS'];
+    const titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
     let company = [''];
     const [companies, setCompanies] = React.useState(0);
     const [companyList, setCompanyList] = React.useState([]);
@@ -418,7 +418,7 @@ const AddOwner = (props) => {
     const createOwner = () => {
         getVoteList();
         let formdata = new FormData();
-        formdata.set('type', titleList[ownerTitle]);
+        formdata.set('type', en_titleList[ownerTitle]);
         formdata.set('email', email);
         formdata.set('owner_role', isSubAccount ? 'subaccount' : isMemberCouncil ? 'member' : 'owner');
         formdata.set('buildingID', buildingID);

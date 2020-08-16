@@ -56,8 +56,8 @@ const OwnerEdit = (props) => {
   const [deleteId, setDeleteId] = useState(-1);
   const [removeBranchID, setRemoveBranchID] = useState(-1);
   const [suspendState, setSuspendState] = useState('Suspendre le compte');
-  const titleList = ['', 'Mr', 'Mme', 'Mr et Mme', 'Company', 'Indivision', 'PACS'];
-
+  const titleList = ['', 'Mr', 'Mme', 'Mr et Mme', 'Société', 'Indivision', 'PACS'];
+  const en_titleList = ['', 'Mr', 'Mrs', 'Mr & Mrs', 'Company', 'Indivision', 'PACS'];
   const [company, setCompany] = useState(['']);
   const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
@@ -418,7 +418,7 @@ const OwnerEdit = (props) => {
     let params = new URLSearchParams(window.location.search);
     getVoteList();
     let formdata = new FormData();
-    formdata.set('type', titleList[ownerTitle]);
+    formdata.set('type', en_titleList[ownerTitle]);
     formdata.set('email', email);
     formdata.set('owner_role', isSubAccount ? 'subaccount' : isMemberCouncil ? 'member' : 'owner');
     formdata.set('buildingID', buildingID);
@@ -484,7 +484,7 @@ const OwnerEdit = (props) => {
               if (ownerInfo.usertype === 'Company') {
                 setCompanyName(ownerInfo.owner_company_name);
               }
-              if (ownerInfo.usertype === 'Mr et Mme' || ownerInfo.usertype === 'PACS') {
+              if (ownerInfo.usertype === 'Mr & Mrs' || ownerInfo.usertype === 'PACS') {
                 setFirstName(ownerInfo.firstname);
                 setLastName(ownerInfo.lastname);
                 setFirstName1(ownerInfo.firstname_1);
