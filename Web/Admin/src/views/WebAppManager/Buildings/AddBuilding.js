@@ -213,7 +213,7 @@ const AddBuilding = (props) => {
                           </Grid>
                         </Grid>
                         <Grid item>
-                          <Grid item xs={6} container justify="space-between" alignItems="center" spacing={1}>
+                          <Grid item xs={12} container justify="space-between" alignItems="center" spacing={1}>
                             <Grid item >
                               <p className={classes.title}>Libellé</p>
                             </Grid>
