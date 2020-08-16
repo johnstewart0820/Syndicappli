@@ -384,7 +384,9 @@ const Topbar = props => {
                   </MenuItem>
                   <Divider />
                   <MenuItem onClick={handleClickLogout}>
-                    <ListItemIcon></ListItemIcon>
+                    <ListItemIcon>
+                        <img src="/images/log_out.png" alt="image" />
+                      </ListItemIcon>
                     <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
                   </MenuItem>
                 </div>
@@ -421,7 +423,9 @@ const Topbar = props => {
                     </MenuItem>
                     <Divider />
                     <MenuItem onClick={handleClickLogout}>
-                      <ListItemIcon></ListItemIcon>
+                      <ListItemIcon>
+                        <img src="/images/log_out.png" alt="image" />
+                      </ListItemIcon>
                       <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
                     </MenuItem>
                   </div>
@@ -435,7 +439,9 @@ const Topbar = props => {
                     </MenuItem>
                     <Divider />
                     <MenuItem onClick={handleClickLogout}>
-                      <ListItemIcon></ListItemIcon>
+                      <ListItemIcon>
+                        <img src="/images/log_out.png" alt="image" />
+                      </ListItemIcon>
                       <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
                     </MenuItem>
                   </div>
@@ -450,7 +456,9 @@ const Topbar = props => {
                     </MenuItem>
                     <Divider />
                     <MenuItem onClick={handleClickLogout}>
-                      <ListItemIcon></ListItemIcon>
+                      <ListItemIcon>
+                        <img src="/images/log_out.png" alt="image" />
+                      </ListItemIcon>
                       <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
                     </MenuItem>
                   </div>
