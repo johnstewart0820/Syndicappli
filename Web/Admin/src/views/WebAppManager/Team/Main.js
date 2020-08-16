@@ -137,7 +137,7 @@ const Main = (props) => {
                     <Grid item xs={12} sm={6} container justify="flex-end" >
                         <Grid>
                             <MyButton
-                                name={value === 0 ? "Nouveau Équipe" : "Vider la Poubelle"}
+                                name={value === 0 ? "Nouveau Gestionnaire" : "Vider la Poubelle"}
                                 color={"1"}
                                 onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashTeamMember}
                                 style={{ visibility: accessTeam === 'edit' ? 'visible' : 'hidden' }}
@@ -167,7 +167,7 @@ const Main = (props) => {
                         }
                     }}
                 >
-                    <Tab xs={12} sm={4} label="Équipe" {...a11yProps(0)} className={classes.tabTitle} disableRipple />
+                    <Tab xs={12} sm={4} label="Gestionnaires" {...a11yProps(0)} className={classes.tabTitle} disableRipple />
                     <Tab xs={12} sm={4} label="Poubelle" {...a11yProps(1)} className={classes.tabTitle} disableRipple />
                 </Tabs>
             </div>
