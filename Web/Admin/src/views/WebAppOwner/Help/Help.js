@@ -102,7 +102,7 @@ const Help = (props) => {
       <div className={classes.root}>
         <div className={classes.title}>
           <Typography variant="h2" className={classes.headerTitle}>
-            <b>D'aide</b>
+            <b>Contactez-nous</b>
           </Typography>
         </div>
         <div className={classes.tool}>
