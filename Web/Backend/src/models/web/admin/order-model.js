@@ -197,7 +197,7 @@ function getBuyerList(uid, data) {
                     WHERE c.permission = "active" and b.permission = "active" and u.userID = ? and r.type="company"`
         else if (data.buyer_type === "owners")
             query = `SELECT
-                    s.userID buyerID, c.companyID, b.buildingID, CONCAT(s.firstname,s.lastname) name
+                    s.userID buyerID, c.companyID, b.buildingID, if(s.type = "Company", s.owner_company_name, CONCAT(s.firstname,s.lastname)) name 
                     FROM
                         users u
                         LEFT JOIN user_relationship r ON u.userID = r.userID
@@ -205,7 +205,7 @@ function getBuyerList(uid, data) {
                         LEFT JOIN buildings b ON c.companyID = b.companyID
                         INNER JOIN (
                         SELECT
-                            rel.relationID, o.userID, o.firstname, o.lastname
+                            rel.relationID, o.userID, o.firstname, o.lastname, o.owner_company_name, o.type
                         FROM
                             users o
                             LEFT JOIN user_relationship rel ON o.userID = rel.userID 

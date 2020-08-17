@@ -24,7 +24,10 @@ var ownerService = {
     updateOwner: updateOwner,
     deleteOwner: deleteOwner,
     updateOwnerStatus: updateOwnerStatus,
-    deleteAllOwner: deleteAllOwner
+    deleteAllOwner: deleteAllOwner,
+
+    exportOwnerCSV: exportOwnerCSV,
+    importOwnerCSV: importOwnerCSV
     
 }
 
@@ -237,6 +240,66 @@ function deleteAllOwner(uid, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             ownerModel.deleteAllOwner(data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that delete All trashed company data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function importOwnerCSV(uid, userdata, file, data) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            ownerModel.importOwnerCSV(uid, file, data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that delete All trashed company data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function exportOwnerCSV(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOwnerPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            ownerModel.exportOwnerCSV(data, res).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

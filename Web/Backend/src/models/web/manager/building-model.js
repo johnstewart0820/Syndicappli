@@ -454,17 +454,17 @@ function importBuildingCSV(uid, file, data) {
         .on('data', async (row) => {
             console.log(row);
 
-            if (row.name !== '') {
+            if (row['name'] !== '' && row['name'] !== null && row['name'] !== undefined) { 
                 if (building.vote_branch.length != 0) {
                     item = JSON.parse(JSON.stringify(building));
                     buildings.push(item)
                     building.vote_branch = []
                 }
-                building.name = row.name
-                building.address = row.address
-                building.vote_branch.push(row[JSON.parse(JSON.stringify('Key'))])                
+                building.name = row['name']
+                building.address = row['address']
+                building.vote_branch.push(row['Key'])                
             } else {
-                building.vote_branch.push(row[JSON.parse(JSON.stringify('Key'))])
+                building.vote_branch.push(row['Key'])
             }
         })
         .on('end', async () => {
@@ -521,7 +521,7 @@ function exportBuildingCSV(data, res) {
             ]
         });
         let buildings = []
-        let buildingIDs = data.buildingID
+        let buildingIDs = JSON.parse(data.buildingID)
         for (var i in buildingIDs) {
             result = await getBuildingForCSV(buildingIDs[i])
             for (var j in result) {

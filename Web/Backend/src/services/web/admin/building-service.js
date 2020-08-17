@@ -26,7 +26,9 @@ var buildingService = {
     getBuilding: getBuilding,
     updateBuilding: updateBuilding,
     deleteBuilding: deleteBuilding,
-    deleteAllBuilding: deleteAllBuilding
+    deleteAllBuilding: deleteAllBuilding,
+    importBuildingCSV: importBuildingCSV,
+    exportBuildingCSV: exportBuildingCSV
 }
 
 
@@ -240,6 +242,66 @@ function deleteAllBuilding(uid, userdata, data) {
     return new Promise((resolve, reject) => {
         authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             buildingModel.deleteAllBuilding(data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that delete All trashed company data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function importBuildingCSV(uid, userdata, file, data) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            buildingModel.importBuildingCSV(uid, file, data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that delete All trashed company data
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function exportBuildingCSV(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            buildingModel.exportBuildingCSV(data, res).then((result) => {
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION

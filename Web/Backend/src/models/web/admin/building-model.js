@@ -12,6 +12,9 @@
 var db = require('../../../database/database')
 var message  = require('../../../constants/message')
 var bcrypt = require('bcrypt-nodejs')
+const csv = require('csv-parser');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const fs = require('fs');
 var table  = require('../../../constants/table')
 var timeHelper = require('../../../helper/timeHelper')
 
@@ -24,7 +27,9 @@ var buildingModel = {
     getBuilding: getBuilding,
     updateBuilding: updateBuilding,
     deleteBuilding: deleteBuilding,
-    deleteAllBuilding: deleteAllBuilding
+    deleteAllBuilding: deleteAllBuilding,
+    importBuildingCSV: importBuildingCSV,
+    exportBuildingCSV: exportBuildingCSV
 }
 
 /**
@@ -401,6 +406,157 @@ function deleteAllBuilding(data) {
     })
 }
 
+function addBuilding(uid, item, data) {
+    return new Promise(async (resolve, reject) => {
+        query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)'
+        let select_building_query = 'Select * from ' + table.BUILDINGS + ' where name = ? and address = ?'
+        await db.query(query, [ data.companyID, item.name, item.address, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime() ],  (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                db.query(select_building_query, [item.name, item.address],  (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                    } else {
+                        if(rows.length > 0){
+                            let buildingID = rows[0].buildingID
+                            let query = `Insert into ` + table.USER_RELATIONSHIP + ` (userID, type, relationID) values (?, ?, ?)`
+                            db.query(query, [uid, "building", buildingID], (error, rows, fields) => {
+                                if (error) {
+                                    console.log(error)
+                                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                                } else {
+                                    query = 'Insert into ' + table.VOTE_BUILDING_BRANCH + ' (buildingID, vote_branch_name, created_by, created_at, updated_at) values ?'
+                                    let branches = []
+                                    let vote_branch = item.vote_branch
+                                    for ( var j = 0 ; j < vote_branch.length ; j++){
+                                        var value = vote_branch[j]
+                                        branches.push([buildingID, value, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()])
+                                    }
+                                    db.query(query, [branches],  (error, rows, fields) => {
+                                        if (error) {
+                                            reject({ message: message.INTERNAL_SERVER_ERROR });
+                                        }
+                                    })
+                                }
+                            })
+                            
+                        } else {
+                            reject({ message: message.BUILDING_NOT_EXSIT });
+                        }
+                    }
+                })
+                resolve("OK")
+            }
+        })
+    })
+}
+/**
+ * import building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function importBuildingCSV(uid, file, data) {
+    return new Promise((resolve, reject) => {
+        let buildings = []
+
+        let building = {
+            name: '',
+            address: '',
+            vote_branch: []
+        }
+        fs.createReadStream(file.path)
+        .pipe(csv())
+        .on('data', async (row) => {
+            console.log(row);
+
+            if (row['name'] !== '' && row['name'] !== null && row['name'] !== undefined) { 
+                if (building.vote_branch.length != 0) {
+                    item = JSON.parse(JSON.stringify(building));
+                    buildings.push(item)
+                    building.vote_branch = []
+                }
+                building.name = row['name']
+                building.address = row['address']
+                building.vote_branch.push(row['Key'])                
+            } else {
+                building.vote_branch.push(row['Key'])
+            }
+        })
+        .on('end', async () => {
+            buildings.push(building)
+            for (var i in buildings) {
+                var item = JSON.parse(JSON.stringify(buildings[i]));
+                await addBuilding(uid, item, data)
+                
+            }
+            resolve("OK")
+        });
+    })
+}
+
+function getBuildingForCSV(buildingID) {
+    return new Promise((resolve, reject) => {
+            let buildings = []
+            let query = 'Select b.name name, b.address address, v.vote_branch_name vote_branch_name from buildings b left join vote_building_branches v on b.buildingID = v.buildingID where b.buildingID = ?'
+            db.query(query, [buildingID], (error, rows, fields) => {
+                if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                } else {
+                    var vote_branch_name = []
+                    for (var j in rows) {
+                        if (j == 0)
+                            buildings.push({name: rows[0].name, address: rows[0].address, vote_branch_name: rows[0].vote_branch_name})
+                        else
+                            buildings.push({name: '', address: '', vote_branch_name: rows[j].vote_branch_name})
+                    }
+                    resolve(buildings)
+                }
+            })
+        
+            
+    })
+}
+
+/**
+ * delete building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function exportBuildingCSV(data, res) {
+    return new Promise(async (resolve, reject) => {
+        time = timeHelper.getCurrentTime()
+        const csvWriter = createCsvWriter({
+            path: 'public/upload/' + time,
+            header: [
+              {id: 'name', title: 'name'},
+              {id: 'address', title: 'address'},
+              {id: 'vote_branch_name', title: 'Key'},
+            ]
+        });
+        let buildings = []
+        let buildingIDs = JSON.parse(data.buildingID)
+        for (var i in buildingIDs) {
+            result = await getBuildingForCSV(buildingIDs[i])
+            for (var j in result) {
+                buildings.push(result[j])
+            }
+        }
+        csvWriter
+            .writeRecords(buildings)
+            .then(()=> {
+                var file = fs.readFileSync("public/upload/" + time);
+                res.setHeader('Content-Length', file.length);
+                res.write(file, 'binary');
+                res.end();
+            });
+        
+    })
+}
 
 
 module.exports = buildingModel

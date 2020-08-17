@@ -21,7 +21,9 @@ const {sendMail} = require('../../../helper/mailHelper')
 var mail = require('../../../constants/mail')
 var randtoken = require('rand-token');
 var code = require('../../../constants/code')
-
+const csv = require('csv-parser');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const fs = require('fs');
 var ownerModel = {
     getOwnerList: getOwnerList,
     getCountOwnerList: getCountOwnerList,
@@ -33,7 +35,9 @@ var ownerModel = {
     delete_apartments: delete_apartments,
     deleteOwner: deleteOwner,
     updateOwnerStatus: updateOwnerStatus,
-    deleteAllOwner: deleteAllOwner
+    deleteAllOwner: deleteAllOwner,
+    exportOwnerCSV: exportOwnerCSV,
+    importOwnerCSV: importOwnerCSV
 }
 
 /**
@@ -310,7 +314,7 @@ function createOwner(uid, data, ownerID) {
  * @return  object If success returns object else returns message
  */
 function getOwner(uid, data, id) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         let query = 'Select *, users.type usertype, users.email email, users.phone phone, users.address address, users.status status from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
         let ownerInfo;
         let vote_amount_info;
@@ -595,4 +599,223 @@ function deleteAllOwner(data) {
         resolve("OK")
     })
 }
+
+
+
+function getbranch(buildingID) {
+    return new Promise(async (resolve, reject) => {
+        query = 'Select v.vote_branch_name, v.voteID from buildings b left join vote_building_branches v on b.buildingID = v.buildingID where b.buildingID = ?'
+        db.query(query, [ buildingID ],  (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows)
+            }
+        })
+    })
+}
+
+/**
+ * import building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function importOwnerCSV(uid, file, data) {
+    return new Promise(async (resolve, reject) => {
+        let owners = []
+        let owner = {
+            'type': '',
+            'owner_role': '',
+            'firstname': '',
+            'lastname': '',
+            'firstname_1': '',
+            'lastname_1': '',
+            'owner_company_name': '',
+            'address': '',
+            'email': '',
+            'phone': '',
+            'vote_value_list': []
+        }
+        let votes = await getbranch(data.buildingID)
+        
+        fs.createReadStream(file.path)
+        .pipe(csv())
+        .on('data', async (row) => {
+            owner_role = row['subaccount'] == 'yes' ? 'subaccount' : row['member of union council'] == 'yes' ? 'member' : 'owner'
+            
+            if (row['type'] !== '' && row['type'] !== null && row['type'] !== undefined) {
+                if (owner.vote_value_list.length != 0) {
+                    item = JSON.parse(JSON.stringify(owner));
+                    owners.push(item)
+                    owner.type = ''
+                    owner.owner_role = ''
+                    owner.firstname = ''
+                    owner.lastname = ''
+                    owner.firstname_1 = ''
+                    owner.lastname_1 = ''
+                    owner.owner_company_name = ''
+                    owner.address = ''
+                    owner.email = ''
+                    owner.phone = ''
+                    owner.vote_value_list = []
+                }
+                owner.type = row.type
+                owner.email = row.email
+                owner.owner_role = owner_role
+                owner.buildingID = data.buildingID
+                owner.firstname = row['1st name 1']
+                owner.lastname = row['last name 1']
+                owner.firstname_1 = row['1st name 2']
+                owner.lastname_1 = row['last name 2']
+                owner.owner_company_name = row['company name']
+                owner.address = row['address']
+                owner.phone = row['phone number']
+                var temp = []
+                if (owner_role != "subaccount")
+                    for (var i in votes) {
+                        temp.push({"voteID" :votes[i].voteID, "vote_amount": row[votes[i].vote_branch_name]})
+                    }
+
+                owner.vote_value_list.push({"apartment_number": row['lots'], "vote": temp})
+            } else {
+                if (owner_role != "subaccount") {
+                    var temp = []
+                
+                    for (var i in votes)
+                        temp.push({"voteID" :votes[i].voteID, "vote_amount": row[votes[i].vote_branch_name]})
+                    owner.vote_value_list.push({"apartment_number": row['lots'], "vote": temp})
+                }
+            }
+        })
+        .on('end', async () => {
+            item = JSON.parse(JSON.stringify(owner));
+            owners.push(item)
+            for (var i in owners) {
+                var item = JSON.parse(JSON.stringify(owners[i]));
+                item.vote_value_list = JSON.stringify(item.vote_value_list)
+                await createOwner_info(uid, item, {})
+                var response = await createBuildingRelationShip(item)
+                if (item.owner_role !== "subaccount") {                     
+                    await createOwner(uid, item, response)
+                }
+            }
+            resolve("OK")
+        });
+    })
+}
+
+function getOwnerForCSV(data, ownerID) {
+    return new Promise(async (resolve, reject) => {
+        let apartments = []
+        let owner_result = {}
+        owner = await getOwner(1, data, ownerID)
+        type_owner = owner.ownerInfo.usertype
+        firstname = owner.ownerInfo.firstname
+        lastname = owner.ownerInfo.lastname
+        firstname_1 = owner.ownerInfo.firstname_1
+        lastname_1 = owner.ownerInfo.lastname_1
+        company_name = owner.ownerInfo.owner_company_name
+        address = owner.ownerInfo.address
+        email = owner.ownerInfo.email
+        phone_number = owner.ownerInfo.phone
+        subaccount = owner.ownerInfo.owner_role == "subaccount" ? "yes" : "no"
+        member = owner.ownerInfo.owner_role == "member" ? "yes" : "no"
+        if (subaccount == "yes") {
+            owner_result['type'] = type_owner
+            owner_result['firstname'] = firstname
+            owner_result['lastname'] = lastname
+            owner_result['firstname_1'] = firstname_1
+            owner_result['lastname_1'] = lastname_1
+            owner_result['company_name'] = company_name
+            owner_result['address'] = address
+            owner_result['email'] = email
+            owner_result['phone_number'] = phone_number
+            owner_result['subaccount'] = subaccount
+            owner_result['member'] = member
+            apartments.push(owner_result)
+            resolve(apartments)
+        } else {
+            for (var i in owner.apartment_info) {
+                owner_result['lots'] = owner.apartment_info[i].apartment_number
+                for (var j in owner.amount_info) {
+                    if (i == 0) {
+                        owner_result['type'] = type_owner
+                        owner_result['firstname'] = firstname
+                        owner_result['lastname'] = lastname
+                        owner_result['firstname_1'] = firstname_1
+                        owner_result['lastname_1'] = lastname_1
+                        owner_result['company_name'] = company_name
+                        owner_result['address'] = address
+                        owner_result['email'] = email
+                        owner_result['phone_number'] = phone_number
+                        owner_result['subaccount'] = subaccount
+                        owner_result['member'] = member
+                    }
+                    if (owner.amount_info[j].apartment_number === owner.apartment_info[i].apartment_number)
+                        owner_result[owner.amount_info[j].voteID] = owner.amount_info[j].amount
+                }
+                apartments.push(owner_result)
+                owner_result = {}
+            }
+            resolve(apartments)
+        }   
+    })
+}
+
+/**
+ * delete building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function exportOwnerCSV(data, res) {
+    return new Promise(async (resolve, reject) => {
+        time = timeHelper.getCurrentTime()
+        
+        var header =  [
+            {id: 'type', title: 'type'},
+            {id: 'firstname', title: '1st name 1'},
+            {id: 'lastname', title: 'last name 1'},
+            {id: 'firstname_1', title: '1st name 2'},
+            {id: 'lastname_1', title: 'last name 2'},
+            {id: 'company_name', title: 'company name'},
+            {id: 'address', title: 'address'},
+            {id: 'email', title: 'email'},
+            {id: 'phone_number', title: 'phone number'},
+            {id: 'subaccount', title: 'subaccount'},
+            {id: 'member', title: 'member of union council'},
+            {id: 'lots', title: 'lots'}
+          ]
+        votes = await getbranch(data.buildingID)
+        for (var k in votes) {
+            header.push({id: votes[k].voteID, title: votes[k].vote_branch_name})
+        }
+        const csvWriter = createCsvWriter({
+            path: 'public/upload/' + time,
+            header: header
+        });
+        let owners = []
+        let ownerIDs = JSON.parse(data.ownerID)
+        for (var i in ownerIDs) {
+            result = await getOwnerForCSV(data,ownerIDs[i])
+            for (var j in result) {
+                owners.push(result[j])
+            }
+        }
+        csvWriter
+            .writeRecords(owners)
+            .then(()=> {
+                var file = fs.readFileSync("public/upload/" + time);
+                res.setHeader('Content-Length', file.length);
+                res.write(file, 'binary');
+                res.end();
+            });
+        
+    })
+}
+
+
 module.exports = ownerModel

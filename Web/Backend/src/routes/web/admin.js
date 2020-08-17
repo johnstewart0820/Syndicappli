@@ -77,6 +77,8 @@ router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
 router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
 router.post('/trash/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
 
+router.post('/building/import_csv', authMiddleware.checkToken, upload.single('csv'), importBuildingCSV)
+router.post('/building/export_csv', authMiddleware.checkToken, exportBuildingCSV)
 /**
  * manager api
  */
@@ -99,6 +101,9 @@ router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo
 router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
 router.post('/trash/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
+
+router.post('/owner_import_csv', authMiddleware.checkToken, upload.single('csv'), importOwnerCSV)
+router.post('/owner_export_csv', authMiddleware.checkToken, exportOwnerCSV)
 
 /**
  * product api
@@ -693,6 +698,46 @@ function deleteBuilding(req, res) {
     })
 }
 
+/**
+ * Function that import CSV for Building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function importBuildingCSV(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let data = req.body
+    
+    buildingService.importBuildingCSV(userId, userdata, file, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that export CSV for Building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function exportBuildingCSV(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    buildingService.exportBuildingCSV(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
 
 //////////////////////////////////////////Manager//////////////////////////////////
 
@@ -977,6 +1022,47 @@ function deleteAllOwner(req, res) {
     let userdata = req.decoded.userdata
     let data = req.body
     ownerService.deleteAllOwner(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that import CSV for Building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function importOwnerCSV(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let data = req.body
+    
+    ownerService.importOwnerCSV(userId, userdata, file, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that export CSV for Building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function exportOwnerCSV(req, res) {
+    console.log('aaa')
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    ownerService.exportOwnerCSV(userId, userdata, data, res).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
