@@ -331,7 +331,7 @@ const OwnerEdit = (props) => {
                 building.push(item.name)
               )
               );
-              buildingList.push(...data.buildinglist);
+              // buildingList.push(...data.buildinglist);
               setBuildingList(...data.buildinglist);
               setBuilding(building);
               setBuildingID(params.get('buildingID'));

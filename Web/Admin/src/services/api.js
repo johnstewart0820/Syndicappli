@@ -113,6 +113,12 @@ class AdminService {
   emptyTrashBuilding(status) {
     return axios.post(API_URL + 'web/admin/trash/building/deleteAll', status, { headers: authHeader() });
   }
+  importBuilding(data) {
+    return axios.post(API_URL + 'web/admin/building/import_csv', data, { headers: authHeader() });
+  }
+  exportBuilding(data) {
+    return axios.post(API_URL + 'web/admin/building/export_csv', data, { headers: authHeader() ,responseType: 'blob'});
+  }
   //Owner Part
   getOwnerList(data) {
     return axios.post(API_URL + 'web/admin/ownerList', data, { headers: authHeader() });
@@ -134,6 +140,12 @@ class AdminService {
   }
   emptyTrashOwner(status) {
     return axios.post(API_URL + 'web/admin/trash/owner/deleteAll', status, { headers: authHeader() });
+  }
+  importOwner(data) {
+    return axios.post(API_URL + 'web/admin/owner_import_csv', data, { headers: authHeader() });
+  }
+  exportOwner(data) {
+    return axios.post(API_URL + 'web/admin/owner_export_csv', data, { headers: authHeader() ,responseType: 'blob'});
   }
   //Manager Part
   getManagerList(data) {
@@ -352,6 +364,12 @@ export class ManagerService {
   emptyTrashBuilding(status) {
     return axios.post(API_URL + 'web/manager/trash/building/deleteAll', status, { headers: authHeader() });
   }
+  importBuilding(data) {
+    return axios.post(API_URL + 'web/manager/building/import_csv', data, { headers: authHeader() });
+  }
+  exportBuilding(data) {
+    return axios.post(API_URL + 'web/manager/building/export_csv', data, { headers: authHeader() ,responseType: 'blob'});
+  }
   //Owner Part
   getOwnerList(data) {
     return axios.post(API_URL + 'web/manager/ownerList', data, { headers: authHeader() });
@@ -373,6 +391,12 @@ export class ManagerService {
   }
   emptyTrashOwner(status) {
     return axios.post(API_URL + 'web/manager/trash/owner/deleteAll', status, { headers: authHeader() });
+  }
+  importOwner(data) {
+    return axios.post(API_URL + 'web/manager/owner_import_csv', data, { headers: authHeader() });
+  }
+  exportOwner(data) {
+    return axios.post(API_URL + 'web/manager/owner_export_csv', data, { headers: authHeader() ,responseType: 'blob'});
   }
   //Team Part
   getTeamMemberList(data) {

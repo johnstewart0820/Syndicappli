@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import SelectTable from '../../../components/SelectTable';
 import MyTable from '../../../components/MyTable';
 import Grid from '@material-ui/core/Grid';
 import { withRouter } from 'react-router-dom';
@@ -33,6 +34,7 @@ const Buildings = (props) => {
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
+  const [state, setState] = useState(false);
   const cellList = [
     { key: 'name', field: 'Nom' },
     { key: 'address', field: 'Adresse' },
@@ -46,6 +48,70 @@ const Buildings = (props) => {
   const handleClickEdit = (id) => {
     history.push('/admin/buildings/edit/' + id);
     window.location.reload();
+  }
+  const handleClickImport = (csvData) => {
+    if(companyID !== -1){
+      let requestData = new FormData();
+      requestData.set('csv', csvData);
+      requestData.set('companyID', companyID);
+      setVisibleIndicator(true);
+      AdminService.importBuilding(requestData)
+        .then(
+          response => {
+            setVisibleIndicator(false);
+            switch (response.data.code) {
+              case 200:
+                const data = response.data.data;
+                localStorage.setItem("token", JSON.stringify(data.token));
+                getBuildings();
+                ToastsStore.success('Imported building successfully');
+                break;
+              case 401:
+                authService.logout();
+                history.push('/login');
+                window.location.reload();
+                break;
+              default:
+                ToastsStore.error(response.data.message);
+            }
+          },
+          error => {
+            ToastsStore.error("Can't connect to the server!");
+            setVisibleIndicator(false);
+          }
+        );
+    }
+    else{
+      ToastsStore.warning('You must select company');
+    }
+  }
+
+  const handleClickExport = (check) => {
+    let buildingIDs = [];
+    for(let i = 0 ; i < check.length ; i++){
+      buildingIDs.push(dataList[check[i]].buildingID);
+    }
+    let year = new Date().getFullYear();
+    let month = new Date().getMonth() + 1;
+    let date1 = new Date().getDate();
+    let date = year + '_' + month + '_' + date1;
+    const requestData = {
+      'buildingID': JSON.stringify(buildingIDs),
+    }
+    setVisibleIndicator(true);
+    AdminService.exportBuilding(requestData)
+      .then(
+        ({ data }) => {
+          setVisibleIndicator(false);
+          const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.setAttribute('download', 'admin_building(' + date + ').csv');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+      );
   }
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
@@ -123,9 +189,10 @@ const Buildings = (props) => {
               else
                 setTotalPage(data.totalpage);
               setDataList(data.buildinglist);
+              setState(!state);
               let amount = 0;
 
-              const items = ['Total', data.totalcount, amount];
+              const items = ['', 'Total', data.totalcount, amount];
               setFooterItems(items);
               break;
             case 401:
@@ -148,7 +215,7 @@ const Buildings = (props) => {
     setDeleteId(id);
   };
   useEffect(() => {
-      getCompanies();
+    getCompanies();
   }, [accessBuildings]);
   useEffect(() => {
     if (accessBuildings !== 'denied')
@@ -213,18 +280,23 @@ const Buildings = (props) => {
           </Grid>
         </Grid>
       </div>
+      <div className={classes.tool}>
+      </div>
       <div className={classes.body}>
-        <MyTable
+        <SelectTable
           onChangeSelect={handleChangeSelect}
           onChangePage={handleChangePagination}
           onSelectSort={handleSort}
           page={page_num}
           columns={columns}
           products={dataList}
+          state={state}
           totalpage={totalpage}
           cells={cellList}
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
+          onImport={handleClickImport}
+          onExport={handleClickExport}
           tblFooter="true"
           footerItems={footerItems}
           access={accessBuildings}

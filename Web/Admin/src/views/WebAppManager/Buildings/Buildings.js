@@ -26,6 +26,7 @@ const Buildings = (props) => {
   const [companyID, setCompanyID] = useState(-1);
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
+  const [state, setState] = useState(false);
   const selectList = [20, 50, 100, 200, -1];
   const cellList = [
     { key: 'name', field: 'Nom' },
@@ -44,15 +45,64 @@ const Buildings = (props) => {
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
   }
-  const handleClickAllSelect = () => {
+  const handleClickImport = (csvData) => {
+    let requestData = new FormData();
+    requestData.set('csv', csvData);
+    requestData.set('companyID', companyID);
+    setVisibleIndicator(true);
+    ManagerService.importBuilding(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              getBuildings();
+              ToastsStore.success('Imported building successfully');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
 
-  }
-  const handleClickImport = () => {
-    // setPageNum();
-  }
-  const handleClickExport = (data) => {
-    // setPageNum();
-    console.log(data);
+  const handleClickExport = (check) => {
+    let buildingIDs = [];
+    for(let i = 0 ; i < check.length ; i++){
+      buildingIDs.push(dataList[check[i]].buildingID);
+    }
+    let year = new Date().getFullYear();
+    let month = new Date().getMonth() + 1;
+    let date1 = new Date().getDate();
+    let date = year + '_' + month + '_' + date1;
+    const requestData = {
+      'buildingID': JSON.stringify(buildingIDs),
+    }
+    setVisibleIndicator(true);
+    ManagerService.exportBuilding(requestData)
+      .then(
+        ({ data }) => {
+          setVisibleIndicator(false);
+          const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.setAttribute('download', 'manager_building(' + date + ').csv');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+      );
   }
 
   const handleChangePagination = (value) => {
@@ -119,6 +169,7 @@ const Buildings = (props) => {
               else
                 setTotalPage(data.totalpage);
               setDataList(data.buildinglist);
+              setState(!state);
               break;
             case 401:
               authService.logout();
@@ -195,6 +246,7 @@ const Buildings = (props) => {
           page={page_num}
           columns={columns}
           products={dataList}
+          state={state}
           totalpage={totalpage}
           cells={cellList}
           onClickEdit={handleClickEdit}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../assets/custom.css';
 import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
@@ -13,6 +13,8 @@ import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
+import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
+import { CSVLink } from "react-csv";
 const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
@@ -140,6 +142,9 @@ const useStyles = makeStyles({
       },
     }
   },
+  input: {
+    display: 'none'
+  },
   body: {
     [theme.breakpoints.up('xl')]: {
       marginBottom: 16,
@@ -165,16 +170,6 @@ const useStyles = makeStyles({
         width: 33,
         height: 33,
       },
-      // [theme.breakpoints.down('md')]: {
-      //   fontSize: 11,
-      //   width: '23 !important',
-      //   height: '23 !important'
-      // },
-      // [theme.breakpoints.down('sm')]: {
-      //   fontSize: 8,
-      //   width: 16,
-      //   height:16
-      // },
     }
   },
   editItem: {
@@ -202,7 +197,13 @@ const useStyles = makeStyles({
     visibility: 'visible'
   },
 });
+const fileTypes = [
+  'application/vnd.ms-excel',
+];
 
+function validFileType(file) {
+  return fileTypes.includes(file.type);
+}
 export default function SelectTable(props) {
   const { onClickEdit, ...rest } = props;
 
@@ -210,45 +211,78 @@ export default function SelectTable(props) {
   const [direction, setDirection] = useState(props.columns);
   const tempDirection = props.columns;
   let tempDirect = [];
-  const [selectList, setSelectList] = useState([]);
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
       tempDirect[i] = '/images/sort_down.png';
   }
-  const allData = 3;
+  const inputFile = useRef(null);
   const [cells, setCells] = useState(props.cells);
   const [items, setItems] = useState([]);
+  const [selectAllText, setSelectAllText] = useState('Tout sélectionner');
   const footer = props.footerItems ? props.footerItems : [];
   const [direct, setDirect] = React.useState(tempDirect);
   const dataList = [20, 50, 100, 200, "all"];
-
+  const [selectAll, setSelectAll] = useState(-1);
+  const [check, setCheck] = useState([]);
   const [value, setValue] = React.useState(0);
   useEffect(() => {
-    setItems(props.products)
-  });
+    setItems(props.products);
+    let tempItems = [...props.products];
+    for (let i = 0; i < props.products.length; i++) {
+      tempItems[i].isChecked = false;
+    }
+    setItems(tempItems);
+    setCheck([]);
+    setSelectAll(-1);
+  }, [props.state]);
   const handleChange = (event) => {
+    let tempItems = [...items];
+    for (let i = 0; i < items.length; i++) {
+      tempItems[i].isChecked = false;
+    }
+    setItems(tempItems);
+    setCheck([]);
+    setSelectAll(-1);
     props.onChangeSelect(event.target.value);
     setValue(event.target.value);
   };
   const handleChangeSelect = (event, id) => {
-    let mItems = [...items];
-    if (selectList.length === allData) {
-      selectList.splice(0, allData);
-      selectList.push(-1);
-    } else {
-      if (selectList.length === 1 && selectList[0] === -1)
-        selectList.splice(0, 1);
-      if (event.target.checked === true) {
-        selectList.push(mItems[id].userID);
-      }
-      else {
-        selectList.splice(selectList.indexOf(mItems[id].userID), 1);
-      }
+    let tmpCheck = [...check];
+    if (tmpCheck.indexOf(id, 0) !== -1) {
+      tmpCheck.splice(tmpCheck.indexOf(id, 0), 1);
     }
-    setSelectList(selectList);
-    mItems[id].isChecked = event.target.checked;
-    setItems(mItems);
+    else
+      tmpCheck.push(id);
+    setCheck(tmpCheck);
   };
+  useEffect(() => {
+    if (check.length === 0) {
+      setSelectAll(-1);
+      setSelectAllText('Tout sélectionner');
+    }
+    else if (check.length === items.length) {
+      setSelectAll(1);
+      setSelectAllText('Tout déselectionner');
+    }
+    else {
+      setSelectAll(0);
+      let tempItems = [...items];
+      for (let j = 0; j < tempItems.length; j++)
+        tempItems[j].isChecked = false;
+      for (let j = 0; j < tempItems.length; j++)
+        for (let i = 0; i < check.length; i++) {
+          if (check[i] === j) {
+            tempItems[j].isChecked = true;
+            break;
+          }
+          else
+            tempItems[j].isChecked = false;
+        }
+      setCheck(check)
+      setItems(tempItems);
+      setSelectAllText('Tout sélectionner');
+    }
+  }, [check]);
   const handleChangePage = (event, page) => {
     props.onChangePage(page);
   };
@@ -264,32 +298,55 @@ export default function SelectTable(props) {
       setDirect(tempDirect);
       setDirection(tempDirection);
     }
-
     props.onSelectSort(index, direction[index]);
   }
   const handleClickAllSelect = () => {
-    let mItems = [...items];
-    if (selectList.length === 1 && selectList[0] === -1) {
-      selectList.splice(0, selectList.length);
-      for (let i = 0; i < mItems.length; i++) {
-        mItems[i].isChecked = false;
-      }
+    if (items.length !== 0) {
+      if (selectAll === 0)
+        setSelectAll(1);
+      else
+        setSelectAll(selectAll * (-1));
     }
-    else if (selectList.length !== allData) {
-      selectList.splice(0, selectList.length);
-      selectList[0] = -1;
-      for (let i = 0; i < mItems.length; i++) {
-        mItems[i].isChecked = true;
-      }
-    }
-    setItems(mItems);
-    setSelectList(selectList);
   }
-  const handleClickImport = () => {
-    props.onImport();
+  useEffect(() => {
+    if (selectAll === 1) {
+      let tempCheck = [];
+      let tempItems = [...items];
+      for (let i = 0; i < tempItems.length; i++) {
+        tempCheck[i] = i;
+        tempItems[i].isChecked = true;
+      }
+      setCheck(tempCheck);
+      setItems(tempItems);
+    }
+    else if (selectAll === -1) {
+      setCheck([]);
+      let tempItems = [...items];
+      for (let i = 0; i < tempItems.length; i++) {
+        tempItems[i].isChecked = false;
+      }
+      setItems(tempItems);
+    }
+  }, [selectAll]);
+  const handleClickImport = (event) => {
+    inputFile.current.click();
+  }
+  const handleChangeImport = (event) => {
+    if (props.id !== -1) {
+      if (event.target.files[0] !== undefined) {
+        if (validFileType(event.target.files[0])) {
+          props.onImport(event.target.files[0]);
+        }
+        else {
+          ToastsStore.warning('CSV format is not correct.');
+        }
+      }
+    }
   }
   const handleClickExport = () => {
-    props.onExport(selectList);
+    if (check.length !== 0) {
+      props.onExport(check);
+    }
   }
   const Value = (val) => {
     switch (val) {
@@ -319,9 +376,10 @@ export default function SelectTable(props) {
     <Grid container direction="column" spacing={2}>
       <Grid item container spacing={2} direction="row">
         <Grid item>
-          <MyButton name={"Tout sélectionner/déselectionner"} bgColor={"#00C9FF"} onClick={handleClickAllSelect} />
+          <MyButton name={selectAllText} bgColor={"#00C9FF"} onClick={handleClickAllSelect} />
         </Grid>
         <Grid item>
+          <input className={classes.input} type="file" ref={inputFile} id="csvForm" accept=".csv" onChange={handleChangeImport} />
           <MyButton name={"Importer"} bgColor={"#00C9FF"} onClick={handleClickImport} />
         </Grid>
         <Grid item>
@@ -374,7 +432,7 @@ export default function SelectTable(props) {
                 {
                   <TableCell key={i}>
                     <Checkbox
-                      checked={item.isChecked}
+                      checked={item.isChecked || false}
                       onChange={(event) => handleChangeSelect(event, i)}
                     />
                   </TableCell>
@@ -443,6 +501,7 @@ export default function SelectTable(props) {
           />
         </Grid>
       </Grid>
+      <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </Grid>
   );
 };
