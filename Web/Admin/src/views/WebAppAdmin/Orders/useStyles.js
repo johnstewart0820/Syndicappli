@@ -419,7 +419,9 @@ export const EditOrderStyles = makeStyles(theme => ({
 }));
 export const BudgetStyles = makeStyles((theme, props)=> ({
   root: {
-    height: '100%'
+    height: '100%',
+    boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
+    borderRadius: 15
   },
   content: {
     alignItems: 'center',
@@ -437,7 +439,6 @@ export const BudgetStyles = makeStyles((theme, props)=> ({
     },
   },
   avatar: {
-    backgroundColor: theme.palette.error.main,
     [theme.breakpoints.up('xl')]: {
       height: 56,
       width: 56

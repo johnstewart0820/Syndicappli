@@ -70,10 +70,14 @@ const OrderEdit = (props) => {
   }, []);
   const handleClickSave = () => {
     let cnt = 0;
+    if (productID === -1) { setErrorsProduct('please select product'); cnt++; }
+    else setErrorsProduct('');
+    if (clientID === -1) { setErrorsClient('please select client'); cnt++; }
+    else setErrorsClient('');
     if (startDate.length === 0) { setErrorsStartDate('please select start date'); cnt++; }
     else setErrorsStartDate('');
     if (priceType === 0) {
-      if (!apartNumber) { setErrorsApartNumber('please enter amount of apartment number'); cnt++; }
+      if (apartNumber.length === 0 || apartNumber === '0') { setErrorsApartNumber('please enter amount of apartment number'); cnt++; }
       else setErrorsApartNumber('');
     }
     else setErrorsApartNumber('');
@@ -163,9 +167,9 @@ const OrderEdit = (props) => {
               setCodeID(data.discount_codeID);
               break;
             case 401:
-              // authService.logout();
-              // history.push('/login');
-              // window.location.reload();
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
               break;
             default:
               ToastsStore.error(response.data.message);
@@ -350,14 +354,17 @@ const OrderEdit = (props) => {
               codeList.splice(0, codeList.length);
               codes.splice(0, codes.length);
               codeList.push('');
+              codes.push('');
               localStorage.setItem("token", JSON.stringify(data.token));
               data.discountcodelist.map((item) =>
                 codes.push(item.name)
               )
-              setCodeList(data.discountcodelist);
+              setCodeList([{discount_codeID:-1},...data.discountcodelist]);
+              setCodes(codes);
               if (data.discountcodelist.length !== 0) {
-                setCodes(codes);
-                setCodeID(data.discountcodelist[0].discount_codeID);
+              }else{
+                setCode(0);
+                setCodeID(-1);
               }
               break;
             case 401:
@@ -504,7 +511,8 @@ const OrderEdit = (props) => {
                 <TextField
                   className={classes.text}
                   variant="outlined"
-                  value={apartNumber || ''}
+                  value={apartNumber}
+                  type="number"
                   onChange={handleChangeApartNumber}
                 />
                 {errorsApartNumber.length > 0 &&

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
@@ -7,18 +7,16 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CardActions,
   Divider,
-  Button
 } from '@material-ui/core';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
-import { data, options } from './chart';
+import palette from 'theme/palette';
 
 const useStyles = makeStyles(() => ({
   root: {
-    width: '100%'
+    width: '100%',
+    boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
+    borderRadius: 15
   },
   chartContainer: {
     height: 'auto',
@@ -31,23 +29,101 @@ const useStyles = makeStyles(() => ({
 
 const LatestSales = props => {
   const { className, ...rest } = props;
-
+  const [items, setItems] = useState([]);
+  const [lines, setLines] = useState([]);
+  useEffect(()=>{
+    let data = [];
+    let linebar = [];
+    if(props.data.result){
+    if(props.data.result.length !== 0){
+      for (var i = 0; i <props.data.result.length; i++) {
+        data.push(props.data.result[i].count);
+      }
+      setItems(data);
+    }
+  }
+  if(props.data.filter){
+    if(props.data.filter.length !== 0){
+      for (var i = 1; i <props.data.filter.length; i++) {
+        linebar.push(props.data.filter[i]);
+      }
+      setLines(linebar);
+    }
+  }
+  },[props.data]);
   const classes = useStyles();
-
+   const data = {
+    labels: lines,
+    datasets: [
+      {
+        label: 'Commandes',
+        backgroundColor: palette.primary.main,
+        data: items
+      }
+    ]
+  };
+  
+   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    legend: { display: false },
+    cornerRadius: 20,
+    tooltips: {
+      enabled: true,
+      mode: 'index',
+      intersect: false,
+      borderWidth: 1,
+      borderColor: palette.divider,
+      backgroundColor: palette.white,
+      titleFontColor: palette.text.primary,
+      bodyFontColor: palette.text.secondary,
+      footerFontColor: palette.text.secondary
+    },
+    layout: { padding: 0 },
+    scales: {
+      xAxes: [
+        {
+          barThickness: 12,
+          maxBarThickness: 10,
+          barPercentage: 0.5,
+          categoryPercentage: 0.5,
+          ticks: {
+            fontColor: palette.text.secondary
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          }
+        }
+      ],
+      yAxes: [
+        {
+          ticks: {
+            fontColor: palette.text.secondary,
+            beginAtZero: true,
+            min: 0
+          },
+          gridLines: {
+            borderDash: [2],
+            borderDashOffset: [2],
+            color: palette.divider,
+            drawBorder: false,
+            zeroLineBorderDash: [2],
+            zeroLineBorderDashOffset: [2],
+            zeroLineColor: palette.divider
+          }
+        }
+      ]
+    }
+  };
+  
   return (
     <Card
       {...rest}
       className={clsx(classes.root, className)}
     >
       <CardHeader
-        action={
-          <Button
-            size="small"
-            variant="text"
-          >
-            Last 7 days <ArrowDropDownIcon />
-          </Button>
-        }
         title="Commandes"
       />
       <Divider />
@@ -56,19 +132,10 @@ const LatestSales = props => {
           <Bar
             data={data}
             options={options}
+            height={200}
           />
         </div>
       </CardContent>
-      <Divider />
-      <CardActions className={classes.actions}>
-        <Button
-          color="primary"
-          size="small"
-          variant="text"
-        >
-          Overview <ArrowRightIcon />
-        </Button>
-      </CardActions>
     </Card>
   );
 };

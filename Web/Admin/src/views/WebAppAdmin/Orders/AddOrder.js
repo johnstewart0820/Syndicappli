@@ -67,10 +67,14 @@ const AddOrder = (props) => {
     };
     const handleCreate = () => {
         let cnt = 0;
+        if (productID === -1) { setErrorsProduct('please select product'); cnt++; }
+        else setErrorsProduct('');
+        if (clientID === -1) { setErrorsClient('please select client'); cnt++; }
+        else setErrorsClient('');
         if (startDate.length === 0) { setErrorsStartDate('please select start date'); cnt++; }
         else setErrorsStartDate('');
         if (priceType === 0) {
-            if (!apartNumber) { setErrorsApartNumber('please enter amount of apartment number'); cnt++; }
+            if (apartNumber.length === 0 || apartNumber === '0') { setErrorsApartNumber('please enter amount of apartment number'); cnt++; }
             else setErrorsApartNumber('');
         }
         else setErrorsApartNumber('');
@@ -183,7 +187,7 @@ const AddOrder = (props) => {
         setPrice(event.target.value);
     }
     const handleChangeApartNumber = (event) => {
-        setApartNumber(+event.target.value);
+        setApartNumber(event.target.value);
     }
     useEffect(() => {
         getProductList(categorie);
@@ -211,15 +215,18 @@ const AddOrder = (props) => {
                             productList.splice(0, productList.length);
                             products.splice(0, products.length)
                             productList.push('')
+                            products.push('');
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.productlist.map((item) => (
                                 products.push(item.name)
                             )
                             );
-                            setProductList(data.productlist);
+                            setProductList([{productID:-1},...data.productlist]);
+                            setProducts(products);
                             if (data.productlist.length !== 0) {
-                                setProducts(products);
-                                setProductID(data.productlist[0].productID);
+                            }else{
+                                setProduct(0);
+                                setProductID(-1);
                             }
                             break;
                         case 401:
@@ -256,15 +263,22 @@ const AddOrder = (props) => {
                             data.buyerlist.map((item) =>
                                 clients.push(item.name)
                             )
-                            setClientList(clientList);
+                            setClientList(data.buyerlist);
+                            setClients(clients);
                             if (data.buyerlist.length !== 0) {
-                                setClients(clients);
                                 setClientID(data.buyerlist[0].buyerID);
                                 setClientName(data.buyerlist[0].name);
                                 if (data.buyerlist[0].companyID)
                                     setCompanyID(data.buyerlist[0].companyID);
                                 if (data.buyerlist[0].buildingID)
                                     setBuildingID(data.buyerlist[0].buildingID);
+                            }else{
+                                setClientName('');
+                                setClientID(-1);
+                                if(companyID !== -1)
+                                    setCompanyID(-1);
+                                if(buildingID !== -1)
+                                    setBuildingID(-1);
                             }
                             break;
                         case 401:
@@ -297,14 +311,17 @@ const AddOrder = (props) => {
                             codeList.splice(0, codeList.length);
                             codes.splice(0, codes.length);
                             codeList.push('');
+                            codes.push('');
                             localStorage.setItem("token", JSON.stringify(data.token));
                             data.discountcodelist.map((item) =>
                                 codes.push(item.name)
                             )
-                            setCodeList(data.discountcodelist);
+                            setCodeList([{discount_codeID:-1},data.discountcodelist]);
+                            setCodes(codes);
                             if (data.discountcodelist.length !== 0) {
-                                setCodes(codes);
-                                setCodeID(data.discountcodelist[0].discount_codeID);
+                            }else{
+                                setCode(0);
+                                setCodeID(-1);
                             }
                             break;
                         case 401:
@@ -348,7 +365,7 @@ const AddOrder = (props) => {
                                     color="gray"
                                     data={products}
                                     onChangeSelect={handleChangeProduct}
-                                    value={product || ''}
+                                    value={product}
                                 />
                                 {errorsProduct.length > 0 &&
                                     <span className={classes.error}>{errorsProduct}</span>}
@@ -410,7 +427,8 @@ const AddOrder = (props) => {
                                 <TextField
                                     className={classes.text}
                                     variant="outlined"
-                                    value={apartNumber || ''}
+                                    value={apartNumber}
+                                    type="number"
                                     onChange={handleChangeApartNumber}
                                 />
                                 {errorsApartNumber.length > 0 &&
@@ -503,7 +521,7 @@ const AddOrder = (props) => {
                                     color="gray"
                                     data={codes}
                                     onChangeSelect={handleChangeCode}
-                                    value={code || ''}
+                                    value={code}
                                 />
                             </Grid>
                         </Grid>

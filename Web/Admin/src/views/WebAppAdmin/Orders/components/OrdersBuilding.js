@@ -26,9 +26,13 @@ const OrdersBuilding = (props) => {
   const [openDelete, setOpenDelete] = React.useState(false);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
+  const [companies, setCompanies] = useState(['Tout Cabinet']);
+  const [buildings, setBuildings] = useState(['Tout Immubles']);
+  const [products, setProducts] = useState(['Tout Produits']);
   const [company, setCompany] = useState(0);
   const [companyID, setCompanyID] = useState(-1);
   const [buildingID, setBuildingID] = useState(-1);
+  const [productID, setProductID] = useState(-1);
   const [building, setBuilding] = useState(0);
   const [product, setProduct] = useState(0);
   const [period, setPeriod] = useState(0);
@@ -41,12 +45,20 @@ const OrdersBuilding = (props) => {
   const [sort_column, setSortColumn] = useState(-1);
   const [sort_method, setSortMethod] = useState('asc');
   const selectList = [20, 50, 100, 200, -1];
-  const companyList = ['', 20, 50, 100];
-  const buildingList = ['', 20, 50, 100];
-  const productList = ['', 20, 50, 100];
-  const periodList = ['', 'les 7 derniers jours', 'les 30 derniers jours', 'les 90 derniers jours', 'la dernière année'];
-  const en_periodList = ['', 'last 7 days', 'last 30 days', 'last 90 days', 'last year'];
-
+  const [companyList, setCompanyList] = useState([]);
+  const [buildingList, setBuildingList] = useState([]);
+  const [productList, setProductList] = useState([]);
+  const periodList = ['les 7 derniers jours', 'les 30 derniers jours', 'les 90 derniers jours', 'la dernière année'];
+  const budgetList = ['en 7 jours', 'en 1 mois', 'en 3 mois', 'en 1 année'];
+  const [budget_period, setBudgetPeriod] = useState('en 7 jours');
+  const en_periodList = [7, 30, 90, 365];
+  const [charts, setCharts] = useState([]);
+  const [income_amount, setIncomeAmount] = useState({ count: 1, color: '#FC5555' });
+  const [income_price, setIncomePrice] = useState({ price: 1, color: '#FC5555' });
+  const [order_amount, setOrderAmount] = useState(0);
+  const [order_price, setOrderPrice] = useState(0);
+  const [pro_amount, setProAmount] = useState(0);
+  const [pro_price, setProPrice] = useState(0);
   const handleClickExport = () => {
     if (accessOrders === 'edit') {
       setOpen(true);
@@ -55,15 +67,31 @@ const OrdersBuilding = (props) => {
   };
   const handleChangeCompany = (value) => {
     setCompany(value);
+    setCompanyID(companyList[value].companyID);
+    if (buildingList) {
+      setBuilding(0);
+      setBuildingID(-1);
+    }
+    if (productList) {
+      setProduct(0);
+      setProductID(-1);
+    }
   }
   const handleChangeBuilding = (value) => {
     setBuilding(value);
+    setBuildingID(buildingList[value].buildingID);
+    if (productList) {
+      setProduct(0);
+      setProductID(-1);
+    }
   }
   const handleChangeProduct = (value) => {
     setProduct(value);
+    setProductID(productList[value].productID);
   }
   const handleChangePeriod = (value) => {
     setPeriod(value);
+    setBudgetPeriod(budgetList[value]);
   }
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);
@@ -75,9 +103,6 @@ const OrdersBuilding = (props) => {
     setSortColumn(index);
     setSortMethod(direct);
   }
-  useEffect(() => {
-    getBuyerList();
-  }, []);
 
   const cellList = [
     { key: 'ID', field: 'Commande #' },
@@ -90,8 +115,8 @@ const OrdersBuilding = (props) => {
   ];
   useEffect(() => {
     if (accessOrders !== 'denied')
-    getOrdersBuilding();
-  }, [page_num, row_count, sort_column, sort_method, props.refresh, companyID, buildingID]);
+      getOrdersBuilding();
+  }, [page_num, row_count, sort_column, sort_method, props.refresh, companyID, buildingID, productID, period]);
 
   const columns = [];
   for (let i = 0; i < 7; i++)
@@ -102,25 +127,25 @@ const OrdersBuilding = (props) => {
   };
   const handleClickDownload = (id) => {
     let requestDate = {
-      'orderID' : id,
+      'orderID': id,
     }
     let year = new Date().getFullYear();
     let month = new Date().getMonth() + 1;
     let date1 = new Date().getDate();
-    let date = year + '_' + month + '_' + date1 ;
+    let date = year + '_' + month + '_' + date1;
     setVisibleIndicator(true);
     AdminService.downloadInvoiceBuilding(requestDate)
       .then(
-        ({data}) => {
+        ({ data }) => {
           setVisibleIndicator(false);
-              const downloadUrl = window.URL.createObjectURL(new Blob([data]));
-              const link = document.createElement('a');
-              link.href = downloadUrl;
-              link.setAttribute('download', 'Invoice('+date+').pdf'); 
-              document.body.appendChild(link);
-              link.click();
-              link.remove();
-          }
+          const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.setAttribute('download', 'Invoice(' + date + ').pdf');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
       );
   }
   const handleClickDelete = (id) => {
@@ -174,7 +199,9 @@ const OrdersBuilding = (props) => {
       'status': 'active',
       'type': 'buildings',
       'companyID': companyID,
-      'buildingID': buildingID
+      'buildingID': buildingID,
+      'productID': productID,
+      'duration': en_periodList[period]
     }
     setVisibleIndicator(true);
     AdminService.getOrderList(requestData)
@@ -184,16 +211,74 @@ const OrdersBuilding = (props) => {
           switch (response.data.code) {
             case 200:
               const data = response.data.data;
+              const filterData = data.filterlist;
+              const chartData = data.chartlist;
+              if (filterData) {
+                if (filterData.length !== 0) {
+                  if (filterData.companies) {
+                    companies.splice(0, companies.length)
+                    companies.push('Tout Cabinets');
+                    filterData.companies.map((item) => (
+                      companies.push(item.name)
+                    )
+                    );
+                    setCompanyList([{ 'companyID': -1 }, ...filterData.companies]);
+                  }
+                  if (filterData.buildings) {
+                    buildings.splice(0, buildings.length)
+                    buildings.push('Tout Immubles');
+                    filterData.buildings.map((item) => (
+                      buildings.push(item.name)
+                    )
+                    );
+                    setBuildingList([{ 'buildingID': -1 }, ...filterData.buildings]);
+                  }
+                  if (filterData.products) {
+                    products.splice(0, products.length)
+                    products.push('Tout Produits');
+                    filterData.products.map((item) => (
+                      products.push(item.name)
+                    )
+                    );
+                    setProductList([{ 'productID': -1 }, ...filterData.products]);
+                  }
+                }
+              }
+              if (chartData) {
+                setCharts(chartData);
+                if (chartData.result_total) {
+                  if (chartData.result_total.length !== 0) {
+                    if (chartData.result_total[1].price > chartData.result_total[0].price)
+                      setIncomePrice({ price: 2, color: '#2DCE9C' });
+                    else
+                      setIncomePrice({ price: 1, color: '#FC5555' });
+                    if (chartData.result_total[1].count > chartData.result_total[0].count)
+                      setIncomeAmount({ count: 2, color: '#2DCE9C' });
+                    else
+                      setIncomeAmount({ count: 1, color: '#FC5555' });
+                    setOrderPrice(chartData.result_total[1].price);
+                    setOrderAmount(chartData.result_total[1].count);
+                    if (chartData.result_total[0].price === 0)
+                      setProPrice(100);
+                    else
+                      setProPrice(Number(chartData.result_total[1].price / chartData.result_total[0].price).toFixed(2));
+                    if (chartData.result_total[0].count === 0)
+                      setProAmount(100);
+                    else
+                      setProAmount(Number(chartData.result_total[1].count / chartData.result_total[0].count).toFixed(2));
+                  }
+                }
+              }
               localStorage.setItem("token", JSON.stringify(data.token));
               if (!data.totalpage)
                 setTotalPage(1);
               else
                 setTotalPage(data.totalpage);
-                let list = data.orderlist;
-                for(let i = 0 ; i < list.length ; i++){
-                  list[i].price_with_vat = list[i].price_with_vat + '€';
-                }
-                setDataList(list);
+              let list = data.orderlist;
+              for (let i = 0; i < list.length; i++) {
+                list[i].price_with_vat = list[i].price_with_vat + '€';
+              }
+              setDataList(list);
               break;
             case 401:
               authService.logout();
@@ -210,48 +295,41 @@ const OrdersBuilding = (props) => {
         }
       );
   }
-  const getBuyerList = () => {
-    let data = {
-      'buyer_type': 'buildings'
-    }
-    setVisibleIndicator(true);
-    AdminService.getBuyerList(data)
-      .then(
-        async response => {
-          setVisibleIndicator(false);
-          switch (response.data.code) {
-            case 200:
-              const data = response.data.data;
-              localStorage.setItem("token", JSON.stringify(data.token));
-              if (data.buyerlist.length !== 0) {
-                if (data.buyerlist[0].companyID)
-                  setCompanyID(data.buyerlist[0].companyID);
-                if (data.buyerlist[0].buildingID)
-                  setBuildingID(data.buyerlist[0].buildingID);
-              }
-              break;
-            case 401:
-              authService.logout();
-              history.push('/login');
-              window.location.reload();
-              break;
-            default:
-              ToastsStore.error(response.data.message);
-          }
-        },
-        error => {
-          ToastsStore.error("Can't connect to the server!");
-          setVisibleIndicator(false);
-        }
-      );
-  }
+
   return (
     <Grid item container spacing={3} direction="column">
       {
         visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
       }
       <Grid item></Grid>
-      <Grid item container spacing={2} direction="row-reverse" >
+      <Grid item container spacing={2} justify="flex-end" >
+        <Grid item>
+          <MySelect
+            color="gray"
+            width="239px"
+            data={companies}
+            value={company}
+            onChangeSelect={handleChangeCompany}
+          />
+        </Grid>
+        <Grid item>
+          <MySelect
+            color="gray"
+            width="239px"
+            data={buildings}
+            value={building}
+            onChangeSelect={handleChangeBuilding}
+          />
+        </Grid>
+        <Grid item>
+          <MySelect
+            color="gray"
+            width="239px"
+            data={products}
+            value={product}
+            onChangeSelect={handleChangeProduct}
+          />
+        </Grid>
         <Grid item>
           <MySelect
             color="gray"
@@ -261,51 +339,41 @@ const OrdersBuilding = (props) => {
             onChangeSelect={handleChangePeriod}
           />
         </Grid>
-        <Grid item>
-          <MySelect
-            color="gray"
-            width="239px"
-            data={productList}
-            value={product}
-            onChangeSelect={handleChangeProduct}
-          />
-        </Grid>
-        <Grid item>
-          <MySelect
-            color="gray"
-            width="239px"
-            data={buildingList}
-            value={building}
-            onChangeSelect={handleChangeBuilding}
-          />
-        </Grid>
-        <Grid item>
-          <MySelect
-            color="gray"
-            width="239px"
-            data={companyList}
-            value={company}
-            onChangeSelect={handleChangeCompany}
-          />
-        </Grid>
       </Grid>
       <Grid item
         container
         justify="space-between"
+        spacing={1}
       >
-        <Grid item sm={3} container direction="column" justify="space-between">
+        <Grid item sm={3} container direction="column" justify="space-between" spacing={1}>
           <Grid item>
-            <Budget title="COMMANDES" body="924" pro="3.48%" tail="en 1 mois" income={2} color={"#2DCE9C"} />
+            <Budget
+              title="COMMANDES"
+              body={order_amount}
+              pro={pro_amount + '%'}
+              tail={budget_period}
+              income={income_amount.count}
+              color={income_amount.color}
+              avatar="/images/order_amount.png"
+            />
           </Grid>
           <Grid item>
-            <Budget title="REVENUS" body="53 456€ HT" pro="1.17%" tail="en 1 mois" income={1} color={"#FC5555"} />
+            <Budget
+              title="REVENUS"
+              body={order_price + "€ HT"}
+              pro={pro_price + '%'}
+              tail={budget_period}
+              income={income_price.price}
+              color={income_price.color}
+              avatar="/images/order_price.png"
+            />
           </Grid>
         </Grid>
         <Grid item sm={4} container alignItems="stretch" >
-          <LatestSales />
+          <LatestSales data={charts} />
         </Grid>
         <Grid item sm={4} container alignItems="stretch">
-          <CurveChart />
+          <CurveChart data={charts} />
         </Grid>
       </Grid>
       <Grid item style={{ marginTop: 48 }}>

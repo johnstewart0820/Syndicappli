@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect , useState} from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {Line} from 'react-chartjs-2';
@@ -7,18 +7,18 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CardActions,
   Divider,
-  Button
 } from '@material-ui/core';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import { getStyle } from '@coreui/coreui/dist/js/coreui-utilities'
+import { max } from 'underscore';
 
-import { mainChart, mainChartOpts } from './chart';
 
+const brandPrimary = getStyle('--primary');
 const useStyles = makeStyles(() => ({
   root: {
-    width: '100%'
+    width: '100%',
+    boxShadow: '0px 3px 5px 2px rgba(182, 172, 251, .42)',
+    borderRadius: 15,
   },
   chartContainer: {
     height: 'auto',
@@ -33,39 +33,104 @@ const CurveChart = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
+  const [items, setItems] = useState([]);
+  const [lines, setLines] = useState([]);
+  useEffect(()=>{
+    let data = [];
+    let linebar = [];
+    if(props.data.result){
+    if(props.data.result.length !== 0){
+      for (var i = 0; i <props.data.result.length; i++) {
+        data.push(props.data.result[i].price);
+      }
+      setItems(data);
+    }
+  }
+  if(props.data.filter){
+    if(props.data.filter.length !== 0){
+      for (var i = 1; i <props.data.filter.length; i++) {
+        linebar.push(props.data.filter[i]);
+      }
+      setLines(linebar);
+    }
+  }
+  },[props.data]);
 
+   const mainChart = {
+      labels: lines,
+      datasets: [
+        {
+          label: 'Revenus',
+          backgroundColor: 'transparent',
+          borderColor: '#03c9e4',
+          pointHoverBackgroundColor: brandPrimary,
+          borderWidth: 10,
+          data: items,
+        },
+      ],
+    };
+    
+    const mainChartOpts = {
+      tooltips: {
+        enabled: true,
+        // custom: CustomTooltips,
+        intersect: true,
+        mode: 'index',
+        position: 'nearest',
+        callbacks: {
+          labelColor: function(tooltipItem, chart) {
+            return { backgroundColor: chart.data.datasets[tooltipItem.datasetIndex].borderColor }
+          }
+        }
+      },
+      maintainAspectRatio: false,
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [
+          {
+            gridLines: {
+              drawOnChartArea: false,
+            },
+          }],
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+              maxTicksLimit: 5,
+              stepSize: Math.ceil(250 / 5),
+              max: Math.ceil(max(items) + 50),
+            },
+          }],
+      },
+      elements: {
+        point: {
+          radius: 0,
+          hitRadius: 10,
+          hoverRadius: 4,
+          hoverBorderWidth: 3,
+        },
+      },
+    };
   return (
     <Card
       {...rest}
       className={clsx(classes.root, className)}
     >
       <CardHeader
-        action={
-          <Button
-            size="small"
-            variant="text"
-          >
-            Last 7 days <ArrowDropDownIcon />
-          </Button>
-        }
         title="Revenus"
       />
       <Divider />
-      <CardContent>
+      <CardContent style={{
+        root:{
+            paddingBottom:0
+        }
+      }}>
         <div className={classes.chartContainer}>
-          <Line data={mainChart} options={mainChartOpts} height={150} />
+          <Line data={mainChart} options={mainChartOpts} height={200} />
         </div>
       </CardContent>
-      <Divider />
-      <CardActions className={classes.actions}>
-        <Button
-          color="primary"
-          size="small"
-          variant="text"
-        >
-          Overview <ArrowRightIcon />
-        </Button>
-      </CardActions>
     </Card>
   );
 };

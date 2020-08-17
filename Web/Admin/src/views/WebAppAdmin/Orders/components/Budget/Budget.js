@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/styles';
-import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
+import { Card, CardContent, Grid } from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import MoneyIcon from '@material-ui/icons/Money';
 import {BudgetStyles as useStyles} from '../../useStyles';
 
 const Budget = props => {
@@ -14,12 +12,24 @@ const Budget = props => {
   const [body, setBody] = useState(props.body);
   const [pro, setPro] = useState(props.pro);
   const [tail, setTail] = useState(props.tail); 
-  //const [avatar, setAvatar] = useState(props.avatar);
+  const [avatar, setAvatar] = useState(props.avatar);
   const [income, setIncome] = useState(props.income);
-  const classes = useStyles(props);
+  useEffect(()=>{
+    setTail(props.tail);
+  },[props.tail]);
+  useEffect(()=>{
+    setBody(props.body);
+  },[props.body]);
+  useEffect(()=>{
+    setPro(props.pro);
+  },[props.pro]);
   let style1, style2 ;
-  if(income === 1){
+  useEffect(()=>{
+    setIncome(props.income);
 
+  },[props.income]);
+  const classes = useStyles(props);
+  if(income === 1){
     style1 = classes.show;
     style2 = classes.hide;
   }
@@ -27,7 +37,6 @@ const Budget = props => {
     style1 = classes.hide;
     style2 = classes.show;
   }
-  console.log(income);
   return (
     <Card
       {...rest}
@@ -39,18 +48,16 @@ const Budget = props => {
           justify="space-between"
         >
           <Grid item>
-            <Typography
+            <p
             className={classes.caption}
             variant="caption"
             >
               {title}
-            </Typography>
+            </p>
             <p className={classes.bodyTitle}>{body}</p>
           </Grid>
           <Grid item>
-            <Avatar className={classes.avatar}>
-              <MoneyIcon className={classes.icon} />
-            </Avatar>
+            <img className={classes.avatar} src={avatar}/>
           </Grid>
         </Grid>
         <div className={classes.difference}>
@@ -61,12 +68,12 @@ const Budget = props => {
           >
             {pro}
           </p>
-          <Typography
+          <p
             className={classes.tail}
             variant="caption"
           >
             {tail}
-          </Typography>
+          </p>
         </div>
       </CardContent>
     </Card>
