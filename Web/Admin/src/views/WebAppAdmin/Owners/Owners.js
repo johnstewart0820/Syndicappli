@@ -374,6 +374,7 @@ const Owners = (props) => {
           </Grid>
         </Grid>
       </div>
+      <div className={classes.title}/>
       <div className={classes.body}>
         <SelectTable
           onChangeSelect={handleChangeSelect}
