@@ -16,7 +16,7 @@ var table = require('../constants/table')
 var jwt = require('jsonwebtoken')
 var key = require('../config/key-config')
 var randtoken = require('rand-token');
-
+var timeHelper = require('../helper/timeHelper')
 var authModel = {
     login: login,
     login_as: login_as,
@@ -53,12 +53,19 @@ function login(authData) {
                             reject({ message: message.INVALID_PASSWORD })
                         } else {
                             if (result) {
-                                let update_query = 'UPDATE ' + table.USERS + ' SET invitation_status = ? WHERE email = ?'
-                                db.query(update_query, ["accepted",authData.email], (error, result, fields) => {
+                                let query = 'Insert into logs (userID, login_time, logout_time) values (?,?,?)'
+                                db.query(query, [rows[0].userID, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows1, fields) => {
                                     if (error) {
                                         reject({ message: message.INTERNAL_SERVER_ERROR })
                                     } else {
-                                        resolve(rows[0])
+                                        let update_query = 'UPDATE ' + table.USERS + ' SET invitation_status = ? WHERE email = ?'
+                                        db.query(update_query, ["accepted",authData.email], (error, result, fields) => {
+                                            if (error) {
+                                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                                            } else {
+                                                resolve(rows[0])
+                                            }
+                                        })
                                     }
                                 })
                             } else {

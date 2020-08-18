@@ -45,7 +45,7 @@ var managerModel = {
 function getManagerList(uid, data) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
-      ifnull(sum(a.count), 0) count, u.userID ID, u.firstname, u.lastname, u.email, u.phone
+      ifnull(sum(a.count), 0) count, u.userID ID, u.firstname, u.lastname, u.email, u.phone, get_daily_time(u.userID) daily_time, get_month_connection(u.userID) month_connection
       FROM
       (select * from users where permission = ?) u 
       LEFT JOIN user_relationship r on u.userID = r.userID
@@ -85,7 +85,7 @@ function getManagerList(uid, data) {
             query += ' order by u.userID ';
           }
           else if (sort_column === 4) {
-            query += ' order by u.userID ';
+            query += ' order by daily_time ';
           }
           else if (sort_column === 5) {
             query += ' order by count '
@@ -93,7 +93,7 @@ function getManagerList(uid, data) {
           query += data.sort_method;
       }
       query += ' limit ' + page_num * row_count + ',' + row_count
-      db.query(query, params, (error, rows, fields) => {
+      db.query(query, params, async (error, rows, fields) => {
         if (error) {
           reject({ message: message.INTERNAL_SERVER_ERROR })
         } else {
@@ -263,7 +263,7 @@ function getManager(uid, id) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
       u.*,
-      ifnull( sum( a.count ), 0 ) count 
+      ifnull( sum( a.count ), 0 ) count, get_daily_time(u.userID) daily_time, get_month_connection(u.userID) month_connection
       FROM
       users u
       LEFT JOIN user_relationship r ON u.userID = r.userID 
