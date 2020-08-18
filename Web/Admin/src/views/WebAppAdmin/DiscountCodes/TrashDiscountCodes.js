@@ -65,6 +65,7 @@ const TrashDiscountCodes = (props) => {
                                 list[i].discount_amount = list[i].discount_amount + '€';
                                 if(list[i].discount_type === 'percentage')
                                 list[i].discount_amount = list[i].discount_amount + '%';
+                                list[i].end_date = list[i].end_date === '' ? '-' : list[i].end_date;
                                 let cnt = list[i].count ? list[i].count : 0;
                                 let max = list[i].amount_of_use === -1 ? '-' : list[i].amount_of_use;
                                 list[i].activations = cnt + '/' + max;
