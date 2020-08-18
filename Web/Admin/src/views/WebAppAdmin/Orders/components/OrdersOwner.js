@@ -37,7 +37,6 @@ const OrdersOwner = (props) => {
   const [product, setProduct] = useState(0);
   const [period, setPeriod] = useState(0);
   const [deleteId, setDeleteId] = useState(-1);
-  const [open, setOpen] = React.useState(false);
   const [dataList, setDataList] = useState([]);
   const [totalpage, setTotalPage] = useState(1);
   const [row_count, setRowCount] = useState(20);
@@ -60,10 +59,37 @@ const OrdersOwner = (props) => {
   const [pro_amount, setProAmount] = useState(0);
   const [pro_price, setProPrice] = useState(0);
   const handleClickExport = () => {
-    if (accessOrders === 'edit') {
-      setOpen(true);
+    const requestData = {
+      'search_key': '',
+      'page_num': page_num - 1,
+      'row_count': row_count,
+      'sort_column': sort_column,
+      'sort_method': sort_method,
+      'status': 'active',
+      'type': 'owners',
+      'companyID': companyID,
+      'buildingID': buildingID,
+      'productID': productID,
+      'duration': en_periodList[period]
     }
-
+    let year = new Date().getFullYear();
+    let month = new Date().getMonth() + 1;
+    let date1 = new Date().getDate();
+    let date = year + '_' + month + '_' + date1;
+    setVisibleIndicator(true);
+    AdminService.downloadZipOwner(requestData)
+      .then(
+        ({ data }) => {
+          setVisibleIndicator(false);
+          const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.setAttribute('download', 'Invoice(' + date + ').zip');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+      );
   };
   const handleChangeCompany = (value) => {
     setCompany(value);
@@ -258,14 +284,30 @@ const OrdersOwner = (props) => {
                       setIncomeAmount({ count: 1, color: '#FC5555' });
                     setOrderPrice(chartData.result_total[1].price);
                     setOrderAmount(chartData.result_total[1].count);
-                    if (chartData.result_total[0].price === 0)
-                      setProPrice(100);
-                    else
-                      setProPrice(Number(chartData.result_total[1].price / chartData.result_total[0].price).toFixed(2));
-                    if (chartData.result_total[0].count === 0)
-                      setProAmount(100);
-                    else
-                      setProAmount(Number(chartData.result_total[1].count / chartData.result_total[0].count).toFixed(2));
+                    if(chartData.result_total[0].price === 0){
+                      if(chartData.result_total[1].price === 0)
+                        setProPrice(0);
+                      else
+                        setProPrice(100);
+                    }
+                    else{
+                      if(chartData.result_total[1].price === 0)
+                        setProPrice(100);
+                      else
+                        setProPrice(Number(chartData.result_total[1].price/chartData.result_total[0].price).toFixed(2));
+                    }
+                    if(chartData.result_total[0].count === 0){
+                      if(chartData.result_total[1].count === 0)
+                        setProAmount(0);
+                      else
+                        setProAmount(100);
+                    }
+                    else{
+                      if(chartData.result_total[1].count === 0)
+                        setProAmount(100);
+                      else
+                        setProAmount(Number(chartData.result_total[1].count/chartData.result_total[0].count).toFixed(2));
+                    }
                   }
                 }
               }

@@ -235,6 +235,15 @@ class AdminService {
   downloadInvoiceOwner(data) {
     return axios.post(API_URL + 'web/admin/downloadInvoiceOwner', data, { headers: authHeader() ,responseType: 'blob'});
   }
+  downloadZipCompany(data) {
+    return axios.post(API_URL + 'web/admin/downloadZipCompany', data, { headers: authHeader() ,responseType: 'blob'});
+  }
+  downloadZipBuilding(data) {
+    return axios.post(API_URL + 'web/admin/downloadZipBuilding', data, { headers: authHeader() ,responseType: 'blob'});
+  }
+  downloadZipOwner(data) {
+    return axios.post(API_URL + 'web/admin/downloadZipOwner', data, { headers: authHeader() ,responseType: 'blob'});
+  }
   getBuyerList(data) {
     return axios.post(API_URL + 'web/admin/buyerList',data, { headers: authHeader() });
   }
