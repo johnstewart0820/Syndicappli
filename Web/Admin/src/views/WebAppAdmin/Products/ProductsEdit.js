@@ -319,7 +319,7 @@ const handleChangeVatFee = (event) => {
             {
               vat_state === true ?
                 <Grid item container alignItems="center" spacing={2}>
-                  <Grid item><p className={classes.title}>VAT en %</p></Grid>
+                  <Grid item><p className={classes.title}>TVA en %</p></Grid>
                   <Grid xs item container>
                     <TextField
                       className={classes.text}
