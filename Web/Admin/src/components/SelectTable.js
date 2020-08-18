@@ -329,17 +329,16 @@ export default function SelectTable(props) {
     }
   }, [selectAll]);
   const handleClickImport = (event) => {
-    inputFile.current.click();
+    if(props.id !== -1)
+      inputFile.current.click();
   }
   const handleChangeImport = (event) => {
-    if (props.id !== -1) {
-      if (event.target.files[0] !== undefined) {
-        if (validFileType(event.target.files[0])) {
-          props.onImport(event.target.files[0]);
-        }
-        else {
-          ToastsStore.warning('CSV format is not correct.');
-        }
+    if (event.target.files[0] !== undefined) {
+      if (validFileType(event.target.files[0])) {
+        props.onImport(event.target.files[0]);
+      }
+      else {
+        ToastsStore.warning('CSV format is not correct.');
       }
     }
   }

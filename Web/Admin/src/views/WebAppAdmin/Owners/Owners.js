@@ -396,6 +396,7 @@ const Owners = (props) => {
           onExport={handleClickExport}
           access={accessOwners}
           type="owner"
+          id={buildingID}
         />
       </div>
       <DeleteConfirmDialog

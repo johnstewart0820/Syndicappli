@@ -300,6 +300,7 @@ const Buildings = (props) => {
           tblFooter="true"
           footerItems={footerItems}
           access={accessBuildings}
+          id={companyID}
         />
       </div>
       <DeleteConfirmDialog
