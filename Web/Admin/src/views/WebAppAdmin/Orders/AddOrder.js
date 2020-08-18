@@ -23,7 +23,7 @@ const AddOrder = (props) => {
     const [billingCycle, setBillingCycle] = React.useState(0);
     const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
     const en_billingCycleList = ['one_time', 'annually', 'monthly'];
-    const orderStatusList = ['parmi Terminé', 'Actif', 'En attente', 'Annulée'];
+    const orderStatusList = ['Terminé', 'Actif', 'En attente', 'Annulée'];
     const en_orderstatusList = ['terminated', 'active', 'on hold', 'cancelled'];
     const [orderStatus, setOrderStatus] = React.useState(0);
     const paymentList = ['carte bancaire', 'SEPA'];
