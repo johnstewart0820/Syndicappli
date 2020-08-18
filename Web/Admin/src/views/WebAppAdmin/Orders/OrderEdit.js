@@ -65,6 +65,7 @@ const OrderEdit = (props) => {
   const [errorsApartNumber, setErrorsApartNumber] = useState('');
   const [errorsProduct, setErrorsProduct] = useState('');
   const [errorsClient, setErrorsClient] = useState('');
+  const [stateLot, setStateLot] = useState(true);
   useEffect(() => {
     getOrder();
   }, []);
@@ -155,6 +156,10 @@ const OrderEdit = (props) => {
               setPrice(data.price);
               setRenewal(data.renewal === 'true' ? true : false);
               setPriceType(en_priceTypeList.indexOf(data.price_type));
+              if(en_priceTypeList.indexOf(data.price_type) === 0)
+                setStateLot(true);
+              else
+                setStateLot(false);
               if (data.price_type === 'per_apartment') {
                 setApartNumber(data.apartment_amount);
               }
@@ -221,6 +226,7 @@ const OrderEdit = (props) => {
   }
   const handleChangePriceType = (val) => {
     setPriceType(val);
+    setStateLot(!stateLot);
   }
 
   const handleChangePayment = (val) => {
@@ -505,20 +511,25 @@ const OrderEdit = (props) => {
                   <span className={classes.error}>{errorsPrice}</span>}
               </Grid>
             </Grid>
-            <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
-              <Grid xs item container direction="column">
-                <TextField
-                  className={classes.text}
-                  variant="outlined"
-                  value={apartNumber}
-                  type="number"
-                  onChange={handleChangeApartNumber}
-                />
-                {errorsApartNumber.length > 0 &&
-                  <span className={classes.error}>{errorsApartNumber}</span>}
+            {     
+              stateLot ?       
+              <Grid item container alignItems="center" spacing={1}>
+                <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
+                <Grid xs item container direction="column">
+                  <TextField
+                    className={classes.text}
+                    variant="outlined"
+                    value={apartNumber}
+                    type="number"
+                    onChange={handleChangeApartNumber}
+                  />
+                  {errorsApartNumber.length > 0 &&
+                    <span className={classes.error}>{errorsApartNumber}</span>}
+                </Grid>
               </Grid>
-            </Grid>
+              :
+              null
+            }
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p className={classes.title}>TVA applicable</p></Grid>
               <Grid xs item container>
