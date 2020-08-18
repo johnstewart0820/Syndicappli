@@ -52,7 +52,19 @@ const useStyles = makeStyles(theme => ({
       minHeight: 29
     },
   },
-
+  div_indicator: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    position: 'fixed',
+    paddingLeft: '50%',
+    alignItems: 'center',
+    marginTop: '-60px',
+    zIndex: 999,
+  },
+  indicator: {
+    color: 'gray'
+  },
   close: {
     cursor: 'pointer',
     color: 'gray'
