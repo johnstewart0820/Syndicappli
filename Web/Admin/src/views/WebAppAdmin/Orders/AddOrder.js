@@ -526,7 +526,7 @@ const AddOrder = (props) => {
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
-                            <Grid item><p className={classes.title}>le statut de la commande</p></Grid>
+                            <Grid item><p className={classes.title}>statut</p></Grid>
                             <Grid xs item container direction="column">
                                 <MySelect
                                     color="gray"
