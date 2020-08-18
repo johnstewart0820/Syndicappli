@@ -132,7 +132,7 @@ const AddProducts = (props) => {
         setVatFee(event.target.value);
     }
     return (
-        <Scrollbars style={{ height: '100vh' }}>
+        <Scrollbars style={{ height: '70vh' }}>
             <div className={classes.root}>
                 {
                     visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
