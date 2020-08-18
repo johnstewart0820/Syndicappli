@@ -17,7 +17,7 @@ const TrashProducts = (props) => {
   }
   const [globalState, globalActions] = useGlobal();
   const accessProducts = authService.getAccess('role_products');
-  const categorieList = ['Gestionnaires', 'Copropriétaires', 'immeubles'];
+  const categorieList = ['Gestionnaires', 'Copropriétaires', 'Immeubles'];
   const en_categorieList = ['managers', 'owners', 'buildings'];
   const [categorie, setCategorie] = React.useState(0);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
