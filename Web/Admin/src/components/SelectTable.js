@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../assets/custom.css';
-import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter } from '@material-ui/core';
+import { Table, TableHead, TableRow, TableBody, TableCell, TableFooter, setRef } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -329,8 +329,12 @@ export default function SelectTable(props) {
     }
   }, [selectAll]);
   const handleClickImport = (event) => {
-    if(props.id !== -1)
+    if(props.id !== -1){
+      document.getElementById('csvForm').value = '';
       inputFile.current.click();
+    }else{
+      ToastsStore.warning(props.err);
+    }
   }
   const handleChangeImport = (event) => {
     if (event.target.files[0] !== undefined) {

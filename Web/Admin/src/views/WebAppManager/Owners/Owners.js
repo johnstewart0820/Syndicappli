@@ -102,7 +102,6 @@ const Owners = (props) => {
     setDeleteId(id);
   };
   const handleClickImport = (csvData) => {
-    if(buildingID !== -1){
       let requestData = new FormData();
       requestData.set('csv', csvData);
       requestData.set('buildingID', buildingID);
@@ -132,10 +131,6 @@ const Owners = (props) => {
             setVisibleIndicator(false);
           }
         );
-    }
-    else{
-      ToastsStore.warning('You must select building');
-    }
   }
   const handleClickExport =  (check) => {
     if(buildingID !== -1){
@@ -378,6 +373,7 @@ const Owners = (props) => {
           access={accessOwners}
           type="owner"
           id={buildingID}
+          err="You must select a building"
         />
       </div>
       <DeleteConfirmDialog

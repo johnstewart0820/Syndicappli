@@ -50,7 +50,6 @@ const Buildings = (props) => {
     window.location.reload();
   }
   const handleClickImport = (csvData) => {
-    if(companyID !== -1){
       let requestData = new FormData();
       requestData.set('csv', csvData);
       requestData.set('companyID', companyID);
@@ -80,10 +79,6 @@ const Buildings = (props) => {
             setVisibleIndicator(false);
           }
         );
-    }
-    else{
-      ToastsStore.warning('You must select company');
-    }
   }
 
   const handleClickExport = (check) => {
@@ -301,6 +296,7 @@ const Buildings = (props) => {
           footerItems={footerItems}
           access={accessBuildings}
           id={companyID}
+          err="You must select a company"
         />
       </div>
       <DeleteConfirmDialog
