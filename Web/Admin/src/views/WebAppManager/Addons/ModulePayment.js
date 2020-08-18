@@ -33,8 +33,8 @@ const ModulePayment = (props) => {
   const [fee_price, setFeePrice] = useState(2.15);
   const [quantity, setQuantity] = useState(1);
   const [address, setAddress] = useState('36 rue Hector Berlioz, 18000 Agen');
-  const [codes, setCodes] = useState(['']);
-  const [code, setCode] = useState(0);
+  // const [codes, setCodes] = useState(['']);
+  const [code, setCode] = useState('');
   const [codeID, setCodeID] = useState(-1);
   const [productID, setProductID] = useState(-1);
   const [codeList, setCodeList] = useState(['']);
@@ -53,6 +53,7 @@ const ModulePayment = (props) => {
   const [buildingID, setBuildingID] = useState(-1);
   const [buyer_name, setBuyerName] = useState('');
   const [errorsIBAN, setErrorsIBAN] = useState('');
+  const [errorsCode, setErrorsCode] = useState('');
   const handleClickApply = () => {
     if (codeID !== -1) {
       if (apply) {
@@ -119,9 +120,26 @@ const ModulePayment = (props) => {
   const handleChangeAccountAddress = (event) => {
     setAccountAddress(event.target.value);
   }
-  const handleChangeCode = (val) => {
-    setCode(val);
-    setCodeID(codeList[val].discount_codeID);
+  const handleChangeCode = (event) => {
+    setCode(event.target.value);
+    if(validateCode(event.target.value) !== -1){
+      setErrorsCode('');
+      setCodeID(codeList[validateCode(event.target.value)].discount_codeID);
+    }else{
+      setErrorsCode('Invalid Code Promo');
+      setCodeID(-1);
+    }
+  }
+  const validateCode = (c) => {
+    if(codeList){
+      if(codeList.length !== 0){
+        for(let i = 0; i < codeList.length; i++)
+        if(codeList[i].name === c){
+          return i;
+        }
+      }
+    }
+    return -1;
   }
   const handleChangeIBAN = (event) => {
     if (!SEPA.validateIBAN(event.target.value))
@@ -132,6 +150,7 @@ const ModulePayment = (props) => {
   }
   useEffect(() => {
     if (accessAddons !== 'denied') {
+      getDatas();
       getBuilding();
       setVisibleIndicator(true);
       ManagerService.getAddon()
@@ -171,7 +190,6 @@ const ModulePayment = (props) => {
             setVisibleIndicator(false);
           }
         );
-      getDatas();
     }
   }, [accessAddons]);
   const calc_price = () => {
@@ -229,16 +247,8 @@ const ModulePayment = (props) => {
             case 200:
               const data = response.data.data;
               codeList.splice(0, codeList.length);
-              codes.splice(0, codes.length);
-              codes.push('');
               localStorage.setItem("token", JSON.stringify(data.token));
-              data.discountcodelist.map((item) =>
-                codes.push(item.name)
-              )
-              setCodeList([{'discount_codeID':-1},...data.discountcodelist]);
-              if (data.discountcodelist.length !== 0) {
-                setCodes(codes);
-              }
+              setCodeList(data.discountcodelist);
               break;
             case 401:
               authService.logout();
@@ -373,13 +383,15 @@ const ModulePayment = (props) => {
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p className={classes.sepaItemTitle}>Code Promo</p></Grid>
               <Grid xs={12} sm={4} item container alignItems="stretch">
-                <MySelect
-                  color="gray"
-                  data={codes}
-                  onChangeSelect={handleChangeCode}
-                  value={code || ''}
-                  width="100%"
+                <TextField
+                  className={classes.text}
+                  variant="outlined"
+                  value={code}
+                  onChange={handleChangeCode}
+                  fullWidth
                 />
+                {errorsCode.length > 0 &&
+                  <span className={classes.error}>{errorsCode}</span>}
               </Grid>
             </Grid>
             <Grid item>
