@@ -254,6 +254,14 @@ export default function ProductTable(props) {
   const handleClick = () => {
     props.onClick();
   }
+  const priceValue = (val) => {
+    if(props.type === 'managers')
+      return val + 'cts/lot/mois HT';
+    if(props.type === 'buildings')
+      return val + '€/lot/an HT';
+    if(props.type === 'owners')
+      return val + '€/an HT';
+  }
   const Value = (val) => {
     switch (val) {
       case 'active': return 'actif';
@@ -343,7 +351,7 @@ export default function ProductTable(props) {
                         style={{width: 100/(props.columns.length + 1) + '%'}}
                       >
                         {
-                          Value(value)
+                          cell.key === 'price' ? priceValue(value): Value(value)
                         }
                       </TableCell>
                     );

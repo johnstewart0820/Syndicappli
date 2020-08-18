@@ -155,6 +155,7 @@ const ProductsManager = (props) => {
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
           access={accessProducts}
+          type="managers"
         />
       </div>
       <DeleteConfirmDialog

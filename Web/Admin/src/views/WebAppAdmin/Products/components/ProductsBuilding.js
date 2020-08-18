@@ -154,6 +154,7 @@ const ProductsBuilding = (props) => {
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
           access={accessProducts}
+          type="buildings"
         />
       </div>
       <DeleteConfirmDialog

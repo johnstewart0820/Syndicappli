@@ -155,6 +155,7 @@ const ProductsOwner = (props) => {
           onClickEdit={handleClickEdit}
           onClickDelete={handleClickDelete}
           access={accessProducts}
+          type="owners"
         />
       </div>
       <DeleteConfirmDialog
