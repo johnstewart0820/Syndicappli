@@ -9,8 +9,8 @@ const useStyles = makeStyles(theme => ({
         width: 40,
         height: 40,
         position: 'fixed',
-        bottom: 10,
-        right: 10,
+        bottom: 60,
+        right: 20,
         borderRadius: 5,
         border: 'none',
         '&:hover': {
