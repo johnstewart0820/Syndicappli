@@ -408,7 +408,7 @@ const AddOrder = (props) => {
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
-                            <Grid item><p className={classes.title}>Prix (€ HT par lot)</p></Grid>
+                            <Grid item><p className={classes.title}>Prix (€ HT {priceTypeList[priceType]})</p></Grid>
                             <Grid xs item container direction="column">
                                 <TextField
                                     className={classes.text}
