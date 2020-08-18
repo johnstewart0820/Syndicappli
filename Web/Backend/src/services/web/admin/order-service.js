@@ -28,7 +28,10 @@ var orderService = {
     getDiscountCodeListByType: getDiscountCodeListByType,
     downloadInvoiceOrder: downloadInvoiceOrder,
     downloadInvoiceOwner: downloadInvoiceOwner,
-    downloadInvoiceBuilding: downloadInvoiceBuilding
+    downloadInvoiceBuilding: downloadInvoiceBuilding,
+    downloadZipOrder: downloadZipOrder,
+    downloadZipOwner: downloadZipOwner,
+    downloadZipBuilding: downloadZipBuilding
 }
 
 /**
@@ -42,15 +45,19 @@ function getOrderList(uid, userdata ,data) {
     return new Promise((resolve, reject) => {
         authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
             orderModel.getOrderList(uid, data).then((orderList) => {
-                if (orderList) {
-                    orderModel.getCountOrderList(uid, data).then((orderCount) => {
-                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                            expiresIn: timer.TOKEN_EXPIRATION
-                        })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(orderCount / Number(data.row_count)), 'orderlist': orderList, 'totalcount': orderCount} })
+                orderModel.getChartList(uid, data).then((chartList) => {
+                    orderModel.getFilterList(uid,data).then((filterList) => {
+                        if (orderList) {
+                            orderModel.getCountOrderList(uid, data).then((orderCount) => {
+                                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                                    expiresIn: timer.TOKEN_EXPIRATION
+                                })
+                                resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(orderCount / Number(data.row_count)), 'orderlist': orderList, 'totalcount': orderCount, 'filterlist': filterList, 'chartlist': chartList} })
+                            })
+        
+                        }
                     })
-
-                }
+                }) 
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
                     reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
@@ -325,6 +332,87 @@ function downloadInvoiceBuilding(uid, userdata, data, res) {
     return new Promise((resolve, reject) => {
         authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
             orderModel.downloadInvoiceBuilding(data, res).then((invoiceList) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'invoicelist': invoiceList } })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that download invoice order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function downloadZipOrder(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
+            orderModel.downloadZipOrder(data, res).then((invoiceList) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'invoicelist': invoiceList } })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that download invoice order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function downloadZipOwner(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
+            orderModel.downloadZipOwner(data, res).then((invoiceList) => {
+                let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    expiresIn: timer.TOKEN_EXPIRATION
+                })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'invoicelist': invoiceList } })
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that download invoice order
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function downloadZipBuilding(uid, userdata, data, res) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasOrderPermission(userdata, [code.SEE_PERMISSION, code.EDIT_PERMISSION]).then((response) => {
+            orderModel.downloadZipBuilding(data, res).then((invoiceList) => {
                 let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })

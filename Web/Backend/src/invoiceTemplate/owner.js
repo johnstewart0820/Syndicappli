@@ -97,7 +97,7 @@ return `
                     <tr>
                         <td>${product_name}</td>
                         <td>${date}</td>
-                        <td>${total}€ TTC</td>
+                        <td>${price}€ TTC</td>
                     </tr>
                 </tbody>
             </table>

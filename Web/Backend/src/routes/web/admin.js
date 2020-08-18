@@ -138,7 +138,10 @@ router.post('/order/:id/delete', authMiddleware.checkToken, deleteOrder)
 router.post('/trash/order/deleteAll', authMiddleware.checkToken, deleteAllOrder)
 router.post('/downloadInvoiceCompany', authMiddleware.checkToken, downloadInvoiceOrder)
 router.post('/downloadInvoiceOwner', authMiddleware.checkToken, downloadInvoiceOwner)
-router.post('/downloadInvoiceBuilding', authMiddleware.checkToken, downloadInvoiceCompany)
+router.post('/downloadInvoiceBuilding', authMiddleware.checkToken, downloadInvoiceBuilding)
+router.post('/downloadZipCompany', authMiddleware.checkToken, downloadZipOrder)
+router.post('/downloadZipOwner', authMiddleware.checkToken, downloadZipOwner)
+router.post('/downloadZipBuilding', authMiddleware.checkToken, downloadZipBuilding)
 /**
  * Function that get profile data
  *
@@ -1520,16 +1523,76 @@ function downloadInvoiceOwner(req, res){
  * @param   object res
  * @return  json
  */
-function downloadInvoiceCompany(req, res){
+function downloadInvoiceBuilding(req, res){
 
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let data = req.body
-    orderService.downloadInvoiceCompany(userId, userdata, data, res).then((result) => {
+    orderService.downloadInvoiceBuilding(userId, userdata, data, res).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)
     })
 }
 
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadZipOrder(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.downloadZipOrder(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadZipOwner(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.downloadZipOwner(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that download addon Invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function downloadZipBuilding(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    orderService.downloadZipBuilding(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 module.exports = router

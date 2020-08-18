@@ -23,8 +23,12 @@ var code = require('../../../constants/code')
 const orderTemplate = require('../../../invoiceTemplate/order')
 const ownerTemplate = require('../../../invoiceTemplate/owner')
 const pdf = require('html-pdf');
+const fs = require('fs');
+const path = require('path');
+var zip=require('adm-zip');
 
 var orderModel = {
+    getFilterList: getFilterList,
     getOrderList: getOrderList,
     getCountOrderList: getCountOrderList,
     createOrder: createOrder,
@@ -36,9 +40,177 @@ var orderModel = {
     getDiscountCodeListByType: getDiscountCodeListByType,
     downloadInvoiceOrder: downloadInvoiceOrder,
     downloadInvoiceOwner: downloadInvoiceOwner,
-    downloadInvoiceBuilding: downloadInvoiceBuilding
+    downloadInvoiceBuilding: downloadInvoiceBuilding,
+    downloadZipOrder: downloadZipOrder,
+    downloadZipOwner: downloadZipOwner,
+    downloadZipBuilding: downloadZipBuilding,
+    getChartList: getChartList
 }
 
+function getFilterList(uid, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'Select companyID, name from companies where permission = "active"'
+        let companies
+        let buildings
+        db.query(query, [], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                companies = rows
+                let query
+                let params
+                if (data.companyID == -1) {
+                    query = 'Select buildingID, name from buildings where permission = "active"'
+                    params = []
+                } else {
+                    query = 'Select buildingID, name from buildings where permission = "active" and companyID = ?'
+                    params = [data.companyID]
+                }
+                db.query(query, params, (error, rows, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                        buildings = rows
+                        let query = 'Select productID, name from products where permission = "active" and buyer_type = ?'
+                        db.query(query, [data.type], (error, rows, fields) => {
+                            if (error)
+                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                            else {
+                                products = rows
+                                resolve({companies: companies, buildings: buildings, products: products})
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    })
+}
+
+function getChartItem(query, params) {
+    return new Promise((resolve, reject)=> {
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows[0])
+            }
+        })
+    })
+}
+function getChartList(uid, data) {
+    return new Promise(async (resolve, reject) => {
+        let query = 'Select ifnull(sum(price * apartment_amount), 0) price, count(price) count from orders where permission = "active" and buyer_type = ?'
+        let filter = []
+        let filter_1 = []
+        let params = [data.type]
+        let result = []
+        let result_total = []
+        if (data.companyID == -1) {
+        } else {
+            query += ' and companyID = ? '
+            params.push(data.companyID)
+        }
+        if (data.buildingID == -1) {
+
+        } else {
+            query += ' and buildingID = ? '
+            params.push(data.buildingID)
+        }
+        if (data.productID == -1) {
+
+        } else {
+            query += ' and productID = ? '
+            params.push(data.productID)
+        }
+
+        var ourDate = new Date()
+        var tempDate
+        if (data.duration === 7) {
+            for (var i = 7; i >= 0; i --) {
+                tempDate = new Date()
+                tempDate.setDate(ourDate.getDate() - i)
+                filter.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            }
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 14)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 7)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 0)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            console.log(filter)
+        } else if (data.duration === 30) {
+            for (var i = 30; i >= 0; i -= 3 ) {
+                tempDate = new Date()
+                tempDate.setDate(ourDate.getDate() - i)
+                filter.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            }
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 60)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 30)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 0)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+        } else if (data.duration === 90) {
+            for (var i = 90; i>= 0; i -= 9) {
+                tempDate = new Date()
+                tempDate.setDate(ourDate.getDate() - i)
+                filter.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            }
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 180)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 90)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 0)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+        } else if (data.duration === 365) {
+            for (var i = 360; i >= 0; i -= 30) {
+                tempDate = new Date()
+                tempDate.setDate(ourDate.getDate() - i)
+                filter.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            }
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 730)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 365)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+            tempDate = new Date()
+            tempDate.setDate(ourDate.getDate() - 0)
+            filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
+        }
+        query += ' and DATE(created_at) >= DATE(?) and DATE(created_at) <= DATE(?)'
+        for (var j = 0;j < filter.length - 1; j ++) {
+            params.push(filter[j])
+            params.push(filter[j + 1])
+            var temp = await getChartItem(query, params)
+            result.push(temp)
+            params.pop()
+            params.pop()
+            
+        }
+        for (j = 0;j < filter_1.length - 1; j ++) {
+            params.push(filter_1[j])
+            params.push(filter_1[j + 1])
+            var temp = await getChartItem(query, params)
+            result_total.push(temp)
+            params.pop()
+            params.pop()
+            
+        }
+        
+        resolve({filter: filter, result: result, result_total: result_total})
+    })
+}
 /**
  * get company list with filter key
  *
@@ -499,8 +671,8 @@ function downloadInvoiceOrder(data, res) {
  */
 function downloadInvoiceBuilding(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select b.name name, b.address address, b.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
-                     from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ? and o.buyer_type = "buildings"`
+        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+                     from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID left join buildings b on o.buildingID = b.buildingID where o.orderID = ? and o.buyer_type = "buildings"`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -528,8 +700,8 @@ function downloadInvoiceBuilding(data, res) {
  */
 function downloadInvoiceOwner(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select ow.name name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
-                     from orders o left join owners ow on o.buyerID = ow.ownerID left join products p on o.productID = p.productID where o.orderID = ?`
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
+                     from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -541,6 +713,161 @@ function downloadInvoiceOwner(data, res) {
                     res.type('pdf');
                     res.end(buffer, 'binary');
                 });
+            }
+        })
+        
+
+    })
+}
+function createPDF(data, options) {
+    return new Promise((resolve, reject) => {
+        pdf.create(orderTemplate(data), options).toFile('public/download/' + data.order_id + '.pdf', function (err, buffer) {
+            resolve("OK")
+        })
+    })
+
+}
+function removeFiles() {
+    return new Promise((resolve, reject) => {
+        const directory = 'public/download/';
+    
+        fs.readdir(directory, (err, files) => {
+            if (err) throw err;
+        
+            for (const file of files) {
+                fs.unlink(path.join(directory, file), err => {
+                    if (err) throw err;
+                });
+            }
+        });
+        resolve("OK")
+    })
+        
+}
+/**
+ * download invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function downloadZipOrder(data, res) {
+    return new Promise(async (resolve, reject) => {
+        await removeFiles()   
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+                        from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "managers" and o.buyer_name like ? `
+        search_key = '%' + data.search_key + '%'
+        let params = [search_key]
+        if (data.companyID != -1) {
+            query += ` and o.companyID = ? `
+            params.push(data.companyID)
+        }
+        db.query(query, params, async (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                options = {format: "A3", "footer": {"height": "28mm"}}
+                for (var i in rows) {
+                    await createPDF(rows[i], options)
+                }
+                const file = new zip();
+                time = timeHelper.getCurrentDate()
+                file.addLocalFolder('public/download/');
+                file.writeZip('public/download/'+ time + '.zip');
+                var read_file = fs.readFileSync("public/download/" + time +'.zip');
+                res.setHeader('Content-Length', read_file.length);
+                res.write(read_file, 'binary');
+                res.end();
+            }
+        })
+        
+        
+    })
+}
+
+/**
+ * download invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function downloadZipBuilding(data, res) {
+    return new Promise(async (resolve, reject) => {
+        await removeFiles()
+        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+                     from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID left join buildings b on o.buildingID = b.buildingID where o.permission = "active" and o.buyer_type = "buildings" and o.buyer_name like ? `
+        search_key = '%' + data.search_key + '%'
+        let params = [search_key]
+        if (data.companyID != -1) {
+            query += ` and o.companyID = ? `
+            params.push(data.companyID)
+        }
+        if (data.buildingID != -1) {
+            query += ` and o.buildingID = ? `
+            params.push(data.buildingID)
+        }
+        db.query(query, params, async (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                options = {format: "A3", "footer": {"height": "28mm"}}
+                for (var i in rows) {
+                    await createPDF(rows[i], options)
+                }
+                const file = new zip();
+                time = timeHelper.getCurrentDate()
+                file.addLocalFolder('public/download/');
+                file.writeZip('public/download/'+ time + '.zip');
+                var read_file = fs.readFileSync("public/download/" + time +'.zip');
+                res.setHeader('Content-Length', read_file.length);
+                res.write(read_file, 'binary');
+                res.end();
+            }
+        })
+        
+
+    })
+}
+
+/**
+ * download invoice
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function downloadZipOwner(data, res) {
+    return new Promise(async (resolve, reject) => {
+        await removeFiles()
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
+                     from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "owners" and o.buyer_name like ? `
+        search_key = '%' + data.search_key + '%'
+        let params = [search_key]
+        if (data.companyID != -1) {
+            query += ` and o.companyID = ? `
+            params.push(data.companyID)
+        }
+        if (data.buildingID != -1) {
+            query += ` and o.buildingID = ? `
+            params.push(data.buildingID)
+        }
+        db.query(query, params, async (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                options = {format: "A3", "footer": {"height": "28mm"}}
+                for (var i in rows) {
+                    await createPDF(rows[i], options)
+                }
+                const file = new zip();
+                time = timeHelper.getCurrentDate()
+                file.addLocalFolder('public/download/');
+                file.writeZip('public/download/'+ time + '.zip');
+                var read_file = fs.readFileSync("public/download/" + time +'.zip');
+                res.setHeader('Content-Length', read_file.length);
+                res.write(read_file, 'binary');
+                res.end();
             }
         })
         
