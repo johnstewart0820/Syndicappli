@@ -65,6 +65,9 @@ const TrashDiscountCodes = (props) => {
                                 list[i].discount_amount = list[i].discount_amount + '€';
                                 if(list[i].discount_type === 'percentage')
                                 list[i].discount_amount = list[i].discount_amount + '%';
+                                let cnt = list[i].count ? list[i].count : 0;
+                                let max = list[i].amount_of_use === -1 ? '-' : list[i].amount_of_use;
+                                list[i].activations = cnt + '/' + max;
                             }
                             setDataList(list);
                             let codeID = [];
@@ -100,7 +103,7 @@ const TrashDiscountCodes = (props) => {
         { key: 'discount_amount', field: 'Réduction' },
         { key: 'start_date', field: 'Début' },
         { key: 'end_date', field: 'Fin' },
-        { key: 'billing_cycle', field: 'Activations' },
+        { key: 'activations', field: 'Activations' },
         { key: 'status', field: 'Statut' }
     ];
     const columns = [];
