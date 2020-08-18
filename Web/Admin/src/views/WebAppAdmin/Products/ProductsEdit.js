@@ -308,7 +308,7 @@ const handleChangeVatFee = (event) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.title}>VAT applicable</p></Grid>
+              <Grid item><p className={classes.title}>TVA applicable</p></Grid>
               <Grid xs item container>
                 <Checkbox
                   checked={vat_state}
