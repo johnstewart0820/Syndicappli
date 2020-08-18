@@ -16,14 +16,14 @@ const AddProducts = (props) => {
     const classes = useStyles();
     const { history } = props;
     const priceTypeList = ['Par lot', 'Par unité'];
-    const en_priceTypeList = ['per_apartment','per_unit'];
+    const en_priceTypeList = ['per_apartment', 'per_unit'];
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
     const [categorie, setCategorie] = React.useState(0);
     const [billingCycle, setBillingCycle] = React.useState(0);
     const categorieList = ['Gestionnaires', 'Copropriétaires', 'Immeubles'];
-    const en_categorieList = ['managers','owners','buildings'];
+    const en_categorieList = ['managers', 'owners', 'buildings'];
     const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
-    const en_billingCycleList = ['one_time','annually','monthly'];
+    const en_billingCycleList = ['one_time', 'annually', 'monthly'];
     const [renewal, setRenewal] = React.useState(false);
     const [productName, setProductName] = React.useState('');
     const [productDescription, setProductDescription] = React.useState('');
@@ -222,7 +222,7 @@ const AddProducts = (props) => {
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={2}>
-                                <Grid item><p className={classes.title}>Prix (€ HT {priceTypeList[priceType]})</p></Grid>
+                            <Grid item><p className={classes.title}>Prix (€ HT {priceTypeList[priceType]})</p></Grid>
                             <Grid xs item container>
                                 <TextField
                                     className={classes.text}
