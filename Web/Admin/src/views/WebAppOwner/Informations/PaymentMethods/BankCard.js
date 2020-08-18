@@ -311,10 +311,17 @@ const BankCard = (props) => {
     setCardHolderName(event.target.value);
   }
   const handleChangeExpirationDate = (event) => {
-    const exp_month = event.target.value.split('-')[1];
-    const exp_year = event.target.value.split('-')[0];
-    setDate(event.target.value);
-    setExpirationDate(exp_month + '/' + exp_year%100);
+    if(event.target.value.length <8){
+      if(validateDate(event.target.value)){
+        const exp_month = event.target.value.split('/')[0];
+        const exp_year = event.target.value.split('/')[1];
+        setExpirationDate(exp_month + '/' + exp_year%100);
+        setErrorsExpirationDate('');
+      }
+      else
+        setErrorsExpirationDate('Invalid Format');
+      setDate(event.target.value);
+    }
   }
   const handleChangeCryptogram = (event) => {
     if (Number.isInteger(Number(event.target.value))) {
@@ -324,6 +331,10 @@ const BankCard = (props) => {
   }
   const handleInputFocus = (e) => {
     setFocus(e.target.name);
+  }
+  function validateDate(testdate) {
+    var date_regex = /(0[1-9]|1[012])[/](19|20)\d\d/ ;
+    return date_regex.test(testdate);
   }
   return (
     <Scrollbars style={{ height: '50vh' }}>
@@ -389,7 +400,7 @@ const BankCard = (props) => {
                   value={Date}
                   onChange={handleChangeExpirationDate}
                   onFocus={handleInputFocus}
-                  type="date"
+                  placeholder="MM/YYYY"
                   fullWidth
                 />
                 {errorsExpirationDate.length > 0 &&
