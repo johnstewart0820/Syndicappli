@@ -326,7 +326,7 @@ const BankCard = (props) => {
     setFocus(e.target.name);
   }
   return (
-    <Scrollbars style={{ height: '80vh' }}>
+    <Scrollbars style={{ height: '50vh' }}>
       <div className={classes.root}>
         {
           visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
@@ -342,6 +342,7 @@ const BankCard = (props) => {
                 number={cardNumber}
               />
             </Grid>
+            <Grid item/>
             <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.title}>Numéro de carte</p></Grid>
               <Grid xs item container direction="column">
