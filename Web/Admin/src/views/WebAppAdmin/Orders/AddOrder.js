@@ -196,6 +196,43 @@ const AddOrder = (props) => {
         getBuyerList(categorie);
         getCodeList(categorie);
     }, [categorie]);
+    const getProduct = () => {
+        setVisibleIndicator(true);
+        AdminService.getProduct(productID)
+            .then(
+                response => {
+                    setVisibleIndicator(false);
+                    switch (response.data.code) {
+                        case 200:
+                            const data = response.data.data.product;
+                            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+                            setBillingCycle(en_billingCycleList.indexOf(data.billing_cycle));
+                            setCategorie(en_categorieList.indexOf(data.buyer_type));
+                            // setProductDescription(data.description);
+                            // setProductName(data.name);
+                            setPrice(data.price);
+                            setRenewal(data.renewal === 'true' ? true : false);
+                            setPriceType(en_priceTypeList.indexOf(data.price_type));
+                            if (data.vat_option === 'true') {
+                                setVatState(true);
+                                setVatFee(data.vat_fee);
+                            }
+                            break;
+                        case 401:
+                            authService.logout();
+                            history.push('/login');
+                            window.location.reload();
+                            break;
+                        default:
+                            ToastsStore.error(response.data.message);
+                    }
+                },
+                error => {
+                    ToastsStore.error("Can't connect to the server!");
+                    setVisibleIndicator(false);
+                }
+            );
+    }
     const getProductList = (id) => {
         const requestData = {
             'search_key': '',
@@ -223,10 +260,10 @@ const AddOrder = (props) => {
                                 products.push(item.name)
                             )
                             );
-                            setProductList([{productID:-1},...data.productlist]);
+                            setProductList([{ productID: -1 }, ...data.productlist]);
                             setProducts(products);
                             if (data.productlist.length !== 0) {
-                            }else{
+                            } else {
                                 setProduct(0);
                                 setProductID(-1);
                             }
@@ -274,12 +311,12 @@ const AddOrder = (props) => {
                                     setCompanyID(data.buyerlist[0].companyID);
                                 if (data.buyerlist[0].buildingID)
                                     setBuildingID(data.buyerlist[0].buildingID);
-                            }else{
+                            } else {
                                 setClientName('');
                                 setClientID(-1);
-                                if(companyID !== -1)
+                                if (companyID !== -1)
                                     setCompanyID(-1);
-                                if(buildingID !== -1)
+                                if (buildingID !== -1)
                                     setBuildingID(-1);
                             }
                             break;
@@ -318,10 +355,10 @@ const AddOrder = (props) => {
                             data.discountcodelist.map((item) =>
                                 codes.push(item.name)
                             )
-                            setCodeList([{discount_codeID:-1},data.discountcodelist]);
+                            setCodeList([{ discount_codeID: -1 }, data.discountcodelist]);
                             setCodes(codes);
                             if (data.discountcodelist.length !== 0) {
-                            }else{
+                            } else {
                                 setCode(0);
                                 setCodeID(-1);
                             }
@@ -341,6 +378,10 @@ const AddOrder = (props) => {
                 }
             );
     }
+    useEffect(()=>{
+        if(productID !== -1)
+            getProduct();
+    },[productID]);
     return (
         <Scrollbars style={{ height: '100vh' }}>
             <div className={classes.root}>
@@ -425,22 +466,22 @@ const AddOrder = (props) => {
                         </Grid>
                         {
                             stateLot ?
-                            <Grid item container alignItems="center" spacing={1}>
-                                <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
-                                <Grid xs item container direction="column">
-                                    <TextField
-                                        className={classes.text}
-                                        variant="outlined"
-                                        value={apartNumber}
-                                        type="number"
-                                        onChange={handleChangeApartNumber}
-                                    />
-                                    {errorsApartNumber.length > 0 &&
-                                        <span className={classes.error}>{errorsApartNumber}</span>}
+                                <Grid item container alignItems="center" spacing={1}>
+                                    <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
+                                    <Grid xs item container direction="column">
+                                        <TextField
+                                            className={classes.text}
+                                            variant="outlined"
+                                            value={apartNumber}
+                                            type="number"
+                                            onChange={handleChangeApartNumber}
+                                        />
+                                        {errorsApartNumber.length > 0 &&
+                                            <span className={classes.error}>{errorsApartNumber}</span>}
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                            :
-                            null
+                                :
+                                null
                         }
                         <Grid item container alignItems="center" spacing={2}>
                             <Grid item><p className={classes.title}>TVA applicable</p></Grid>
