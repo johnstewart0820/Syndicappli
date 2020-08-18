@@ -1,7 +1,7 @@
-import React, { useEffect , useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {Line} from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { makeStyles } from '@material-ui/styles';
 import {
   Card,
@@ -35,84 +35,94 @@ const CurveChart = props => {
   const classes = useStyles();
   const [items, setItems] = useState([]);
   const [lines, setLines] = useState([]);
-  useEffect(()=>{
+  useEffect(() => {
     let data = [];
     let linebar = [];
-    if(props.data.result){
-    if(props.data.result.length !== 0){
-      for (var i = 0; i <props.data.result.length; i++) {
-        data.push(props.data.result[i].price);
+    if (props.data.result) {
+      if (props.data.result.length !== 0) {
+        for (var i = 0; i < props.data.result.length; i++) {
+          data.push(props.data.result[i].price);
+        }
+        setItems(data);
       }
-      setItems(data);
     }
-  }
-  if(props.data.filter){
-    if(props.data.filter.length !== 0){
-      for (var i = 1; i <props.data.filter.length; i++) {
-        linebar.push(props.data.filter[i]);
+    if (props.data.filter) {
+      if (props.data.filter.length !== 0) {
+        for (var i = 1; i < props.data.filter.length; i++) {
+          linebar.push(props.data.filter[i]);
+        }
+        setLines(linebar);
       }
-      setLines(linebar);
     }
-  }
-  },[props.data]);
+  }, [props.data]);
 
-   const mainChart = {
+  const mainChart = (canvas) => {
+    var ctx = canvas.getContext("2d");
+
+    var gradientStroke = ctx.createLinearGradient(300, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#0CC77C');
+
+    gradientStroke.addColorStop(1, '#00C9FF');
+    return {
       labels: lines,
       datasets: [
         {
           label: 'Revenus',
           backgroundColor: 'transparent',
-          borderColor: '#03c9e4',
-          pointHoverBackgroundColor: brandPrimary,
+          borderColor: gradientStroke,
+          pointBorderColor: gradientStroke,
+          pointBackgroundColor: gradientStroke,
+          pointHoverBackgroundColor: gradientStroke,
+          pointHoverBorderColor: gradientStroke,
           borderWidth: 10,
           data: items,
         },
       ],
-    };
-    
-    const mainChartOpts = {
-      tooltips: {
-        enabled: true,
-        // custom: CustomTooltips,
-        intersect: true,
-        mode: 'index',
-        position: 'nearest',
-        callbacks: {
-          labelColor: function(tooltipItem, chart) {
-            return { backgroundColor: chart.data.datasets[tooltipItem.datasetIndex].borderColor }
-          }
+    }
+  };
+
+  const mainChartOpts = {
+    tooltips: {
+      enabled: true,
+      intersect: true,
+      mode: 'index',
+      position: 'nearest',
+      callbacks: {
+        labelColor: function (tooltipItem, chart) {
+          return { backgroundColor: chart.data.datasets[tooltipItem.datasetIndex].borderColor }
         }
+      }
+    },
+    maintainAspectRatio: false,
+    legend: {
+      display: false,
+    },
+    scales: {
+      xAxes: [
+        {
+          gridLines: {
+            drawOnChartArea: false,
+          },
+        }],
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+            maxTicksLimit: 5,
+            stepSize: Math.ceil(250 / 5),
+            max: Math.ceil(max(items) + 50),
+          },
+        }],
+    },
+    elements: {
+      point: {
+        radius: 0,
+        hitRadius: 10,
+        hoverRadius: 4,
+        hoverBorderWidth: 3,
       },
-      maintainAspectRatio: false,
-      legend: {
-        display: false,
-      },
-      scales: {
-        xAxes: [
-          {
-            gridLines: {
-              drawOnChartArea: false,
-            },
-          }],
-        yAxes: [
-          {
-            ticks: {
-              beginAtZero: true,
-              maxTicksLimit: 5,
-              stepSize: Math.ceil(250 / 5),
-              max: Math.ceil(max(items) + 50),
-            },
-          }],
-      },
-      elements: {
-        point: {
-          radius: 0,
-          hitRadius: 10,
-          hoverRadius: 4,
-          hoverBorderWidth: 3,
-        },
-      },
-    };
+    },
+  };
   return (
     <Card
       {...rest}
@@ -123,12 +133,12 @@ const CurveChart = props => {
       />
       <Divider />
       <CardContent style={{
-        root:{
-            paddingBottom:0
+        root: {
+          paddingBottom: 0
         }
       }}>
         <div className={classes.chartContainer}>
-          <Line data={mainChart} options={mainChartOpts} height={200} />
+          <Line id="line" data={mainChart} options={mainChartOpts} height={200} />
         </div>
       </CardContent>
     </Card>

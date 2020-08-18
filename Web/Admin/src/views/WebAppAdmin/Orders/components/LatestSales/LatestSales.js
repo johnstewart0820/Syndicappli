@@ -52,16 +52,26 @@ const LatestSales = props => {
   }
   },[props.data]);
   const classes = useStyles();
-   const data = {
+   const data = (canvas) =>{
+    var ctx = canvas.getContext("2d");
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 150);
+    gradient.addColorStop(0, '#0CC77C');
+    gradient.addColorStop(1, '#00C9FF');
+    return{
     labels: lines,
     datasets: [
       {
         label: 'Commandes',
-        backgroundColor: palette.primary.main,
-        data: items
+        backgroundColor: 'transparent',
+        borderColor: gradient,
+        borderWidth: 10,
+        data: items,
       }
     ]
+  }
   };
+  
   
    const options = {
     responsive: true,
@@ -71,14 +81,14 @@ const LatestSales = props => {
     cornerRadius: 20,
     tooltips: {
       enabled: true,
+      intersect: true,
       mode: 'index',
-      intersect: false,
-      borderWidth: 1,
-      borderColor: palette.divider,
-      backgroundColor: palette.white,
-      titleFontColor: palette.text.primary,
-      bodyFontColor: palette.text.secondary,
-      footerFontColor: palette.text.secondary
+      position: 'nearest',
+      callbacks: {
+        labelColor: function (tooltipItem, chart) {
+          return { backgroundColor: chart.data.datasets[tooltipItem.datasetIndex].borderColor }
+        }
+      }
     },
     layout: { padding: 0 },
     scales: {
