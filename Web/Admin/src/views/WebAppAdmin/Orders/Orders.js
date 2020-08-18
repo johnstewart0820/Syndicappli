@@ -140,7 +140,7 @@ const Orders = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-end" >
             <Grid>
               <MyButton
-                name={value !== 3 ? "Nouveau Commandes" : "Vider la Poubelle"}
+                name={value !== 3 ? "Nouvelle Commande" : "Vider la Poubelle"}
                 color={"1"}
                 onClick={value !== 3 ? handleClickAdd : handleClickEmptyTrashOrder}
                 style={{ visibility: accessOrders === 'edit' ? 'visible' : 'hidden' }}
@@ -154,7 +154,7 @@ const Orders = (props) => {
               >
                 <Grid item container className={classes.padding} justify="space-between">
                   <Grid item container direction="row-reverse"><CloseIcon onClick={handleClose} className={classes.close} /></Grid>
-                  <Grid><h2 id="transition-modal-title" className={classes.modalTitle}>Nouveau Commande</h2></Grid>
+                  <Grid><h2 id="transition-modal-title" className={classes.modalTitle}>Nouvelle Commande</h2></Grid>
                 </Grid>
                 <AddOrder onCancel={handleClose} onAdd={handleAdd} />
               </Dialog>
