@@ -292,7 +292,7 @@ const handleChangeVatFee = (event) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={2}>
-              <Grid item><p className={classes.itemTitle}>Prix (€ HT par lot)</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Prix (€ HT {priceTypeList[priceType]})</p></Grid>
               <Grid xs item container direction="column">
                 <TextField
                   id="outlined-basic"
