@@ -217,7 +217,10 @@ const PaymentMethods = (props) => {
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
               data.companylist.map((item) => (
-                setCompanyID(item.companyID)
+                setCompanyID(item.companyID),
+                setAccountAddress(item.account_address),
+                setAccountHolder(item.account_holdername),
+                setAccountIBAN(item.account_IBAN)
               )
               );
               break;
