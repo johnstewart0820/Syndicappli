@@ -400,13 +400,13 @@ const BuildingsEdit = (props) => {
                 <Grid item container direction="column" spacing={4}>
                   {
                     clefList.map((clef, i) => (
-                      <Grid key={i} item container direction="column">
+                      <Grid key={i} item container direction="column" spacing={1}>
                         <Grid item>
                           <Grid item xs={6} container justify="space-between" alignItems="center">
-                            <Grid item >
+                            <Grid item xs={6}>
                               <p className={classes.itemTitle} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
                             </Grid>
-                            <Grid item>
+                            <Grid item xs={6}>
                               <RemoveCircleOutlineIcon
                                 className={classes.plus}
                                 onClick={accessBuildings === 'see' ? null : () => handleClickRemoveClef(i)}

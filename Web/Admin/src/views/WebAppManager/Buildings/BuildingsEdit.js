@@ -405,10 +405,10 @@ const BuildingsEdit = (props) => {
                       <Grid key={i} item container spacing={1} direction="column">
                         <Grid item>
                           <Grid item  xs={6} container justify="space-between" alignItems="center">
-                            <Grid item >
-                              <p className={classes.title} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
+                            <Grid item xs={6}>
+                              <p className={classes.itemTitle} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
                             </Grid>
-                            <Grid item>
+                            <Grid item xs={6}>
                               <RemoveCircleOutlineIcon
                                 className={classes.plus}
                                 onClick={accessBuildings === 'see' ? null : () => handleClickRemoveClef(i)}
@@ -419,7 +419,7 @@ const BuildingsEdit = (props) => {
                         <Grid item>
                           <Grid item xs={12} container justify="space-between" alignItems="center" spacing={1}>
                             <Grid item >
-                              <p className={classes.title}>Libellé</p>
+                              <p className={classes.itemTitle}>Libellé</p>
                             </Grid>
                             <Grid xs item >
                               <TextField
