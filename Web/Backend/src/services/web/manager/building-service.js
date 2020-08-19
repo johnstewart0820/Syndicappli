@@ -134,7 +134,7 @@ function getBuilding(uid, data, userdata) {
                     expiresIn: timer.TOKEN_EXPIRATION
                 })
 
-                resolve({ code: code.OK, message: '', data: { 'token': token, 'building': result.building, 'company_list': result.companyList, 'vote_list': result.votelist } })
+                resolve({ code: code.OK, message: '', data: { 'token': token, 'building': result.building, 'company_list': result.companyList, 'vote_list': result.votelist, 'lots': result.lots } })
             }
         }).catch((err) => {
             if (err.message === message.INTERNAL_SERVER_ERROR)

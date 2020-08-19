@@ -229,7 +229,16 @@ function getManagerBuilding(uid, id) {
                                                 rows1[j].total = result[i].total
                                         }
                                     }
-                                    resolve({building: rows, companyList: result1, votelist: rows1})
+                                    let query = 'select count(*) count from apartments a left join user_relationship r on a.userID = r.userID where r.type = "building" and a.buildingID = ?'
+                                    db.query(query, [id], (error, rows2, fields) => {
+                                        if (error) {
+                                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                                        } else {
+                                            resolve({building: rows, companyList: result1, votelist: rows1, lots: rows2[0].count})
+                                        }
+
+                                    })
+                                    
                                 }
                             })
                             
