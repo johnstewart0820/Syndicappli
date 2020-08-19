@@ -264,11 +264,14 @@ export default function OrderTable(props) {
   }
   const Value = (val, cell_pos) => {
     switch (val) {
-      case 'active': return 'actif';
-      case 'inactive': return 'inactif';
+      case 'active': return 'Actif';
+      case 'inactive': return 'Inactif';
       case 'owner': return 'Copropriétaire';
       case 'subaccount': return 'Sous-compte';
       case 'member': return 'Membre du Conseil Syndical';
+      case 'terminated' : return 'Terminé';
+      case 'cancelled' : return 'Annulée';
+      case 'on_hold' : return 'En attente';
       default:
         if (cell_pos === 5) {
           if (val === '') return '-';
