@@ -357,12 +357,12 @@ export default function SelectTable(props) {
   }
   const handleChangeImport = (event) => {
     if (event.target.files[0] !== undefined) {
-      if (validFileType(event.target.files[0])) {
+      // if (validFileType(event.target.files[0])) {
         props.onImport(event.target.files[0]);
-      }
-      else {
-        ToastsStore.warning('CSV format is not correct.');
-      }
+      // }
+      // else {
+      //   ToastsStore.warning('CSV format is not correct.');
+      // }
     }
   }
   const handleClickExport = () => {
