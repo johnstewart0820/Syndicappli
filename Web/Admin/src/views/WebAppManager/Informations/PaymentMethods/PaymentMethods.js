@@ -461,7 +461,7 @@ const PaymentMethods = (props) => {
             <MyTableCard
               products={cardDataList}
               cells={cardCellList}
-              leftBtn="Ajouter uno  carte"
+              leftBtn="ajouter une carte"
               onClickEdit={handleClickEditCard}
               onClickDelete={handleClickDeleteCard}
               onClickAdd={handleClickAddCard}
