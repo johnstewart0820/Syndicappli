@@ -188,7 +188,7 @@ function getChartList(uid, data) {
             tempDate.setDate(ourDate.getDate() - 0)
             filter_1.push(JSON.stringify(tempDate).split('T')[0].replace('"',''))
         }
-        query += ' and DATE(created_at) >= DATE(?) and DATE(created_at) <= DATE(?)'
+        query += ' and DATE(created_at) > DATE(?) and DATE(created_at) <= DATE(?)'
         for (var j = 0;j < filter.length - 1; j ++) {
             params.push(filter[j])
             params.push(filter[j + 1])
