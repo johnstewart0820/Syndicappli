@@ -97,7 +97,7 @@ function login(req, res) {
  * @return  json
  */
 function login_as(req, res) {
-    let userId = req.decoded.uid
+    let userID = req.decoded.uid
     let userdata = req.decoded.userdata
     let data = req.body
     authService.login_as(userID, userdata, data).then((result) => {

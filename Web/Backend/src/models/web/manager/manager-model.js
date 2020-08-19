@@ -252,7 +252,7 @@ function getManager(id) {
     return new Promise((resolve, reject) => {
       let query = `SELECT
       u.*,
-      ifnull( sum( a.count ), 0 ) count 
+      ifnull( sum( a.count ), 0 ) count , get_daily_time(u.userID) daily_time, get_month_connection(u.userID) month_connection
       FROM
       users u
       LEFT JOIN user_relationship r ON u.userID = r.userID 

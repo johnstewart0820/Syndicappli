@@ -369,7 +369,7 @@ function getBuyerList(uid, data) {
                     WHERE c.permission = "active" and b.permission = "active" and u.userID = ? and r.type="company"`
         else if (data.buyer_type === "owners")
             query = `SELECT
-                    s.userID buyerID, c.companyID, b.buildingID, if(s.type = "Company", s.owner_company_name, CONCAT(s.firstname,s.lastname)) name 
+                    s.userID buyerID, c.companyID, b.buildingID, if(s.type = "Company", s.owner_company_name, CONCAT(s.firstname, ' ', s.lastname)) name 
                     FROM
                         users u
                         LEFT JOIN user_relationship r ON u.userID = r.userID
@@ -700,7 +700,7 @@ function downloadInvoiceBuilding(data, res) {
  */
 function downloadInvoiceOwner(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
                      from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
@@ -840,7 +840,7 @@ function downloadZipBuilding(data, res) {
 function downloadZipOwner(data, res) {
     return new Promise(async (resolve, reject) => {
         await removeFiles()
-        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
                      from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "owners" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]
