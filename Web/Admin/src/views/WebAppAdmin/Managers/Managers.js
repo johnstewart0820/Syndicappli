@@ -69,16 +69,13 @@ const Managers = (props) => {
   useEffect(() => {
     if (accessManagers !== 'denied')
       getManagers();
-  }, [page_num, row_count, sort_column, sort_method, buildingID, props.refresh]);
-  useEffect(() => {
-    getManagers();
-  }, [buildingList])
+  }, [page_num, row_count, sort_column, sort_method, buildingID, buildingList, props.refresh]);
   const cellList = [
     { key: 'lastname', field: 'Nom' },
     { key: 'firstname', field: 'Prénom' },
     { key: 'email', field: 'Email' },
-    { key: 'connection', field: 'Connexions/mois' },
-    { key: 'dailytime', field: 'Temps connexion/jour' },
+    { key: 'month_connection', field: 'Connexions/mois' },
+    { key: 'daily_time', field: 'Temps connexion/jour' },
     { key: 'count', field: 'Lots' }
   ];
   const columns = [];
@@ -225,9 +222,27 @@ const Managers = (props) => {
                 setTotalPage(data.totalpage);
               else
                 setTotalPage(1)
-              setDataList(data.managerlist);
+                let list = data.managerlist;
               let amount_connection = 0;
-              const items = ['Total', '', data.totalcount, amount_connection, amount_connection, data.sum];
+              let totalcount = 0;
+              let total_time = 0;
+              let lot_count = 0;
+              let str_total_time = '0mn';
+              for (let i = 0; i < list.length; i++) {
+                totalcount++;
+                amount_connection += list[i].month_connection;
+                total_time += list[i].daily_time;
+                lot_count += list[i].count;
+                if(list[i].daily_time > 3600)
+                  list[i].daily_time = Math.floor(list[i].daily_time/3600) + 'h' + (list[i].daily_time%3600)/60;
+                else list[i].daily_time = Math.floor(list[i].daily_time/60) + 'mn';
+              }
+              setDataList(list);
+              if(total_time > 3600)
+                str_total_time = Math.floor(total_time/3600) + 'h' + (total_time%3600)/60;
+              else 
+                str_total_time = Math.floor(total_time/60) + 'mn';
+              const items = ['Total', '', totalcount, amount_connection, str_total_time, lot_count];
               setFooterItems(items);
               break;
             case 401:
