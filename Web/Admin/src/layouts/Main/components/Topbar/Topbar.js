@@ -16,6 +16,7 @@ import {ManagerService as Service1} from 'services/api.js';
 import {OwnerService as Service2} from 'services/api.js';
 import { SearchInput } from 'components';
 import {withRouter} from 'react-router-dom';
+import LoginAsButton from './LoginAsButton';
 const ManagerService = new Service1();
 const OwnerService = new Service2();
 const useStyles = makeStyles(theme => ({
@@ -291,11 +292,18 @@ const Topbar = props => {
   let owner_idcard_state = '';
   if(webApp === 'owner')
    owner_idcard_state = authService.getAccess('idcard_state');
+  const loginas_name = authService.getAccess('login_as');
   return (
     <AppBar
       className={clsx(classes.root, className)}
     >
       <Toolbar className={classes.toolbar}>
+        {
+          loginas_name ?
+            <LoginAsButton loginas={loginas_name}/>
+          :
+            null
+        }
         <Hidden lgUp>
           <IconButton
             color="inherit"
