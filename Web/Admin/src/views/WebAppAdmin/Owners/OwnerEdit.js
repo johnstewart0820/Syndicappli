@@ -24,6 +24,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MuiPhoneNumber from 'material-ui-phone-number';
+import useGlobal from 'Global/global';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
   "image/apng",
@@ -48,6 +49,7 @@ const OwnerEdit = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
+  const [globalState, globalActions] = useGlobal();
   const accessOwners = authService.getAccess('role_owners');
   const [state, setState] = useState(false);
   const classes = useStyles();
@@ -551,7 +553,65 @@ const OwnerEdit = (props) => {
       );
   }
   const handleClickLoginAsOwner = () => {
-    window.open('http://localhost:3000');
+    let params = new URLSearchParams(window.location.search);
+    var data = {
+      'userID' : params.get('id'),
+    };
+    setVisibleIndicator(true);
+    AdminService.loginAs(data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            let profile = response.data.data.profile;
+            globalActions.setFirstName(profile.firstname);
+            globalActions.setLastName(profile.lastname);
+            globalActions.setAvatarUrl(profile.photo_url);
+            localStorage.clear();
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            localStorage.setItem("firstlogin", JSON.stringify("false"));
+            localStorage.setItem("usertype", JSON.stringify(profile.usertype));
+            localStorage.setItem("select", JSON.stringify(0));
+            if (!(profile.identity_card_front === null || profile.identity_card_front === "" || profile.identity_card_front === undefined)) {
+              if(profile.owner_role === 'subaccount'){
+                localStorage.setItem("role_addons", JSON.stringify('edit'));
+                localStorage.setItem("role_assemblies", JSON.stringify('denied'));
+                localStorage.setItem("role_chat", JSON.stringify('edit'));
+                localStorage.setItem("role_events", JSON.stringify('edit'));
+                localStorage.setItem("role_incidents", JSON.stringify('edit'));
+                localStorage.setItem("role_payments", JSON.stringify('edit'));
+                localStorage.setItem("role_invoices", JSON.stringify('edit'));
+                localStorage.setItem("idcard_state", JSON.stringify('true'));
+              }else{
+                localStorage.setItem("role_addons", JSON.stringify('edit'));
+                localStorage.setItem("role_assemblies", JSON.stringify('edit'));
+                localStorage.setItem("role_chat", JSON.stringify('edit'));
+                localStorage.setItem("role_events", JSON.stringify('edit'));
+                localStorage.setItem("role_incidents", JSON.stringify('edit'));
+                localStorage.setItem("role_payments", JSON.stringify('edit'));
+                localStorage.setItem("role_invoices", JSON.stringify('edit'));
+                localStorage.setItem("idcard_state", JSON.stringify('true'));
+              }
+            } else {
+              localStorage.setItem("role_addons", JSON.stringify('denied'));
+              localStorage.setItem("role_assemblies", JSON.stringify('denied'));
+              localStorage.setItem("role_chat", JSON.stringify('denied'));
+              localStorage.setItem("role_events", JSON.stringify('denied'));
+              localStorage.setItem("role_incidents", JSON.stringify('denied'));
+              localStorage.setItem("role_payments", JSON.stringify('denied'));
+              localStorage.setItem("role_invoices", JSON.stringify('denied'));
+              localStorage.setItem("idcard_state", JSON.stringify('false'));
+            }
+            window.location.replace("/owner/dashboard");
+          }
+        },
+        error => {
+          setVisibleIndicator(false);
+          ToastsStore.error("Can't connect to the Server!");
+        }
+      );
   }
   const handleClickResetPassword = () => {
     var data = {};

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -11,7 +11,7 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import authService from '../../../services/authService.js';
 import Multiselect from '../../../components/Multiselect.js';
 import { EditTeamMemberStyles as useStyles } from './useStyles';
-import { ManagerService as Service } from '../../../services/api.js';
+import AdminService, { ManagerService as Service } from '../../../services/api.js';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useGlobal from 'Global/global';
@@ -43,47 +43,49 @@ const TeamMemberEdit = (props) => {
     window.location.replace("/login");
   }
   const accessTeam = authService.getAccess('role_team');
-  const [globalState, setGlobalActions] = useGlobal();
-  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+  const [globalState, globalActions] = useGlobal();
+  const [visibleIndicator, setVisibleIndicator] = useState(false);
   const classes = useStyles();
   const permissionList = ['Voir', 'Editer', 'Refusé'];
   const role_permission = ['see', 'edit', 'denied'];
-  const [openDelete, setOpenDelete] = React.useState(false);
-  const [deleteId, setDeleteId] = React.useState(-1);
-  const [suspendState, setSuspendState] = React.useState('Suspendre le compte');
-  const [avatarurl, setAvatarUrl] = React.useState("");
-  const [avatar, setAvatar] = React.useState(null);
-  const [lastname, setLastName] = React.useState('');
-  const [firstname, setFirstName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [phonenumber, setPhoneNumber] = React.useState('');
-  const [buildingsPermission, setBuildingsPermission] = React.useState(0);
-  const [chatPermission, setChatPermission] = React.useState(0);
-  const [ownersPermission, setOwnersPermission] = React.useState(0);
-  const [incidentsPermission, setIncidentsPermission] = React.useState(0);
-  const [assembliesPermission, setAssembliesPermission] = React.useState(0);
-  const [eventsPermission, setEventsPermission] = React.useState(0);
-  const [teamPermission, setTeamPermission] = React.useState(0);
-  const [providersPermission, setProvidersPermission] = React.useState(0);
-  const [announcementsPermission, setAnnouncementsPermission] = React.useState(0);
-  const [companyPermission, setCompanyPermission] = React.useState(0);
-  const [addonsPermission, setAddonsPermission] = React.useState(0);
-  const [invoicesPermission, setInvoicesPermission] = React.useState(0);
-  const [paymentMethodsPermission, setPaymentMethodsPermission] = React.useState(0);
-  const [apartNumber, setApartNumber] = React.useState('');
+  const [openDelete, setOpenDelete] = useState(false);
+  const [deleteId, setDeleteId] = useState(-1);
+  const [suspendState, setSuspendState] = useState('Suspendre le compte');
+  const [avatarurl, setAvatarUrl] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [lastname, setLastName] = useState('');
+  const [firstname, setFirstName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phonenumber, setPhoneNumber] = useState('');
+  const [buildingsPermission, setBuildingsPermission] = useState(0);
+  const [chatPermission, setChatPermission] = useState(0);
+  const [ownersPermission, setOwnersPermission] = useState(0);
+  const [incidentsPermission, setIncidentsPermission] = useState(0);
+  const [assembliesPermission, setAssembliesPermission] = useState(0);
+  const [eventsPermission, setEventsPermission] = useState(0);
+  const [teamPermission, setTeamPermission] = useState(0);
+  const [providersPermission, setProvidersPermission] = useState(0);
+  const [announcementsPermission, setAnnouncementsPermission] = useState(0);
+  const [companyPermission, setCompanyPermission] = useState(0);
+  const [addonsPermission, setAddonsPermission] = useState(0);
+  const [invoicesPermission, setInvoicesPermission] = useState(0);
+  const [paymentMethodsPermission, setPaymentMethodsPermission] = useState(0);
+  const [apartNumber, setApartNumber] = useState('');
 
-  const [errorsBuildings, setErrorsBuildings] = React.useState('');
-  const [errorsLastname, setErrorsLastname] = React.useState('');
-  const [errorsFirstname, setErrorsFirstname] = React.useState('');
-  const [errorsEmail, setErrorsEmail] = React.useState('');
-  const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
-  const [companyID, setCompanyID] = React.useState(-1);
+  const [errorsBuildings, setErrorsBuildings] = useState('');
+  const [errorsLastname, setErrorsLastname] = useState('');
+  const [errorsFirstname, setErrorsFirstname] = useState('');
+  const [errorsEmail, setErrorsEmail] = useState('');
+  const [errorsPhonenumber, setErrorsPhonenumber] = useState('');
+  const [companyID, setCompanyID] = useState(-1);
 
-  const [buildingList, setBuildingList] = React.useState([]);
+  const [buildingList, setBuildingList] = useState([]);
   let buildingID = [];
-  const [buildings, setBuildings] = React.useState([]);
-  const [multiID, setMultiID] = React.useState([]);
-  const [suggestions, setSuggestions] = React.useState([]);
+  const [buildings, setBuildings] = useState([]);
+  const [multiID, setMultiID] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [month_connection, setMonthConnection] = useState('0');
+  const [daily_time, setDailyTime] = useState('0mn');
   useEffect(() => {
     getCompanies();
   }, [accessTeam]);
@@ -192,6 +194,11 @@ const TeamMemberEdit = (props) => {
               setProvidersPermission(role_permission.indexOf(profile.role_providers));
               setTeamPermission(role_permission.indexOf(profile.role_team));
               setApartNumber(profile.count);
+              setMonthConnection(profile.month_connection);
+              if(profile.daily_time > 3600)
+                setDailyTime(Math.floor(profile.daily_time/3600) + 'h' + (profile.daily_time%3600)/60);
+              else 
+                setDailyTime(Math.floor(profile.daily_time/60) + 'mn');
               if (profile.status === 'active')
                 setSuspendState('Suspendre le compte');
               else if (profile.status === 'inactive')
@@ -416,7 +423,47 @@ const TeamMemberEdit = (props) => {
       );
   }
   const handleClickLoginAsManager = () => {
-    window.open('http://localhost:3000');
+    var data = {
+      'userID': props.match.params.id,
+    };
+    setVisibleIndicator(true);
+    AdminService.loginAs(data)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          if (response.data.code !== 200) {
+            ToastsStore.error(response.data.message);
+          } else {
+            let profile = response.data.data.profile;
+            globalActions.setFirstName(profile.firstname);
+            globalActions.setLastName(profile.lastname);
+            globalActions.setAvatarUrl(profile.photo_url);
+            localStorage.clear();
+            localStorage.setItem("token", JSON.stringify(response.data.data.token));
+            localStorage.setItem("firstlogin", JSON.stringify("false"));
+            localStorage.setItem("usertype", JSON.stringify(profile.usertype));
+            localStorage.setItem("role_addons", profile.role_addons === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_addons));
+            localStorage.setItem("role_advertisement", profile.role_advertisement === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
+            localStorage.setItem("role_assemblies", profile.role_assemblies === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
+            localStorage.setItem("role_buildings", profile.role_buildings === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_buildings));
+            localStorage.setItem("role_chat", profile.role_chat === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
+            localStorage.setItem("role_company", profile.role_company === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
+            localStorage.setItem("role_events", profile.role_events === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
+            localStorage.setItem("role_incidents", profile.role_incidents === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
+            localStorage.setItem("role_invoices", profile.role_invoices === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_invoices));
+            localStorage.setItem("role_owners", profile.role_owners === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_owners));
+            localStorage.setItem("role_payments", profile.role_payments === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_payments));
+            localStorage.setItem("role_providers", profile.role_providers === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
+            localStorage.setItem("role_team", profile.role_team === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_team));
+            localStorage.setItem("select", JSON.stringify(0));
+            window.location.replace("/manager/dashboard");
+          }
+        },
+        error => {
+          setVisibleIndicator(false);
+          ToastsStore.error("Can't connect to the Server!");
+        }
+      );
   }
   const handleClickDeleteManager = () => {
     setOpenDelete(true);
@@ -615,10 +662,10 @@ const TeamMemberEdit = (props) => {
                 </Badge>
               </Grid>
               <Grid item container direction="row-reverse">
-                <p className={classes.itemTitle}>Connexions/mois : 90</p>
+                <p className={classes.itemTitle}>Connexions/mois : {month_connection}</p>
               </Grid>
               <Grid item container direction="row-reverse">
-                <p className={classes.itemTitle}>Temps connexion/jour : 1h</p>
+                <p className={classes.itemTitle}>Temps connexion/jour : {daily_time}</p>
               </Grid>
               <Grid item container direction="row-reverse">
                 <p className={classes.itemTitle}>Lots : {apartNumber}</p>
