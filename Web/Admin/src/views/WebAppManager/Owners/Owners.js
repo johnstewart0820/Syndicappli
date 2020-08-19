@@ -231,7 +231,6 @@ const Owners = (props) => {
   }
   const getBuildings = () => {
     const requestData = {
-      'companyID': companyID
     }
     setVisibleIndicator(true);
     ManagerService.getBuildingListByCompany(requestData)

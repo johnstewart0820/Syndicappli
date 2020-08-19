@@ -2,6 +2,10 @@ import axios from 'axios';
 import authHeader from './authHeader';
 const API_URL = process.env.REACT_APP_API_URL;
 class AdminService {
+  //LoginAs
+  loginAs(data) {
+    return axios.post(API_URL + 'auth/login_as', data, { headers: authHeader() });
+  }
   //Login
   login(data) {
     return axios.post(API_URL + 'auth/login', data, {});
@@ -434,7 +438,7 @@ export class ManagerService {
     return axios.get(API_URL + 'web/manager/companyListByUser', { headers: authHeader() });
   }
   getBuildingListByCompany(data) {
-    return axios.post(API_URL + 'web/admin/buildingListByCompany', data, { headers: authHeader() });
+    return axios.post(API_URL + 'web/manager/owner_building_list', data, { headers: authHeader() });
   }
   //PaymentMethod Part
   //Card Part
