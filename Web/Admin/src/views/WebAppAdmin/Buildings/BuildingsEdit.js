@@ -401,8 +401,8 @@ const BuildingsEdit = (props) => {
                   {
                     clefList.map((clef, i) => (
                       <Grid key={i} item container direction="column">
-                        <Grid item xs={6}>
-                          <Grid item container justify="space-between" alignItems="center">
+                        <Grid item>
+                          <Grid item xs={6} container justify="space-between" alignItems="center">
                             <Grid item >
                               <p className={classes.itemTitle} style={{ display: 'flex' }}>{clef.vote_branch_name}</p>
                             </Grid>
@@ -414,8 +414,8 @@ const BuildingsEdit = (props) => {
                             </Grid>
                           </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                          <Grid item container justify="space-between" alignItems="center" spacing={1}>
+                        <Grid item>
+                          <Grid item  xs={12} container justify="space-between" alignItems="center" spacing={1}>
                             <Grid item >
                               <p className={classes.itemTitle}>Libellé</p>
                             </Grid>
@@ -430,7 +430,7 @@ const BuildingsEdit = (props) => {
                             </Grid>
                           </Grid>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item>
                           <p className={classes.itemTitle}>{clef.total ? clef.total : 0} tantièmes</p>
                         </Grid>
                       </Grid>
