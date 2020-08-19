@@ -101,9 +101,28 @@ const useStyles = makeStyles({
         borderBottomRightRadius: '15px',
       },
     },
-    // '& thead tr:first-child th': {
-    //   borderRadius: 30,
-    // },
+    '& thead tr:first-child th:first-child': {
+      [theme.breakpoints.up('xl')]: {
+        borderTopLeftRadius: '30px',
+      },
+      [theme.breakpoints.between('lg', 'lg')]: {
+        borderTopLeftRadius: '21px',
+      },
+      [theme.breakpoints.down('md')]: {
+        borderTopLeftRadius: '15px',
+      },
+    },
+    '& thead tr:first-child th:last-child': {
+      [theme.breakpoints.up('xl')]: {
+        borderTopRightRadius: '30px',
+      },
+      [theme.breakpoints.between('lg', 'lg')]: {
+        borderTopRightRadius: '21px',
+      },
+      [theme.breakpoints.down('md')]: {
+        borderTopRightRadius: '15px',
+      },
+    },
     [theme.breakpoints.up('xl')]: {
       marginBottom: 16,
       marginTop: 8,

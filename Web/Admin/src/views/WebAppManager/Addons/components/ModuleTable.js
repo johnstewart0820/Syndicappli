@@ -42,9 +42,28 @@ const useStyles = makeStyles({
           borderBottomRightRadius: '15px',
         },
       },
-    '& thead tr:first-child th':{
-      borderRadius:30,
-    },
+      '& thead tr:first-child th:first-child': {
+        [theme.breakpoints.up('xl')]: {
+          borderTopLeftRadius: '30px',
+        },
+        [theme.breakpoints.between('lg', 'lg')]: {
+          borderTopLeftRadius: '21px',
+        },
+        [theme.breakpoints.down('md')]: {
+          borderTopLeftRadius: '15px',
+        },
+      },
+      '& thead tr:first-child th:last-child': {
+        [theme.breakpoints.up('xl')]: {
+          borderTopRightRadius: '30px',
+        },
+        [theme.breakpoints.between('lg', 'lg')]: {
+          borderTopRightRadius: '21px',
+        },
+        [theme.breakpoints.down('md')]: {
+          borderTopRightRadius: '15px',
+        },
+      },
     [theme.breakpoints.up('xl')]: {
       marginBottom: 16,
       marginTop: 8,
@@ -85,14 +104,14 @@ export default function ModuleTable  (props)  {
   const [cells,setCells] = useState(props.cells);
   const items = props.products;
   return ( 
-      <Grid item container xs={12} sm={8} md={8} lg={8} xl={6}  style={{overflowX:'auto'}}>
+      <Grid item container xs={12} sm={8} md={8} lg={8} xl={6}>
           <Table className={classes.root}>
             <TableHead>
               <TableRow >
                 {
                   cells.map((cell,i)=>(
                     <TableCell key={i} style={{width: 100/(props.columns) + '%'}}>
-                      <b>{cell.field}</b>
+                      {cell.field}
                     </TableCell>
                   ))
                 }
