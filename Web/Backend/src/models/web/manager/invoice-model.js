@@ -91,7 +91,7 @@ function getInvoiceAddon(data) {
                         LEFT JOIN buildings b ON o.buildingID = b.buildingID 
                     WHERE
                         o.companyID = ?
-                        AND o.buyer_type = "managers" 
+                        AND o.buyer_type = "buildings" 
                         AND o.permission = "active" 
                         AND p.name = "Pack de Modules"`
             params = [data.companyID]
@@ -109,7 +109,7 @@ function getInvoiceAddon(data) {
                     WHERE
                         o.companyID = ?
                         AND o.buildingID = ?
-                        AND o.buyer_type = "managers" 
+                        AND o.buyer_type = "buildings" 
                         AND o.permission = "active" 
                         AND p.name = "Pack de Modules"`
             params = [data.companyID, data.buildingID]
@@ -146,7 +146,7 @@ function downloadInvoiceAddon(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 pdf.create(addonTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
@@ -168,14 +168,14 @@ function downloadInvoiceAddon(data, res) {
  */
 function downloadInvoiceOrder(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select b.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');

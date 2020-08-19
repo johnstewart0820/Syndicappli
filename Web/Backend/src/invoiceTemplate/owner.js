@@ -6,7 +6,6 @@ return `
            <style>
                body {
                     padding-top: 50px !important;
-                    padding-left: 50px !important;
                     padding-right: 10px !important;
                }
 
@@ -17,7 +16,9 @@ return `
                .image {
                    width: 40%;
                }
-
+               .row {
+                padding-left: 50px !important;
+            }
                h2 {
                    margin-top: 0px !important;
                }
@@ -25,7 +26,7 @@ return `
                 margin-top: 50px !important;
                }
                .padding-15 {
-                   padding-left: 15px !important;
+                   padding-left: 65px !important;
                }
                th {
                    padding: 8px !important;
@@ -45,6 +46,9 @@ return `
                	width: 50%;
                	float: left;
                }
+               .blank {
+                height: 600px;
+                }
                
             </style>
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -101,7 +105,33 @@ return `
                 </tbody>
             </table>
         </div>
-        <div id="pageFooter"><p>Syndicappli-66 avenue des Champs Elysees 75008 Paris - Societe par actions simplifiee au capital de 2000,00 Euros immatriculee au RCS de Paris sous le numero 123 456 789 R.C.S Paris - Siren 123 456 789 - Siret 123456789123</p></div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <div><img src= "https://syndicappli-avatars.s3.amazonaws.com/55a7f5c761eca713a9e6684324c85c85.png" /></div>
        </body>
     </html>
     `;

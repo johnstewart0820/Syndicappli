@@ -653,7 +653,7 @@ function downloadInvoiceOrder(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
@@ -682,7 +682,7 @@ function downloadInvoiceBuilding(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
@@ -711,7 +711,7 @@ function downloadInvoiceOwner(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 pdf.create(ownerTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
@@ -770,7 +770,7 @@ function downloadZipOrder(data, res) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 for (var i in rows) {
                     await createPDF(rows[i], options)
                 }
@@ -815,7 +815,7 @@ function downloadZipBuilding(data, res) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 for (var i in rows) {
                     await createPDF(rows[i], options)
                 }
@@ -860,7 +860,7 @@ function downloadZipOwner(data, res) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                options = {format: "A3", "footer": {"height": "28mm"}}
+                options = {format: "A3"}
                 for (var i in rows) {
                     await createPDF(rows[i], options)
                 }
