@@ -96,11 +96,19 @@ function login_as(data) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                if (rows.length > 0) {
-                    resolve(rows[0])
-                } else {
-                    reject({ message: message.ACCOUNT_NOT_EXIST })
-                }
+                let query = 'Insert into logs (userID, login_time, logout_time) values (?,?,?)'
+                db.query(query, [rows[0].userID, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows1, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                        if (rows.length > 0) {
+                            resolve(rows[0])
+                        } else {
+                            reject({ message: message.ACCOUNT_NOT_EXIST })
+                        }
+                    }
+                })
+                
             }
         })
     })
