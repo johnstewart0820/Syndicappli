@@ -74,6 +74,7 @@ router.put('/owner/:id', authMiddleware.checkToken, upload.fields([{name: 'photo
 router.post('/owner/:id/delete', authMiddleware.checkToken, deleteOwner)
 router.put('/owner/:id/status', authMiddleware.checkToken, updateOwnerStatus)
 router.post('/trash/owner/deleteAll', authMiddleware.checkToken, deleteAllOwner)
+router.post('/owner_building_list', authMiddleware.checkToken, getOwnerBuildingList)
 
 router.post('/owner_import_csv', authMiddleware.checkToken, upload.single('csv'), importOwnerCSV)
 router.post('/owner_export_csv', authMiddleware.checkToken, exportOwnerCSV)
@@ -609,6 +610,26 @@ function getOwner(req, res){
     let id = req.params.id
     let data = req.body
     ownerService.getOwner(userId, userdata, data, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get owner
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getOwnerBuildingList(req, res){
+
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    ownerService.getBuildingList(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

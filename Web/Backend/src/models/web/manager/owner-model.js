@@ -37,7 +37,8 @@ var ownerModel = {
     updateOwnerStatus: updateOwnerStatus,
     deleteAllOwner: deleteAllOwner,
     exportOwnerCSV: exportOwnerCSV,
-    importOwnerCSV: importOwnerCSV
+    importOwnerCSV: importOwnerCSV,
+    getBuildingList: getBuildingList
 }
 
 /**
@@ -99,11 +100,19 @@ function getOwnerList(uid, data) {
             query += data.sort_method;
         }
         query += ' limit ' + page_num * row_count + ',' + row_count
-        db.query(query, params, (error, rows, fields) => {
+        db.query(query, params, async (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
-                resolve(rows);
+                result = await getBuildingList(uid, null)
+                var final_result = []
+                for (var j in rows) {
+                    for (var i in result) {
+                        if (rows[j].buildingID == result[i].buildingID)
+                            final_result.push(rows[j])
+                    }
+                }
+                resolve(final_result);
             }
         })
     })
@@ -814,6 +823,33 @@ function exportOwnerCSV(data, res) {
                 res.end();
             });
         
+    })
+}
+
+/**
+ * get building list with filter key
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function getBuildingList(uid, data) {
+    return new Promise((resolve, reject) => {
+        let query;
+
+        query = `select b.*
+                from ` + table.BUILDINGS + ` b
+                where b.buildingID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'building') 
+                and b.permission = "active"`
+
+    
+        db.query(query, [ uid], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows);
+            }
+        })
     })
 }
 
