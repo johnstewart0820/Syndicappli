@@ -97,7 +97,6 @@ const ModulePayment = (props) => {
               case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
-                ToastsStore.success('You bought new module successfully');
                 handleClick();
                 break;
               case 401:
@@ -129,7 +128,11 @@ const ModulePayment = (props) => {
       setErrorsCode('');
       setCodeID(codeList[validateCode(event.target.value)].discount_codeID);
     }else{
-      setErrorsCode('Invalid Code Promo');
+      if(event.target.value.length === 0){
+        setErrorsCode('');
+      }else{
+        setErrorsCode('Invalid Code Promo');
+      }
       setCodeID(-1);
     }
   }
@@ -169,15 +172,15 @@ const ModulePayment = (props) => {
                   setBundleName(addon.name);
                   setVatOption(addon.vat_option === 'true' ? true : false);
                   setVatPro(addon.vat_fee);
-                  setRealPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
-                  setTempPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
-                  setRealFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
-                  setTempFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
+                  setRealPrice((((100 + addon.vat_fee) * addon.price * apartment_amount) / 100).toFixed(2));
+                  setTempPrice((((100 + addon.vat_fee) * addon.price * apartment_amount) / 100).toFixed(2));
+                  setRealFeePrice(((addon.vat_fee * addon.price * apartment_amount) / 100).toFixed(2));
+                  setTempFeePrice(((addon.vat_fee * addon.price * apartment_amount) / 100).toFixed(2));
                   setProductID(addon.productID);
                   setRenewal(addon.renewal);
                   setPriceType(addon.price_type);
                   setBillingCycle(addon.billing_cycle);
-                  setPrice(addon.price);
+                  setPrice(addon.price * apartment_amount);
                 }
                 break;
               case 401:
@@ -295,6 +298,7 @@ const ModulePayment = (props) => {
                 setBuyerName(company.name);
                 setCompanyID(company.companyID);
               }
+              setApartAmount(data.lots ? data.lots : 1);
               break;
             case 401:
               authService.logout();
