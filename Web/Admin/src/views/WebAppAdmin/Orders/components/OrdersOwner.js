@@ -27,9 +27,9 @@ const OrdersOwner = (props) => {
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
   const [company, setCompany] = useState(0);
-  const [companies, setCompanies] = useState(['Tout Cabinet']);
-  const [buildings, setBuildings] = useState(['Tout Immubles']);
-  const [products, setProducts] = useState(['Tout Produits']);
+  const [companies, setCompanies] = useState(['Tous les Cabinet']);
+  const [buildings, setBuildings] = useState(['Tous les Immubles']);
+  const [products, setProducts] = useState(['Tous les Produits']);
   const [companyID, setCompanyID] = useState(-1);
   const [buildingID, setBuildingID] = useState(-1);
   const [productID, setProductID] = useState(-1);
@@ -243,7 +243,7 @@ const OrdersOwner = (props) => {
                 if (filterData.length !== 0) {
                   if (filterData.companies) {
                     companies.splice(0, companies.length)
-                    companies.push('Tout Cabinets');
+                    companies.push('Tous les Cabinets');
                     filterData.companies.map((item) => (
                       companies.push(item.name)
                     )
@@ -252,7 +252,7 @@ const OrdersOwner = (props) => {
                   }
                   if (filterData.buildings) {
                     buildings.splice(0, buildings.length)
-                    buildings.push('Tout Immubles');
+                    buildings.push('Tous les Immubles');
                     filterData.buildings.map((item) => (
                       buildings.push(item.name)
                     )
@@ -261,7 +261,7 @@ const OrdersOwner = (props) => {
                   }
                   if (filterData.products) {
                     products.splice(0, products.length)
-                    products.push('Tout Produits');
+                    products.push('Tous les Produits');
                     filterData.products.map((item) => (
                       products.push(item.name)
                     )
