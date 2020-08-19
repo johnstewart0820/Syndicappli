@@ -577,7 +577,7 @@ const TeamMemberEdit = (props) => {
               localStorage.setItem("token", JSON.stringify(data.token));
               ToastsStore.success('Updated manager successfully!');
               if (globalState.ID === Number(props.match.params.id)) {
-                localStorage.setItem("role_addons", JSON.stringify('denied'));
+                localStorage.setItem("role_addons", JSON.stringify(role_permission[addonsPermission]));
                 localStorage.setItem("role_advertisement", JSON.stringify('denied'));
                 localStorage.setItem("role_assemblies", JSON.stringify('denied'));
                 localStorage.setItem("role_buildings", JSON.stringify(role_permission[buildingsPermission]));
@@ -585,9 +585,9 @@ const TeamMemberEdit = (props) => {
                 localStorage.setItem("role_company", JSON.stringify('denied'));
                 localStorage.setItem("role_events", JSON.stringify('denied'));
                 localStorage.setItem("role_incidents", JSON.stringify('denied'));
-                localStorage.setItem("role_invoices", JSON.stringify('denied'));
+                localStorage.setItem("role_invoices", JSON.stringify(role_permission[invoicesPermission]));
                 localStorage.setItem("role_owners", JSON.stringify(role_permission[ownersPermission]));
-                localStorage.setItem("role_payments", JSON.stringify('denied'));
+                localStorage.setItem("role_payments", JSON.stringify(role_permission[paymentMethodsPermission]));
                 localStorage.setItem("role_providers", JSON.stringify('denied'));
                 localStorage.setItem("role_team", JSON.stringify(role_permission[teamPermission]));
                 window.location.reload();
