@@ -572,6 +572,8 @@ function updateOrder(id, data) {
                                             if (data.discount_codeID > 0 && data.discount_codeID != order.discount_codeID && data.amount_of_use_per_user != -1 && rows[0].count + 1 > data.amount_of_use_per_user)
                                                 reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
                                             else {
+                                                if (data.price_type === "per_unit")
+                                                    data.apartment_amount = 1
                                                 let query = `Update ` + table.ORDERS + ` Set buyer_type = ?, productID = ?, companyID = ?, buildingID = ?, buyerID = ?, buyer_name = ?, billing_cycle = ?, renewal = ?, price_type = ?, price = ?, vat_option = ?, vat_fee = ?, apartment_amount = ?, start_date = ?, end_date = ?, payment_method = ?, discount_codeID = ?, discount_type = ?, discount_amount = ?, status = ?, updated_at = ? where orderID = ?`;
                                                 db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, timeHelper.getCurrentTime(), id], function (error, result, fields) {
                                                     if (error) {

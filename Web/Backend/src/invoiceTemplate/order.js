@@ -1,5 +1,4 @@
 module.exports = ({ name, address, email, invoice_number, invoice_date, order_id, order_date, product_name, amount_lot, price, date, total }) => {
-    name = 1
 return `
 <!doctype html>
     <html>
@@ -65,8 +64,8 @@ return `
                 <p>66 avenue des Champs Elysees</p>
                 <p>75008 Paris</p>
                 <br/>
-                <p>Tel: 01 02 03 04 05</p>
-                <p>mail: contact@syndicappli.fr</p>
+                <p>Tel : 01 02 03 04 05</p>
+                <p>mail : contact@syndicappli.fr</p>
             </div>
         </div>
         <div class="row block">
@@ -77,11 +76,11 @@ return `
                 <p>${email}</p>
             </div>
             <div class="col-md-6">
-                <p>Numéro de facture:#${invoice_number}</p>
-                <p>Date de la facture:${invoice_date}</p>
-                <p>Numéro de la commande:#${order_id}</p>
-                <p>Date de la commende:${order_date}</p>
-                <p>Méthode de paiement:SEPA</p>
+                <p>Numéro de facture : #${invoice_number}</p>
+                <p>Date de la facture : ${invoice_date}</p>
+                <p>Numéro de la commande : #${order_id}</p>
+                <p>Date de la commende : ${order_date}</p>
+                <p>Méthode de paiement : SEPA</p>
             </div>
         </div>
         <div class="row block padding-15">
