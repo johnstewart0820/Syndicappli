@@ -571,6 +571,7 @@ const OwnerEdit = (props) => {
             localStorage.setItem("firstlogin", JSON.stringify("false"));
             localStorage.setItem("usertype", JSON.stringify(profile.usertype));
             localStorage.setItem("select", JSON.stringify(0));
+            localStorage.setItem("login_as", JSON.stringify(profile.firstname + ' ' + profile.lastname));
             if (!(profile.identity_card_front === null || profile.identity_card_front === "" || profile.identity_card_front === undefined)) {
               if(profile.owner_role === 'subaccount'){
                 localStorage.setItem("role_addons", JSON.stringify('edit'));

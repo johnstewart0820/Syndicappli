@@ -497,6 +497,7 @@ const ManagerEdit = (props) => {
             localStorage.setItem("role_providers", profile.role_providers === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
             localStorage.setItem("role_team", profile.role_team === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_team));
             localStorage.setItem("select", JSON.stringify(0));
+            localStorage.setItem("login_as", JSON.stringify(profile.firstname + ' ' + profile.lastname));
             window.location.replace("/manager/dashboard");
           }
         },

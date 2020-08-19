@@ -455,6 +455,7 @@ const TeamMemberEdit = (props) => {
             localStorage.setItem("role_payments", profile.role_payments === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_payments));
             localStorage.setItem("role_providers", profile.role_providers === undefined ? JSON.stringify('denied') : JSON.stringify('denied'));
             localStorage.setItem("role_team", profile.role_team === undefined ? JSON.stringify('denied') : JSON.stringify(profile.role_team));
+            localStorage.setItem("login_as", JSON.stringify(profile.firstname + ' ' + profile.lastname));
             localStorage.setItem("select", JSON.stringify(0));
             window.location.replace("/manager/dashboard");
           }
