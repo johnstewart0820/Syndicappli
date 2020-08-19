@@ -28,7 +28,7 @@ const OrdersOwner = (props) => {
   const classes = useStyles();
   const [company, setCompany] = useState(0);
   const [companies, setCompanies] = useState(['Tous les Cabinet']);
-  const [buildings, setBuildings] = useState(['Tous les Immubles']);
+  const [buildings, setBuildings] = useState(['Tous les Immeubles']);
   const [products, setProducts] = useState(['Tous les Produits']);
   const [companyID, setCompanyID] = useState(-1);
   const [buildingID, setBuildingID] = useState(-1);
@@ -252,7 +252,7 @@ const OrdersOwner = (props) => {
                   }
                   if (filterData.buildings) {
                     buildings.splice(0, buildings.length)
-                    buildings.push('Tous les Immubles');
+                    buildings.push('Tous les Immeubles');
                     filterData.buildings.map((item) => (
                       buildings.push(item.name)
                     )

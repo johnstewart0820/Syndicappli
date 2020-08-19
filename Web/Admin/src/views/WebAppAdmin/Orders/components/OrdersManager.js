@@ -29,7 +29,7 @@ const OrdersManager = (props) => {
   const [company, setCompany] = useState(0);
   const [companyID, setCompanyID] = useState(-1);
   const [companies, setCompanies] = useState(['Tous les Cabinet']);
-  const [buildings, setBuildings] = useState(['Tous les Immubles']);
+  const [buildings, setBuildings] = useState(['Tous les Immeubles']);
   const [products, setProducts] = useState(['Tous les Produits']);
   const [buildingID, setBuildingID] = useState(-1);
   const [productID, setProductID] = useState(-1);
@@ -252,7 +252,7 @@ const OrdersManager = (props) => {
                   }
                   if (filterData.buildings) {
                     buildings.splice(0, buildings.length)
-                    buildings.push('Tous les Immubles');
+                    buildings.push('Tous les Immeubles');
                     filterData.buildings.map((item) => (
                       buildings.push(item.name)
                     )

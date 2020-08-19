@@ -27,7 +27,7 @@ const OrdersBuilding = (props) => {
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
   const classes = useStyles();
   const [companies, setCompanies] = useState(['Tous les Cabinet']);
-  const [buildings, setBuildings] = useState(['Tous les Immubles']);
+  const [buildings, setBuildings] = useState(['Tous les Immeubles']);
   const [products, setProducts] = useState(['Tous les Produits']);
   const [company, setCompany] = useState(0);
   const [companyID, setCompanyID] = useState(-1);
@@ -252,7 +252,7 @@ const OrdersBuilding = (props) => {
                   }
                   if (filterData.buildings) {
                     buildings.splice(0, buildings.length)
-                    buildings.push('Tous les Immubles');
+                    buildings.push('Tous les Immeubles');
                     filterData.buildings.map((item) => (
                       buildings.push(item.name)
                     )
