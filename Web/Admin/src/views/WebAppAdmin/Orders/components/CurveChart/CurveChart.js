@@ -110,7 +110,7 @@ const CurveChart = props => {
             beginAtZero: true,
             maxTicksLimit: 5,
             stepSize: Math.ceil(250 / 5),
-            max: Math.ceil(max(items) + 50),
+            max: Math.ceil(max(items)),
           },
         }],
     },
