@@ -322,7 +322,7 @@ const ModulePayment = (props) => {
           </Grid>
         </Grid>
       </div>
-      <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Immeubles</p>
+      <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la des Modules</p>
       <div className={classes.tool}>
         <Grid item container spacing={1}>
           <Grid item container justify="space-between">
