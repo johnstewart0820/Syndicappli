@@ -26,13 +26,14 @@ const ModulePayment = (props) => {
   const [accountname, setAccountName] = useState('');
   const [accountaddress, setAccountAddress] = useState('');
   const [IBAN, setIBAN] = useState('');
-  const [bundle_name, setBundleName] = useState('Pack de Modules');
-  const [building_name, setBuildingName] = useState('Immeuble 36 rue Hector Berlioz, Agen ');
-  const [real_price, setRealPrice] = useState(12.90);
-  const [temp_price, setTempPrice] = useState(12.90);
-  const [fee_price, setFeePrice] = useState(2.15);
+  const [bundle_name, setBundleName] = useState('');
+  const [building_name, setBuildingName] = useState('');
+  const [real_price, setRealPrice] = useState(0);
+  const [temp_price, setTempPrice] = useState(0);
+  const [real_fee_price, setRealFeePrice] = useState(0);
+  const [temp_fee_price, setTempFeePrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [address, setAddress] = useState('36 rue Hector Berlioz, 18000 Agen');
+  const [address, setAddress] = useState('');
   // const [codes, setCodes] = useState(['']);
   const [code, setCode] = useState('');
   const [codeID, setCodeID] = useState(-1);
@@ -61,6 +62,7 @@ const ModulePayment = (props) => {
       }
     }else{
       setRealPrice(temp_price);
+      setRealFeePrice(temp_fee_price);
     }
   }
   const handleClickPay = () => {
@@ -166,9 +168,10 @@ const ModulePayment = (props) => {
                   setBundleName(addon.name);
                   setVatOption(addon.vat_option === 'true' ? true : false);
                   setVatPro(addon.vat_fee);
-                  setRealPrice(((100 + addon.vat_fee) * addon.price) / 100);
-                  setTempPrice(((100 + addon.vat_fee) * addon.price) / 100);
-                  setFeePrice((addon.vat_fee * addon.price) / 100);
+                  setRealPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
+                  setTempPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
+                  setRealFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
+                  setTempFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
                   setProductID(addon.productID);
                   setRenewal(addon.renewal);
                   setPriceType(addon.price_type);
@@ -194,9 +197,11 @@ const ModulePayment = (props) => {
   }, [accessAddons]);
   const calc_price = () => {
     if (discount_type === 'fixed') {
-      setRealPrice(temp_price - discount_amount);
+      setRealPrice((temp_price - discount_amount).toFixed(2));
+      setRealFeePrice((vat_pro * (price - discount_amount)/100).toFixed(2));
     } else if (discount_type === 'percentage') {
       setRealPrice((temp_price * (100 - discount_amount) / 100).toFixed(2));
+      setRealFeePrice((vat_pro * (price - (100 - discount_amount))/100).toFixed(2));
     }
     setApply(false);
   }
@@ -361,7 +366,7 @@ const ModulePayment = (props) => {
                     <p className={classes.itemTitle}>dont TVA à {vat_pro}%</p>
                   </Grid>
                   <Grid item>
-                    <p className={classes.itemTitle}>{fee_price}€</p>
+                    <p className={classes.itemTitle}>{real_fee_price}€</p>
                   </Grid>
                 </Grid>
                 :
