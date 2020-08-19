@@ -281,8 +281,8 @@ const BankCard = (props) => {
               setCardHolderName(data.card.name);
               setDate(data.card.expiry_date);
               setCryptogram(data.card.secure_code);
-              const exp_month = data.card.expiry_date.split('-')[1];
-              const exp_year = data.card.expiry_date.split('-')[0];
+              const exp_month = data.card.expiry_date.split('/')[0];
+              const exp_year = data.card.expiry_date.split('/')[1];
               setExpirationDate(exp_month + '/' + exp_year%100);
               break;
             case 401:
