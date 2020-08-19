@@ -147,7 +147,12 @@ const InvoiceSubscriptions = (props) => {
             case 200:
               const data = response.data.data;
               localStorage.setItem("token", JSON.stringify(data.token));
-              setDataList(data.invoicelist);
+              let list = data.invoicelist;
+              for (let i = 0; i < list.length; i++) {
+                list[i].price = list[i].price + 'cts HT';
+                list[i].total_amount = list[i].total_amount + '€ HT';
+              }
+              setDataList(list);
               break;
             case 401:
               authService.logout();
