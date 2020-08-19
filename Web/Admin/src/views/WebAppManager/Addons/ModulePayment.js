@@ -98,6 +98,7 @@ const ModulePayment = (props) => {
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
                 ToastsStore.success('You bought new module successfully');
+                handleClick();
                 break;
               case 401:
                 authService.logout();
@@ -241,7 +242,7 @@ const ModulePayment = (props) => {
   }
   const getDatas = () => {
     const requestData = {
-      'user_type': 'managers',
+      'user_type': 'buildings',
     }
     setVisibleIndicator(true);
     ManagerService.getDiscountCodesList(requestData)
