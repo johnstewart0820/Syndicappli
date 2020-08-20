@@ -12,6 +12,7 @@ import { Checkbox } from '@material-ui/core';
 import { EditOrderStyles as useStyles } from './useStyles';
 import AdminService from 'services/api.js';
 import { isGetAccessorDeclaration } from 'typescript';
+import { AddBuildingStyles } from '../Buildings/useStyles';
 
 const OrderEdit = (props) => {
   const classes = useStyles();
@@ -114,7 +115,7 @@ const OrderEdit = (props) => {
       'status': en_orderstatusList[orderStatus]
     }
     setVisibleIndicator(true);
-    AdminService.updateOrder(props.match.params.id,requestData)
+    AdminService.updateOrder(props.match.params.id, requestData)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -156,7 +157,7 @@ const OrderEdit = (props) => {
               setPrice(data.price);
               setRenewal(data.renewal === 'true' ? true : false);
               setPriceType(en_priceTypeList.indexOf(data.price_type));
-              if(en_priceTypeList.indexOf(data.price_type) === 0)
+              if (en_priceTypeList.indexOf(data.price_type) === 0)
                 setStateLot(true);
               else
                 setStateLot(false);
@@ -188,6 +189,7 @@ const OrderEdit = (props) => {
   }
   const handleChangeCategorie = (val) => {
     setCategorie(val);
+    setDefault();
   }
   const handleChangeStartDate = (event) => {
     setStartDate(event.target.value);
@@ -206,6 +208,7 @@ const OrderEdit = (props) => {
     if (clientList[val].buildingID)
       setBuildingID(clientList[val].buildingID);
     setClientName(clientList[val].name)
+    setDefault();
   }
   const handleChangeCode = (val) => {
     setCode(val);
@@ -214,6 +217,7 @@ const OrderEdit = (props) => {
   const handleChangeProduct = (val) => {
     setProduct(val);
     setProductID(productList[val].productID);
+    setDefault();
   }
   const handleChangeRenewal = (event) => {
     setRenewal(event.target.checked);
@@ -243,16 +247,9 @@ const OrderEdit = (props) => {
   }
   useEffect(() => {
     getProductList(categorie);
-    getBuyerList(categorie);
     getCodeList(categorie);
-    // getOrder();
+    getBuyerList(categorie);
   }, [categorie]);
-  // useEffect(()=>{
-  // },[productList]);
-  // useEffect(()=>{
-  // },[clientList]);
-  // useEffect(()=>{
-  // },[clientList]);
   const getProductList = (id) => {
     const requestData = {
       'search_key': '',
@@ -365,10 +362,10 @@ const OrderEdit = (props) => {
               data.discountcodelist.map((item) =>
                 codes.push(item.name)
               )
-              setCodeList([{discount_codeID:-1},...data.discountcodelist]);
+              setCodeList([{ discount_codeID: -1 }, ...data.discountcodelist]);
               setCodes(codes);
               if (data.discountcodelist.length !== 0) {
-              }else{
+              } else {
                 setCode(0);
                 setCodeID(-1);
               }
@@ -388,27 +385,35 @@ const OrderEdit = (props) => {
         }
       );
   }
-  useEffect(()=>{
+  const setDefault = () => {
+    setBillingCycle(0);
+    setStartDate('');
+    setEndDate('');
+    setPrice('');
+    setRenewal(false);
+    setPriceType(0);
+    setStateLot(false);
+    setApartNumber('');
+    setVatState(false);
+  }
+  useEffect(() => {
     for (let i = 0; i < productList.length; i++)
-    if (productList[i].productID === productID){
-      setProduct(i);
-      console.log('product:',i);
-    }
-  },[productID]);
-  useEffect(()=>{
+      if (productList[i].productID === productID) {
+        setProduct(i);
+      }
+  }, [productID]);
+  useEffect(() => {
     for (let i = 0; i < clientList.length; i++)
-    if (clientList[i].buyerID === clientID){
-      setClient(i);
-      console.log('client:',i);
-    }
-  },[clientID]);
-  useEffect(()=>{
+      if (clientList[i].buyerID === clientID) {
+        setClient(i);
+      }
+  }, [clientID]);
+  useEffect(() => {
     for (let i = 0; i < codeList.length; i++)
-    if (codeList[i].discount_codeID === codeID){
-      setCode(i);
-      console.log('code:',i);
-    }
-  },[codeID]);
+      if (codeList[i].discount_codeID === codeID) {
+        setCode(i);
+      }
+  }, [codeID]);
   const handleClick = () => {
     history.goBack();
   };
@@ -511,24 +516,24 @@ const OrderEdit = (props) => {
                   <span className={classes.error}>{errorsPrice}</span>}
               </Grid>
             </Grid>
-            {     
-              stateLot ?       
-              <Grid item container alignItems="center" spacing={1}>
-                <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
-                <Grid xs item container direction="column">
-                  <TextField
-                    className={classes.text}
-                    variant="outlined"
-                    value={apartNumber}
-                    type="number"
-                    onChange={handleChangeApartNumber}
-                  />
-                  {errorsApartNumber.length > 0 &&
-                    <span className={classes.error}>{errorsApartNumber}</span>}
+            {
+              stateLot ?
+                <Grid item container alignItems="center" spacing={1}>
+                  <Grid item><p className={classes.title}>Nombre de lots</p></Grid>
+                  <Grid xs item container direction="column">
+                    <TextField
+                      className={classes.text}
+                      variant="outlined"
+                      value={apartNumber}
+                      type="number"
+                      onChange={handleChangeApartNumber}
+                    />
+                    {errorsApartNumber.length > 0 &&
+                      <span className={classes.error}>{errorsApartNumber}</span>}
+                  </Grid>
                 </Grid>
-              </Grid>
-              :
-              null
+                :
+                null
             }
             <Grid item container alignItems="center" spacing={2}>
               <Grid item><p className={classes.title}>TVA applicable</p></Grid>
