@@ -461,6 +461,9 @@ export class ManagerService {
   updateBankInfo(id, data) {
     return axios.put(API_URL + 'web/manager/building/' + id + '/bank', data, { headers: authHeader() });
   }
+  updateCompanyBankInfo(data) {
+    return axios.put(API_URL + 'web/manager/bank', data, { headers: authHeader() });
+  }
   //Event Part
   getEventList(data) {
     return axios.post(API_URL + 'web/manager/eventList', data, { headers: authHeader() });

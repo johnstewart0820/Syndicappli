@@ -361,7 +361,7 @@ const PaymentMethods = (props) => {
         'companyID': companyID
       }
       setVisibleIndicator(true);
-      ManagerService.updateBankInfo(requestData)
+      ManagerService.updateCompanyBankInfo(requestData)
         .then(
           response => {
             setVisibleIndicator(false);
@@ -407,7 +407,7 @@ const PaymentMethods = (props) => {
       'companyID': companyID
     }
     setVisibleIndicator(true);
-    ManagerService.updateBankInfo(requestData)
+    ManagerService.updateCompanyBankInfo(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
