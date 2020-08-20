@@ -139,7 +139,10 @@ function downloadInvoiceAddon(data, res) {
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                         ), 2) price, o.vat_option, o.vat_fee, 
-                        ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount,
+                        ROUND(if (o.discount_type = "fixed", 
+                            (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
+                            (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
+                        ), 2) vat_amount,
                         o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                         from orders o
                         LEFT JOIN products p ON o.productID = p.productID
@@ -155,7 +158,7 @@ function downloadInvoiceAddon(data, res) {
                 if (data.vat_option === "false")
                     data.vat_result = "No Vat"
                 else
-                    data.vat_result = "VAT Fee("+ data.vat_fee + "%): " + data.vat_amount
+                    data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}
                 pdf.create(addonTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
@@ -183,7 +186,11 @@ function downloadInvoiceOrder(data, res) {
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                      ), 2) total, o.vat_option, o.vat_fee, 
-                     ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
+                     ROUND(if (o.discount_type = "fixed", 
+                            (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
+                            (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
+                        ), 2) vat_amount,
+                    if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
@@ -193,7 +200,7 @@ function downloadInvoiceOrder(data, res) {
                 if (data.vat_option === "false")
                     data.vat_result = "No Vat"
                 else
-                    data.vat_result = "VAT Fee("+ data.vat_fee + "%): " + data.vat_amount
+                    data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);

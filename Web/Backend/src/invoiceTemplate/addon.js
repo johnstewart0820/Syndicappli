@@ -26,6 +26,9 @@ module.exports = ({ name, address, email, invoice_number, invoice_date, order_id
                    .row.block {
                     margin-top: 50px !important;
                    }
+                   .row.small_block {
+                    margin-top: 30px !important;
+                   }
                    .padding-15 {
                        padding-left: 65px !important;
                    }
@@ -59,7 +62,10 @@ module.exports = ({ name, address, email, invoice_number, invoice_date, order_id
                     .center {
                             text-align: center;
                     }
-                   
+                    .right {
+                        text-align: right;
+                        margin-right: 95px !important;
+                    }
                 </style>
               <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
               <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
@@ -116,7 +122,7 @@ module.exports = ({ name, address, email, invoice_number, invoice_date, order_id
                     </tbody>
                 </table>
             </div>
-            <div class="row block center">
+            <div class="row small_block right">
                     <b>${vat_result}€</b>
             </div>
             <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>

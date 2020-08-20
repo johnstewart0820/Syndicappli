@@ -26,6 +26,9 @@ return `
                .row.block {
                 margin-top: 50px !important;
                }
+               .row.small_block {
+                margin-top: 30px !important;
+               }
                .padding-15 {
                    padding-left: 65px !important;
                }
@@ -58,6 +61,10 @@ return `
                 }
                 .center {
                         text-align: center;
+                }
+                .right {
+                    text-align: right;
+                    margin-right: 95px !important;
                 }
                
             </style>
@@ -119,7 +126,7 @@ return `
                 </tbody>
             </table>
         </div>
-        <div class="row block center">
+        <div class="row small_block right">
                 <b>${vat_result}€</b>
         </div>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
