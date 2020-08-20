@@ -656,7 +656,7 @@ function downloadInvoiceOrder(data, res) {
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                      ), 2) total, o.vat_option, o.vat_fee, 
-                     ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount
+                     ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
@@ -695,7 +695,7 @@ function downloadInvoiceBuilding(data, res) {
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                         ), 2) price, o.vat_option, o.vat_fee, 
                         ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount,
-                        o.start_date date
+                        o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                         from orders o
                         LEFT JOIN products p ON o.productID = p.productID
                         LEFT JOIN buildings b ON o.buildingID = b.buildingID
@@ -733,7 +733,7 @@ function downloadInvoiceBuilding(data, res) {
  */
 function downloadInvoiceOwner(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                      from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
@@ -810,7 +810,7 @@ function downloadZipOrder(data, res) {
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                         ), 2) total, o.vat_option, o.vat_fee, 
-                        ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount
+                        ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                         from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "managers" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]
@@ -861,7 +861,7 @@ function downloadZipBuilding(data, res) {
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                         ), 2) price, o.vat_option, o.vat_fee, 
                         ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount,
-                        o.start_date date
+                        o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID left join buildings b on o.buildingID = b.buildingID where o.permission = "active" and o.buyer_type = "buildings" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]
@@ -910,7 +910,7 @@ function downloadZipBuilding(data, res) {
 function downloadZipOwner(data, res) {
     return new Promise(async (resolve, reject) => {
         await removeFiles()
-        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date,if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                      from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "owners" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]

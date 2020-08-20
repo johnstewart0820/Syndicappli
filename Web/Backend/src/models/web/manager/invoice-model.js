@@ -140,7 +140,7 @@ function downloadInvoiceAddon(data, res) {
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                         ), 2) price, o.vat_option, o.vat_fee, 
                         ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount,
-                        o.start_date date
+                        o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                         from orders o
                         LEFT JOIN products p ON o.productID = p.productID
                         LEFT JOIN buildings b ON o.buildingID = b.buildingID
@@ -183,7 +183,7 @@ function downloadInvoiceOrder(data, res) {
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
                      ), 2) total, o.vat_option, o.vat_fee, 
-                     ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount
+                     ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
