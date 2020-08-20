@@ -119,10 +119,10 @@ return `
                 </tbody>
             </table>
         </div>
-        <div class="row">
-                ${vat_result}
+        <div class="row block center">
+                <b>${vat_result}€</b>
         </div>
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <p class="bottom_class center">Syndicappli - 66 avenue des Champs Elysées 75008 Paris - Société par actions simplifiée au capital de 2000,00 Euros immatriculée au RCS de Paris sous le numéro 123456789 R.C.S Paris - Siren 123 456 789 - Siret 123456789123 </p>
        </body>
     </html>

@@ -22,6 +22,7 @@ var randtoken = require('rand-token');
 var code = require('../../../constants/code')
 const orderTemplate = require('../../../invoiceTemplate/order')
 const ownerTemplate = require('../../../invoiceTemplate/owner')
+const addonTemplate = require('../../../invoiceTemplate/addon')
 const pdf = require('html-pdf');
 const fs = require('fs');
 const path = require('path');
@@ -449,6 +450,8 @@ function createOrder(uid, data) {
     return new Promise((resolve, reject) => {
         if (data.end_date === undefined || data.end_date === "" || data.end_date === null)
             data.end_date = "9999-12-31"
+        if (data.vat_fee === undefined || data.vat_fee === "" || data.end_date === null)
+            data.vat_fee = 0
         let query = `Select * from ` + table.DISCOUNTCODES + ` where discount_codeID = ?`
         db.query(query, [data.discount_codeID], (error, rows, fields)=> {
             if (error) {
@@ -648,13 +651,22 @@ function deleteAllOrder() {
  */
 function downloadInvoiceOrder(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, 
+                     ROUND(if (o.discount_type = "fixed", 
+                        if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                        if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
+                     ), 2) total, o.vat_option, o.vat_fee, 
+                     ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
+                if (data.vat_option === "false")
+                    data.vat_result = "No Vat"
+                else
+                    data.vat_result = "VAT Fee("+ data.vat_fee + "%): " + data.vat_amount
                 options = {format: "A3"}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
@@ -677,28 +689,30 @@ function downloadInvoiceOrder(data, res) {
  */
 function downloadInvoiceBuilding(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, 
-        ROUND(if (o.discount_codeID > 0, 
-            if (o.discount_type = "fixed", 
-                if(o.vat_option="true", 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) - discount_amount, 
-                if(o.vat_option="true", 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) / 100 * (100 - o.discount_amount)
-            ),
-            if(o.vat_option="true", 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price))
-        ),2) total
-                     from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID left join buildings b on o.buildingID = b.buildingID where o.orderID = ? and o.buyer_type = "buildings"`
+        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, b.name building_name, 
+                        ROUND(if (o.discount_type = "fixed", 
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
+                        ), 2) price, o.vat_option, o.vat_fee, 
+                        ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount,
+                        o.start_date date
+                        from orders o
+                        LEFT JOIN products p ON o.productID = p.productID
+                        LEFT JOIN buildings b ON o.buildingID = b.buildingID
+                        LEFT JOIN companies c ON o.companyID = c.companyID 
+                    WHERE
+                        o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
+                if (data.vat_option === "false")
+                    data.vat_result = "No Vat"
+                else
+                    data.vat_result = "VAT Fee("+ data.vat_fee + "%): " + data.vat_amount
                 options = {format: "A3"}
-                pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
+                pdf.create(addonTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
                     res.type('pdf');
                     res.end(buffer, 'binary');
@@ -738,9 +752,27 @@ function downloadInvoiceOwner(data, res) {
 
     })
 }
-function createPDF(data, options) {
+function orderPDF(data, options) {
     return new Promise((resolve, reject) => {
         pdf.create(orderTemplate(data), options).toFile('public/download/' + data.order_id + '.pdf', function (err, buffer) {
+            resolve("OK")
+        })
+    })
+
+}
+
+function buildingPDF(data, options) {
+    return new Promise((resolve, reject) => {
+        pdf.create(addonTemplate(data), options).toFile('public/download/' + data.order_id + '.pdf', function (err, buffer) {
+            resolve("OK")
+        })
+    })
+
+}
+
+function ownerPDF(data, options) {
+    return new Promise((resolve, reject) => {
+        pdf.create(ownerTemplate(data), options).toFile('public/download/' + data.order_id + '.pdf', function (err, buffer) {
             resolve("OK")
         })
     })
@@ -773,7 +805,12 @@ function removeFiles() {
 function downloadZipOrder(data, res) {
     return new Promise(async (resolve, reject) => {
         await removeFiles()   
-        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, 
+                        ROUND(if (o.discount_type = "fixed", 
+                        if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                        if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
+                        ), 2) total, o.vat_option, o.vat_fee, 
+                        ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount
                         from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "managers" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]
@@ -787,7 +824,11 @@ function downloadZipOrder(data, res) {
             } else {
                 options = {format: "A3"}
                 for (var i in rows) {
-                    await createPDF(rows[i], options)
+                    if (rows[i].vat_option === "false")
+                        rows[i].vat_result = "No Vat"
+                    else
+                        rows[i].vat_result = "VAT Fee("+ rows[i].vat_fee + "%): " + rows[i].vat_amount
+                    await orderPDF(rows[i], options)
                 }
                 const file = new zip();
                 time = timeHelper.getCurrentDate()
@@ -814,20 +855,13 @@ function downloadZipOrder(data, res) {
 function downloadZipBuilding(data, res) {
     return new Promise(async (resolve, reject) => {
         await removeFiles()
-        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date,
-        ROUND(if (o.discount_codeID > 0, 
-            if (o.discount_type = "fixed", 
-                if(o.vat_option="true", 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) - discount_amount, 
-                if(o.vat_option="true", 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) / 100 * (100 - o.discount_amount)
-            ),
-            if(o.vat_option="true", 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
-                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price))
-        ),2) total
+        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, b.name building_name, 
+                        ROUND(if (o.discount_type = "fixed", 
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
+                        ), 2) price, o.vat_option, o.vat_fee, 
+                        ROUND(o.price * o.apartment_amount * o.vat_fee / 100, 2) vat_amount,
+                        o.start_date date
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID left join buildings b on o.buildingID = b.buildingID where o.permission = "active" and o.buyer_type = "buildings" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]
@@ -845,7 +879,11 @@ function downloadZipBuilding(data, res) {
             } else {
                 options = {format: "A3"}
                 for (var i in rows) {
-                    await createPDF(rows[i], options)
+                    if (rows[i].vat_option === "false")
+                        rows[i].vat_result = "No Vat"
+                    else
+                        rows[i].vat_result = "VAT Fee("+ rows[i].vat_fee + "%): " + rows[i].vat_amount
+                    await buildingPDF(rows[i], options)
                 }
                 const file = new zip();
                 time = timeHelper.getCurrentDate()
@@ -890,7 +928,7 @@ function downloadZipOwner(data, res) {
             } else {
                 options = {format: "A3"}
                 for (var i in rows) {
-                    await createPDF(rows[i], options)
+                    await ownerPDF(rows[i], options)
                 }
                 const file = new zip();
                 time = timeHelper.getCurrentDate()
