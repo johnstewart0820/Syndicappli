@@ -411,7 +411,7 @@ const Addons = (props) => {
               </Grid>
             </Grid>
             <Grid container direction="column" alignItems="center" spacing={3}>
-              <Grid item ><p className={classes.price}><b>{addon_price}€</b></p></Grid>
+              <Grid item ><p className={classes.price}><b>{addon_price}€ HT</b></p></Grid>
               <Grid item ><MyButton name={"J'achète le pack"} color={"1"} onClick={handleClickBuyPack} /></Grid>
               <Grid item></Grid>
             </Grid>
