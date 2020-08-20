@@ -222,7 +222,7 @@ const BuildingsEdit = (props) => {
       'account_IBAN': ''
     }
     setVisibleIndicator(true);
-    AdminService.updateBankInfo(props.match.params.id, requestData)
+    AdminService.updateBuildingBankInfo(props.match.params.id, requestData)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -294,7 +294,7 @@ const BuildingsEdit = (props) => {
         'account_IBAN': IBAN
       }
       setVisibleIndicator(true);
-      AdminService.updateBankInfo(props.match.params.id, requestData)
+      AdminService.updateBuildingBankInfo(props.match.params.id, requestData)
         .then(
           response => {
             setVisibleIndicator(false);
