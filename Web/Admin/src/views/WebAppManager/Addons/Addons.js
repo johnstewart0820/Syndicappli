@@ -205,6 +205,7 @@ const Addons = (props) => {
                   console.log('building:', building_name);
                   list[i].bundle_name = bundle_name;
                   list[i].building_name = building_name;
+                  list[i].end_date = list[i].end_date === '' ? '-' : list[i].end_date;
                 }
                 setAddonList(list);
               } else {
