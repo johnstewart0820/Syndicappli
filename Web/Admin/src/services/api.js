@@ -79,8 +79,8 @@ class AdminService {
   updateBankInfo(id, data) {
     return axios.put(API_URL + 'web/admin/company/' + id + '/bank', data, { headers: authHeader() });
   }
-  deleteBankInfo(id, data) {
-    return axios.put(API_URL + 'web/admin/company/' + id, data, { headers: authHeader() });
+  updateBuildingBankInfo(id, data) {
+    return axios.put(API_URL + 'web/admin/building/' + id + '/bank', data, { headers: authHeader() });
   }
   //Card Part
   getCardList(data) {
@@ -458,11 +458,8 @@ export class ManagerService {
     return axios.delete(API_URL + 'web/manager/card/' + id, { headers: authHeader() });
   }
   //Bank Information Part
-  updateBankInfo(data) {
-    return axios.put(API_URL + 'web/manager/bank', data, { headers: authHeader() });
-  }
-  getBankInfo(data) {
-    return axios.post(API_URL + 'web/manager/bank' , data, { headers: authHeader() });
+  updateBankInfo(id, data) {
+    return axios.put(API_URL + 'web/manager/building/' + id + '/bank', data, { headers: authHeader() });
   }
   //Event Part
   getEventList(data) {
