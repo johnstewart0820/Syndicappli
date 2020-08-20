@@ -54,65 +54,77 @@ const ModulePayment = (props) => {
   const [buildingID, setBuildingID] = useState(-1);
   const [buyer_name, setBuyerName] = useState('');
   const [errorsIBAN, setErrorsIBAN] = useState('');
+  const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
+  const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
   const [errorsCode, setErrorsCode] = useState('');
   const handleClickApply = () => {
     if (codeID !== -1) {
       if (apply) {
         calc_price();
       }
-    }else{
+    } else {
       setRealPrice(temp_price);
       setRealFeePrice(temp_fee_price);
     }
   }
   const handleClickPay = () => {
-    if(!SEPA.validateIBAN(IBAN)){
-      setErrorsIBAN('please enter correct IBAN');
-    }
-    else if ( accessAddons !== 'denied') {
-      let requestData = {
-        'productID': productID,
-        'companyID': companyID,
-        'buildingID': buildingID,
-        'buyerID': companyID,
-        'buyer_name': buyer_name,
-        'billing_cycle': billing_cycle,
-        'renewal': renewal,
-        'price_type': price_type,
-        'price': price,
-        'vat_option': vat_option ? 'true' : 'false',
-        'vat_fee': vat_pro,
-        'apartment_amount': apartment_amount,
-        'payment_method': payment_method,
-        'discount_codeID': codeID,
-        'discount_type': discount_type,
-        'discount_amount': discount_amount
-      };
-      setVisibleIndicator(true);
-      ManagerService.buyAddon(requestData)
-        .then(
-          response => {
-            setVisibleIndicator(false);
-            switch (response.data.code) {
-              case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                handleClick();
-                break;
-              case 401:
-                authService.logout();
-                history.push('/login');
-                window.location.reload();
-                break;
-              default:
-                ToastsStore.error(response.data.message);
+    if (accessAddons !== 'denied') {
+      let cnt = 0;
+      if (accountaddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
+      else setErrorsAccountAddress('');
+      if (accountname.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
+      else setErrorsAccountHolder('');
+      if (IBAN.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
+      else setErrorsIBAN('');
+      if (!SEPA.validateIBAN(IBAN)) {
+        setErrorsIBAN('please enter correct IBAN');
+        cnt++;
+      }
+      if (cnt === 0) {
+        let requestData = {
+          'productID': productID,
+          'companyID': companyID,
+          'buildingID': buildingID,
+          'buyerID': companyID,
+          'buyer_name': buyer_name,
+          'billing_cycle': billing_cycle,
+          'renewal': renewal,
+          'price_type': price_type,
+          'price': price,
+          'vat_option': vat_option ? 'true' : 'false',
+          'vat_fee': vat_pro,
+          'apartment_amount': apartment_amount,
+          'payment_method': payment_method,
+          'discount_codeID': codeID,
+          'discount_type': codeID === -1 ? 'fixed' : discount_type,
+          'discount_amount': codeID === -1 ? 0 : discount_amount
+        };
+        setVisibleIndicator(true);
+        ManagerService.buyAddon(requestData)
+          .then(
+            response => {
+              setVisibleIndicator(false);
+              switch (response.data.code) {
+                case 200:
+                  const data = response.data.data;
+                  localStorage.setItem("token", JSON.stringify(data.token));
+                  handleClick();
+                  break;
+                case 401:
+                  authService.logout();
+                  history.push('/login');
+                  window.location.reload();
+                  break;
+                default:
+                  ToastsStore.error(response.data.message);
+              }
+            },
+            error => {
+              ToastsStore.error("Can't connect to the server!");
+              setVisibleIndicator(false);
             }
-          },
-          error => {
-            ToastsStore.error("Can't connect to the server!");
-            setVisibleIndicator(false);
-          }
-        );
+          );
+      }
     }
   }
   const handleChangeAccountName = (event) => {
@@ -124,25 +136,25 @@ const ModulePayment = (props) => {
   }
   const handleChangeCode = (event) => {
     setCode(event.target.value);
-    if(validateCode(event.target.value) !== -1){
+    if (validateCode(event.target.value) !== -1) {
       setErrorsCode('');
       setCodeID(codeList[validateCode(event.target.value)].discount_codeID);
-    }else{
-      if(event.target.value.length === 0){
+    } else {
+      if (event.target.value.length === 0) {
         setErrorsCode('');
-      }else{
+      } else {
         setErrorsCode('Invalid Code Promo');
       }
       setCodeID(-1);
     }
   }
   const validateCode = (c) => {
-    if(codeList){
-      if(codeList.length !== 0){
-        for(let i = 0; i < codeList.length; i++)
-        if(codeList[i].name === c){
-          return i;
-        }
+    if (codeList) {
+      if (codeList.length !== 0) {
+        for (let i = 0; i < codeList.length; i++)
+          if (codeList[i].name === c) {
+            return i;
+          }
       }
     }
     return -1;
@@ -158,54 +170,20 @@ const ModulePayment = (props) => {
     if (accessAddons !== 'denied') {
       getDatas();
       getBuilding();
-      setVisibleIndicator(true);
-      ManagerService.getAddon()
-        .then(
-          response => {
-            setVisibleIndicator(false);
-            switch (response.data.code) {
-              case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                const addon = data.addon[0];
-                if (addon) {
-                  setBundleName(addon.name);
-                  setVatOption(addon.vat_option === 'true' ? true : false);
-                  setVatPro(addon.vat_fee);
-                  setRealPrice((((100 + addon.vat_fee) * addon.price * apartment_amount) / 100).toFixed(2));
-                  setTempPrice((((100 + addon.vat_fee) * addon.price * apartment_amount) / 100).toFixed(2));
-                  setRealFeePrice(((addon.vat_fee * addon.price * apartment_amount) / 100).toFixed(2));
-                  setTempFeePrice(((addon.vat_fee * addon.price * apartment_amount) / 100).toFixed(2));
-                  setProductID(addon.productID);
-                  setRenewal(addon.renewal);
-                  setPriceType(addon.price_type);
-                  setBillingCycle(addon.billing_cycle);
-                  setPrice(addon.price * apartment_amount);
-                }
-                break;
-              case 401:
-                authService.logout();
-                history.push('/login');
-                window.location.reload();
-                break;
-              default:
-                ToastsStore.error(response.data.message);
-            }
-          },
-          error => {
-            ToastsStore.error("Can't connect to the server!");
-            setVisibleIndicator(false);
-          }
-        );
     }
   }, [accessAddons]);
+  useEffect(() => {
+    if (buildingID !== -1) {
+      getAddon();
+    }
+  }, [buildingID]);
   const calc_price = () => {
     if (discount_type === 'fixed') {
-      setRealPrice((temp_price - discount_amount).toFixed(2));
-      setRealFeePrice((vat_pro * (price - discount_amount)/100).toFixed(2));
+      setRealPrice(((price - discount_amount) * (100 + vat_pro) / 100).toFixed(2));
+      setRealFeePrice((vat_pro * (price - discount_amount) / 100).toFixed(2));
     } else if (discount_type === 'percentage') {
-      setRealPrice((temp_price * (100 - discount_amount) / 100).toFixed(2));
-      setRealFeePrice((vat_pro * (price - (100 - discount_amount))/100).toFixed(2));
+      setRealPrice((price * (100 - discount_amount) * (100 + vat_pro) / 100 / 100).toFixed(2));
+      setRealFeePrice((price * (100 - discount_amount) * vat_pro / 100 / 100).toFixed(2));
     }
     setApply(false);
   }
@@ -227,6 +205,47 @@ const ModulePayment = (props) => {
               localStorage.setItem("token", JSON.stringify(response.data.data.token));
               setDiscountAmount(data.discount_amount);
               setDiscountType(data.discount_type);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const getAddon = () => {
+    setVisibleIndicator(true);
+    ManagerService.getAddon()
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              const addon = data.addon[0];
+              if (addon) {
+                setBundleName(addon.name);
+                setVatOption(addon.vat_option === 'true' ? true : false);
+                setVatPro(addon.vat_fee);
+                setRealPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
+                setTempPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
+                setRealFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
+                setTempFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
+                setProductID(addon.productID);
+                setRenewal(addon.renewal);
+                setPriceType(addon.price_type);
+                setBillingCycle(addon.billing_cycle);
+                setPrice(addon.price);
+              }
               break;
             case 401:
               authService.logout();
@@ -289,12 +308,12 @@ const ModulePayment = (props) => {
                 setBuildingName(building.name);
                 setAddress(building.address);
                 setBuildingID(building.buildingID);
+                setAccountName(building.account_holdername ? building.account_holdername : '');
+                setAccountAddress(building.account_address ? building.account_address : '');
+                setIBAN(building.account_IBAN ? building.account_IBAN : '');
               }
               if (data.company_list) {
                 const company = data.company_list[0];
-                setAccountName(company.account_holdername ? company.account_holdername : '');
-                setAccountAddress(company.account_address ? company.account_address : '');
-                setIBAN(company.account_IBAN ? company.account_IBAN : '');
                 setBuyerName(company.name);
                 setCompanyID(company.companyID);
               }
@@ -348,7 +367,7 @@ const ModulePayment = (props) => {
               <p className={classes.itemTitle}></p>
             </Grid>
             <Grid item>
-              <p className={classes.price}>{real_price}€</p>
+              <p className={classes.price}>{(real_price * apartment_amount).toFixed(2)}€ TTC</p>
             </Grid>
           </Grid>
         </Grid>
@@ -361,7 +380,7 @@ const ModulePayment = (props) => {
                 <p className={classes.headerTitle}><b>TOTAL</b></p>
               </Grid>
               <Grid item>
-                <p className={classes.price}><b>{real_price}€</b></p>
+                <p className={classes.price}><b>{(real_price * apartment_amount).toFixed(2)}€ TTC</b></p>
               </Grid>
             </Grid>
             {
@@ -371,7 +390,7 @@ const ModulePayment = (props) => {
                     <p className={classes.itemTitle}>dont TVA à {vat_pro}%</p>
                   </Grid>
                   <Grid item>
-                    <p className={classes.itemTitle}>{real_fee_price}€</p>
+                    <p className={classes.itemTitle}>{(real_fee_price * apartment_amount).toFixed(2)}€ TTC</p>
                   </Grid>
                 </Grid>
                 :
@@ -427,6 +446,8 @@ const ModulePayment = (props) => {
                       onChange={handleChangeAccountName}
                       fullWidth
                     />
+                    {errorsAccountHolder.length > 0 &&
+                      <span className={classes.error}>{errorsAccountHolder}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -442,6 +463,8 @@ const ModulePayment = (props) => {
                       onChange={handleChangeAccountAddress}
                       fullWidth
                     />
+                    {errorsAccountAddress.length > 0 &&
+                      <span className={classes.error}>{errorsAccountAddress}</span>}
                   </Grid>
                 </Grid>
               </Grid>
