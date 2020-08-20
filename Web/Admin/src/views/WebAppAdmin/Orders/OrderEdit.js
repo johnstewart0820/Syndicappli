@@ -243,16 +243,16 @@ const OrderEdit = (props) => {
   }
   useEffect(() => {
     getProductList(categorie);
-  }, [categorie]);
-  useEffect(()=>{
     getBuyerList(categorie);
-  },[productList]);
-  useEffect(()=>{
     getCodeList(categorie);
-  },[clientList]);
-  useEffect(()=>{
-    getOrder();
-  },[clientList]);
+    // getOrder();
+  }, [categorie]);
+  // useEffect(()=>{
+  // },[productList]);
+  // useEffect(()=>{
+  // },[clientList]);
+  // useEffect(()=>{
+  // },[clientList]);
   const getProductList = (id) => {
     const requestData = {
       'search_key': '',
@@ -319,7 +319,7 @@ const OrderEdit = (props) => {
               data.buyerlist.map((item) =>
                 clients.push(item.name)
               )
-              setClientList(clientList);
+              setClientList(data.buyerlist);
               if (data.buyerlist.length !== 0) {
                 setClients(clients);
                 setClientID(data.buyerlist[0].buyerID);
