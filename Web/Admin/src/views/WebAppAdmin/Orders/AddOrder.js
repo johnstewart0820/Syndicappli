@@ -355,8 +355,8 @@ const AddOrder = (props) => {
                             data.discountcodelist.map((item) =>
                                 codes.push(item.name)
                             )
-                            setCodeList([{ discount_codeID: -1 }, data.discountcodelist]);
                             setCodes(codes);
+                            setCodeList([{ discount_codeID: -1 }, ...data.discountcodelist]);
                             if (data.discountcodelist.length !== 0) {
                             } else {
                                 setCode(0);
