@@ -49,7 +49,15 @@ return `
                .blank {
                 height: 600px;
                 }
-               
+                .bottom_class {
+                    margin-left: 25px;
+                    margin-right: 25px;
+                    border-top: 1px solid #aaaaaa;
+                    padding-top: 10px;
+                }
+                .center {
+                        text-align: center;
+                }
             </style>
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
           <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
@@ -105,33 +113,8 @@ return `
                 </tbody>
             </table>
         </div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <div><img src= "https://syndicappli-avatars.s3.amazonaws.com/55a7f5c761eca713a9e6684324c85c85.png" /></div>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <p class="bottom_class center">Syndicappli - 66 avenue des Champs Elysées 75008 Paris - Société par actions simplifiée au capital de 2000,00 Euros immatriculée au RCS de Paris sous le numéro 123456789 R.C.S Paris - Siren 123 456 789 - Siret 123456789123 </p>
        </body>
     </html>
     `;

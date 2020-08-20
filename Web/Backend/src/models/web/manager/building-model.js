@@ -30,7 +30,8 @@ var buildingModel = {
     managerDeleteBuilding: managerDeleteBuilding,
     deleteAllBuilding: deleteAllBuilding,
     importBuildingCSV: importBuildingCSV,
-    exportBuildingCSV: exportBuildingCSV
+    exportBuildingCSV: exportBuildingCSV,
+    updateBankInformation: updateBankInformation,
 }
 
 /**
@@ -147,9 +148,9 @@ function managerCreateBuilding(uid, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 if(rows.length > 0){
-                    query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)'
+                    query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)'
                     let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-                    db.query(query, [ data.companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime() ],  (error, rows, fields) => {
+                    db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime() ],  (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
@@ -549,4 +550,24 @@ function exportBuildingCSV(data, res) {
     })
 }
 
+/**
+ * update Bank Information of building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateBankInformation(buildingID, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'Update ' + table.BUILDINGS + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where buildingID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, buildingID]
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({message: message.INTERNAL_SERVER_ERROR})
+            } else {
+                resolve("OK")
+            }
+        })
+    })
+}
 module.exports = buildingModel

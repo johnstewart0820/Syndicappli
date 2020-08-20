@@ -54,7 +54,7 @@ router.post('/trash/user/deleteAll', authMiddleware.checkToken, deleteAllUser)
 router.post('/companyList', authMiddleware.checkToken, getCompanyList)
 router.post('/company', authMiddleware.checkToken, upload.single('logo'), createCompany)
 router.put('/company/:id', authMiddleware.checkToken, upload.single('logo'), updateCompany)
-router.put('/company/:id/bank', authMiddleware.checkToken, updateBankInformation)
+router.put('/company/:id/bank', authMiddleware.checkToken, updateCompanyBankInformation)
 router.get('/company/:id', authMiddleware.checkToken, getCompany)
 router.post('/company/:id/delete', authMiddleware.checkToken, deleteCompany)
 router.post('/trash/company/deleteAll', authMiddleware.checkToken, deleteAllCompany)
@@ -74,6 +74,7 @@ router.get('/companyListByUser', authMiddleware.checkToken, getCompanyListByUser
 router.post('/building', authMiddleware.checkToken, createBuilding)
 router.get('/building/:id', authMiddleware.checkToken, getBuilding)
 router.put('/building/:id', authMiddleware.checkToken, updateBuilding)
+router.put('/building/:id/bank', authMiddleware.checkToken, updateBuildingBankInformation)
 router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
 router.post('/trash/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
 
@@ -372,7 +373,7 @@ function updateCompany(req, res) {
  * @param   object res
  * @return  json
  */
-function updateBankInformation(req, res) {
+function updateCompanyBankInformation(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
     let companyID = req.params.id
@@ -741,6 +742,24 @@ function exportBuildingCSV(req, res) {
     })
 }
 
+/**
+ * Function that updates bank information
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateBuildingBankInformation(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let buildingID = req.params.id
+    buildingService.updateBankInformation(buildingID, userId, userdata, req.body).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
+}
 
 //////////////////////////////////////////Manager//////////////////////////////////
 

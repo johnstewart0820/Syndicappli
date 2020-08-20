@@ -46,7 +46,7 @@ function getInvoiceOrder(data) {
                         o.price,
                         p.name product_name,
                         o.apartment_amount,
-                        o.apartment_amount * o.price total_amount
+                        ROUND(if (o.discount_type = "fixed", o.apartment_amount * o.price - o.discount_amount, o.apartment_amount * o.price * (100 - o.discount_amount) / 100), 2) total_amount
                     FROM
                         orders o
                         LEFT JOIN products p ON o.productID = p.productID
@@ -83,7 +83,7 @@ function getInvoiceAddon(data) {
                         o.orderID as ID,
                         b.name building_name,
                         o.start_date,
-                        o.price,
+                        ROUND(if (o.discount_type = "fixed", o.apartment_amount * o.price - o.discount_amount, o.apartment_amount * o.price * (100 - o.discount_amount) / 100), 2) total_amount,
                         p.name product_name
                     FROM
                         orders o
@@ -100,7 +100,7 @@ function getInvoiceAddon(data) {
                         o.orderID as ID,
                         b.name building_name,
                         o.start_date,
-                        o.price,
+                        ROUND(if (o.discount_type = "fixed", o.apartment_amount * o.price - o.discount_amount, o.apartment_amount * o.price * (100 - o.discount_amount) / 100), 2) total_amount,
                         p.name product_name
                     FROM
                         orders o
@@ -134,7 +134,13 @@ function getInvoiceAddon(data) {
  */
 function downloadInvoiceAddon(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select b.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, b.name building_name, o.price price, o.start_date date
+        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, b.name building_name, 
+                        if (o.discount_type = "fixed", 
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
+                        ) price, o.vat_option, o.vat_fee, 
+                        o.price * o.apartment_amount * o.vat_fee / 100 vat_amount,
+                        o.start_date date
                         from orders o
                         LEFT JOIN products p ON o.productID = p.productID
                         LEFT JOIN buildings b ON o.buildingID = b.buildingID
@@ -146,6 +152,10 @@ function downloadInvoiceAddon(data, res) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
+                if (data.vat_option === "false")
+                    data.vat_result = "No Vat"
+                else
+                    data.vat_result = "VAT Fee("+ data.vat_fee + "%): " + data.vat_amount
                 options = {format: "A3"}
                 pdf.create(addonTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
@@ -168,13 +178,22 @@ function downloadInvoiceAddon(data, res) {
  */
 function downloadInvoiceOrder(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, 
+                     if (o.discount_type = "fixed", 
+                        if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                        if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.vat_fee) / 100
+                     ) total, o.vat_option, o.vat_fee, 
+                     o.price * o.apartment_amount * o.vat_fee / 100 vat_amount
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
+                if (data.vat_option === "false")
+                    data.vat_result = "No Vat"
+                else
+                    data.vat_result = "VAT Fee("+ data.vat_fee + "%): " + data.vat_amount
                 options = {format: "A3"}
                 pdf.create(orderTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);

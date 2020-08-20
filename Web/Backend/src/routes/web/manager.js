@@ -52,7 +52,7 @@ router.post('/building/:id/delete', authMiddleware.checkToken, deleteBuilding)
 router.post('/trash/building/deleteAll', authMiddleware.checkToken, deleteAllBuilding)
 router.post('/building/import_csv', authMiddleware.checkToken, upload.single('csv'), importBuildingCSV)
 router.post('/building/export_csv', authMiddleware.checkToken, exportBuildingCSV)
-
+router.put('/building/:id/bank', authMiddleware.checkToken, updateBuildingBankInformation)
 /**
  * team api
  */
@@ -408,6 +408,25 @@ function exportBuildingCSV(req, res) {
     }).catch((err) => {
         res.json(err)
     })
+}
+
+/**
+ * Function that updates bank information
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateBuildingBankInformation(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let buildingID = req.params.id
+    buildingService.updateBankInformation(buildingID, userId, userdata, req.body).then((result)=>{
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    });
 }
 ///////////////////////////////////Manager///////////////////////////
 

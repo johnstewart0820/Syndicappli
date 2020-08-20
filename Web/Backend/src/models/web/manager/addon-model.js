@@ -38,7 +38,7 @@ var addonModel = {
  */
 function getAddonsByBuildingID(data) {
     return new Promise((resolve, reject) => {
-        let query = 'Select * from orders where companyID = ? and buildingID = ? and buyer_type = "buildings" and permission = "active"'
+        let query = 'Select *, if (end_date ="9999-12-31", "", end_date) end_date from orders where companyID = ? and buildingID = ? and buyer_type = "buildings" and permission = "active"'
         
         db.query(query, [data.companyID, data.buildingID], (error, rows, fields) => {
             if (error) {

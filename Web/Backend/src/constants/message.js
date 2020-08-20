@@ -46,6 +46,7 @@ const messages = {
     RESET_PASSWORD_SUCCESSFULLY: 'Reseted your password successfully.',
     COMPANY_ADD_SUCCESSFULLY: 'Created Company Successfully.',
     COMPANY_UPDATE_SUCCESSFULLY: 'Updated Company Successfully.',
+    BUILDING_UPDATE_SUCCESSFULLY: 'Updated Building Successfully.',
     SUBACCOUNT_HAS_BEEN_UPDATED_STATUS: 'Your account status has been updated with "ACTIVE" ',
     NOT_USE_THIS_DISCOUNT_CODE: 'You cant use this discount code because not charge',
     CARD_ADD_SUCCESSFULLY: 'Created Card Successfully.',

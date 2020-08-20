@@ -28,7 +28,8 @@ var buildingService = {
     deleteBuilding: deleteBuilding,
     deleteAllBuilding: deleteAllBuilding,
     importBuildingCSV: importBuildingCSV,
-    exportBuildingCSV: exportBuildingCSV
+    exportBuildingCSV: exportBuildingCSV,
+    updateBankInformation: updateBankInformation,
 }
 
 
@@ -321,4 +322,33 @@ function exportBuildingCSV(uid, userdata, data, res) {
     })
 }
 
+/**
+ * Function that updates Bank Information of building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  json
+ */
+function updateBankInformation(buildingID, uid, userdata, data) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            buildingModel.updateBankInformation(buildingID, data).then((data) => {
+                if (data) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+
+                    resolve({ code: code.OK, message: message.BUILDING_UPDATE_SUCCESSFULLY, data: { 'token': token} })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((err) => {
+            reject({ code: code.BAD_REQUEST, message: message.HAS_NO_PERMISSION, data: {} })
+        })
+    })
+}
 module.exports = buildingService

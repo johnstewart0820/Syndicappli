@@ -1,4 +1,4 @@
-module.exports = ({ name, address, email, invoice_number, invoice_date, order_id, order_date, product_name, amount_lot, price, date, total }) => {
+module.exports = ({ name, address, email, invoice_number, invoice_date, order_id, order_date, product_name, amount_lot, price, date, total, vat_result }) => {
 return `
 <!doctype html>
     <html>
@@ -50,6 +50,15 @@ return `
                .blank {
                    height: 600px;
                }
+               .bottom_class {
+                    margin-left: 25px;
+                    margin-right: 25px;
+                    padding-top: 10px;
+                    border-top: 1px solid #aaaaaa;
+                }
+                .center {
+                        text-align: center;
+                }
                
             </style>
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -105,38 +114,16 @@ return `
                         <td>${amount_lot}</td>
                         <td>${price}cts HT</td>
                         <td>${date}</td>
-                        <td>${total}€ HT</td>
+                        <td>${total}€ TTC</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <div><img src= "https://syndicappli-avatars.s3.amazonaws.com/55a7f5c761eca713a9e6684324c85c85.png" /></div>
+        <div class="row">
+                ${vat_result}
+        </div>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <p class="bottom_class center">Syndicappli - 66 avenue des Champs Elysées 75008 Paris - Société par actions simplifiée au capital de 2000,00 Euros immatriculée au RCS de Paris sous le numéro 123456789 R.C.S Paris - Siren 123 456 789 - Siret 123456789123 </p>
        </body>
     </html>
     `;

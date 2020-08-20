@@ -29,7 +29,8 @@ var buildingModel = {
     deleteBuilding: deleteBuilding,
     deleteAllBuilding: deleteAllBuilding,
     importBuildingCSV: importBuildingCSV,
-    exportBuildingCSV: exportBuildingCSV
+    exportBuildingCSV: exportBuildingCSV,
+    updateBankInformation: updateBankInformation,
 }
 
 /**
@@ -146,19 +147,19 @@ function getCountBuildingList(uid, data) {
     return new Promise((resolve, reject) => {
         let query;
         if (data.companyID == -1) {
-            query = `select count(*) as count
+            query = `select count(*) count
                     from ` + table.BUILDINGS + ` b
-                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
-                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
-                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = ? and b.permission = ? and (b.name like ?)`
+                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
+                    where c.permission = 'active' 
+                    and b.companyID in (select relationID from ` + table.USER_RELATIONSHIP + ` where userID = ? and type = 'company') 
+                    and b.permission = ? and (b.name like ?)`
         } else {
-            query = `select count(*) as count
+            query = `select count(*) count
                     from ` + table.BUILDINGS + ` b
-                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID and c.permission = 'active'
-                    left join ` + table.USER_RELATIONSHIP + ` ur on ur.relationID = c.companyID and ur.type = 'company'
-                    left join ` + table.USERS + ` u on u.userID = ur.userID and u.permission = 'active'
-                    where u.userID = ? and b.permission = ? and (b.name like ?) and b.companyID = ?`
+                    left join ` + table.COMPANIES + ` c on c.companyID = b.companyID
+                    where c.permission = 'active'
+                    and b.permission = ? and (b.name like ?)
+                    and b.companyID = ?`
         }
         search_key = '%' + data.search_key + '%'
 
@@ -185,9 +186,9 @@ function getCountBuildingList(uid, data) {
  */
 function createBuilding(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?)'
+        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, account_holdername, account_address, account_IBAN, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-        db.query(query, [data.companyID, data.name, data.address, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+        db.query(query, [data.companyID, data.name, data.address, uid, data.account_holdername, data.account_address, data.account_IBAN, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
             if (error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})
             } else {
@@ -558,5 +559,25 @@ function exportBuildingCSV(data, res) {
     })
 }
 
+/**
+ * update Bank Information of building
+ *
+ * @author  Taras Hryts <streaming9663@gmail.com>
+ * @param   object authData
+ * @return  object If success returns object else returns message
+ */
+function updateBankInformation(buildingID, data) {
+    return new Promise((resolve, reject) => {
+        let query = 'Update ' + table.BUILDINGS + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where buildingID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, buildingID]
+        db.query(query, params, (error, rows, fields) => {
+            if (error) {
+                reject({message: message.INTERNAL_SERVER_ERROR})
+            } else {
+                resolve("OK")
+            }
+        })
+    })
+}
 
 module.exports = buildingModel

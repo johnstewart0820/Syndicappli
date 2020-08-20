@@ -222,7 +222,7 @@ function getOrderList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
                     *, orderID ID, if(end_date = "9999-12-31", "", end_date) end_date,
-                    if (discount_codeID > 0, 
+                    ROUND(if (discount_codeID > 0, 
                         if (discount_type = "fixed", 
                             if(vat_option="true", 
                                 if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
@@ -234,7 +234,7 @@ function getOrderList(uid, data) {
                         if(vat_option="true", 
                                 if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
                                 if(price_type = "per_apartment", price * apartment_amount, price))
-                    ) price_with_vat
+                    ),2) price_with_vat
                     FROM orders
                     WHERE permission = ? and buyer_type = ? and buyer_name like ? `
         search_key = '%' + data.search_key + '%'
@@ -460,8 +460,10 @@ function createOrder(uid, data) {
                     data.discount_amount = discount_codes[0].discount_amount
                     data.amount_of_use = discount_codes[0].amount_of_use
                     data.amount_of_use_per_user = discount_codes[0].amount_of_use_per_user
+                } else {
+                    data.discount_type = "fixed"
+                    data.discount_amount = 0
                 }
-
                 let query = `Select count(*) count from ` + table.ORDERS + ` where discount_codeID = ? and (permission = "active" or permission = "trash")`
                 db.query(query, [data.discount_codeID], (error, rows, fields) => {
                     if (error)
@@ -675,7 +677,20 @@ function downloadInvoiceOrder(data, res) {
  */
 function downloadInvoiceBuilding(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, 
+        ROUND(if (o.discount_codeID > 0, 
+            if (o.discount_type = "fixed", 
+                if(o.vat_option="true", 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) - discount_amount, 
+                if(o.vat_option="true", 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) / 100 * (100 - o.discount_amount)
+            ),
+            if(o.vat_option="true", 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price))
+        ),2) total
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID left join buildings b on o.buildingID = b.buildingID where o.orderID = ? and o.buyer_type = "buildings"`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
@@ -799,7 +814,20 @@ function downloadZipOrder(data, res) {
 function downloadZipBuilding(data, res) {
     return new Promise(async (resolve, reject) => {
         await removeFiles()
-        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, o.price * o.apartment_amount total
+        let query = `Select b.name name, b.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date,
+        ROUND(if (o.discount_codeID > 0, 
+            if (o.discount_type = "fixed", 
+                if(o.vat_option="true", 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) - discount_amount, 
+                if(o.vat_option="true", 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price)) / 100 * (100 - o.discount_amount)
+            ),
+            if(o.vat_option="true", 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price) * (100 + o.vat_fee) / 100, 
+                    if(o.price_type = "per_apartment", o.price * o.apartment_amount, o.price))
+        ),2) total
                      from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID left join buildings b on o.buildingID = b.buildingID where o.permission = "active" and o.buyer_type = "buildings" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]
