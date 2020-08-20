@@ -90,7 +90,7 @@ const InvoiceAddons = (props) => {
     { key: 'product_name', field: 'Produit' },
     { key: 'building_name', field: 'Immeuble' },
     { key: 'start_date', field: 'Date' },
-    { key: 'price', field: 'Montant' },
+    { key: 'total_amount', field: 'Montant' },
   ];
   const handleClickDownload = (id) => {
     let requestDate = {
@@ -146,7 +146,7 @@ const InvoiceAddons = (props) => {
               localStorage.setItem("token", JSON.stringify(data.token));
               let list = data.invoice;
               for (let i = 0; i < list.length; i++) {
-                list[i].price = list[i].price + '€ TTC';
+                list[i].total_amount = list[i].total_amount + '€ HT';
               }
               setDataList(list);
               break;
