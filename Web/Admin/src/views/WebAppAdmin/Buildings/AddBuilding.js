@@ -140,9 +140,9 @@ const AddBuilding = (props) => {
       'name': name,
       'address': address,
       'vote_branches': clefList,
-      'sepa_name': accountHolder,
-      'sepa_address': accountAddress,
-      'iban': accountIban
+      'account_holdername': accountHolder,
+      'account_address': accountAddress,
+      'account_IBAN': accountIban
     }
     setVisibleIndicator(true);
     AdminService.createBuilding(requestData)
