@@ -152,7 +152,7 @@ const handleChangeVatFee = (event) => {
         'price_type': en_priceTypeList[priceType],
         'price': price,
         'vat_option': vat_state ? 'true' : 'false',
-        'vat_fee': vat_fee,
+        'vat_fee': vat_fee === '' ? '0' : vat_fee,
     }
     setVisibleIndicator(true);
     AdminService.updateProduct(props.match.params.id,requestData)
