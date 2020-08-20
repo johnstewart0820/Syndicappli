@@ -43,10 +43,16 @@ function getInvoiceOrder(data) {
                         o.orderID as ID,
                         b.name building_name,
                         o.start_date,
-                        o.price,
                         p.name product_name,
                         o.apartment_amount,
-                        ROUND(if (o.discount_type = "fixed", o.apartment_amount * o.price - o.discount_amount, o.apartment_amount * o.price * (100 - o.discount_amount) / 100), 2) total_amount
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) total_amount, 
+                            ROUND(
+                                if (o.discount_type = "fixed", 
+                                (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                                (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)) / o.apartment_amount, 2) price
                     FROM
                         orders o
                         LEFT JOIN products p ON o.productID = p.productID
@@ -83,7 +89,10 @@ function getInvoiceAddon(data) {
                         o.orderID as ID,
                         b.name building_name,
                         o.start_date,
-                        ROUND(if (o.discount_type = "fixed", o.apartment_amount * o.price - o.discount_amount, o.apartment_amount * o.price * (100 - o.discount_amount) / 100), 2) total_amount,
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100  - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100  * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) total_amount,
                         p.name product_name
                     FROM
                         orders o
@@ -100,7 +109,10 @@ function getInvoiceAddon(data) {
                         o.orderID as ID,
                         b.name building_name,
                         o.start_date,
-                        ROUND(if (o.discount_type = "fixed", o.apartment_amount * o.price - o.discount_amount, o.apartment_amount * o.price * (100 - o.discount_amount) / 100), 2) total_amount,
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price*(100 + o.vat_fee) / 100  - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) total_amount,
                         p.name product_name
                     FROM
                         orders o
