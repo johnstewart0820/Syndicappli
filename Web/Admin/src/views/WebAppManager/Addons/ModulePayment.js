@@ -180,7 +180,7 @@ const ModulePayment = (props) => {
   const calc_price = () => {
     if (discount_type === 'fixed') {
       setRealPrice((apartment_amount * price * (100 + vat_pro) / 100 - discount_amount).toFixed(2));
-      setRealFeePrice((apartment_amount * price * vat_pro/100).toFixed(2));
+      setRealFeePrice(((apartment_amount * price * (100 + vat_pro)/100 - discount_amount)/(100 + vat_pro) * vat_pro).toFixed(2));
     } else if (discount_type === 'percentage') {
       setRealPrice((apartment_amount * price * (100 - discount_amount) * (100 + vat_pro) / 100 / 100).toFixed(2));
       setRealFeePrice((apartment_amount * price * (100 - discount_amount) * vat_pro / 100 / 100).toFixed(2));
