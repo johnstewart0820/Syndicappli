@@ -32,6 +32,7 @@ const Addons = (props) => {
   const [addonList, setAddonList] = useState([]);
   const [bundle_name, setBundleName] = useState('');
   const [building_name, setBuildingName] = useState('');
+  const [count, setCount] = useState(0);
   const cellList = [
     { key: 'bundle_name', field: 'Produit' },
     { key: 'building_name', field: 'Immeuble' },
@@ -46,8 +47,13 @@ const Addons = (props) => {
   const handleClickBuyPack = () => {
     if (buildingID !== -1) {
       setErrorsBuilding('');
-      history.push("/manager/addons/payment/" + buildingID);
-      window.location.reload();
+      if(count === 0){
+        ToastsStore.warning("You can't buy module. You must add at least 1 apartment in owner that is related with this building")
+      }
+      else{
+        history.push("/manager/addons/payment?id=" + buildingID + "&count=" + count);
+        window.location.reload();
+      }
     } else {
       setErrorsBuilding('please select building');
     }
@@ -71,8 +77,10 @@ const Addons = (props) => {
   }, [bundle_name]);
   useEffect(() => {
     if (accessAddons !== 'denied') {
-      if (buildingID !== -1)
+      if (buildingID !== -1){
+        getBuilding();
         getAddons();
+      }
     }
   }, [buildingID])
   const getCompanies = () => {
@@ -164,7 +172,7 @@ const Addons = (props) => {
               case 200:
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
-                setAddonPrice(((100 + data.addon[0].vat_fee) * data.addon[0].price) / 100);
+                setAddonPrice(Number(data.addon[0].price).toFixed(2));
                 setBundleName(data.addon[0].name);
                 break;
               case 401:
@@ -182,6 +190,33 @@ const Addons = (props) => {
           }
         );
     }
+  }
+  const getBuilding = () => {
+    setVisibleIndicator(true);
+    ManagerService.getBuilding(buildingID)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              setCount(data.lots === null || data.lots === undefined ? 0 : data.lots);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
   }
   const getAddons = () => {
     const requestData = {

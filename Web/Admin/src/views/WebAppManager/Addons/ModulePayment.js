@@ -179,11 +179,11 @@ const ModulePayment = (props) => {
   }, [buildingID]);
   const calc_price = () => {
     if (discount_type === 'fixed') {
-      setRealPrice(((price - discount_amount) * (100 + vat_pro) / 100).toFixed(2));
-      setRealFeePrice((vat_pro * (price - discount_amount) / 100).toFixed(2));
+      setRealPrice((apartment_amount * price * (100 + vat_pro) / 100 - discount_amount).toFixed(2));
+      setRealFeePrice((apartment_amount * price * vat_pro/100).toFixed(2));
     } else if (discount_type === 'percentage') {
-      setRealPrice((price * (100 - discount_amount) * (100 + vat_pro) / 100 / 100).toFixed(2));
-      setRealFeePrice((price * (100 - discount_amount) * vat_pro / 100 / 100).toFixed(2));
+      setRealPrice((apartment_amount * price * (100 - discount_amount) * (100 + vat_pro) / 100 / 100).toFixed(2));
+      setRealFeePrice((apartment_amount * price * (100 - discount_amount) * vat_pro / 100 / 100).toFixed(2));
     }
     setApply(false);
   }
@@ -236,10 +236,10 @@ const ModulePayment = (props) => {
                 setBundleName(addon.name);
                 setVatOption(addon.vat_option === 'true' ? true : false);
                 setVatPro(addon.vat_fee);
-                setRealPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
-                setTempPrice((((100 + addon.vat_fee) * addon.price) / 100).toFixed(2));
-                setRealFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
-                setTempFeePrice(((addon.vat_fee * addon.price) / 100).toFixed(2));
+                setRealPrice((((100 + addon.vat_fee) * addon.price * apartment_amount) / 100).toFixed(2));
+                setTempPrice((((100 + addon.vat_fee) * addon.price * apartment_amount) / 100).toFixed(2));
+                setRealFeePrice(((addon.vat_fee * addon.price * apartment_amount) / 100).toFixed(2));
+                setTempFeePrice(((addon.vat_fee * addon.price * apartment_amount) / 100).toFixed(2));
                 setProductID(addon.productID);
                 setRenewal(addon.renewal);
                 setPriceType(addon.price_type);
@@ -294,8 +294,10 @@ const ModulePayment = (props) => {
       );
   }
   const getBuilding = () => {
+    let params = new URLSearchParams(window.location.search);
+    setApartAmount(params.get('count'));
     setVisibleIndicator(true);
-    ManagerService.getBuilding(props.match.params.id)
+    ManagerService.getBuilding(params.get('id'))
       .then(
         response => {
           setVisibleIndicator(false);
@@ -311,13 +313,12 @@ const ModulePayment = (props) => {
                 setAccountName(building.account_holdername ? building.account_holdername : '');
                 setAccountAddress(building.account_address ? building.account_address : '');
                 setIBAN(building.account_IBAN ? building.account_IBAN : '');
+                setBuyerName(building.name);
               }
               if (data.company_list) {
                 const company = data.company_list[0];
-                setBuyerName(company.name);
                 setCompanyID(company.companyID);
               }
-              setApartAmount(data.lots ? data.lots : 1);
               break;
             case 401:
               authService.logout();
@@ -367,7 +368,7 @@ const ModulePayment = (props) => {
               <p className={classes.itemTitle}></p>
             </Grid>
             <Grid item>
-              <p className={classes.price}>{(real_price * apartment_amount).toFixed(2)}€ TTC</p>
+              <p className={classes.price}>{real_price}€</p>
             </Grid>
           </Grid>
         </Grid>
@@ -380,7 +381,7 @@ const ModulePayment = (props) => {
                 <p className={classes.headerTitle}><b>TOTAL</b></p>
               </Grid>
               <Grid item>
-                <p className={classes.price}><b>{(real_price * apartment_amount).toFixed(2)}€ TTC</b></p>
+                <p className={classes.price}><b>{real_price}€</b></p>
               </Grid>
             </Grid>
             {
@@ -390,7 +391,7 @@ const ModulePayment = (props) => {
                     <p className={classes.itemTitle}>dont TVA à {vat_pro}%</p>
                   </Grid>
                   <Grid item>
-                    <p className={classes.itemTitle}>{(real_fee_price * apartment_amount).toFixed(2)}€ TTC</p>
+                    <p className={classes.itemTitle}>{real_fee_price}€</p>
                   </Grid>
                 </Grid>
                 :
