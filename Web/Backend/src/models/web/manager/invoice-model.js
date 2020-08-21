@@ -155,6 +155,10 @@ function downloadInvoiceAddon(data, res) {
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
                         ), 2) vat_amount,
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat,
                         o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                         from orders o
                         LEFT JOIN products p ON o.productID = p.productID
@@ -202,6 +206,10 @@ function downloadInvoiceOrder(data, res) {
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
                         ), 2) vat_amount,
+                    ROUND(
+                        if (o.discount_type = "fixed", 
+                        (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                        (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat,
                     ROUND(
                         if (o.discount_type = "fixed", 
                         (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 

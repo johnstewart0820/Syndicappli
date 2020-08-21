@@ -1,4 +1,4 @@
-module.exports = ({ name, address, email, invoice_number, invoice_date, order_id, order_date, product_name, price, date, payment_method, vat_result}) => {
+module.exports = ({ name, address, email, invoice_number, invoice_date, order_id, order_date, product_name, price, date, payment_method, vat_result, price_without_vat}) => {
     return `
     <!doctype html>
         <html>
@@ -119,7 +119,7 @@ module.exports = ({ name, address, email, invoice_number, invoice_date, order_id
                         <tr>
                             <td>${product_name}</td>
                             <td>${date}</td>
-                            <td>${price}€ TTC</td>
+                            <td>${price}€ TTC <br/>${price_without_vat}€ HT</td>
                         </tr>
                     </tbody>
                 </table>

@@ -658,6 +658,10 @@ function downloadInvoiceOrder(data, res) {
                      ROUND(
                         if (o.discount_type = "fixed", 
                         (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                        (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat,
+                     ROUND(
+                        if (o.discount_type = "fixed", 
+                        (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
                         (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)) / o.apartment_amount, 2) price,
                      o.vat_option, o.vat_fee, 
                      ROUND(if (o.discount_type = "fixed", 
@@ -702,6 +706,10 @@ function downloadInvoiceBuilding(data, res) {
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
                         ), 2) price, o.vat_option, o.vat_fee, 
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat,
                         ROUND(if (o.discount_type = "fixed", 
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
@@ -749,6 +757,10 @@ function downloadInvoiceOwner(data, res) {
                                     (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                                     (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
                                 ), 2) vat_amount, o.vat_option, o.vat_fee,
+                    ROUND(
+                        if (o.discount_type = "fixed", 
+                        (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                        (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat,
                     ROUND(if (o.discount_type = "fixed", 
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
@@ -832,7 +844,11 @@ function downloadZipOrder(data, res) {
                         ROUND(if (o.discount_type = "fixed", 
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
-                        ), 2) total, o.vat_option, o.vat_fee, 
+                        ), 2) total, o.vat_option, o.vat_fee,
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat, 
                         ROUND(if (o.discount_type = "fixed", 
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
@@ -891,6 +907,10 @@ function downloadZipBuilding(data, res) {
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
                         ), 2) price, o.vat_option, o.vat_fee, 
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat,
                         ROUND(if (o.discount_type = "fixed", 
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
@@ -949,6 +969,10 @@ function downloadZipOwner(data, res) {
                         (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                         (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
                     ), 2) vat_amount,
+                    ROUND(
+                        if (o.discount_type = "fixed", 
+                        (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                        (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)), 2) price_without_vat,
                     ROUND(if (o.discount_type = "fixed", 
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                             if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
