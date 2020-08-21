@@ -102,12 +102,12 @@ function getChartItem(query, params) {
 function getChartList(uid, data) {
     return new Promise(async (resolve, reject) => {
         let query = `Select 
-        ifnull(sum(
+        ROUND(ifnull(sum(
             if (discount_type = "fixed", 
                 (apartment_amount * price *(100 + vat_fee) / 100  - discount_amount) * 100 / (100 + vat_fee), 
                 (apartment_amount * price *(100 + vat_fee) / 100  * (100 - discount_amount) / 100) * 100 / (100 + vat_fee)
             )
-        ), 0) price, count(price) count from orders where permission = "active" and buyer_type = ?`
+        ), 0),2) price, count(price) count from orders where permission = "active" and buyer_type = ?`
         let filter = []
         let filter_1 = []
         let params = [data.type]
