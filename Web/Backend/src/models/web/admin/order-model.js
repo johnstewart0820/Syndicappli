@@ -653,11 +653,16 @@ function deleteAllOrder() {
  */
 function downloadInvoiceOrder(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, 
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.start_date date, 
                      ROUND(if (o.discount_type = "fixed", 
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
-                     ), 2) total, o.vat_option, o.vat_fee, 
+                     ), 2) total, 
+                     ROUND(
+                        if (o.discount_type = "fixed", 
+                        (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                        (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)) / o.apartment_amount, 2) price,
+                     o.vat_option, o.vat_fee, 
                      ROUND(if (o.discount_type = "fixed", 
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
@@ -814,7 +819,7 @@ function removeFiles() {
 function downloadZipOrder(data, res) {
     return new Promise(async (resolve, reject) => {
         await removeFiles()   
-        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.price price, o.start_date date, 
+        let query = `Select c.name name, c.address address, c.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.apartment_amount amount_lot, o.start_date date, 
                         ROUND(if (o.discount_type = "fixed", 
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
                         if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
@@ -823,6 +828,10 @@ function downloadZipOrder(data, res) {
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
                             (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
                         ), 2) vat_amount, 
+                        ROUND(
+                            if (o.discount_type = "fixed", 
+                            (o.apartment_amount * o.price * (100 + o.vat_fee) / 100 - o.discount_amount) * 100 / (100 + o.vat_fee), 
+                            (o.apartment_amount * o.price *(100 + o.vat_fee) / 100 * (100 - o.discount_amount) / 100) * 100 / (100 + o.vat_fee)) / o.apartment_amount, 2) price,
                         if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
                         from orders o left join companies c on o.companyID = c.companyID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "managers" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
