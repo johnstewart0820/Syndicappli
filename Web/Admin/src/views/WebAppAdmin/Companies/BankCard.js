@@ -170,7 +170,7 @@ const BankCard = (props) => {
     if (cryptogram.length === 0) { setErrorsCryptogram('please enter cryptogram'); cnt++; }
     else setErrorsCryptogram('');
     if (cnt === 0) {
-      window.Stripe.setPublishableKey('pk_test_51HEthNHgsqnVJgIV6rOYtsghGogygy02fGaBgqkdHjWhNVX6iWM7tajkEjTBUj7AEPlIHAmBYrJMtU6NFLosx11U00TA0sB3wL');
+      window.Stripe.setPublishableKey(process.env.REACT_APP_STRIPE_KEY);
       const exp_month = expirationDate.split('/')[0];
       const exp_year = expirationDate.split('/')[1];
       const cardInfo = {
