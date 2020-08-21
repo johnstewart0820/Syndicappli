@@ -23,6 +23,7 @@ var code = require('../../../constants/code')
 const csv = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
+const stripeHelper = require('../../../helper/stripeHelper')
 var ownerModel = {
     getOwnerList: getOwnerList,
     getCountOwnerList: getCountOwnerList,
@@ -171,7 +172,9 @@ function getCountOwnerList(uid, data) {
  * @return  object If success returns object else returns message
  */
 function createOwner_info(uid, data, files) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        var response = await stripeHelper.createCustomer({email: data.email, name: data.firstname + ' ' + data.lastname, description: 'owner'})
+        data.customer_id = response.id
         let query = `Select * from ` + table.USERS + ` where email = ?`;
         db.query(query, [data.email], async function (error, result, fields) {
             if (error) {
@@ -198,8 +201,8 @@ function createOwner_info(uid, data, files) {
                     let randomPassword = randtoken.generate(15);
                     let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
-                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, firstname_1, lastname_1, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    db.query(query, ["owner", data.type, data.owner_role, data.firstname, data.lastname, data.firstname_1, data.lastname_1, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], function (error, rows, fields)  {
+                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, firstname_1, lastname_1, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at, stripe_customerID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                    db.query(query, ["owner", data.type, data.owner_role, data.firstname, data.lastname, data.firstname_1, data.lastname_1, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {

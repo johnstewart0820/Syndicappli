@@ -143,7 +143,7 @@ function getCountCompanyList(uid, data) {
 function createCompany(uid, data, file) {
     return new Promise((resolve, reject) => {
         let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ?';
-        let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status, created_by, created_at, updated_at, stripe_customerID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         db.query(confirm_query, [data.email], async function (error, rows, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -156,7 +156,7 @@ function createCompany(uid, data, file) {
                         uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.COMPANY_LOGO)
                         file_name = uploadS3.Location
                     }
-                    db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+                    db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id], (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {

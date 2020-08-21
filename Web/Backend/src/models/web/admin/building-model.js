@@ -186,9 +186,9 @@ function getCountBuildingList(uid, data) {
  */
 function createBuilding(uid, data) {
     return new Promise((resolve, reject) => {
-        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, account_holdername, account_address, account_IBAN, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, account_holdername, account_address, account_IBAN, created_at, updated_at, stripe_customerID) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-        db.query(query, [data.companyID, data.name, data.address, uid, data.account_holdername, data.account_address, data.account_IBAN, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()], (error, rows, fields) => {
+        db.query(query, [data.companyID, data.name, data.address, uid, data.account_holdername, data.account_address, data.account_IBAN, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id], (error, rows, fields) => {
             if (error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})
             } else {

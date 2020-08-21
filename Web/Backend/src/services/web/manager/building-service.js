@@ -10,6 +10,7 @@
  */
 
 var buildingModel = require('../../../models/web/manager/building-model')
+var companyModel = require('../../../models/web/admin/company-model')
 var jwt = require('jsonwebtoken')
 var message = require('../../../constants/message')
 var code = require('../../../constants/code')
@@ -100,20 +101,25 @@ function getBuildingList(uid, data, userdata) {
 function createBuilding(uid, data, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasBuildingPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            buildingModel.managerCreateBuilding(uid, data).then((result) => {
-                if (result) {
-                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
-                        expiresIn: timer.TOKEN_EXPIRATION
-                    })
-
-                    resolve({ code: code.OK, message: '', data: { 'token': token } })
-                }
-            }).catch((err) => {
-                if (err.message === message.INTERNAL_SERVER_ERROR)
-                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
-                else
-                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            companyModel.getCompany(null, data.companyID).then(async (result) => {
+                var response = await stripeHelper.createCustomer({email: result.email, name: data.name, description: 'building'})
+                data.customer_id = response.id
+                buildingModel.managerCreateBuilding(uid, data).then((result) => {
+                    if (result) {
+                        let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                            expiresIn: timer.TOKEN_EXPIRATION
+                        })
+    
+                        resolve({ code: code.OK, message: '', data: { 'token': token } })
+                    }
+                }).catch((err) => {
+                    if (err.message === message.INTERNAL_SERVER_ERROR)
+                        reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                    else
+                        reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+                })
             })
+            
         }).catch((error) => {
             reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
         })

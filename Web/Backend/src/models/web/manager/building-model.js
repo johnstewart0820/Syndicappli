@@ -148,9 +148,9 @@ function managerCreateBuilding(uid, data) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 if(rows.length > 0){
-                    query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN, created_by, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                    query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN, created_by, created_at, updated_at, stripe_customerID) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
                     let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-                    db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime() ],  (error, rows, fields) => {
+                    db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id ],  (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {

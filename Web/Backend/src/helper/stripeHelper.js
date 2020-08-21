@@ -41,11 +41,11 @@ function createSource(iban, account_holder_name) {
     });
 }
 
-function createCustomer(email) {
+function createCustomer(data) {
     return new Promise((resolve, reject) => {
-        stripe.customers.create({
-            email: email
-        }).then((customer) => {
+        stripe.customers.create(
+            data
+        ).then((customer) => {
             resolve(customer)
         }).catch((err) => {
             console.log('createCustomer error == ', err)

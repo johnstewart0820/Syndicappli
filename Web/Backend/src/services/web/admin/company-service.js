@@ -73,8 +73,10 @@ function getCompanyList(uid, data, userdata) {
  * @return  json
  */
 function createCompany(uid, userdata, data, file) {
-    return new Promise((resolve, reject) => {
-        authHelper.hasCompanyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+    return new Promise(async (resolve, reject) => {
+        authHelper.hasCompanyPermission(userdata, [code.EDIT_PERMISSION]).then(async (response) => {
+            var response = await stripeHelper.createCustomer({email: data.email, name: data.name, description: 'company'})
+            data.customer_id = response.id
             companyModel.createCompany(uid, data, file).then((data) => {
                 if (data) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
