@@ -9,8 +9,6 @@ import { ModulePaymentStyles as useStyles } from './useStyles';
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
-import MySelect from 'components/MySelect';
-
 
 const ManagerService = new Service();
 const ModulePayment = (props) => {
@@ -19,7 +17,6 @@ const ModulePayment = (props) => {
   if (!token) {
     window.location.replace("/login");
   }
-  var SEPA = require("sepa");
   const accessAddons = authService.getAccess('role_addons');
   const classes = useStyles();
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
@@ -53,9 +50,7 @@ const ModulePayment = (props) => {
   const [companyID, setCompanyID] = useState(-1);
   const [buildingID, setBuildingID] = useState(-1);
   const [buyer_name, setBuyerName] = useState('');
-  const [errorsIBAN, setErrorsIBAN] = useState('');
-  const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
-  const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
+  const [errorsBank, setErrorsBank] = useState('');
   const [errorsCode, setErrorsCode] = useState('');
   const handleClickApply = () => {
     if (codeID !== -1) {
@@ -67,64 +62,74 @@ const ModulePayment = (props) => {
       setRealFeePrice(temp_fee_price);
     }
   }
+  const setOutcome = (result) => {
+    if (result.source) {
+      setErrorsBank('');
+      onPay(result.source.id);
+    } else if (result.error) {
+      setErrorsBank(result.error.message);
+    }
+  }
+  const onPay = (id) => {
+    let requestData = {
+      'productID': productID,
+      'companyID': companyID,
+      'buildingID': buildingID,
+      'buyerID': companyID,
+      'buyer_name': buyer_name,
+      'billing_cycle': billing_cycle,
+      'renewal': renewal,
+      'price_type': price_type,
+      'price': price,
+      'vat_option': vat_option ? 'true' : 'false',
+      'vat_fee': vat_pro,
+      'apartment_amount': apartment_amount,
+      'payment_method': payment_method,
+      'discount_codeID': codeID,
+      'discount_type': codeID === -1 ? 'fixed' : discount_type,
+      'discount_amount': codeID === -1 ? 0 : discount_amount,
+      'id': id
+    };
+    setVisibleIndicator(true);
+    ManagerService.buyAddon(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              handleClick();
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
   const handleClickPay = () => {
     if (accessAddons !== 'denied') {
-      let cnt = 0;
-      if (accountaddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
-      else setErrorsAccountAddress('');
-      if (accountname.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
-      else setErrorsAccountHolder('');
-      if (IBAN.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
-      else setErrorsIBAN('');
-      if (!SEPA.validateIBAN(IBAN)) {
-        setErrorsIBAN('please enter correct IBAN');
-        cnt++;
-      }
-      if (cnt === 0) {
-        let requestData = {
-          'productID': productID,
-          'companyID': companyID,
-          'buildingID': buildingID,
-          'buyerID': companyID,
-          'buyer_name': buyer_name,
-          'billing_cycle': billing_cycle,
-          'renewal': renewal,
-          'price_type': price_type,
-          'price': price,
-          'vat_option': vat_option ? 'true' : 'false',
-          'vat_fee': vat_pro,
-          'apartment_amount': apartment_amount,
-          'payment_method': payment_method,
-          'discount_codeID': codeID,
-          'discount_type': codeID === -1 ? 'fixed' : discount_type,
-          'discount_amount': codeID === -1 ? 0 : discount_amount
-        };
-        setVisibleIndicator(true);
-        ManagerService.buyAddon(requestData)
-          .then(
-            response => {
-              setVisibleIndicator(false);
-              switch (response.data.code) {
-                case 200:
-                  const data = response.data.data;
-                  localStorage.setItem("token", JSON.stringify(data.token));
-                  handleClick();
-                  break;
-                case 401:
-                  authService.logout();
-                  history.push('/login');
-                  window.location.reload();
-                  break;
-                default:
-                  ToastsStore.error(response.data.message);
-              }
-            },
-            error => {
-              ToastsStore.error("Can't connect to the server!");
-              setVisibleIndicator(false);
-            }
-          );
-      }
+      var stripe = window.Stripe(process.env.REACT_APP_STRIPE_KEY);
+      var sourceData = {
+        type: 'sepa_debit',
+        sepa_debit: {
+          iban: IBAN,
+        },
+        currency: 'eur',
+        owner: {
+          name: accountname,
+        },
+      };
+      stripe.createSource(sourceData).then(setOutcome);
     }
   }
   const handleChangeAccountName = (event) => {
@@ -160,10 +165,6 @@ const ModulePayment = (props) => {
     return -1;
   }
   const handleChangeIBAN = (event) => {
-    if (!SEPA.validateIBAN(event.target.value))
-      setErrorsIBAN('please enter correct IBAN');
-    else
-      setErrorsIBAN('');
     setIBAN(event.target.value);
   }
   useEffect(() => {
@@ -180,7 +181,7 @@ const ModulePayment = (props) => {
   const calc_price = () => {
     if (discount_type === 'fixed') {
       setRealPrice((apartment_amount * price * (100 + vat_pro) / 100 - discount_amount).toFixed(2));
-      setRealFeePrice(((apartment_amount * price * (100 + vat_pro)/100 - discount_amount)/(100 + vat_pro) * vat_pro).toFixed(2));
+      setRealFeePrice(((apartment_amount * price * (100 + vat_pro) / 100 - discount_amount) / (100 + vat_pro) * vat_pro).toFixed(2));
     } else if (discount_type === 'percentage') {
       setRealPrice((apartment_amount * price * (100 - discount_amount) * (100 + vat_pro) / 100 / 100).toFixed(2));
       setRealFeePrice((apartment_amount * price * (100 - discount_amount) * vat_pro / 100 / 100).toFixed(2));
@@ -447,8 +448,6 @@ const ModulePayment = (props) => {
                       onChange={handleChangeAccountName}
                       fullWidth
                     />
-                    {errorsAccountHolder.length > 0 &&
-                      <span className={classes.error}>{errorsAccountHolder}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -464,8 +463,6 @@ const ModulePayment = (props) => {
                       onChange={handleChangeAccountAddress}
                       fullWidth
                     />
-                    {errorsAccountAddress.length > 0 &&
-                      <span className={classes.error}>{errorsAccountAddress}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -480,8 +477,6 @@ const ModulePayment = (props) => {
                       onChange={handleChangeIBAN}
                       fullWidth
                     />
-                    {errorsIBAN.length > 0 &&
-                      <span className={classes.error}>{errorsIBAN}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -491,6 +486,8 @@ const ModulePayment = (props) => {
         <Grid item container justify="center" style={{ marginTop: 80 }}>
           <MyButton name={"Payer"} color={"1"} onClick={handleClickPay} />
         </Grid>
+        {errorsBank.length > 0 &&
+          <span className={classes.error}>{errorsBank}</span>}
       </div>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>

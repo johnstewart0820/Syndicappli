@@ -12,8 +12,6 @@ import { withRouter } from 'react-router-dom';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { Scrollbars } from 'react-custom-scrollbars';
 import MuiPhoneNumber from 'material-ui-phone-number';
-import SEPA from 'sepa';
-import { isInteger, isNumber } from 'validate.js';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const fileTypes = [
     "image/apng",
@@ -35,9 +33,9 @@ const AddCompany = (props) => {
     const { history } = props;
     const classes = useStyles();
 
-    const [avatarurl, setAvatarUrl] = React.useState("");
-    const [avatar, setAvatar] = React.useState(null);
-    const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+    const [avatarurl, setAvatarUrl] = useState("");
+    const [avatar, setAvatar] = useState(null);
+    const [visibleIndicator, setVisibleIndicator] = useState(false);
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [email, setEmail] = useState('');
@@ -53,15 +51,13 @@ const AddCompany = (props) => {
     const [statusActive, setStatusActive] = useState(false);
     const [statusInActive, setStatusInActive] = useState(false);
 
-    const [errorsName, setErrorsName] = React.useState('');
-    const [errorsAddress, setErrorsAddress] = React.useState('');
-    const [errorsEmail, setErrorsEmail] = React.useState('');
-    const [errorsPhone, setErrorsPhone] = React.useState('');
-    const [errorsSiret, setErrorsSiret] = React.useState('');
-    const [errorsStatus, setErrorsStatus] = React.useState('');
-    const [errorsIBAN, setErrorsIBAN] = React.useState('');
-    const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
-    const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
+    const [errorsName, setErrorsName] = useState('');
+    const [errorsAddress, setErrorsAddress] = useState('');
+    const [errorsEmail, setErrorsEmail] = useState('');
+    const [errorsPhone, setErrorsPhone] = useState('');
+    const [errorsSiret, setErrorsSiret] = useState('');
+    const [errorsStatus, setErrorsStatus] = useState('');
+    const [errorsBank, setErrorsBank] = useState('');
     const handleClose = () => {
         props.onCancel();
     };
@@ -105,9 +101,9 @@ const AddCompany = (props) => {
     }
 
     const handleChangeSiret = (event) => {
-        if(event.target.value[event.target.value.length-1] === '.')
+        if (event.target.value[event.target.value.length - 1] === '.')
             return;
-        if(Number.isInteger(Number(event.target.value))){
+        if (Number.isInteger(Number(event.target.value))) {
             if (event.target.value.length < 15)
                 setSiret(event.target.value);
         }
@@ -126,12 +122,6 @@ const AddCompany = (props) => {
     }
 
     const handleChangeIBAN = (event) => {
-        if (!SEPA.validateIBAN(event.target.value))
-            setErrorsIBAN('please enter correct IBAN');
-        else
-            setErrorsIBAN('');
-        if (event.target.value.length === 0)
-            setErrorsIBAN('');
         setIBAN(event.target.value);
     }
 
@@ -149,19 +139,29 @@ const AddCompany = (props) => {
         else setErrorsSiret('');
         if (statusActive === false && statusInActive === false) { setErrorsStatus('please select company status'); cnt++; }
         else setErrorsStatus('');
-        if (IBAN.length !== 0) {
-            if (!SEPA.validateIBAN(IBAN)) {
-                setErrorsIBAN('please enter correct IBAN');
-                cnt++;
-            } else {
-                if (accountaddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
-                else setErrorsAccountAddress('');
-                if (accountname.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
-                else setErrorsAccountHolder('');
+        if (cnt === 0) {
+            if (accountname !== '' || IBAN !== '' || accountaddress !== '') {
+                var stripe = window.Stripe(process.env.REACT_APP_STRIPE_KEY);
+                var sourceData = {
+                    type: 'sepa_debit',
+                    sepa_debit: {
+                        iban: IBAN,
+                    },
+                    currency: 'eur',
+                    owner: {
+                        name: accountname,
+                    },
+                };
+                stripe.createSource(sourceData).then(setOutcome);
             }
         }
-        if (cnt === 0) {
-            addCompany();
+    }
+    const setOutcome = (result) => {
+        if (result.source) {
+            setErrorsBank('');
+            createCompany(result.source.id);
+        } else if (result.error) {
+            setErrorsBank(result.error.message);
         }
     }
     const handleChangeAssemblies360 = (event) => {
@@ -187,7 +187,7 @@ const AddCompany = (props) => {
         else
             setStatusActive(statusInActive);
     }
-    const addCompany = () => {
+    const createCompany = (id) => {
         let formdata = new FormData();
         formdata.set('name', name);
         formdata.set('address', address);
@@ -204,7 +204,7 @@ const AddCompany = (props) => {
         formdata.set('access_audio', assembliesAudio ? 'true' : 'false');
         formdata.set('status', statusActive === true ? 'active' : 'inactive');
         formdata.set('logo', avatar === null ? '' : avatar);
-
+        formdata.set('id', id);
         setVisibleIndicator(true);
         AdminService.addCompany(formdata)
             .then(
@@ -337,8 +337,6 @@ const AddCompany = (props) => {
                                     onChange={handleChangeAccountName}
                                     fullWidth
                                 />
-                                {errorsAccountHolder.length > 0 &&
-                                    <span className={classes.error}>{errorsAccountHolder}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="flex-start" spacing={2}>
@@ -352,8 +350,6 @@ const AddCompany = (props) => {
                                     onChange={handleChangeAccountAddress}
                                     fullWidth
                                 />
-                                {errorsAccountAddress.length > 0 &&
-                                    <span className={classes.error}>{errorsAccountAddress}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={2}>
@@ -366,10 +362,10 @@ const AddCompany = (props) => {
                                     onChange={handleChangeIBAN}
                                     fullWidth
                                 />
-                                {errorsIBAN.length > 0 &&
-                                    <span className={classes.error}>{errorsIBAN}</span>}
                             </Grid>
                         </Grid>
+                        {errorsBank.length > 0 &&
+                            <span className={classes.error}>{errorsBank}</span>}
                         <Grid xs={12} item container direction="column" spacing={2}>
                             <Grid item><p className={classes.title}>Logo</p></Grid>
                             <Grid item container justify="flex-start">

@@ -55,7 +55,6 @@
     "react-select": "^3.1.0",
     "react-toasts": "^3.0.6",
     "recompose": "^0.30.0",
-    "sepa": "^1.0.3",
     "underscore": "^1.9.1",
     "use-global-hook": "^0.1.12",
     "uuid": "^3.3.2",

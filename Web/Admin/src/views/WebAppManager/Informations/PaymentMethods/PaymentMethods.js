@@ -13,7 +13,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import BankCard from './BankCard';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import SEPA from 'sepa';
 import validator from 'card-validator';
 const useStyles = makeStyles(theme => ({
   root: {
@@ -160,9 +159,7 @@ const PaymentMethods = (props) => {
   const [accountHolder, setAccountHolder] = useState('');
   const [accountAddress, setAccountAddress] = useState('');
   const [accountIban, setAccountIBAN] = useState('');
-  const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
-  const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
-  const [errorsIBAN, setErrorsIBAN] = useState('');
+  const [errorsBank, setErrorsBank] = useState('');
   const [cardDataList, setCardDataList] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -178,12 +175,6 @@ const PaymentMethods = (props) => {
     setAccountAddress(event.target.value);
   };
   const handleChangeAccountIban = (event) => {
-    if (!SEPA.validateIBAN(event.target.value))
-      setErrorsIBAN('please enter correct IBAN');
-    else
-      setErrorsIBAN('');
-    if (event.target.value.length === 0)
-      setErrorsIBAN('');
     setAccountIBAN(event.target.value);
   };
   useEffect(() => {
@@ -341,54 +332,61 @@ const PaymentMethods = (props) => {
         }
       );
   }
-  const handleClickUpdateBankInfo = () => {
-    let cnt = 0;
-    if (accountAddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
-    else setErrorsAccountAddress('');
-    if (accountHolder.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
-    else setErrorsAccountHolder('');
-    if (accountIban.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
-    else setErrorsIBAN('');
-    if (!SEPA.validateIBAN(accountIban)) {
-      setErrorsIBAN('please enter correct IBAN');
-      cnt++;
+  const setOutcome = (result) => {
+    if (result.source) {
+      setErrorsBank('');
+      updateBankInfo(result.source.id);
+    } else if (result.error) {
+      setErrorsBank(result.error.message);
     }
-    if (cnt === 0) {
-      let requestData = {
-        'account_holdername': accountHolder,
-        'account_address': accountAddress,
-        'account_IBAN': accountIban,
-        'companyID': companyID
-      }
-      setVisibleIndicator(true);
-      ManagerService.updateCompanyBankInfo(requestData)
-        .then(
-          response => {
-            setVisibleIndicator(false);
-            switch (response.data.code) {
-              case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                ToastsStore.success('Updated Successfully');
-                setErrorsAccountAddress('');
-                setErrorsAccountHolder('');
-                setErrorsIBAN('');
-                break;
-              case 401:
-                authService.logout();
-                history.push('/login');
-                window.location.reload();
-                break;
-              default:
-                ToastsStore.error(response.data.message);
-            }
-          },
-          error => {
-            ToastsStore.error("Can't connect to the server!");
-            setVisibleIndicator(false);
+  }
+  const updateBankInfo = (id) => {
+    let requestData = {
+      'account_holdername': accountHolder,
+      'account_address': accountAddress,
+      'account_IBAN': accountIban,
+      'companyID': companyID,
+      'id': id
+    }
+    setVisibleIndicator(true);
+    ManagerService.updateCompanyBankInfo(requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success('Updated Successfully');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
-        );
-    }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const handleClickUpdateBankInfo = () => {
+    var stripe = window.Stripe(process.env.REACT_APP_STRIPE_KEY);
+    var sourceData = {
+      type: 'sepa_debit',
+      sepa_debit: {
+        iban: accountIban,
+      },
+      currency: 'eur',
+      owner: {
+        name: accountHolder,
+      },
+    };
+    stripe.createSource(sourceData).then(setOutcome);
   }
   const handleClickDeleteBankInfo = () => {
     if (accountIban.length !== 0) {
@@ -419,9 +417,6 @@ const PaymentMethods = (props) => {
               setAccountAddress('');
               setAccountHolder('');
               setAccountIBAN('');
-              setErrorsAccountAddress('');
-              setErrorsAccountHolder('');
-              setErrorsIBAN('');
               break;
             case 401:
               authService.logout();
@@ -502,8 +497,6 @@ const PaymentMethods = (props) => {
                       onChange={handleChangeAccountHolder}
                       disabled={(accesspayments === 'see' ? true : false)}
                     />
-                    {errorsAccountHolder.length > 0 &&
-                      <span className={classes.error}>{errorsAccountHolder}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -519,8 +512,6 @@ const PaymentMethods = (props) => {
                       onChange={handleChangeAccountAddress}
                       disabled={(accesspayments === 'see' ? true : false)}
                     />
-                    {errorsAccountAddress.length > 0 &&
-                      <span className={classes.error}>{errorsAccountAddress}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -535,8 +526,6 @@ const PaymentMethods = (props) => {
                       onChange={handleChangeAccountIban}
                       disabled={(accesspayments === 'see' ? true : false)}
                     />
-                    {errorsIBAN.length > 0 &&
-                      <span className={classes.error}>{errorsIBAN}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -559,6 +548,8 @@ const PaymentMethods = (props) => {
                 />
               </Grid>
             </Grid>
+            {errorsBank.length > 0 &&
+              <span className={classes.error}>{errorsBank}</span>}
           </Grid>
         </div>
       </Grid>

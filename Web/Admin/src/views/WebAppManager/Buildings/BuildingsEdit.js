@@ -13,7 +13,6 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { ManagerService as Service } from '../../../services/api.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
-import SEPA from 'sepa';
 const ManagerService = new Service();
 const BuildingsEdit = (props) => {
   const { history } = props;
@@ -22,31 +21,29 @@ const BuildingsEdit = (props) => {
     window.location.replace("/login");
   }
   const accessBuildings = authService.getAccess('role_buildings');
-  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+  const [visibleIndicator, setVisibleIndicator] = useState(false);
   const classes = useStyles();
-  const [state, setState] = React.useState(false);
+  const [state, setState] = useState(false);
 
-  const [name, setName] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [accountname, setAccountName] = React.useState('');
-  const [accountaddress, setAccountAddress] = React.useState('');
-  const [IBAN, setIBAN] = React.useState('');
-  const [addClefs, setAddClefs] = React.useState('');
-  const [clefList, setClefList] = React.useState([]);
-  const [companyList, setCompanyList] = React.useState([]);
-  const [companyID, setCompanyID] = React.useState(-1);
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [accountname, setAccountName] = useState('');
+  const [accountaddress, setAccountAddress] = useState('');
+  const [IBAN, setIBAN] = useState('');
+  const [addClefs, setAddClefs] = useState('');
+  const [clefList, setClefList] = useState([]);
+  const [companyList, setCompanyList] = useState([]);
+  const [companyID, setCompanyID] = useState(-1);
   const [openSEPADelete, setOpenSEPADelete] = useState(false);
 
-  const [errorsName, setErrorsName] = React.useState('');
-  const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsCompanies, setErrorsCompanies] = React.useState('');
-  const [errorsVote, setErrorsVote] = React.useState('');
-  const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
-  const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
-  const [errorsIBAN, setErrorsIBAN] = useState('');
-  const [count, setCount] = React.useState(0);
-  const [companies, setCompanies] = React.useState(0);
-  const [company, setCompany] = React.useState(['']);
+  const [errorsName, setErrorsName] = useState('');
+  const [errorsAddress, setErrorsAddress] = useState('');
+  const [errorsCompanies, setErrorsCompanies] = useState('');
+  const [errorsVote, setErrorsVote] = useState('');
+  const [errorsBank, setErrorsBank] = useState('');
+  const [count, setCount] = useState(0);
+  const [companies, setCompanies] = useState(0);
+  const [company, setCompany] = useState(['']);
   const handleClick = () => {
     history.goBack();
   };
@@ -124,9 +121,6 @@ const BuildingsEdit = (props) => {
               setAccountAddress('');
               setAccountName('');
               setIBAN('');
-              setErrorsAccountAddress('');
-              setErrorsAccountHolder('');
-              setErrorsIBAN('');
               break;
             case 401:
               authService.logout();
@@ -157,31 +151,22 @@ const BuildingsEdit = (props) => {
   }
 
   const handleChangeIBAN = (event) => {
-    if (!SEPA.validateIBAN(event.target.value))
-      setErrorsIBAN('please enter correct IBAN');
-    else
-      setErrorsIBAN('');
-    if (event.target.value.length === 0)
-      setErrorsIBAN('');
     setIBAN(event.target.value);
   }
-  const handleClickUpdateBankInfo = () => {
-    let cnt = 0;
-    if (accountaddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
-    else setErrorsAccountAddress('');
-    if (accountname.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
-    else setErrorsAccountHolder('');
-    if (IBAN.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
-    else setErrorsIBAN('');
-    if (!SEPA.validateIBAN(IBAN)) {
-      setErrorsIBAN('please enter correct IBAN');
-      cnt++;
+  const setOutcome = (result) => {
+    if (result.source) {
+      setErrorsBank('');
+      updateBuildingBankInfo(result.source.id);
+  } else if (result.error) {
+      setErrorsBank(result.error.message);
     }
-    if (cnt === 0) {
+  }
+  const updateBuildingBankInfo = (id) => {
       let requestData = {
         'account_holdername': accountname,
         'account_address': accountaddress,
-        'account_IBAN': IBAN
+        'account_IBAN': IBAN,
+        'id' : id
       }
       setVisibleIndicator(true);
       ManagerService.updateBankInfo(props.match.params.id, requestData)
@@ -193,9 +178,6 @@ const BuildingsEdit = (props) => {
                 const data = response.data.data;
                 localStorage.setItem("token", JSON.stringify(data.token));
                 ToastsStore.success('Updated Successfully');
-                setErrorsAccountAddress('');
-                setErrorsAccountHolder('');
-                setErrorsIBAN('');
                 break;
               case 401:
                 authService.logout();
@@ -211,7 +193,20 @@ const BuildingsEdit = (props) => {
             setVisibleIndicator(false);
           }
         );
-    }
+  }
+  const handleClickUpdateBankInfo = () => {
+    var stripe = window.Stripe(process.env.REACT_APP_STRIPE_KEY);
+    var sourceData = {
+      type: 'sepa_debit',
+      sepa_debit: {
+        iban: IBAN,
+      },
+      currency: 'eur',
+      owner: {
+        name: accountname,
+      },
+    };
+    stripe.createSource(sourceData).then(setOutcome);
   }
   const updateBuilding = () => {
     const requestData = {
@@ -486,8 +481,6 @@ const BuildingsEdit = (props) => {
                       onChange={handleChangeAccountName}
                       disabled={(accessBuildings === 'see' ? true : false)}
                     />
-                    {errorsAccountHolder.length > 0 &&
-                      <span className={classes.error}>{errorsAccountHolder}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -502,8 +495,6 @@ const BuildingsEdit = (props) => {
                       onChange={handleChangeAccountAddress}
                       disabled={(accessBuildings === 'see' ? true : false)}
                     />
-                    {errorsAccountAddress.length > 0 &&
-                      <span className={classes.error}>{errorsAccountAddress}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -517,8 +508,6 @@ const BuildingsEdit = (props) => {
                       onChange={handleChangeIBAN}
                       disabled={(accessBuildings === 'see' ? true : false)}
                     />
-                    {errorsIBAN.length > 0 &&
-                      <span className={classes.error}>{errorsIBAN}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -541,6 +530,8 @@ const BuildingsEdit = (props) => {
                 />
               </Grid>
             </Grid>
+            {errorsBank.length > 0 &&
+                      <span className={classes.error}>{errorsBank}</span>}
           </Grid>
         </div>
       </Grid>

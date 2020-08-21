@@ -21,7 +21,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import authService from '../../../services/authService.js';
 import DeleteConfirmDialog from 'components/DeleteConfirmDialog';
 import MuiPhoneNumber from 'material-ui-phone-number';
-import SEPA from 'sepa';
 import BankCard from './BankCard';
 import validator from 'card-validator';
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
@@ -52,10 +51,10 @@ const CompaniesEdit = (props) => {
   const accessCompanies = authService.getAccess('role_companies');
   const accessManagers = authService.getAccess('role_managers');
   const accessBuildings = authService.getAccess('role_buildings');
-  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+  const [visibleIndicator, setVisibleIndicator] = useState(false);
 
-  const [openAddManager, setOpenAddManager] = React.useState(false);
-  const [openAddBuilding, setOpenAddBuilding] = React.useState(false);
+  const [openAddManager, setOpenAddManager] = useState(false);
+  const [openAddBuilding, setOpenAddBuilding] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openSEPADelete, setOpenSEPADelete] = useState(false);
   const [open, setOpen] = useState(false);
@@ -100,8 +99,8 @@ const CompaniesEdit = (props) => {
   const managerColumns = [];
   for (let i = 0; i < 4; i++)
     managerColumns[i] = 'asc';
-  const [building_refresh, setBuildingRefresh] = React.useState(false);
-  const [manager_refresh, setManagerRefresh] = React.useState(false);
+  const [building_refresh, setBuildingRefresh] = useState(false);
+  const [manager_refresh, setManagerRefresh] = useState(false);
   const [buildingDataList, setBuildingDataList] = useState([]);
   const [buildingTotalpage, setBuildingTotalPage] = useState(1);
   const [building_row_count, setBuildingRowCount] = useState(20);
@@ -112,15 +111,13 @@ const CompaniesEdit = (props) => {
   const [buildingOpenDelete, setBuildingOpenDelete] = useState(false);
   const buildingSelectList = [20, 50, 100, 200, -1];
 
-  const [errorsName, setErrorsName] = React.useState('');
-  const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsEmail, setErrorsEmail] = React.useState('');
-  const [errorsPhone, setErrorsPhone] = React.useState('');
-  const [errorsSiret, setErrorsSiret] = React.useState('');
-  const [errorsStatus, setErrorsStatus] = React.useState('');
-  const [errorsAccountAddress, setErrorsAccountAddress] = useState('');
-  const [errorsAccountHolder, setErrorsAccountHolder] = useState('');
-  const [errorsIBAN, setErrorsIBAN] = useState('');
+  const [errorsName, setErrorsName] = useState('');
+  const [errorsAddress, setErrorsAddress] = useState('');
+  const [errorsEmail, setErrorsEmail] = useState('');
+  const [errorsPhone, setErrorsPhone] = useState('');
+  const [errorsSiret, setErrorsSiret] = useState('');
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [errorsBank, setErrorsBank] = useState('');
   const buildingCellList = [
     { key: 'name', field: 'Nom' },
     { key: 'address', field: 'Adresse' },
@@ -196,12 +193,6 @@ const CompaniesEdit = (props) => {
   }
 
   const handleChangeIBAN = (event) => {
-    if (!SEPA.validateIBAN(event.target.value))
-      setErrorsIBAN('please enter correct IBAN');
-    else
-      setErrorsIBAN('');
-    if (event.target.value.length === 0)
-      setErrorsIBAN('');
     setIBAN(event.target.value);
   }
 
@@ -613,53 +604,60 @@ const CompaniesEdit = (props) => {
         }
       );
   }
-  const handleClickUpdateBankInfo = () => {
-    let cnt = 0;
-    if (accountaddress.length === 0) { setErrorsAccountAddress('please enter your address'); cnt++; }
-    else setErrorsAccountAddress('');
-    if (accountname.length === 0) { setErrorsAccountHolder('please enter bank account name'); cnt++; }
-    else setErrorsAccountHolder('');
-    if (IBAN.length === 0) { setErrorsIBAN('please enter IBAN'); cnt++; }
-    else setErrorsIBAN('');
-    if (!SEPA.validateIBAN(IBAN)) {
-      setErrorsIBAN('please enter correct IBAN');
-      cnt++;
+  const setOutcome = (result) => {
+    if (result.source) {
+      setErrorsBank('');
+      updateBankInfo(result.source.id);
+  } else if (result.error) {
+      setErrorsBank(result.error.message);
     }
-    if (cnt === 0) {
-      let requestData = {
-        'account_holdername': accountname,
-        'account_address': accountaddress,
-        'account_IBAN': IBAN
-      }
-      setVisibleIndicator(true);
-      AdminService.updateBankInfo(props.match.params.id, requestData)
-        .then(
-          response => {
-            setVisibleIndicator(false);
-            switch (response.data.code) {
-              case 200:
-                const data = response.data.data;
-                localStorage.setItem("token", JSON.stringify(data.token));
-                ToastsStore.success('Updated Successfully');
-                setErrorsAccountAddress('');
-                setErrorsAccountHolder('');
-                setErrorsIBAN('');
-                break;
-              case 401:
-                authService.logout();
-                history.push('/login');
-                window.location.reload();
-                break;
-              default:
-                ToastsStore.error(response.data.message);
-            }
-          },
-          error => {
-            ToastsStore.error("Can't connect to the server!");
-            setVisibleIndicator(false);
+  }
+  const updateBankInfo = (id) => {
+    let requestData = {
+      'account_holdername': accountname,
+      'account_address': accountaddress,
+      'account_IBAN': IBAN,
+      'id' : id
+    }
+    setVisibleIndicator(true);
+    AdminService.updateBankInfo(props.match.params.id, requestData)
+      .then(
+        response => {
+          setVisibleIndicator(false);
+          switch (response.data.code) {
+            case 200:
+              const data = response.data.data;
+              localStorage.setItem("token", JSON.stringify(data.token));
+              ToastsStore.success('Updated Successfully');
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
           }
-        );
-    }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server!");
+          setVisibleIndicator(false);
+        }
+      );
+  }
+  const handleClickUpdateBankInfo = () => {
+    var stripe = window.Stripe(process.env.REACT_APP_STRIPE_KEY);
+    var sourceData = {
+      type: 'sepa_debit',
+      sepa_debit: {
+        iban: IBAN,
+      },
+      currency: 'eur',
+      owner: {
+        name: accountname,
+      },
+    };
+    stripe.createSource(sourceData).then(setOutcome);
   }
   const handleClickDeleteBankInfo = () => {
     if (IBAN.length !== 0) {
@@ -717,9 +715,6 @@ const CompaniesEdit = (props) => {
               setAccountAddress('');
               setAccountName('');
               setIBAN('');
-              setErrorsAccountAddress('');
-              setErrorsAccountHolder('');
-              setErrorsIBAN('');
               break;
             case 401:
               authService.logout();
@@ -1102,8 +1097,6 @@ const CompaniesEdit = (props) => {
                       fullWidth
                       disabled={(accessCompanies === 'see' ? true : false)}
                     />
-                    {errorsAccountHolder.length > 0 &&
-                      <span className={classes.error}>{errorsAccountHolder}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -1120,8 +1113,6 @@ const CompaniesEdit = (props) => {
                       fullWidth
                       disabled={(accessCompanies === 'see' ? true : false)}
                     />
-                    {errorsAccountAddress.length > 0 &&
-                      <span className={classes.error}>{errorsAccountAddress}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -1137,8 +1128,6 @@ const CompaniesEdit = (props) => {
                       fullWidth
                       disabled={(accessCompanies === 'see' ? true : false)}
                     />
-                    {errorsIBAN.length > 0 &&
-                      <span className={classes.error}>{errorsIBAN}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -1161,6 +1150,8 @@ const CompaniesEdit = (props) => {
                 />
               </Grid>
             </Grid>
+            {errorsBank.length > 0 &&
+                      <span className={classes.error}>{errorsBank}</span>}
           </Grid>
         </div>
       </Grid>

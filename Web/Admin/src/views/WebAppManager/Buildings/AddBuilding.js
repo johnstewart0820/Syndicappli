@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import Grid from '@material-ui/core/Grid';
 import MyButton from '../../../components/MyButton';
@@ -16,21 +16,22 @@ const ManagerService = new Service();
 const AddBuilding = (props) => {
   const classes = useStyles();
   const { history } = props;
-  const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-  const [state, setState] = React.useState(false);
-  const [name, setName] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [accountHolder, setAccountHolder] = React.useState('');
-  const [accountAddress, setAccountAddress] = React.useState('');
-  const [accountIban, setAccountIban] = React.useState('');
-  const [addClefs, setAddClefs] = React.useState('');
-  const [clefList, setClefList] = React.useState([]);
-  const [companyID, setCompanyID] = React.useState(-1);
+  const [visibleIndicator, setVisibleIndicator] = useState(false);
+  const [state, setState] = useState(false);
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [accountHolder, setAccountHolder] = useState('');
+  const [accountAddress, setAccountAddress] = useState('');
+  const [accountIban, setAccountIban] = useState('');
+  const [addClefs, setAddClefs] = useState('');
+  const [clefList, setClefList] = useState([]);
+  const [companyID, setCompanyID] = useState(-1);
 
-  const [errorsName, setErrorsName] = React.useState('');
-  const [errorsAddress, setErrorsAddress] = React.useState('');
-  const [errorsVote, setErrorsVote] = React.useState('');
-  const [count, setCount] = React.useState(0);
+  const [errorsName, setErrorsName] = useState('');
+  const [errorsAddress, setErrorsAddress] = useState('');
+  const [errorsVote, setErrorsVote] = useState('');
+  const [errorsBank, setErrorsBank] = useState('');
+  const [count, setCount] = useState(0);
   const handleChangeName = (event) => {
     setName(event.target.value);
   };
@@ -82,9 +83,30 @@ const AddBuilding = (props) => {
     if (count === 0) { setErrorsVote('please add a vote branch'); cnt++; }
     else setErrorsVote('');
     if (cnt === 0) {
-      createBuilding();
+      if(accountHolder !== '' || accountIban !== '' || accountAddress !== ''){
+        var stripe = window.Stripe(process.env.REACT_APP_STRIPE_KEY);
+        var sourceData = {
+          type: 'sepa_debit',
+          sepa_debit: {
+            iban: accountIban,
+          },
+          currency: 'eur',
+          owner: {
+            name: accountHolder,
+          },
+        };
+        stripe.createSource(sourceData).then(setOutcome);
+      }
     }
   };
+  const setOutcome = (result) => {
+    if (result.source) {
+      setErrorsBank('');
+      createBuilding(result.source.id);
+  } else if (result.error) {
+      setErrorsBank(result.error.message);
+    }
+  }
   useEffect(() => {
     getCompanies();
   }, []);
@@ -118,7 +140,7 @@ const AddBuilding = (props) => {
         }
       );
   }
-  const createBuilding = () => {
+  const createBuilding = (id) => {
     const requestData = {
       'companyID': companyID,
       'name': name,
@@ -126,7 +148,8 @@ const AddBuilding = (props) => {
       'vote_branches': clefList,
       'account_holdername': accountHolder,
       'account_address': accountAddress,
-      'account_IBAN': accountIban
+      'account_IBAN': accountIban,
+      'id' : id
     }
     setVisibleIndicator(true);
     ManagerService.createBuilding(requestData)
@@ -303,6 +326,8 @@ const AddBuilding = (props) => {
               <MyButton name={"Annuler"} bgColor="gray" onClick={handleClose} />
             </Grid>
           </div>
+          {errorsBank.length > 0 &&
+                    <span className={classes.error}>{errorsBank}</span>}
         </div>
         <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
       </div>
