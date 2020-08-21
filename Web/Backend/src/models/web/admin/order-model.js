@@ -223,19 +223,10 @@ function getOrderList(uid, data) {
     return new Promise((resolve, reject) => {
         let query = `SELECT
                     *, orderID ID, if(end_date = "9999-12-31", "", end_date) end_date,
-                    ROUND(if (discount_codeID > 0, 
+                    ROUND(
                         if (discount_type = "fixed", 
-                            if(vat_option="true", 
-                                if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
-                                if(price_type = "per_apartment", price * apartment_amount, price)) - discount_amount, 
-                            if(vat_option="true", 
-                                if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
-                                if(price_type = "per_apartment", price * apartment_amount, price)) / 100 * (100 - discount_amount)
-                        ),
-                        if(vat_option="true", 
-                                if(price_type = "per_apartment", price * apartment_amount, price) * (100 + vat_fee) / 100, 
-                                if(price_type = "per_apartment", price * apartment_amount, price))
-                    ),2) price_with_vat
+                        (apartment_amount * price * (100 + vat_fee) / 100 - discount_amount) * 100 / (100 + vat_fee), 
+                        (apartment_amount * price * (100 + vat_fee) / 100 * (100 - discount_amount) / 100) * 100 / (100 + vat_fee)), 2) price_with_vat
                     FROM orders
                     WHERE permission = ? and buyer_type = ? and buyer_name like ? `
         search_key = '%' + data.search_key + '%'
