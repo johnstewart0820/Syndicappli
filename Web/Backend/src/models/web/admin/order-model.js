@@ -744,13 +744,25 @@ function downloadInvoiceBuilding(data, res) {
  */
 function downloadInvoiceOwner(data, res) {
     return new Promise((resolve, reject) => {
-        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.start_date date, if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method,
+                    ROUND(if (o.discount_type = "fixed", 
+                                    (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
+                                    (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
+                                ), 2) vat_amount, o.vat_option, o.vat_fee,
+                    ROUND(if (o.discount_type = "fixed", 
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
+                        ), 2) price 
                      from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.orderID = ?`
         db.query(query, [data.orderID], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 data = rows[0]
+                if (data.vat_option === "false")
+                    data.vat_result = "No Vat"
+                else
+                    data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}
                 pdf.create(ownerTemplate(data), options).toBuffer(function (err, buffer) {
                     if (err) return res.send(err);
@@ -932,7 +944,15 @@ function downloadZipBuilding(data, res) {
 function downloadZipOwner(data, res) {
     return new Promise(async (resolve, reject) => {
         await removeFiles()
-        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.price price, o.start_date date,if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method
+        let query = `Select if (ow.type = "Company", ow.owner_company_name, CONCAT(ow.firstname, ' ', ow.lastname)) name, ow.address address, ow.email email, o.orderID invoice_number, o.start_date invoice_date, o.orderID order_id, o.start_date order_date, p.name product_name, o.start_date date,if (o.payment_method = "credit_card", "carte_bancaire", "SEPA") payment_method,
+                        ROUND(if (o.discount_type = "fixed", 
+                        (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 - o.discount_amount) / ((100 + o.vat_fee)) * o.vat_fee,
+                        (o.price * o.apartment_amount * (100 + o.vat_fee) / 100 / 100 * (100 - o.discount_amount)) / ((100 + o.vat_fee)) * o.vat_fee
+                    ), 2) vat_amount,
+                    ROUND(if (o.discount_type = "fixed", 
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) - o.discount_amount,
+                            if (o.vat_option = "true", o.price * o.apartment_amount * (100 + o.vat_fee) / 100, o.price * o.apartment_amount) * (100 - o.discount_amount) / 100
+                        ), 2) price 
                      from orders o left join users ow on o.buyerID = ow.userID left join products p on o.productID = p.productID where o.permission = "active" and o.buyer_type = "owners" and o.buyer_name like ? `
         search_key = '%' + data.search_key + '%'
         let params = [search_key]
@@ -950,6 +970,10 @@ function downloadZipOwner(data, res) {
             } else {
                 options = {format: "A3"}
                 for (var i in rows) {
+                    if (rows[i].vat_option === "false")
+                        rows[i].vat_result = "No Vat"
+                    else
+                        rows[i].vat_result = "Montant de la TVA à "+ rows[i].vat_fee + "% : " + rows[i].vat_amount
                     await ownerPDF(rows[i], options)
                 }
                 const file = new zip();
