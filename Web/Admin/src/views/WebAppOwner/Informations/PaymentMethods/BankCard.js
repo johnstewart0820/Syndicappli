@@ -183,13 +183,14 @@ const BankCard = (props) => {
       window.Stripe.createToken(cardInfo, handleResponse);
     }
   }
-  const createCard = () => {
+  const createCard = (token) => {
     const requestData = {
       'card_number': cardNumber,
       'name': cardHolderName,
       'expiry_date': Date,
       'secure_code': cryptogram,
-      'ownerID' : props.state.ownerID
+      'ownerID' : props.state.ownerID,
+      'id' : token
     }
     setVisibleIndicator(true);
     OwnerService.createCard(requestData)
@@ -228,17 +229,18 @@ const BankCard = (props) => {
         setErrorsExpirationDate(res.error.message);
     }else if(res.id){
       if (props.state.method === 'add')
-        createCard();
+        createCard(res.id);
       else if (props.state.method === 'edit')
-        updateCard();
+        updateCard(res.id);
     }
   }
-  const updateCard = () => {
+  const updateCard = (token) => {
     const requestData = {
       'card_number': cardNumber,
       'name': cardHolderName,
       'expiry_date': Date,
-      'secure_code': cryptogram
+      'secure_code': cryptogram,
+      'id' : token
     }
     setVisibleIndicator(true);
     OwnerService.updateCard(props.state.pos, requestData)
