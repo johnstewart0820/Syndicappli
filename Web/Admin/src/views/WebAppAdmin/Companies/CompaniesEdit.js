@@ -110,7 +110,7 @@ const CompaniesEdit = (props) => {
   const [buildingDeleteId, setBuildingDeleteId] = useState(-1);
   const [buildingOpenDelete, setBuildingOpenDelete] = useState(false);
   const buildingSelectList = [20, 50, 100, 200, -1];
-
+  const [stripeCustomerID, setStripeCustomerID] = useState('');
   const [errorsName, setErrorsName] = useState('');
   const [errorsAddress, setErrorsAddress] = useState('');
   const [errorsEmail, setErrorsEmail] = useState('');
@@ -376,6 +376,7 @@ const CompaniesEdit = (props) => {
                 setAssembliesAudio(data.access_audio === 'true' ? true : false);
                 setManagerCount(data.manager_count ? data.manager_count : 0);
                 setApartmentCount(data.apartment_count ? data.apartment_count : 0);
+                setStripeCustomerID(data.stripe_customerID ? data.stripe_customerID : '');
                 if (data.status === 'active') {
                   setStatusActive(true);
                   setStatusInActive(false);
@@ -418,6 +419,7 @@ const CompaniesEdit = (props) => {
     formdata.set('access_audio', assembliesAudio ? 'true' : 'false');
     formdata.set('status', statusActive === true ? 'active' : 'inactive');
     formdata.set('logo', avatar === null ? '' : avatar);
+    formdata.set('stripe_customerID', stripeCustomerID);
     setVisibleIndicator(true);
     AdminService.updateCompany(props.match.params.id, formdata)
       .then(

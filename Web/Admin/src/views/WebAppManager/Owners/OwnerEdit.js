@@ -102,6 +102,7 @@ const OwnerEdit = (props) => {
   const [lotsList, setLotsList] = useState([]);
   const [stateLots, setStateLots] = useState(false);
   const [buildingVote, setBuildingVote] = useState([]);
+  const [stripeCustomerID, setStripeCustomerID] = useState('');
   const [voteAmount, setVoteAmount] = useState(Array.from({ length: 100 }, () => Array.from({ length: buildingVote.length }, () => null)));
   let voteLists = [];
   const [count, setCount] = useState(0);
@@ -435,6 +436,7 @@ const OwnerEdit = (props) => {
     formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0])
     formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1])
     formdata.set('vote_value_list', JSON.stringify(voteLists));
+    formdata.set('stripe_customerID', stripeCustomerID);
     setVisibleIndicator(true);
     ManagerService.updateOwner(params.get('id'), formdata)
       .then(
@@ -494,6 +496,7 @@ const OwnerEdit = (props) => {
               setEmail(ownerInfo.email);
               setPhoneNumber(ownerInfo.phone);
               setAddress(ownerInfo.address);
+              setStripeCustomerID(ownerInfo.stripe_customerID ? ownerInfo.stripe_customerID : '')
               if (ownerInfo.owner_role === 'subaccount') {
                 setIsSubAccount(true);
                 setIsMemberCouncil(false);

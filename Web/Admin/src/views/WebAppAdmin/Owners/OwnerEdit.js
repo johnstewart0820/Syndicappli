@@ -87,7 +87,7 @@ const OwnerEdit = (props) => {
   const [address, setAddress] = useState('');
   const [apartNumber, setApartNumber] = useState([]);
   const [companyName, setCompanyName] = useState('');
-
+  const [stripeCustomerID, setStripeCustomerID] = useState('');
   const [errorsCompanies, setErrorsCompanies] = useState('');
   const [errorsBuildings, setErrorsBuildings] = useState('');
   const [errorsOwnerTitle, setErrorsOwnerTitle] = useState('');
@@ -435,6 +435,7 @@ const OwnerEdit = (props) => {
     formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0])
     formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1])
     formdata.set('vote_value_list', JSON.stringify(voteLists));
+    formdata.set('stripe_customerID', stripeCustomerID);
     setVisibleIndicator(true);
     AdminService.updateOwner(params.get('id'), formdata)
       .then(
@@ -499,6 +500,7 @@ const OwnerEdit = (props) => {
               setEmail(ownerInfo.email);
               setPhoneNumber(ownerInfo.phone);
               setAddress(ownerInfo.address);
+              setStripeCustomerID(ownerInfo.stripe_customerID ? ownerInfo.stripe_customerID : '');
               if (ownerInfo.owner_role === 'subaccount') {
                 setIsSubAccount(true);
                 setIsMemberCouncil(false);

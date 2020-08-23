@@ -44,6 +44,7 @@ const BuildingsEdit = (props) => {
   const [count, setCount] = useState(0);
   const [companies, setCompanies] = useState(0);
   const [company, setCompany] = useState(['']);
+  const [stripeCustomerID, setStripeCustomerID] = useState('');
   const handleClick = () => {
     history.goBack();
   };
@@ -214,6 +215,7 @@ const BuildingsEdit = (props) => {
       'name': name,
       'address': address,
       'vote_branches': clefList,
+      'stripe_customerID': stripeCustomerID
     }
     setVisibleIndicator(true);
     ManagerService.updateBuilding(props.match.params.id, requestData)
@@ -303,6 +305,7 @@ const BuildingsEdit = (props) => {
                 setCompanyID(building.companyID);
                 setClefList(clefList);
                 setCount(vote_list.length);
+                setStripeCustomerID(building.stripe_customerID ? building.stripe_customerID : '');
                 break;
               case 401:
                 authService.logout();

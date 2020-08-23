@@ -264,7 +264,7 @@ const MyCompany = (props) => {
   const [avatarurl, setAvatarUrl] = React.useState('');
   const [avatar, setAvatar] = React.useState(null);
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
-
+  const [stripeCustomerID, setStripeCustomerID] = React.useState('');
   const handleChangeName = (event) => {
     setName(event.target.value);
   }
@@ -315,6 +315,7 @@ const MyCompany = (props) => {
               setPhone(mycompany.phone);
               setAvatarUrl(mycompany.logo_url);
               setCompanyID(mycompany.companyID);
+              setStripeCustomerID(mycompany.stripe_customerID ? mycompany.stripe_customerID : '');
               break;
             case 401:
               authService.logout();
@@ -352,6 +353,7 @@ const MyCompany = (props) => {
     formdata.set('email', email);
     formdata.set('phone', phone);
     formdata.set('logo', avatar === null ? '' : avatar);
+    formdata.set('stripe_customerID', stripeCustomerID);
     setVisibleIndicator(true);
     ManagerService.updateMyCompany(formdata)
       .then(

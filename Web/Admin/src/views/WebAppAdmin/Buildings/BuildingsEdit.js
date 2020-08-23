@@ -33,7 +33,7 @@ const BuildingsEdit = (props) => {
   const [clefList, setClefList] = React.useState([]);
   const [companyList, setCompanyList] = React.useState([]);
   const [companyID, setCompanyID] = React.useState(-1);
-
+  const [stripeCustomerID, setStripeCustomerID] = React.useState('');
   const [errorsName, setErrorsName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
   const [errorsCompanies, setErrorsCompanies] = React.useState('');
@@ -103,6 +103,7 @@ const BuildingsEdit = (props) => {
       'name': name,
       'address': address,
       'vote_branches': clefList,
+      'stripe_customerID' : stripeCustomerID
     }
     setVisibleIndicator(true);
     AdminService.updateBuilding(props.match.params.id, requestData)
@@ -191,6 +192,7 @@ const BuildingsEdit = (props) => {
                 setCompanyID(building.companyID);
                 setClefList(clefList);
                 setCount(vote_list.length);
+                setStripeCustomerID(building.stripe_customerID ? building.stripe_customerID : '');
                 break;
               case 401:
                 authService.logout();
