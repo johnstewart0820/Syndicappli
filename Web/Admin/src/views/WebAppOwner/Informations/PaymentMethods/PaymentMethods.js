@@ -178,7 +178,7 @@ const PaymentMethods = (props) => {
       getCards();
   }, [refresh]);
   const cardCellList = [
-    { key: 'secure_code', field: '' },
+    { key: 'last_digits', field: '' },
     { key: 'name', field: '' },
     { key: 'expiry_date', field: '' }
   ];
@@ -230,11 +230,12 @@ const PaymentMethods = (props) => {
                 let numberValidation = validator.number(list[i].card_number);
                 if (numberValidation.isPotentiallyValid) {
                   if (numberValidation.card) {
-                    list[i].secure_code = numberValidation.card.niceType + '-' + list[i].secure_code;
+                    var digits = String(list[i].card_number);
+                    list[i].last_digits = numberValidation.card.niceType + '-' + digits.substring(digits.length - 4);
                   } else
-                    list[i].secure_code = list[i].secure_code;
+                    list[i].last_digits = list[i].card_number;
                 } else
-                  list[i].secure_code = list[i].secure_code;
+                  list[i].last_digits = list[i].card_number;
               }
               setCardDataList(list);
               break;
