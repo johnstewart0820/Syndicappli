@@ -477,6 +477,8 @@ const ModulePayment = (props) => {
                       onChange={handleChangeIBAN}
                       fullWidth
                     />
+                    {errorsBank.length > 0 &&
+                      <span className={classes.error}>{errorsBank}</span>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -486,8 +488,6 @@ const ModulePayment = (props) => {
         <Grid item container justify="center" style={{ marginTop: 80 }}>
           <MyButton name={"Payer"} color={"1"} onClick={handleClickPay} />
         </Grid>
-        {errorsBank.length > 0 &&
-          <span className={classes.error}>{errorsBank}</span>}
       </div>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </div>
