@@ -284,7 +284,7 @@ const MyAccount = (props) => {
   const [idcardurls, setIdcardUrls] = React.useState([]);
   const [idcards, setIdcards] = React.useState([]);
   const [state, setState] = React.useState(false);
-
+  const [stripeCustomerID, setStripeCustomerID] = React.useState('');
   const handleChangeLastName = (event) => {
     setLastName(event.target.value);
   }
@@ -354,6 +354,7 @@ const MyAccount = (props) => {
               if (!(profile.identity_card_back === null || profile.identity_card_back === '' || profile.identity_card_back === undefined))
                 urls.push(profile.identity_card_back);
               setIdcardUrls(urls);
+              setStripeCustomerID(profile.stripe_customerID ? profile.stripe_customerID : '');
               break;
             case 401:
               authService.logout();
@@ -410,6 +411,7 @@ const MyAccount = (props) => {
     formdata.set('avatar', avatar === null ? '' : avatar);
     formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0]);
     formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1]);
+    formdata.set('stripe_customerID', stripeCustomerID);
     setVisibleIndicator(true);
     OwnerService.updateProfile(formdata)
       .then(

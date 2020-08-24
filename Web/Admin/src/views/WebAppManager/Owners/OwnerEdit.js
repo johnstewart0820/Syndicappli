@@ -496,7 +496,7 @@ const OwnerEdit = (props) => {
               setEmail(ownerInfo.email);
               setPhoneNumber(ownerInfo.phone);
               setAddress(ownerInfo.address);
-              setStripeCustomerID(ownerInfo.stripe_customerID ? ownerInfo.stripe_customerID : '')
+              setStripeCustomerID(ownerInfo.customerID ? ownerInfo.customerID : '');
               if (ownerInfo.owner_role === 'subaccount') {
                 setIsSubAccount(true);
                 setIsMemberCouncil(false);
