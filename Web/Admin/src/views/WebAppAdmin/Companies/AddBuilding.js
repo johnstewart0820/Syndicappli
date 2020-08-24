@@ -101,7 +101,7 @@ const AddBuilding = (props) => {
       setErrorsBank('');
       createBuilding(result.source.id);
   } else if (result.error) {
-      setErrorsBank(result.error.message);
+      setErrorsBank("Please check your bank information. It's not correct.");
     }
   }
   const createBuilding = (id) => {
