@@ -212,6 +212,10 @@ const AddOrder = (props) => {
                             // setProductName(data.name);
                             setPrice(data.price);
                             setRenewal(data.renewal === 'true' ? true : false);
+                            if(en_priceTypeList.indexOf(data.price_type) !== 0){
+                                setStateLot(false);
+                            }else 
+                                setStateLot(true);
                             setPriceType(en_priceTypeList.indexOf(data.price_type));
                             if (data.vat_option === 'true') {
                                 setVatState(true);
