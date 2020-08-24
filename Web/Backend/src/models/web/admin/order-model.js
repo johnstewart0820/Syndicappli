@@ -27,7 +27,10 @@ const pdf = require('html-pdf');
 const fs = require('fs');
 const path = require('path');
 var zip=require('adm-zip');
-
+const stripeHelper = require('../../../helper/stripeHelper')
+const adminCompanyModel = require('../admin/company-model')
+const adminBuildingModel = require('../admin/building-model')
+const ownerCardModel = require('../owner/card-model')
 var orderModel = {
     getFilterList: getFilterList,
     getOrderList: getOrderList,
@@ -436,6 +439,96 @@ function getDiscountCodeListByType(data) {
     })
 }
 
+function getOwner(ownerID) {
+    return new Promise((resolve, reject) => {
+        let query = 'select * from users where userID = ?'
+        db.query(query, [ownerID], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR})
+            } else {
+                resolve(rows[0])
+            }
+        })
+    })
+}
+
+function createCharge(data) {
+    return new Promise(async (resolve, reject) => {
+        var price;
+        if (data.discount_type == "fixed") {
+            if (data.vat_option = "true") {
+                price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 - data.discount_amount
+            } else {
+                price = data.price * data.apartment_amount - data.discount_amount
+            }
+        } else {
+            if (data.vat_option = "true") {
+                price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 * (100 - data.discount_amount) / 100
+            } else {
+                price = data.price * data.apartment_amount * (100 - data.discount_amount) / 100 
+            }
+        }
+        if (price <= 0) {
+            reject({message: message.NOT_CREATE_ORDER})
+        } else {
+            price *= 100
+            if (data.buyer_type === "managers") {
+                if (data.payment_method === "credit_card") {
+    
+                    var cards = await adminCompanyModel.getCardList(data)
+                    var response = await adminCompanyModel.getCompany(null, data.companyID)
+                    if (cards.length === 0)
+                        reject({ message: message.NO_CARD})
+                    else {
+                        stripeHelper.createCharge(price,response.stripe_customerID, "").then((response) => {
+                            resolve("OK")
+                        }).catch((err) => {
+                            reject({message: err.message})
+                        })
+                        resolve("OK")
+                    }
+                } else {
+                    var response = await adminCompanyModel.getCompany(null, data.companyID)
+                    if (response.account_IBAN === "" || response.account_IBAN === undefined || response.account_IBAN === null)
+                        reject({ message: message.NO_BANK })
+                    else {
+                        stripeHelper.createCharge(price,response.stripe_customerID, "").then((response) => {
+                            resolve("OK")
+                        }).catch((err) => {
+                            reject({message: err.message})
+                        })
+                    }
+                }
+            } else if (data.buyer_type === "owners") {
+                data.ownerID = data.buyerID
+                var cards = await ownerCardModel.getCardList(data)
+                var response = await getOwner(data.buyerID)
+                if (cards.length === 0)
+                    reject({ message: message.NO_CARD})
+                else {
+                    stripeHelper.createCharge(price,response.stripe_customerID, "").then((response) => {
+                        resolve("OK")
+                    }).catch((err) => {
+                        reject({message: err.message})
+                    })
+                    resolve("OK")
+                }
+            } else if (data.buyer_type === "buildings") {
+                var response = await adminBuildingModel.getBuilding(data.buildingID)
+                if (response.building[0].account_IBAN === "" || response.building[0].account_IBAN === undefined || response.building[0].account_IBAN === null)
+                    reject({ message: message.NO_BANK })
+                else {
+                    stripeHelper.createCharge(price,response.building[0].stripe_customerID, "").then((response) => {
+                        resolve("OK")
+                    }).catch((err) => {
+                        reject({message: err.message})
+                    })
+                }
+            }
+        }
+        
+    })
+}
 /**
  * create Order only order table
  *
@@ -484,14 +577,21 @@ function createOrder(uid, data) {
                                     else {
                                         if (data.price_type === "per_unit")
                                             data.apartment_amount = 1
-                                        let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                        db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
-                                            if (error) {
-                                                reject({ message: message.INTERNAL_SERVER_ERROR });
-                                            } else {
-                                                resolve("ok")
-                                            }
-                                        })
+                                        if (data.apartment_amount == '' || data.apartment_amount == null || data.apartment_amount == undefined)
+                                            data.apartment_amount = 0
+                                        createCharge(data).then((response) => {
+                                            let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                            db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                                                if (error) {
+                                                    reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                } else {
+                                                    resolve("ok")
+                                                }
+                                            })
+                                        }).catch((err) => {
+                                            reject({ message: err.message });
+                                        }) 
+                                        
                                     }
                                 }
                             })

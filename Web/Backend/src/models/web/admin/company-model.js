@@ -16,6 +16,7 @@ var table  = require('../../../constants/table')
 const s3Helper = require('../../../helper/s3helper')
 const s3buckets = require('../../../constants/s3buckets')
 const timeHelper = require('../../../helper/timeHelper')
+const stripeHelper = require('../../../helper/stripeHelper')
 
 var companyModel = {
     getCompanyList: getCompanyList,
@@ -141,9 +142,15 @@ function getCountCompanyList(uid, data) {
  * @return  object If success returns object else returns message
  */
 function createCompany(uid, data, file) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        if (data.account_IBAN != "" && data.account_IBAN != null && data.account_IBAN != undefined) {
+            var response = await stripeHelper.createBankSource(data.account_IBAN, data.account_holdername)
+            data.stripe_sourceID = response.id
+            await stripeHelper.attachSourceToCustomer(data.customer_id, data.stripe_sourceID)
+        }
+
         let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ?';
-        let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status, created_by, created_at, updated_at, stripe_customerID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        let query = 'Insert into ' + table.COMPANIES + ' (name, address, email, phone, SIRET, VAT, account_holdername, account_address, account_IBAN, logo_url, access_360cam, access_webcam, access_audio, status, created_by, created_at, updated_at, stripe_customerID, stripe_sourceID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         db.query(confirm_query, [data.email], async function (error, rows, fields) {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
@@ -156,7 +163,7 @@ function createCompany(uid, data, file) {
                         uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.COMPANY_LOGO)
                         file_name = uploadS3.Location
                     }
-                    db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id], (error, rows, fields) => {
+                    db.query(query, [ data.name, data.address, data.email, data.phone, data.SIRET, data.VAT, data.account_holdername, data.account_address, data.account_IBAN, file_name, data.access_360cam, data.access_webcam, data.access_audio, data.status, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id, data.stripe_sourceID], (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
@@ -171,7 +178,7 @@ function createCompany(uid, data, file) {
                                         if (error) {
                                             reject({ message: message.INTERNAL_SERVER_ERROR })
                                         } else {
-                                            db.query(user_relation_query, [1, "company", companyID], (error, rows, fields) => {
+                                            db.query(user_relation_query, [1, "company", companyID], async (error, rows, fields) => {
                                                 if (error) {
                                                     reject({ message: message.INTERNAL_SERVER_ERROR })
                                                 } else {
@@ -198,7 +205,8 @@ function createCompany(uid, data, file) {
  * @return  object If success returns object else returns message
  */
 function updateCompany(companyID, uid, data, file) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        data.stripe_sourceID = response.id
         let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ? and companyID != ?';
         
         db.query(confirm_query, [data.email, companyID], async function (error, rows, fields) {
@@ -243,9 +251,12 @@ function updateCompany(companyID, uid, data, file) {
  * @return  object If success returns object else returns message
  */
 function updateBankInformation(companyID, data) {
-    return new Promise((resolve, reject) => {
-        let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where companyID = ?';
-        params = [data.account_holdername, data.account_address, data.account_IBAN, companyID]
+    return new Promise(async (resolve, reject) => {
+        company = await getCompany(null, companyID)
+        await stripeHelper.deleteCardSource(company.stripe_customerID, company.stripe_sourceID)
+        var response = await stripeHelper.createCardSource(company.stripe_customerID, data.id)
+        let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ?, stripe_sourceID = ? where companyID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, response.id, companyID]
         db.query(query, params, (error, rows, fields) => {
             if (error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})
@@ -450,9 +461,11 @@ function getCardList(data) {
  * @return  object If success returns object else returns message
  */
 function createCard(data, uid) {
-    return new Promise((resolve, reject) => {
-        let query = `Insert into cards (companyID, card_number, expiry_date, name, secure_code, created_by, created_at) values (?, ?, ?, ?, ?, ?, ?)`
-        db.query(query, [data.companyID, data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime()], (error, rows, fields) => {
+    return new Promise(async (resolve, reject) => {
+        response = await getCompany(uid, data.companyID)
+        stripe_source = await stripeHelper.createCardSource(response.stripe_customerID, data.id)
+        let query = `Insert into cards (companyID, card_number, expiry_date, name, secure_code, created_by, created_at,stripe_sourceID) values (?, ?, ?, ?, ?, ?, ?, ?)`
+        db.query(query, [data.companyID, data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime(), stripe_source.id], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -490,9 +503,13 @@ function getCard(id) {
  * @return  object If success returns object else returns message
  */
 function updateCard(id, data, uid) {
-    return new Promise((resolve, reject) => {
-        let query = `update cards set card_number = ?, expiry_date = ?, name = ?, secure_code = ?, updated_by = ?, updated_at = ? where cardID = ?`
-        db.query(query, [data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime(), id], (error, rows, fields) => {
+    return new Promise(async (resolve, reject) => {
+        var card = await getCard(id)
+        var response = await getCompany(uid, card.companyID)
+        await stripeHelper.deleteCardSource(response.stripe_customerID, card.stripe_sourceID)
+        var card_response = await stripeHelper.createCardSource(response.stripe_customerID, data.id)
+        let query = `update cards set card_number = ?, expiry_date = ?, name = ?, secure_code = ?, updated_by = ?, updated_at = ?, stripe_sourceID = ? where cardID = ?`
+        db.query(query, [data.card_number, data.expiry_date, data.name, data.secure_code, uid, timeHelper.getCurrentTime(), card_response.id, id], (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
@@ -510,7 +527,10 @@ function updateCard(id, data, uid) {
  * @return  object If success returns object else returns message
  */
 function deleteCard(id) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        var card = await getCard(id)
+        var response = await getCompany(null, card.companyID)
+        await stripeHelper.deleteCardSource(response.stripe_customerID, card.stripe_sourceID)
         let query = `delete from cards where cardID = ?`
         db.query(query, [id], (error, rows, fields) => {
             if (error) {

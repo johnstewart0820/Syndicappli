@@ -51,6 +51,9 @@ const messages = {
     NOT_USE_THIS_DISCOUNT_CODE: 'You cant use this discount code because not charge',
     CARD_ADD_SUCCESSFULLY: 'Created Card Successfully.',
     CARD_UPDATE_SUCCESSFULLY: 'Updated Card Successfully.',
+    NO_BANK: 'Have No Bank Information.',
+    NO_CARD: 'Have No Card Information.',
+    NOT_CREATE_ORDER: `Can't create the order due to price is lower than zero.`,
 }
 
 module.exports = messages

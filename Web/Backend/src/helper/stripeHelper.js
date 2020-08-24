@@ -16,14 +16,17 @@ const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const stripeHelper = {
-    createSource: createSource,
+    createBankSource: createBankSource,
+    createCardSource: createCardSource,
     createCustomer: createCustomer,
-    createCustomerSource: createCustomerSource,
+    attachSourceToCustomer: attachSourceToCustomer,
     createCharge: createCharge,
-    sendStripeEmail: sendStripeEmail
+    sendStripeEmail: sendStripeEmail,
+    updateCustomer: updateCustomer,
+    deleteCardSource: deleteCardSource,
 }
 
-function createSource(iban, account_holder_name) {
+function createBankSource(iban, account_holder_name) {
     return new Promise((resolve, reject) => {
         stripe.sources.create({
             type: 'sepa_debit',
@@ -35,9 +38,38 @@ function createSource(iban, account_holder_name) {
           }).then((source) => {
             resolve(source)
           }).catch((err) => {
-              console.log('createSource error == ', err)
+              console.log('createBankSource error == ', err)
               reject(err)
           });
+    });
+}
+
+function createCardSource(stripeCustomerId, cardToken) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const source = await stripe.customers.createSource(stripeCustomerId,
+                {
+                  source: cardToken
+                }
+            );
+            resolve(source);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+function deleteCardSource(stripeCustomerId, cardToken) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const deleted = await stripe.customers.deleteSource(
+                stripeCustomerId,
+                cardToken
+              );
+            resolve(deleted);
+        } catch (error) {
+            reject(error);
+        }
     });
 }
 
@@ -54,29 +86,43 @@ function createCustomer(data) {
     });
 }
 
-function createCustomerSource(stripeCustomerId, cardToken){
-    return new Promise(async (resolve, reject) => {
-        try {
-            const source = await stripe.customers.createSource(stripeCustomerId,
-                {
-                    source: cardToken
-                }
-            );
-            resolve(source);
-        } catch (error) {
-            reject(error);
-        }
+function updateCustomer(customerID, data) {
+    return new Promise((resolve, reject) => {
+        stripe.customers.update(
+            customerID, data
+        ).then((customer) => {
+            resolve(customer)
+        }).catch((err) => {
+            console.log('updateCustomer error == ', err)
+            reject(err)
+        });
     });
 }
 
-function createCharge(amount, stripeCustomerId, description, currency = 'usd') {
+function attachSourceToCustomer(stripeCustomerId, stripeSourceId){
+    return new Promise(async (resolve, reject) => {
+        stripe.customers.createSource(
+            stripeCustomerId,
+            {
+              source: stripeSourceId,
+            }
+          ).then((response) => {
+              resolve(response)
+          }).catch((err) => {
+              console.log('attachSourceToCustomer error == ', err)
+              reject(err)
+          });
+    });
+}
+
+function createCharge(amount, stripe_customerID, description, currency = 'eur') {
     return new Promise(async (resolve, reject) => {
         try {
             const chargeResponse = await stripe.charges.create({
-                amount,
-                currency,
-                customer: stripeCustomerId,
-                description
+                amount: amount,
+                currency: currency,
+                customer: stripe_customerID,
+                description: description
             });
             resolve(chargeResponse);
         } catch (error) {

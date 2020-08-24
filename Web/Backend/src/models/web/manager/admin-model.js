@@ -15,7 +15,8 @@ var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../../constants/table')
 const s3Helper = require('../../../helper/s3helper')
 const s3buckets = require('../../../constants/s3buckets')
-
+const stripeHelper = require('../../../helper/stripeHelper')
+const adminCompanyModel = require('../admin/company-model')
 var adminModel = {
     getProfile: getProfile,
     updateProfile: updateProfile,
@@ -66,6 +67,7 @@ function getProfile(uid) {
  */
 function updateProfile(uid, data, file) {
     return new Promise(async function(resolve, reject) {
+        await stripeHelper.updateCustomer(data.stripe_customerID, {email: data.email, name: data.data.name, description: 'company'})
         var file_name = ""
         if(file){
             uploadS3 = await s3Helper.uploadLogoS3(file, s3buckets.AVATAR)
@@ -178,6 +180,7 @@ function getCompany(uid) {
  */
 function updateCompany(uid, data, file) {
     return new Promise(async (resolve, reject) => {
+        await stripeHelper.updateCustomer(data.stripe_customerID, {email: data.email, name: data.name, description: 'company'})
         var file_name = ""
 
         if(file) {
@@ -210,9 +213,12 @@ function updateCompany(uid, data, file) {
  * @return  object If success returns object else returns message
  */
 function updateBankInformation(data) {
-    return new Promise((resolve, reject) => {
-        let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where companyID = ?';
-        params = [data.account_holdername, data.account_address, data.account_IBAN, data.companyID]
+    return new Promise(async (resolve, reject) => {
+        company = await adminCompanyModel.getCompany(null, data.companyID)
+        await stripeHelper.deleteCardSource(company.stripe_customerID, company.stripe_sourceID)
+        var response = await stripeHelper.createCardSource(company.stripe_customerID, data.id)
+        let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ?, stripe_sourceID = ? where companyID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, response.id, data.companyID]
         db.query(query, params, (error, rows, fields) => {
             if (error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})

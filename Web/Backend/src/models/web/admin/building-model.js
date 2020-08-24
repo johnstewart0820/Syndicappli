@@ -17,7 +17,7 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 var table  = require('../../../constants/table')
 var timeHelper = require('../../../helper/timeHelper')
-
+var stripeHelper = require('../../../helper/stripeHelper')
 var buildingModel = {
     getCompanyListByUser: getCompanyListByUser,
     getBuildingListByCompany: getBuildingListByCompany,
@@ -185,10 +185,15 @@ function getCountBuildingList(uid, data) {
  * @return  object If success returns object else returns message
  */
 function createBuilding(uid, data) {
-    return new Promise((resolve, reject) => {
-        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, account_holdername, account_address, account_IBAN, created_at, updated_at, stripe_customerID) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    return new Promise(async (resolve, reject) => {
+        if (data.account_IBAN != "" && data.account_IBAN != null && data.account_IBAN != undefined) {
+            var response = await stripeHelper.createBankSource(data.account_IBAN, data.account_holdername)
+            data.stripe_sourceID = response.id
+            await stripeHelper.attachSourceToCustomer(data.customer_id, data.stripe_sourceID)
+        }
+        let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, account_holdername, account_address, account_IBAN, created_at, updated_at, stripe_customerID, stripe_sourceID) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-        db.query(query, [data.companyID, data.name, data.address, uid, data.account_holdername, data.account_address, data.account_IBAN, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id], (error, rows, fields) => {
+        db.query(query, [data.companyID, data.name, data.address, uid, data.account_holdername, data.account_address, data.account_IBAN, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id, data.stripe_sourceID], (error, rows, fields) => {
             if (error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})
             } else {
@@ -567,9 +572,12 @@ function exportBuildingCSV(data, res) {
  * @return  object If success returns object else returns message
  */
 function updateBankInformation(buildingID, data) {
-    return new Promise((resolve, reject) => {
-        let query = 'Update ' + table.BUILDINGS + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where buildingID = ?';
-        params = [data.account_holdername, data.account_address, data.account_IBAN, buildingID]
+    return new Promise(async (resolve, reject) => {
+        building = await getBuilding(buildingID)
+        await stripeHelper.deleteCardSource(building.stripe_customerID, building.stripe_sourceID)
+        var response = await stripeHelper.createCardSource(building.stripe_customerID, data.id)
+        let query = 'Update ' + table.BUILDINGS + ' SET account_holdername = ?, account_address = ?, account_IBAN = ?, stripe_sourceID = ? where buildingID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, response.id, buildingID]
         db.query(query, params, (error, rows, fields) => {
             if (error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})

@@ -19,7 +19,8 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const fs = require('fs');
 const s3Helper = require('../../../helper/s3helper')
 const s3buckets = require('../../../constants/s3buckets')
-
+const adminBuildingModel = require('../admin/building-model')
+const stripeHelper = require('../../../helper/stripeHelper')
 var buildingModel = {
     getManagerCompanyListByUser: getManagerCompanyListByUser,
     getManagerBuildingList: getManagerBuildingList,
@@ -141,16 +142,21 @@ function getManagerCountBuildingList(uid, data) {
  * @return  object If success returns object else returns message
  */
 function managerCreateBuilding(uid, data) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        if (data.account_IBAN != "" && data.account_IBAN != null && data.account_IBAN != undefined) {
+            var response = await stripeHelper.createBankSource(data.account_IBAN, data.account_holdername)
+            data.stripe_sourceID = response.id
+            await stripeHelper.attachSourceToCustomer(data.customer_id, data.stripe_sourceID)
+        }
         let query = 'Select * from ' + table.USERS + ' where userID = ? and permission = "active"'
         db.query(query, [ uid ],  (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 if(rows.length > 0){
-                    query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN, created_by, created_at, updated_at, stripe_customerID) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                    query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, account_holdername, account_address, account_IBAN, created_by, created_at, updated_at, stripe_customerID, stripe_sourceID) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
                     let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
-                    db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id ],  (error, rows, fields) => {
+                    db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN, uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id, data.stripe_sourceID ],  (error, rows, fields) => {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
@@ -558,9 +564,12 @@ function exportBuildingCSV(data, res) {
  * @return  object If success returns object else returns message
  */
 function updateBankInformation(buildingID, data) {
-    return new Promise((resolve, reject) => {
-        let query = 'Update ' + table.BUILDINGS + ' SET account_holdername = ?, account_address = ?, account_IBAN = ? where buildingID = ?';
-        params = [data.account_holdername, data.account_address, data.account_IBAN, buildingID]
+    return new Promise(async (resolve, reject) => {
+        building = await adminBuildingModel.getBuilding(buildingID)
+        await stripeHelper.deleteCardSource(building.stripe_customerID, building.stripe_sourceID)
+        var response = await stripeHelper.createCardSource(building.stripe_customerID, data.id)
+        let query = 'Update ' + table.BUILDINGS + ' SET account_holdername = ?, account_address = ?, account_IBAN = ?, stripe_sourceID = ? where buildingID = ?';
+        params = [data.account_holdername, data.account_address, data.account_IBAN, response.id, buildingID]
         db.query(query, params, (error, rows, fields) => {
             if (error) {
                 reject({message: message.INTERNAL_SERVER_ERROR})

@@ -15,7 +15,7 @@ var bcrypt = require('bcrypt-nodejs')
 var table  = require('../../../constants/table')
 const s3Helper = require('../../../helper/s3helper')
 const s3buckets = require('../../../constants/s3buckets')
-
+const stripeHelper = require('../../../helper/stripeHelper')
 var adminModel = {
     getProfile: getProfile,
     updateProfile: updateProfile
@@ -62,6 +62,7 @@ function getProfile(uid) {
  */
 function updateProfile(uid, data, files) {
     return new Promise(async function(resolve, reject) {
+        await stripeHelper.updateCustomer(data.stripe_customerID, {email: data.email, name: data.firstname + ' ' + data.lastname, description: 'owner'})
         let photo_url = ""
         let id_front = ""
         let id_back = ""

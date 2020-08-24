@@ -16,6 +16,7 @@ var code = require('../../../constants/code')
 var key = require('../../../config/key-config')
 var timer  = require('../../../constants/timer')
 var authHelper = require('../../../helper/authHelper')
+var stripeHelper = require('../../../helper/stripeHelper')
 
 var companyService = {
     getCompanyList: getCompanyList,

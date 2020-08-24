@@ -16,6 +16,8 @@ var table  = require('../../../constants/table')
 const s3Helper = require('../../../helper/s3helper')
 const s3buckets = require('../../../constants/s3buckets')
 const timeHelper = require('../../../helper/timeHelper')
+const stripeHelper = require('../../../helper/stripeHelper')
+const adminBuildingModel = require('../admin/building-model')
 const {sendMail} = require('../../../helper/mailHelper')
 var mail = require('../../../constants/mail')
 var randtoken = require('rand-token');
@@ -71,6 +73,42 @@ function getAddon() {
     })
 }
 
+function createCharge(data) {
+    return new Promise(async (resolve, reject) => {
+        var price;
+        if (data.discount_type == "fixed") {
+            if (data.vat_option = "true") {
+                price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 - data.discount_amount
+            } else {
+                price = data.price * data.apartment_amount - data.discount_amount
+            }
+        } else {
+            if (data.vat_option = "true") {
+                price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 * (100 - data.discount_amount) / 100
+            } else {
+                price = data.price * data.apartment_amount * (100 - data.discount_amount) / 100 
+            }
+        }
+        if (price <= 0) {
+            reject({message: message.NOT_CREATE_ORDER})
+        } else {
+            price *= 100
+            var response = await adminBuildingModel.getBuilding(data.buildingID)
+            if (response.building[0].account_IBAN === "" || response.building[0].account_IBAN === undefined || response.building[0].account_IBAN === null)
+                reject({ message: message.NO_BANK })
+            else {
+                stripeHelper.createCharge(price,response.building[0].stripe_customerID, "").then((response) => {
+                    resolve("OK")
+                }).catch((err) => {
+                    reject({message: err.message})
+                })
+            }
+
+        }
+        
+    })
+}
+
 /**
  * buy addon
  *
@@ -107,13 +145,17 @@ function buyAddon(uid, data) {
                                             if (data.discount_codeID > 0 && amount_of_use_per_user != -1 && rows[0].count + 1 > amount_of_use_per_user)
                                                 reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
                                             else {
-                                                let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                                db.query(query, ["buildings", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
-                                                    if (error) {
-                                                        reject({ message: message.INTERNAL_SERVER_ERROR });
-                                                    } else {
-                                                        resolve("ok")
-                                                    }
+                                                createCharge(data).then((response) => {
+                                                    let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                                    db.query(query, ["buildings", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                                                        if (error) {
+                                                            reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                        } else {
+                                                            resolve("ok")
+                                                        }
+                                                    })
+                                                }).catch((err)=>{
+                                                    reject({ message: err.message})
                                                 })
                                             }
                                         }
@@ -125,13 +167,17 @@ function buyAddon(uid, data) {
                 }
             })
         } else {
-            let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-            db.query(query, ["buildings", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
-                if (error) {
-                    reject({ message: message.INTERNAL_SERVER_ERROR });
-                } else {
-                    resolve("ok")
-                }
+            createCharge(data).then((response) => {
+                let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                db.query(query, ["buildings", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                    } else {
+                        resolve("ok")
+                    }
+                }).catch((err)=>{
+                    reject({ message: err.message})
+                })
             })
         }
     })

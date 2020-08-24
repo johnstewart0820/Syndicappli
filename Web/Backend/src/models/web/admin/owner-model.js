@@ -326,7 +326,7 @@ function createOwner(uid, data, ownerID) {
  */
 function getOwner(uid, data, id) {
     return new Promise((resolve, reject) => {
-        let query = 'Select *, users.type usertype, users.email email, users.phone phone, users.address address, users.status status from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
+        let query = 'Select *, users.type usertype, users.email email, users.phone phone, users.address address, users.status status, users.stripe_customerID customerID from ' + table.USERS + ' left join ' + table.USER_RELATIONSHIP + ' using (userID) left join '+  table.BUILDINGS + ' on buildings.buildingID = user_relationship.relationID left join ' + table.COMPANIES + ' using (companyID) where users.userID = ? and buildings.buildingID = ?'
         let ownerInfo;
         let vote_amount_info;
         let apartment_info;
@@ -371,7 +371,7 @@ function getOwner(uid, data, id) {
  */
 function updateOwner_info(id, data, files) {
     return new Promise(async (resolve, reject) => {
-        
+        await stripeHelper.updateCustomer(data.stripe_customerID, {email: data.email, name: data.firstname + ' ' + data.lastname, description: 'owner'})
         let photo_url = ""
         let id_front = ""
         let id_back = ""
@@ -466,7 +466,8 @@ function delete_apartments(data, id) {
  * @return  object If success returns object else returns message
  */
 function updateOwner(uid, data) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+        
         let query = 'Insert into ' + table.USERS + ' (companyID, name, address, account_holdername, account_address, account_IBAN) values (?, ?, ?, ?, ?, ?)'
         let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
         db.query(query, [ data.companyID, data.name, data.address, data.account_holdername, data.account_address, data.account_IBAN ],  async (error, rows, fields) => {
