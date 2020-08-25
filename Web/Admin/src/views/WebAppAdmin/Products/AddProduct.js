@@ -22,8 +22,8 @@ const AddProducts = (props) => {
     const [billingCycle, setBillingCycle] = React.useState(0);
     const categorieList = ['Gestionnaires', 'Copropriétaires', 'Immeubles'];
     const en_categorieList = ['managers', 'owners', 'buildings'];
-    const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
-    const en_billingCycleList = ['one_time', 'annually', 'monthly'];
+    const billingCycleList = ['une fois', 'annuellement', 'trimestrielle', 'mensuelle'];
+    const en_billingCycleList = ['one_time', 'annually', '3_months', 'monthly'];
     const [renewal, setRenewal] = React.useState(false);
     const [productName, setProductName] = React.useState('');
     const [productDescription, setProductDescription] = React.useState('');

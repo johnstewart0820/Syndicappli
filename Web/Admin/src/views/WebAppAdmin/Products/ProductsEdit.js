@@ -44,8 +44,8 @@ const ProductsEdit = (props) => {
 
   const categorieList = ['Gestionnaires', 'Copropriétaires', 'Immeubles'];
   const en_categorieList = ['managers','owners','buildings'];
-  const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
-  const en_billingCycleList = ['one_time','annually','monthly'];
+  const billingCycleList = ['une fois', 'annuellement', 'trimestrielle', 'mensuelle'];
+  const en_billingCycleList = ['one_time','annually', '3_months', 'monthly'];
   useEffect(() => {
     getProduct();
   }, [accessProducts]);

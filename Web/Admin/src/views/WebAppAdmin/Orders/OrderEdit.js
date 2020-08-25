@@ -25,8 +25,8 @@ const OrderEdit = (props) => {
   const [categorie, setCategorie] = React.useState(0);
   const discountTypeList = ['fixe', 'pourcentage'];
   const [billingCycle, setBillingCycle] = React.useState(0);
-  const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
-  const en_billingCycleList = ['one_time', 'annually', 'monthly'];
+  const billingCycleList = ['une fois', 'annuellement', 'trimestrielle', 'mensuelle'];
+  const en_billingCycleList = ['one_time', 'annually', '3_months', 'monthly'];
   const orderStatusList = ['Terminé', 'Actif', 'En attente', 'Annulée'];
   const en_orderstatusList = ['terminated', 'active', 'on hold', 'cancelled'];
   const [orderStatus, setOrderStatus] = React.useState(0);
@@ -427,7 +427,7 @@ const OrderEdit = (props) => {
           <Grid item xs={12} sm={6} container justify="flex-start" >
             <Grid item>
               <Typography variant="h2" className={classes.headerTitle}>
-                <b>Résidence les Pinsons</b>
+                <b>Commande #{props.match.params.id}</b>
               </Typography>
             </Grid>
           </Grid>
@@ -436,7 +436,7 @@ const OrderEdit = (props) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-        <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Produit</p>
+        <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Commandes</p>
       </div>
       <Grid container direction="column" >
         <div className={classes.body}>

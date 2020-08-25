@@ -21,8 +21,8 @@ const AddOrder = (props) => {
     const [categorie, setCategorie] = React.useState(0);
     const discountTypeList = ['fixe', 'pourcentage'];
     const [billingCycle, setBillingCycle] = React.useState(0);
-    const billingCycleList = ['une fois', 'annuellement', 'mensuelle'];
-    const en_billingCycleList = ['one_time', 'annually', 'monthly'];
+    const billingCycleList = ['une fois', 'annuellement', 'trimestrielle', 'mensuelle'];
+    const en_billingCycleList = ['one_time', 'annually', '3_months', 'monthly'];
     const orderStatusList = ['Terminé', 'Actif', 'En attente', 'Annulée'];
     const en_orderstatusList = ['terminated', 'active', 'on_hold', 'cancelled'];
     const [orderStatus, setOrderStatus] = React.useState(0);
