@@ -180,7 +180,10 @@ const BankCard = (props) => {
           exp_year: exp_year,
           cvc: cryptogram,
       }
-      window.Stripe.createToken(cardInfo, handleResponse);
+      var sourceData = {
+        type: 'card',
+      };
+      window.Stripe.createToken(cardInfo,sourceData,handleResponse);
     }
   }
   const createCard = (token) => {
