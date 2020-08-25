@@ -154,6 +154,8 @@ const AddCompany = (props) => {
                 };
                 stripe.createSource(sourceData).then(setOutcome);
             }
+            else
+                createCompany('');
         }
     }
     const setOutcome = (result) => {

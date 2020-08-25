@@ -94,6 +94,8 @@ const AddBuilding = (props) => {
         };
         stripe.createSource(sourceData).then(setOutcome);
       }
+      else
+        createBuilding('');
     }
   };
   const setOutcome = (result) => {
