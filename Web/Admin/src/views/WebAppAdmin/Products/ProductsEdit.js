@@ -199,7 +199,7 @@ const handleChangeVatFee = (event) => {
         </Grid>
       </div>
       <div className={classes.tool}>
-        <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des Produit</p>
+        <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des produits</p>
       </div>
       <Grid container direction="column" >
         <div className={classes.body}>

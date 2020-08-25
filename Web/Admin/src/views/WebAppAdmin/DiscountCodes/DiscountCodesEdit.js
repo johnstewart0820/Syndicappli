@@ -186,7 +186,7 @@ const updateDiscountCode = () => {
         </Grid>
       </div>
       <div className={classes.tool}>
-          <p onClick={handleClick} className={classes.backTitle}>&lt; retour à la liste des codes promo</p>
+          <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des codes promo</p>
       </div> 
       <Grid container direction="column" >
         <div className={classes.body}>
