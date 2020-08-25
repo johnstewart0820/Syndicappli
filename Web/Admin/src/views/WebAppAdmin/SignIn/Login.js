@@ -164,7 +164,7 @@ const Login = (props) => {
                 localStorage.setItem("usertype", JSON.stringify(profile.usertype));
                 localStorage.setItem("select", JSON.stringify(0));
                 if (!(profile.identity_card_front === null || profile.identity_card_front === "" || profile.identity_card_front === undefined)) {
-                  if(profile.owner_role === 'subaccount'){
+                  if (profile.owner_role === 'subaccount') {
                     localStorage.setItem("role_addons", JSON.stringify('edit'));
                     localStorage.setItem("role_assemblies", JSON.stringify('denied'));
                     localStorage.setItem("role_chat", JSON.stringify('edit'));
@@ -173,7 +173,7 @@ const Login = (props) => {
                     localStorage.setItem("role_payments", JSON.stringify('edit'));
                     localStorage.setItem("role_invoices", JSON.stringify('edit'));
                     localStorage.setItem("idcard_state", JSON.stringify('true'));
-                  }else{
+                  } else {
                     localStorage.setItem("role_addons", JSON.stringify('edit'));
                     localStorage.setItem("role_assemblies", JSON.stringify('edit'));
                     localStorage.setItem("role_chat", JSON.stringify('edit'));
@@ -243,9 +243,7 @@ const Login = (props) => {
           <img src={logo.url} className={classes.logo} alt="" />
         </Grid>
         <Grid item container justify="center">
-          <p className={classes.title}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut
-          tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae.
-         Suspendisse vehicula laoreet ullamcorper. </p>
+          <p className={classes.title}>Bienvenue sur votre espace personnel de connexion.Veuillez entrer votre identifiant Email et votre mot de passe personnel pour vous connecter.</p>
         </Grid>
         <Grid item container justify="center">
           <Grid item container xs={1} sm={2} md={4}></Grid>
