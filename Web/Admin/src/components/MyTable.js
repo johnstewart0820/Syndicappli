@@ -275,7 +275,7 @@ export default function ProductTable(props) {
   }
   const priceValue = (val) => {
     if(props.type === 'managers')
-      return val + 'cts/lot/mois HT';
+      return val + '€/lot/mois HT';
     if(props.type === 'buildings')
       return val + '€/lot/an HT';
     if(props.type === 'owners')

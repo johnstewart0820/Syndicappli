@@ -149,7 +149,7 @@ const InvoiceSubscriptions = (props) => {
               localStorage.setItem("token", JSON.stringify(data.token));
               let list = data.invoicelist;
               for (let i = 0; i < list.length; i++) {
-                list[i].price = list[i].price + 'cts HT';
+                list[i].price = list[i].price + '€ HT';
                 list[i].total_amount = list[i].total_amount + '€ HT';
               }
               setDataList(list);
