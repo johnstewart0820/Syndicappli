@@ -215,7 +215,8 @@ function updateCompany(uid, data, file) {
 function updateBankInformation(data) {
     return new Promise(async (resolve, reject) => {
         company = await adminCompanyModel.getCompany(null, data.companyID)
-        await stripeHelper.deleteCardSource(company.stripe_customerID, company.stripe_sourceID)
+        if (company.stripe_sourceID !== null && company.stripe_sourceID !== "" && company.stripe_sourceID !== undefined)
+            await stripeHelper.deleteCardSource(company.stripe_customerID, company.stripe_sourceID)
         var response = await stripeHelper.createCardSource(company.stripe_customerID, data.id)
         let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ?, stripe_sourceID = ? where companyID = ?';
         params = [data.account_holdername, data.account_address, data.account_IBAN, response.id, data.companyID]

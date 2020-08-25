@@ -144,9 +144,8 @@ function getCountCompanyList(uid, data) {
 function createCompany(uid, data, file) {
     return new Promise(async (resolve, reject) => {
         if (data.account_IBAN != "" && data.account_IBAN != null && data.account_IBAN != undefined) {
-            var response = await stripeHelper.createBankSource(data.account_IBAN, data.account_holdername)
-            data.stripe_sourceID = response.id
-            await stripeHelper.attachSourceToCustomer(data.customer_id, data.stripe_sourceID)
+            await stripeHelper.createCardSource(data.customer_id, data.id)
+            data.stripe_sourceID = data.id
         }
 
         let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ?';
@@ -253,7 +252,8 @@ function updateCompany(companyID, uid, data, file) {
 function updateBankInformation(companyID, data) {
     return new Promise(async (resolve, reject) => {
         company = await getCompany(null, companyID)
-        await stripeHelper.deleteCardSource(company.stripe_customerID, company.stripe_sourceID)
+        if (company.stripe_sourceID !== null && company.stripe_sourceID !== "" && company.stripe_sourceID !== undefined)
+            await stripeHelper.deleteCardSource(company.stripe_customerID, company.stripe_sourceID)
         var response = await stripeHelper.createCardSource(company.stripe_customerID, data.id)
         let query = 'Update ' + table.COMPANIES + ' SET account_holdername = ?, account_address = ?, account_IBAN = ?, stripe_sourceID = ? where companyID = ?';
         params = [data.account_holdername, data.account_address, data.account_IBAN, response.id, companyID]

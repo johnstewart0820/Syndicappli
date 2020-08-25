@@ -48,7 +48,11 @@ var orderModel = {
     downloadZipOrder: downloadZipOrder,
     downloadZipOwner: downloadZipOwner,
     downloadZipBuilding: downloadZipBuilding,
-    getChartList: getChartList
+    getChartList: getChartList,
+    createCharge: createCharge,
+    createChargeList: createChargeList,
+    getPendingOrderList:getPendingOrderList,
+
 }
 
 function getFilterList(uid, data) {
@@ -451,7 +455,30 @@ function getOwner(ownerID) {
         })
     })
 }
-
+function getPendingOrderList() {
+    return new Promise(async (resolve, reject) => {
+        let query = 'Select * from orders where permission="active" and payment_status="pending"'
+        db.query(query, [], (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve(rows)
+            }
+        })
+    })
+}
+function createChargeList(list) {
+    return new Promise(async (resolve, reject) => {
+        for (var i in list) {
+            var data = list[i]
+            createCharge(data).then(async (response) => {
+                let query = `update ` + table.ORDERS + ` set  payment_status = "success" where orderID = ?`;
+                await db.query(query, [data.orderID])
+            }).catch((err) => {
+            }) 
+        }
+    })
+}
 function createCharge(data) {
     return new Promise(async (resolve, reject) => {
         var price;
@@ -472,6 +499,7 @@ function createCharge(data) {
             reject({message: message.NOT_CREATE_ORDER})
         } else {
             price *= 100
+            price = Math.round(price)
             if (data.buyer_type === "managers") {
                 if (data.payment_method === "credit_card") {
     
@@ -480,7 +508,7 @@ function createCharge(data) {
                     if (cards.length === 0)
                         reject({ message: message.NO_CARD})
                     else {
-                        stripeHelper.createCharge(price,response.stripe_customerID, "").then((response) => {
+                        stripeHelper.createCharge(price,response.stripe_customerID, cards[0].stripe_sourceID,  "").then((response) => {
                             resolve("OK")
                         }).catch((err) => {
                             reject({message: err.message})
@@ -492,7 +520,7 @@ function createCharge(data) {
                     if (response.account_IBAN === "" || response.account_IBAN === undefined || response.account_IBAN === null)
                         reject({ message: message.NO_BANK })
                     else {
-                        stripeHelper.createCharge(price,response.stripe_customerID, "").then((response) => {
+                        stripeHelper.createCharge(price,response.stripe_customerID, response.stripe_sourceID, "").then((response) => {
                             resolve("OK")
                         }).catch((err) => {
                             reject({message: err.message})
@@ -506,7 +534,7 @@ function createCharge(data) {
                 if (cards.length === 0)
                     reject({ message: message.NO_CARD})
                 else {
-                    stripeHelper.createCharge(price,response.stripe_customerID, "").then((response) => {
+                    stripeHelper.createCharge(price,response.stripe_customerID, cards[0].stripe_sourceID, "").then((response) => {
                         resolve("OK")
                     }).catch((err) => {
                         reject({message: err.message})
@@ -518,7 +546,7 @@ function createCharge(data) {
                 if (response.building[0].account_IBAN === "" || response.building[0].account_IBAN === undefined || response.building[0].account_IBAN === null)
                     reject({ message: message.NO_BANK })
                 else {
-                    stripeHelper.createCharge(price,response.building[0].stripe_customerID, "").then((response) => {
+                    stripeHelper.createCharge(price,response.building[0].stripe_customerID, response.building[0].stripe_sourceID,  "").then((response) => {
                         resolve("OK")
                     }).catch((err) => {
                         reject({message: err.message})
@@ -579,19 +607,36 @@ function createOrder(uid, data) {
                                             data.apartment_amount = 1
                                         if (data.apartment_amount == '' || data.apartment_amount == null || data.apartment_amount == undefined)
                                             data.apartment_amount = 0
-                                        createCharge(data).then((response) => {
-                                            let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                            db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                                        if (Date(data.start_date) <= Date(timeHelper.getCurrentDate())) {
+                                            createCharge(data).then((response) => {
+                                                let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at, payment_status) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                                db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime(),"success"], function (error, result, fields) {
+                                                    if (error) {
+                                                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                    } else {
+                                                        resolve("ok")
+                                                    }
+                                                })
+                                            }).catch((err) => {
+                                                let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at, payment_status) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                                db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime(), "pending"], function (error, result, fields) {
+                                                    if (error) {
+                                                        reject({ message: message.INTERNAL_SERVER_ERROR });
+                                                    } else {
+                                                        resolve("ok")
+                                                    }
+                                                })
+                                            })     
+                                        } else {
+                                            let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at, payment_status) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                            db.query(query, [data.buyer_type, data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, data.start_date, data.end_date, data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, data.status, "active", uid, timeHelper.getCurrentTime(),"pending"], function (error, result, fields) {
                                                 if (error) {
                                                     reject({ message: message.INTERNAL_SERVER_ERROR });
                                                 } else {
                                                     resolve("ok")
                                                 }
                                             })
-                                        }).catch((err) => {
-                                            reject({ message: err.message });
-                                        }) 
-                                        
+                                        }
                                     }
                                 }
                             })

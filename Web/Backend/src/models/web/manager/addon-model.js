@@ -93,17 +93,13 @@ function createCharge(data) {
             reject({message: message.NOT_CREATE_ORDER})
         } else {
             price *= 100
+            price = Math.round(price)
             var response = await adminBuildingModel.getBuilding(data.buildingID)
-            if (response.building[0].account_IBAN === "" || response.building[0].account_IBAN === undefined || response.building[0].account_IBAN === null)
-                reject({ message: message.NO_BANK })
-            else {
-                stripeHelper.createCharge(price,response.building[0].stripe_customerID, "").then((response) => {
-                    resolve("OK")
-                }).catch((err) => {
-                    reject({message: err.message})
-                })
-            }
-
+            stripeHelper.createCharge(price,response.building[0].stripe_customerID, data.id, "").then((response) => {
+                resolve("OK")
+            }).catch((err) => {
+                reject({message: err.message})
+            })
         }
         
     })
@@ -117,7 +113,7 @@ function createCharge(data) {
  * @return  object If success returns object else returns message
  */
 function buyAddon(uid, data) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         let query = 'select * from discount_codes where permission = "active" and discount_codeID = ? and user_type="buildings"'
         if (data.discount_codeID > 0) {
             db.query(query, [data.discount_codeID], (error, rows, fields) => {
@@ -145,14 +141,11 @@ function buyAddon(uid, data) {
                                             if (data.discount_codeID > 0 && amount_of_use_per_user != -1 && rows[0].count + 1 > amount_of_use_per_user)
                                                 reject({ message: message.NOT_USE_THIS_DISCOUNT_CODE })
                                             else {
-                                                var response = await stripeHelper.createBankSource(data.account_IBAN, data.account_holdername)
-                                                data.stripe_sourceID = response.id
                                                 building_response = await adminBuildingModel.getBuilding(data.buildingID)
-
-                                                await stripeHelper.attachSourceToCustomer(building_response.building[0].customer_id, data.stripe_sourceID)
+                                                await stripeHelper.createCardSource(building_response.building[0].stripe_customerID, data.id)
                                                 createCharge(data).then((response) => {
-                                                    let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                                    db.query(query, ["buildings", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {
+                                                    let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at, payment_status) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                                    db.query(query, ["buildings", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime(),"success"], function (error, result, fields) {
                                                         if (error) {
                                                             reject({ message: message.INTERNAL_SERVER_ERROR });
                                                         } else {
@@ -172,6 +165,8 @@ function buyAddon(uid, data) {
                 }
             })
         } else {
+            building_response = await adminBuildingModel.getBuilding(data.buildingID)
+            await stripeHelper.createCardSource(building_response.building[0].stripe_customerID, data.id)
             createCharge(data).then((response) => {
                 let query = `Insert into ` + table.ORDERS + ` (buyer_type, productID, companyID, buildingID, buyerID, buyer_name, billing_cycle, renewal, price_type, price, vat_option, vat_fee, apartment_amount, start_date, end_date, payment_method, discount_codeID, discount_type, discount_amount, status, permission, created_by, created_at) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
                 db.query(query, ["buildings", data.productID, data.companyID, data.buildingID, data.buyerID, data.buyer_name, data.billing_cycle, data.renewal, data.price_type, data.price, data.vat_option, data.vat_fee, data.apartment_amount, timeHelper.getCurrentDate(), timeHelper.getNextYearDate(), data.payment_method, data.discount_codeID, data.discount_type, data.discount_amount, "active", "active", uid, timeHelper.getCurrentTime()], function (error, result, fields) {

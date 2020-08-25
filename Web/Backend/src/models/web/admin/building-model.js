@@ -187,9 +187,8 @@ function getCountBuildingList(uid, data) {
 function createBuilding(uid, data) {
     return new Promise(async (resolve, reject) => {
         if (data.account_IBAN != "" && data.account_IBAN != null && data.account_IBAN != undefined) {
-            var response = await stripeHelper.createBankSource(data.account_IBAN, data.account_holdername)
-            data.stripe_sourceID = response.id
-            await stripeHelper.attachSourceToCustomer(data.customer_id, data.stripe_sourceID)
+            await stripeHelper.createCardSource(data.customer_id, data.id)
+            data.stripe_sourceID = data.id
         }
         let query = 'Insert into ' + table.BUILDINGS + ' (companyID, name, address, created_by, account_holdername, account_address, account_IBAN, created_at, updated_at, stripe_customerID, stripe_sourceID) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         let select_building_query = 'Select * from ' + table.BUILDINGS + ' order by created_at desc limit 1'
@@ -573,9 +572,10 @@ function exportBuildingCSV(data, res) {
  */
 function updateBankInformation(buildingID, data) {
     return new Promise(async (resolve, reject) => {
-        building = await getBuilding(buildingID)
-        await stripeHelper.deleteCardSource(building.stripe_customerID, building.stripe_sourceID)
-        var response = await stripeHelper.createCardSource(building.stripe_customerID, data.id)
+        building_response = await getBuilding(buildingID)
+        if (building_response.building[0].stripe_sourceID !== null && building_response.building[0].stripe_sourceID !== undefined && building_response.building[0].stripe_sourceID !== "")
+            await stripeHelper.deleteCardSource(building_response.building[0].stripe_customerID, building_response.building[0].stripe_sourceID)
+        var response = await stripeHelper.createCardSource(building_response.building[0].stripe_customerID, data.id)
         let query = 'Update ' + table.BUILDINGS + ' SET account_holdername = ?, account_address = ?, account_IBAN = ?, stripe_sourceID = ? where buildingID = ?';
         params = [data.account_holdername, data.account_address, data.account_IBAN, response.id, buildingID]
         db.query(query, params, (error, rows, fields) => {

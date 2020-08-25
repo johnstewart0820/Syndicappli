@@ -115,14 +115,15 @@ function attachSourceToCustomer(stripeCustomerId, stripeSourceId){
     });
 }
 
-function createCharge(amount, stripe_customerID, description, currency = 'eur') {
+function createCharge(amount, stripe_customerID, stripe_sourceID, description, currency = 'eur') {
     return new Promise(async (resolve, reject) => {
         try {
             const chargeResponse = await stripe.charges.create({
                 amount: amount,
                 currency: currency,
                 customer: stripe_customerID,
-                description: description
+                description: description,
+                source: stripe_sourceID
             });
             resolve(chargeResponse);
         } catch (error) {

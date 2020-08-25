@@ -17,9 +17,10 @@ var logger = require('morgan')
 var bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 var apiRouter = require('./routes/index')
+const cron = require("node-cron");
 var authMiddleware = require('./middleware/auth-middleware')
 const { ValidationError } = require('express-validation')
-
+const orderModel = require('./models/web/admin/order-model')
 dotenv.config()
 const app = express()
 app.use(logger('dev'))
@@ -44,5 +45,15 @@ app.use(function (err, req, res, next) {
 
     return res.status(500).json(err)
 })
+
+cron.schedule("* 9 * * *", function() {
+    console.log("running a task every minute");
+    orderModel.getPendingOrderList().then((data) =>{
+        orderModel.createChargeList(data)
+    }).catch((err) =>{
+
+    })
+});
+
 
 module.exports = app
