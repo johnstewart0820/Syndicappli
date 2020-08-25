@@ -205,7 +205,7 @@ function createCompany(uid, data, file) {
  */
 function updateCompany(companyID, uid, data, file) {
     return new Promise(async (resolve, reject) => {
-        data.stripe_sourceID = response.id
+        await stripeHelper.updateCustomer(data.stripe_customerID, {email: data.email, name: data.name, description: 'company'})
         let confirm_query = 'Select * from ' + table.COMPANIES + ' where email = ? and companyID != ?';
         
         db.query(confirm_query, [data.email, companyID], async function (error, rows, fields) {

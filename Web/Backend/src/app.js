@@ -46,7 +46,7 @@ app.use(function (err, req, res, next) {
     return res.status(500).json(err)
 })
 
-cron.schedule("* 9 * * *", function() {
+cron.schedule("0 9 * * *", function() {
     console.log("running a task every minute");
     orderModel.getPendingOrderList().then((data) =>{
         orderModel.createChargeList(data)
