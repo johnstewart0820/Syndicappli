@@ -88,7 +88,7 @@ const InvoiceSubscriptions = (props) => {
           const downloadUrl = window.URL.createObjectURL(new Blob([data]));
           const link = document.createElement('a');
           link.href = downloadUrl;
-          link.setAttribute('download', 'Invoice(' + date + ').pdf');
+          link.setAttribute('download', 'Invoice' + id + '(' + date + ').pdf');
           document.body.appendChild(link);
           link.click();
           link.remove();
