@@ -153,12 +153,12 @@ export default function ProductTable(props) {
                     })
                   }
                   <TableCell align="right">
-                    <IconButton>
-                      <EditIcon className={classes.editItem} onClick={() => props.onClickEdit(item.ID)} />
+                    <IconButton  onClick={() => props.onClickEdit(item.ID)} >
+                      <EditIcon className={classes.editItem}/>
                     </IconButton>
                       &nbsp;&nbsp;
-                    <IconButton>
-                      <DeleteIcon className={classes.editItem} onClick={() => props.onClickDelete(item.ID)}></DeleteIcon>
+                    <IconButton onClick={() => props.onClickDelete(item.ID)}>
+                      <DeleteIcon className={classes.editItem}></DeleteIcon>
                     </IconButton>
                   </TableCell>
                 </TableRow>
