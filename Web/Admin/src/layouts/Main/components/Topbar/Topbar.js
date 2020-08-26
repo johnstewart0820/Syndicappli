@@ -172,20 +172,19 @@ const useStyles = makeStyles(theme => ({
   },
   logo_size: {
     [theme.breakpoints.up('xl')]: {
-      height: 50,
-      width: 308,
+      height: 209,
+      paddingTop: 50,
     },
     [theme.breakpoints.down('lg')]: {
-      height: 35,
-      width: 215,
+      height: 146,
+      padding: 20
     },
     [theme.breakpoints.down('md')]: {
-      height: 25,
-      width: 151,
+      height: 102,
+      padding: 10,
     },
     display: 'flex',
     alignItems: 'center',
-    objectFit: 'cover',
   },
 }));
 
