@@ -64,7 +64,7 @@ const OwnerEdit = (props) => {
   const [companies, setCompanies] = useState(0);
   const [companyList, setCompanyList] = useState([]);
   const [companyID, setCompanyID] = useState(-1);
-
+  const [postalCode, setPostalCode] = useState('');
   const [building, setBuilding] = useState(['']);
   const [buildings, setBuildings] = useState(0);
   const [buildingList, setBuildingList] = useState([]);
@@ -101,7 +101,7 @@ const OwnerEdit = (props) => {
   const [errorsCompanyName, setErrorsCompanyName] = useState('');
   const [errorsLotsList, setErrorsLotsList] = useState('');
   const [errorsLot, setErrorsLot] = useState('');
-
+  const [errorsPostalCode, setErrorsPostalCode] = React.useState('');
   const [lotsList, setLotsList] = useState([]);
   const [stateLots, setStateLots] = useState(false);
   const [buildingVote, setBuildingVote] = useState([]);
@@ -184,6 +184,8 @@ const OwnerEdit = (props) => {
     else setErrorsPhonenumber('');
     if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
     else setErrorsAddress('');
+    if (postalCode.length !== 5) { setErrorsPostalCode('please check postal code'); cnt++; }
+    else setErrorsPostalCode('');
     if (isSubAccount === false) {
       if (count === 0) { setErrorsLotsList('please add a Lot at least'); cnt++; }
       else setErrorsLotsList('');
@@ -303,6 +305,14 @@ const OwnerEdit = (props) => {
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
+  }
+  const handleChangePostalCode = (event) => {
+    if (event.target.value[event.target.value.length - 1] === '.')
+        return;
+    if (Number.isInteger(Number(event.target.value))) {
+        if (event.target.value.length < 6)
+            setPostalCode(event.target.value);
+    }
   }
   const handleChangeCompanies = (val) => {
     setCompanies(val);
@@ -430,6 +440,7 @@ const OwnerEdit = (props) => {
     formdata.set('lastname_1', lastname1);
     formdata.set('owner_company_name', companyName);
     formdata.set('address', address);
+    formdata.set('code_postal', postalCode);
     formdata.set('phone', phonenumber);
     formdata.set('photo_url', avatar === null ? '' : avatar)
     formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0])
@@ -500,6 +511,7 @@ const OwnerEdit = (props) => {
               setEmail(ownerInfo.email);
               setPhoneNumber(ownerInfo.phone);
               setAddress(ownerInfo.address);
+              setPostalCode(ownerInfo.code_postal);
               setStripeCustomerID(ownerInfo.customerID ? ownerInfo.customerID : '');
               if (ownerInfo.owner_role === 'subaccount') {
                 setIsSubAccount(true);
@@ -994,7 +1006,7 @@ const OwnerEdit = (props) => {
           <Grid item container spacing={5}>
             <Grid item container ></Grid>
             <Grid item container spacing={1} direction="column">
-              <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Adresse (Ville)</p></Grid>
               <Grid item container direction="column">
                 <TextField
                   className={classes.text}
@@ -1007,6 +1019,21 @@ const OwnerEdit = (props) => {
                 />
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container spacing={1} direction="column">
+              <Grid item><p className={classes.itemTitle}>Code postal</p></Grid>
+              <Grid item container direction="column">
+                <TextField
+                  className={classes.text}
+                  variant="outlined"
+                  value={postalCode}
+                  onChange={handleChangePostalCode}
+                  disabled={(accessOwners === 'see' ? true : false)}
+                  style={{width:'50%'}}
+                />
+                {errorsPostalCode.length > 0 &&
+                  <span className={classes.error}>{errorsPostalCode}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

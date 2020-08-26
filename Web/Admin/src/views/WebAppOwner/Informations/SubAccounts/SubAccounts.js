@@ -158,6 +158,7 @@ const SubAccounts = (props) => {
   const [email, setEmail] = React.useState('');
   const [mobile, setMobile] = React.useState('');
   const [address, setAddress] = React.useState('');
+  const [postalCode, setPostalCode] = React.useState('');
 
   const [errorsLastName, setErrorsLastName] = React.useState('');
   const [errorsFirstName, setErrorsFirstName] = React.useState('');
@@ -166,7 +167,7 @@ const SubAccounts = (props) => {
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsMobile, setErrorsMobile] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
-
+  const [errorsPostalCode, setErrorsPostalCode] = React.useState('');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
   const [dataList, setDataList] = useState([]);
@@ -192,6 +193,14 @@ const SubAccounts = (props) => {
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
+  }
+  const handleChangePostalCode = (event) => {
+    if (event.target.value[event.target.value.length - 1] === '.')
+        return;
+    if (Number.isInteger(Number(event.target.value))) {
+        if (event.target.value.length < 6)
+            setPostalCode(event.target.value);
+    }
   }
   const handleChangeEmail = (event) => {
     event.preventDefault();
@@ -282,6 +291,10 @@ const SubAccounts = (props) => {
                 setAddress(data.owner.address);
               else
                 setAddress('');
+              if (data.owner.code_postal)
+                setPostalCode(data.owner.code_postal);
+              else
+                setPostalCode('');
               if (data.owner.email)
                 setEmail(data.owner.email);
               else
@@ -342,6 +355,10 @@ const SubAccounts = (props) => {
                 requestdata['address'] = data.owner.address;
               else
                 requestdata['address'] = '';
+              if (data.owner.code_postal)
+                requestdata['code_postal'] = data.owner.code_postal;
+              else
+                requestdata['code_postal'] = '';
               if (data.owner.email)
                 requestdata['email'] = data.owner.email;
               else
@@ -444,6 +461,8 @@ const SubAccounts = (props) => {
     else setErrorsFirstName1('');
     if (address.length === 0) { setErrorsAddress('please enter owner address'); cnt++; }
     else setErrorsAddress('');
+    if (postalCode.length !== 5) { setErrorsPostalCode('please check postal code'); cnt++; }
+    else setErrorsPostalCode('');
     if (email.length === 0) { setErrorsEmail('please enter owner email'); cnt++; }
     else setErrorsEmail('');
     if (mobile.length === 0) { setErrorsMobile('please enter owner mobile number'); cnt++; }
@@ -616,7 +635,7 @@ const SubAccounts = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid xs={2} item><p className={classes.backTitle}>Adresse</p></Grid>
+              <Grid xs={2} item><p className={classes.backTitle}>Adresse (Ville)</p></Grid>
               <Grid xs={10} item container alignItems="stretch" direction="column">
                 <TextField
                   variant="outlined"
@@ -626,6 +645,19 @@ const SubAccounts = (props) => {
                 />
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid xs={2} item><p className={classes.backTitle}>Code postal</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={postalCode}
+                  onChange={handleChangePostalCode}
+                  fullWidth
+                />
+                {errorsPostalCode.length > 0 &&
+                  <span className={classes.error}>{errorsPostalCode}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

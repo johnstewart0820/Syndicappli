@@ -268,6 +268,7 @@ const MyAccount = (props) => {
   const [old_password, setOldPassword] = React.useState('');
   const [new_password, setNewPassword] = React.useState('');
   const [confirm_password, setConfirmPassword] = React.useState('');
+  const [postalCode, setPostalCode] = React.useState('');
 
   const [errorsLastname, setErrorsLastName] = React.useState('');
   const [errorsFirstname, setErrorsFirstName] = React.useState('');
@@ -277,6 +278,7 @@ const MyAccount = (props) => {
   const [errorsOldPassword, setErrorsOldPassword] = React.useState('');
   const [errorsNewPassword, setErrorsNewPassword] = React.useState('');
   const [errorsConfirmPassword, setErrorsConfirmPassword] = React.useState('');
+  const [errorsPostalCode, setErrorsPostalCode] = React.useState('');
 
   const [avatarurl, setAvatarUrl] = React.useState('');
   const [avatar, setAvatar] = React.useState(null);
@@ -293,6 +295,14 @@ const MyAccount = (props) => {
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
+  }
+  const handleChangePostalCode = (event) => {
+    if (event.target.value[event.target.value.length - 1] === '.')
+        return;
+    if (Number.isInteger(Number(event.target.value))) {
+        if (event.target.value.length < 6)
+            setPostalCode(event.target.value);
+    }
   }
   const handleChangeEmail = (event) => {
     event.preventDefault();
@@ -348,6 +358,7 @@ const MyAccount = (props) => {
               setPhone(profile.phone ? profile.phone : '');
               setAvatarUrl(profile.photo_url ? profile.photo_url : '');
               setAddress(profile.address ? profile.address : '');
+              setPostalCode(profile.code_postal ? profile.code_postal : '');
               let urls = [];
               if (!(profile.identity_card_front === null || profile.identity_card_front === '' || profile.identity_card_front === undefined))
                 urls.push(profile.identity_card_front);
@@ -380,6 +391,8 @@ const MyAccount = (props) => {
     else setErrorsFirstName('');
     if (address.length === 0) { setErrorsAddress('please enter your address'); cnt++; }
     else setErrorsAddress('');
+    if (postalCode.length !== 5) { setErrorsPostalCode('please check postal code'); cnt++; }
+    else setErrorsPostalCode('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
     if (phone.length === 0) { setErrorsPhone('please enter your phone number'); cnt++; }
@@ -406,6 +419,7 @@ const MyAccount = (props) => {
     formdata.set('email', email);
     formdata.set('phone', phone);
     formdata.set('address', address);
+    formdata.set('code_postal', postalCode);
     formdata.set('old_password', old_password);
     formdata.set('new_password', new_password);
     formdata.set('avatar', avatar === null ? '' : avatar);
@@ -498,7 +512,6 @@ const MyAccount = (props) => {
                   <Grid xs item container alignItems="stretch" direction="column">
                     <Grid item>
                       <TextField
-                        id="outlined-basic"
                         variant="outlined"
                         value={lastname}
                         onChange={handleChangeLastName}
@@ -538,7 +551,6 @@ const MyAccount = (props) => {
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
-                    id="outlined-basic"
                     variant="outlined"
                     value={firstname}
                     onChange={handleChangeFirstName}
@@ -549,11 +561,10 @@ const MyAccount = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Adresse (Ville)</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
-                    id="outlined-basic"
                     variant="outlined"
                     value={address}
                     onChange={handleChangeAddress}
@@ -564,11 +575,24 @@ const MyAccount = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
+              <Grid item><p className={classes.itemTitle}>Code postal</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    value={postalCode}
+                    onChange={handleChangePostalCode}
+                  />
+                </Grid>
+                {errorsPostalCode.length > 0 &&
+                  <span className={classes.error}>{errorsPostalCode}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Email</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
-                    id="outlined-basic"
                     variant="outlined"
                     value={email}
                     onChange={handleChangeEmail}
@@ -584,7 +608,6 @@ const MyAccount = (props) => {
                 <Grid item>
                   <MuiPhoneNumber 
                     defaultCountry='fr'
-                    id="outlined-basic"
                     variant="outlined"
                     value={phone}
                     onChange={handleChangePhone}
@@ -599,7 +622,6 @@ const MyAccount = (props) => {
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
-                    id="outlined-basic"
                     variant="outlined"
                     value={old_password}
                     type="password"
@@ -615,7 +637,6 @@ const MyAccount = (props) => {
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
-                    id="outlined-basic"
                     variant="outlined"
                     value={new_password}
                     type="password"
@@ -631,7 +652,6 @@ const MyAccount = (props) => {
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
-                    id="outlined-basic"
                     variant="outlined"
                     value={confirm_password}
                     type="password"
