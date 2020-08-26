@@ -3,7 +3,7 @@ import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toa
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { AppBar, Toolbar, Badge, Hidden, IconButton, Button, Avatar, ListItemIcon, ListItemText } from '@material-ui/core';
+import { AppBar, Toolbar, Badge, Hidden, IconButton, Button, Avatar, ListItemIcon, ListItemText, Grid } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,10 +12,10 @@ import Divider from '@material-ui/core/Divider';
 import authService from 'services/authService';
 import useGlobal from 'Global/global';
 import AdminService from 'services/api.js';
-import {ManagerService as Service1} from 'services/api.js';
-import {OwnerService as Service2} from 'services/api.js';
+import { ManagerService as Service1 } from 'services/api.js';
+import { OwnerService as Service2 } from 'services/api.js';
 import { SearchInput } from 'components';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import LoginAsButton from './LoginAsButton';
 const ManagerService = new Service1();
 const OwnerService = new Service2();
@@ -170,11 +170,28 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
   },
+  logo_size: {
+    [theme.breakpoints.up('xl')]: {
+      height: 50,
+      width: 308,
+    },
+    [theme.breakpoints.down('lg')]: {
+      height: 35,
+      width: 215,
+    },
+    [theme.breakpoints.down('md')]: {
+      height: 25,
+      width: 151,
+    },
+    display: 'flex',
+    alignItems: 'center',
+    objectFit: 'cover',
+  },
 }));
 
 const Topbar = props => {
-  const { className, onSidebarOpen} = props;
-  const {history} = props;
+  const { className, onSidebarOpen } = props;
+  const { history } = props;
   const classes = useStyles();
   const [value, setValue] = useState('');
   const [globalState, globalActions] = useGlobal();
@@ -254,14 +271,38 @@ const Topbar = props => {
     history.push('/admin/myaccount');
     window.location.reload();
   }
+  const getCompanyLogo = () => {
+    ManagerService.getMyCompany()
+      .then(
+        response => {
+          switch (response.data.code) {
+            case 200:
+              localStorage.setItem("token", JSON.stringify(response.data.data.token));
+              const mycompany = response.data.data.profile;
+              globalActions.setCompanyLogoUrl(mycompany.logo_url);
+              break;
+            case 401:
+              authService.logout();
+              history.push('/login');
+              window.location.reload();
+              break;
+            default:
+              ToastsStore.error(response.data.message);
+          }
+        },
+        error => {
+          ToastsStore.error("Can't connect to the server");
+        }
+      );
+  }
   useEffect(() => {
     const usertype = authService.getAccess('usertype');
     let Service = AdminService;
-    switch(usertype){
-      case 'superadmin' : Service = AdminService; break;
-      case 'admin' : Service = AdminService; break;
-      case 'manager' : Service = ManagerService; break;
-      case 'owner' : Service = OwnerService; break;
+    switch (usertype) {
+      case 'superadmin': Service = AdminService; break;
+      case 'admin': Service = AdminService; break;
+      case 'manager': Service = ManagerService; break;
+      case 'owner': Service = OwnerService; break;
     }
     Service.getProfile()
       .then(
@@ -274,6 +315,8 @@ const Topbar = props => {
               globalActions.setFirstName(profile.firstname);
               globalActions.setLastName(profile.lastname);
               globalActions.setAvatarUrl(profile.photo_url);
+              if(profile.usertype === 'manager' || profile.usertype === 'owner')
+                getCompanyLogo();
               break;
             case 401:
               authService.logout();
@@ -290,8 +333,8 @@ const Topbar = props => {
   }, []);
   const webApp = authService.getAccess('usertype');
   let owner_idcard_state = '';
-  if(webApp === 'owner')
-   owner_idcard_state = authService.getAccess('idcard_state');
+  if (webApp === 'owner')
+    owner_idcard_state = authService.getAccess('idcard_state');
   const loginas_name = authService.getAccess('login_as');
   return (
     <AppBar
@@ -300,183 +343,198 @@ const Topbar = props => {
       <Toolbar className={classes.toolbar}>
         {
           loginas_name ?
-            <LoginAsButton loginas={loginas_name}/>
-          :
+            <LoginAsButton loginas={loginas_name} />
+            :
             null
         }
-        <Hidden lgUp>
-          <IconButton
-            color="inherit"
-            onClick={onSidebarOpen}
-          >
-            <MenuIcon className={classes.menuIcon} />
-          </IconButton>
-        </Hidden>
-        <div className={classes.flexGrow} />
-        {/* <SearchBar
-          className={classes.searchBar}
-          onChange={handleChange}
-          value={value}
-          placeholder="Rechercher..."
-          onRequestSearch={() => console.log('onRequestSearch')}
-        /> */}
-        <div className={classes.row}>
-          <SearchInput
-            className={classes.searchInput}
-            placeholder="Rechercher..."
-          />
-        </div>
-        <IconButton color="inherit" >
-          <Badge
-            className={classes.alertButton}
-            badgeContent={notifications.length}
-            color="primary"
-            variant="dot"
-          >
-            <Avatar className={classes.avatar} src='/images/alarm.png' />
-          </Badge>
-        </IconButton>
-        <IconButton
-          className={classes.signOutButton}
-          onClick={handleClick}
-          color="inherit"
-        >
-          <Avatar
-            alt={globalState.firstname + ' ' + globalState.lastname}
-            className={classes.avatar}
-            src={globalState.avatarurl}
-          >
-            {globalState.firstname[0] + globalState.lastname[0]}
-          </Avatar>
-        </IconButton>
-        <Paper className={classes.paper}>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            PaperProps={{
-              className: classes.menuProps
-            }}
-          >
+        <Grid container>
+          <Grid item container xs={12} sm={5} alignItems="center">
+            <Hidden lgUp>
+              <IconButton
+                color="inherit"
+                onClick={onSidebarOpen}
+              >
+                <MenuIcon className={classes.menuIcon} />
+              </IconButton>
+            </Hidden>
             {
-              webApp === 'manager' ?
-                <div>
-                  <MenuItem onClick={handleClickManagerMyAccount} >
-                    <ListItemIcon>
-                      <img src="/images/my_account.png" alt="image" />
-                    </ListItemIcon>
-                    <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleClickManagerMyCompany} >
-                    <ListItemIcon>
-                      <img src="/images/my_company.png" alt="image" />
-                    </ListItemIcon>
-                    <ListItemText className={classes.menu_item}>Mon Cabinet</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleClickManagerInvoices} >
-                    <ListItemIcon>
-                      <img src="/images/invoice.png" alt="image" />
-                    </ListItemIcon>
-                    <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleClickManagerPayment} >
-                    <ListItemIcon>
-                      <img src="/images/payment.png" alt="image" />
-                    </ListItemIcon>
-                    <ListItemText className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleClickLogout}>
-                    <ListItemIcon>
-                        <img src="/images/log_out.png" alt="image" />
-                      </ListItemIcon>
-                    <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
-                  </MenuItem>
-                </div>
-
-                : webApp === 'owner' ?
-                  owner_idcard_state === 'true' ?
-                  <div>
-                    <MenuItem onClick={handleClickOwnerMyAccount} >
-                      <ListItemIcon>
-                        <img src="/images/my_account.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={handleClickOwnerInvoices}>
-                      <ListItemIcon>
-                        <img src="/images/invoice.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={handleClickOwnerSubAccounts}>
-                      <ListItemIcon>
-                        <img src="/images/sub_accounts.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Sous comptes</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={handleClickOwnerPayment} >
-                      <ListItemIcon>
-                        <img src="/images/payment.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={handleClickLogout}>
-                      <ListItemIcon>
-                        <img src="/images/log_out.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
-                    </MenuItem>
-                  </div>
-                  :
-                  <div>
-                    <MenuItem onClick={handleClickOwnerMyAccount} >
-                      <ListItemIcon>
-                        <img src="/images/my_account.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={handleClickLogout}>
-                      <ListItemIcon>
-                        <img src="/images/log_out.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
-                    </MenuItem>
-                  </div>
+              webApp === 'manager' || webApp === 'owner' ?
+                globalState.company_logo !== '' && globalState.company_logo !== undefined && globalState.company_logo !== null?
+                  <img src={globalState.company_logo} className={classes.logo_size} />
                 :
-
-                  <div>
-                    <MenuItem onClick={handleClickAdminMyAccount} >
-                      <ListItemIcon>
-                        <img src="/images/my_account.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={handleClickLogout}>
-                      <ListItemIcon>
-                        <img src="/images/log_out.png" alt="image" />
-                      </ListItemIcon>
-                      <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
-                    </MenuItem>
-                  </div>
+                  null
+              :
+                null
             }
-          </Menu>
-        </Paper>
-        <Button onClick={handleClick}>
-          <p className={classes.menu_item}><b>{globalState.firstname + ' ' + globalState.lastname}</b></p>
-          <img src='/images/down.png' className={classes.down} />
-        </Button>
+          </Grid>
+          <Grid item xs={12} sm={7} style={{ display: 'flex' }} alignItems="center">
+            <div className={classes.flexGrow} />
+            {/* <SearchBar
+            className={classes.searchBar}
+            onChange={handleChange}
+            value={value}
+            placeholder="Rechercher..."
+            onRequestSearch={() => console.log('onRequestSearch')}
+          /> */}
+            <div className={classes.row}>
+              <SearchInput
+                className={classes.searchInput}
+                placeholder="Rechercher..."
+              />
+            </div>
+            <IconButton color="inherit" >
+              <Badge
+                className={classes.alertButton}
+                badgeContent={notifications.length}
+                color="primary"
+                variant="dot"
+              >
+                <Avatar className={classes.avatar} src='/images/alarm.png' />
+              </Badge>
+            </IconButton>
+            <IconButton
+              className={classes.signOutButton}
+              onClick={handleClick}
+              color="inherit"
+            >
+              <Avatar
+                alt={globalState.firstname + ' ' + globalState.lastname}
+                className={classes.avatar}
+                src={globalState.avatarurl}
+              >
+                {globalState.firstname[0] + globalState.lastname[0]}
+              </Avatar>
+            </IconButton>
+            <Paper className={classes.paper}>
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                PaperProps={{
+                  className: classes.menuProps
+                }}
+              >
+                {
+                  webApp === 'manager' ?
+                    <div>
+                      <MenuItem onClick={handleClickManagerMyAccount} >
+                        <ListItemIcon>
+                          <img src="/images/my_account.png" alt="image" />
+                        </ListItemIcon>
+                        <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem onClick={handleClickManagerMyCompany} >
+                        <ListItemIcon>
+                          <img src="/images/my_company.png" alt="image" />
+                        </ListItemIcon>
+                        <ListItemText className={classes.menu_item}>Mon Cabinet</ListItemText>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem onClick={handleClickManagerInvoices} >
+                        <ListItemIcon>
+                          <img src="/images/invoice.png" alt="image" />
+                        </ListItemIcon>
+                        <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem onClick={handleClickManagerPayment} >
+                        <ListItemIcon>
+                          <img src="/images/payment.png" alt="image" />
+                        </ListItemIcon>
+                        <ListItemText className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem onClick={handleClickLogout}>
+                        <ListItemIcon>
+                          <img src="/images/log_out.png" alt="image" />
+                        </ListItemIcon>
+                        <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                      </MenuItem>
+                    </div>
+
+                    : webApp === 'owner' ?
+                      owner_idcard_state === 'true' ?
+                        <div>
+                          <MenuItem onClick={handleClickOwnerMyAccount} >
+                            <ListItemIcon>
+                              <img src="/images/my_account.png" alt="image" />
+                            </ListItemIcon>
+                            <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={handleClickOwnerInvoices}>
+                            <ListItemIcon>
+                              <img src="/images/invoice.png" alt="image" />
+                            </ListItemIcon>
+                            <ListItemText className={classes.menu_item}>Mes Factures</ListItemText>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={handleClickOwnerSubAccounts}>
+                            <ListItemIcon>
+                              <img src="/images/sub_accounts.png" alt="image" />
+                            </ListItemIcon>
+                            <ListItemText className={classes.menu_item}>Sous comptes</ListItemText>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={handleClickOwnerPayment} >
+                            <ListItemIcon>
+                              <img src="/images/payment.png" alt="image" />
+                            </ListItemIcon>
+                            <ListItemText className={classes.menu_item}>Mes Moyens de paiement</ListItemText>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={handleClickLogout}>
+                            <ListItemIcon>
+                              <img src="/images/log_out.png" alt="image" />
+                            </ListItemIcon>
+                            <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                          </MenuItem>
+                        </div>
+                        :
+                        <div>
+                          <MenuItem onClick={handleClickOwnerMyAccount} >
+                            <ListItemIcon>
+                              <img src="/images/my_account.png" alt="image" />
+                            </ListItemIcon>
+                            <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={handleClickLogout}>
+                            <ListItemIcon>
+                              <img src="/images/log_out.png" alt="image" />
+                            </ListItemIcon>
+                            <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                          </MenuItem>
+                        </div>
+                      :
+
+                      <div>
+                        <MenuItem onClick={handleClickAdminMyAccount} >
+                          <ListItemIcon>
+                            <img src="/images/my_account.png" alt="image" />
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Mon compte</ListItemText>
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem onClick={handleClickLogout}>
+                          <ListItemIcon>
+                            <img src="/images/log_out.png" alt="image" />
+                          </ListItemIcon>
+                          <ListItemText className={classes.menu_item}>Déconnexion</ListItemText>
+                        </MenuItem>
+                      </div>
+                }
+              </Menu>
+            </Paper>
+            <Button onClick={handleClick}>
+              <p className={classes.menu_item}><b>{globalState.firstname + ' ' + globalState.lastname}</b></p>
+              <img src='/images/down.png' className={classes.down} />
+            </Button>
+          </Grid>
+        </Grid>
       </Toolbar>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
     </AppBar>

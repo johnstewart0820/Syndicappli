@@ -5,6 +5,7 @@ const initialState = {
   firstname : ' ',
   lastname : ' ',
   avatarurl: '',
+  company_logo: '',
   smsAuth : '',
   trash : {
     type : '',
@@ -26,6 +27,9 @@ const actions = {
     },
     setAvatarUrl: (store, avatarurl)=>{
         store.setState({avatarurl : avatarurl});
+    },
+    setCompanyLogoUrl: (store, company_logo)=>{
+        store.setState({company_logo : company_logo});
     },
     setSmsAuth : (store, smsAuth)=>{
         store.setState({smsAuth: smsAuth});
