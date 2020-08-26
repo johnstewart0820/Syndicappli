@@ -158,6 +158,7 @@ const SubAccounts = (props) => {
   const [email, setEmail] = React.useState('');
   const [mobile, setMobile] = React.useState('');
   const [address, setAddress] = React.useState('');
+  const [city, setCity] = React.useState('');
   const [postalCode, setPostalCode] = React.useState('');
 
   const [errorsLastName, setErrorsLastName] = React.useState('');
@@ -167,6 +168,7 @@ const SubAccounts = (props) => {
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsMobile, setErrorsMobile] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
+  const [errorsCity, setErrorsCity] = React.useState('');
   const [errorsPostalCode, setErrorsPostalCode] = React.useState('');
   const [visibleIndicator, setVisibleIndicator] = React.useState(false);
 
@@ -193,6 +195,9 @@ const SubAccounts = (props) => {
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
+  }
+  const handleChangeCity = (event) => {
+    setCity(event.target.value);
   }
   const handleChangePostalCode = (event) => {
     if (event.target.value[event.target.value.length - 1] === '.')
@@ -291,6 +296,7 @@ const SubAccounts = (props) => {
                 setAddress(data.owner.address);
               else
                 setAddress('');
+              setCity(data.owner.city ? data.owner.city : '');
               if (data.owner.code_postal)
                 setPostalCode(data.owner.code_postal);
               else
@@ -355,6 +361,7 @@ const SubAccounts = (props) => {
                 requestdata['address'] = data.owner.address;
               else
                 requestdata['address'] = '';
+              requestdata['city'] = data.owner.city ? data.owner.city : '';
               if (data.owner.code_postal)
                 requestdata['code_postal'] = data.owner.code_postal;
               else
@@ -461,6 +468,8 @@ const SubAccounts = (props) => {
     else setErrorsFirstName1('');
     if (address.length === 0) { setErrorsAddress('please enter owner address'); cnt++; }
     else setErrorsAddress('');
+    if (city.length === 0) { setErrorsCity('please enter owner city'); cnt++; }
+    else setErrorsCity('');
     if (postalCode.length !== 5) { setErrorsPostalCode('please check postal code'); cnt++; }
     else setErrorsPostalCode('');
     if (email.length === 0) { setErrorsEmail('please enter owner email'); cnt++; }
@@ -476,6 +485,7 @@ const SubAccounts = (props) => {
       'firstname_1': firstname1,
       'lastname_1': lastname1,
       'address': address,
+      'city': city, 
       'email': email,
       'phone': mobile,
       'buildingID': buildingID
@@ -635,7 +645,7 @@ const SubAccounts = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid xs={2} item><p className={classes.backTitle}>Adresse (Ville)</p></Grid>
+              <Grid xs={2} item><p className={classes.backTitle}>Adresse</p></Grid>
               <Grid xs={10} item container alignItems="stretch" direction="column">
                 <TextField
                   variant="outlined"
@@ -645,6 +655,19 @@ const SubAccounts = (props) => {
                 />
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid xs={2} item><p className={classes.backTitle}>Ville</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={city}
+                  onChange={handleChangeCity}
+                  fullWidth
+                />
+                {errorsCity.length > 0 &&
+                  <span className={classes.error}>{errorsCity}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

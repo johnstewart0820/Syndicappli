@@ -263,6 +263,7 @@ const MyAccount = (props) => {
   const [lastname, setLastName] = React.useState('');
   const [firstname, setFirstName] = React.useState('');
   const [address, setAddress] = React.useState('');
+  const [city, setCity] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [old_password, setOldPassword] = React.useState('');
@@ -273,6 +274,7 @@ const MyAccount = (props) => {
   const [errorsLastname, setErrorsLastName] = React.useState('');
   const [errorsFirstname, setErrorsFirstName] = React.useState('');
   const [errorsAddress, setErrorsAddress] = React.useState('');
+  const [errorsCity, setErrorsCity] = React.useState('');
   const [errorsEmail, setErrorsEmail] = React.useState('');
   const [errorsPhone, setErrorsPhone] = React.useState('');
   const [errorsOldPassword, setErrorsOldPassword] = React.useState('');
@@ -295,6 +297,9 @@ const MyAccount = (props) => {
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
+  }
+  const handleChangeCity = (event) => {
+    setCity(event.target.value);
   }
   const handleChangePostalCode = (event) => {
     if (event.target.value[event.target.value.length - 1] === '.')
@@ -358,6 +363,7 @@ const MyAccount = (props) => {
               setPhone(profile.phone ? profile.phone : '');
               setAvatarUrl(profile.photo_url ? profile.photo_url : '');
               setAddress(profile.address ? profile.address : '');
+              setCity(profile.city ? profile.city : '');
               setPostalCode(profile.code_postal ? profile.code_postal : '');
               let urls = [];
               if (!(profile.identity_card_front === null || profile.identity_card_front === '' || profile.identity_card_front === undefined))
@@ -391,6 +397,8 @@ const MyAccount = (props) => {
     else setErrorsFirstName('');
     if (address.length === 0) { setErrorsAddress('please enter your address'); cnt++; }
     else setErrorsAddress('');
+    if (city.length === 0) { setErrorsCity('please enter your city'); cnt++; }
+    else setErrorsCity('');
     if (postalCode.length !== 5) { setErrorsPostalCode('please check postal code'); cnt++; }
     else setErrorsPostalCode('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
@@ -419,6 +427,7 @@ const MyAccount = (props) => {
     formdata.set('email', email);
     formdata.set('phone', phone);
     formdata.set('address', address);
+    formdata.set('city', city);
     formdata.set('code_postal', postalCode);
     formdata.set('old_password', old_password);
     formdata.set('new_password', new_password);
@@ -561,7 +570,7 @@ const MyAccount = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Adresse (Ville)</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
                   <TextField
@@ -572,6 +581,20 @@ const MyAccount = (props) => {
                 </Grid>
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid item><p className={classes.itemTitle}>Ville</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    value={city}
+                    onChange={handleChangeCity}
+                  />
+                </Grid>
+                {errorsCity.length > 0 &&
+                  <span className={classes.error}>{errorsCity}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

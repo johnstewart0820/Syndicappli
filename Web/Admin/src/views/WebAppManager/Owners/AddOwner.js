@@ -61,6 +61,7 @@ const AddOwner = (props) => {
     const [email, setEmail] = React.useState('');
     const [phonenumber, setPhoneNumber] = React.useState('');
     const [address, setAddress] = React.useState('');
+    const [city, setCity] = React.useState('');
     const [apartNumber, setApartNumber] = React.useState([]);
     const [companyName, setCompanyName] = React.useState('');
 
@@ -73,6 +74,7 @@ const AddOwner = (props) => {
     const [errorsEmail, setErrorsEmail] = React.useState('');
     const [errorsPhonenumber, setErrorsPhonenumber] = React.useState('');
     const [errorsAddress, setErrorsAddress] = React.useState('');
+    const [errorsCity, setErrorsCity] = React.useState('');
     const [errorsCompanyName, setErrorsCompanyName] = React.useState('');
     const [errorsVoteLists, setErrorsVoteLists] = React.useState('');
     const [errorsLot, setErrorsLot] = React.useState('');
@@ -121,6 +123,8 @@ const AddOwner = (props) => {
         else setErrorsPhonenumber('');
         if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
         else setErrorsAddress('');
+        if (city.length === 0) { setErrorsCity('please enter city'); cnt++; }
+        else setErrorsCity('');
         if (postalCode.length !== 5) { setErrorsPostalCode('please check postal code'); cnt++; }
         else setErrorsPostalCode('');
         if (isSubAccount === false) {
@@ -243,6 +247,9 @@ const AddOwner = (props) => {
     }
     const handleChangeAddress = (event) => {
         setAddress(event.target.value);
+    }
+    const handleChangeCity = (event) => {
+        setCity(event.target.value);
     }
     const handleChangePostalCode = (event) => {
         if (event.target.value[event.target.value.length - 1] === '.')
@@ -418,6 +425,7 @@ const AddOwner = (props) => {
         formdata.set('lastname_1', lastname1);
         formdata.set('owner_company_name', companyName);
         formdata.set('address', address);
+        formdata.set('city', city);
         formdata.set('code_postal', postalCode);
         formdata.set('phone', phonenumber);
         formdata.set('photo_url', avatar === null ? '' : avatar)
@@ -597,7 +605,7 @@ const AddOwner = (props) => {
                         }
 
                         <Grid item container spacing={1} direction="column">
-                            <Grid item><p className={classes.title}>Adresse (Ville)</p></Grid>
+                            <Grid item><p className={classes.title}>Adresse</p></Grid>
                             <Grid item container direction="column">
                                 <TextField
                                     className={classes.text}
@@ -609,6 +617,20 @@ const AddOwner = (props) => {
                                 />
                                 {errorsAddress.length > 0 &&
                                     <span className={classes.error}>{errorsAddress}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container spacing={1} alignItems="center">
+                            <Grid item><p className={classes.title}>Ville</p></Grid>
+                            <Grid xs item container direction="column">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={city}
+                                    onChange={handleChangeCity}
+                                    fullWidth
+                                />
+                                {errorsCity.length > 0 &&
+                                    <span className={classes.error}>{errorsCity}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container spacing={1} alignItems="center">

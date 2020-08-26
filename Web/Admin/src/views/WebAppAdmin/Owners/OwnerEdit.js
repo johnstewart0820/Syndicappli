@@ -85,6 +85,7 @@ const OwnerEdit = (props) => {
   const [email, setEmail] = useState('');
   const [phonenumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
   const [apartNumber, setApartNumber] = useState([]);
   const [companyName, setCompanyName] = useState('');
   const [stripeCustomerID, setStripeCustomerID] = useState('');
@@ -98,6 +99,7 @@ const OwnerEdit = (props) => {
   const [errorsEmail, setErrorsEmail] = useState('');
   const [errorsPhonenumber, setErrorsPhonenumber] = useState('');
   const [errorsAddress, setErrorsAddress] = useState('');
+  const [errorsCity, setErrorsCity] = useState('');
   const [errorsCompanyName, setErrorsCompanyName] = useState('');
   const [errorsLotsList, setErrorsLotsList] = useState('');
   const [errorsLot, setErrorsLot] = useState('');
@@ -184,6 +186,8 @@ const OwnerEdit = (props) => {
     else setErrorsPhonenumber('');
     if (address.length === 0) { setErrorsAddress('please enter address'); cnt++; }
     else setErrorsAddress('');
+    if (city.length === 0) { setErrorsCity('please enter city'); cnt++; }
+    else setErrorsCity('');
     if (postalCode.length !== 5) { setErrorsPostalCode('please check postal code'); cnt++; }
     else setErrorsPostalCode('');
     if (isSubAccount === false) {
@@ -305,6 +309,9 @@ const OwnerEdit = (props) => {
   }
   const handleChangeAddress = (event) => {
     setAddress(event.target.value);
+  }
+  const handleChangeCity = (event) => {
+    setCity(event.target.value);
   }
   const handleChangePostalCode = (event) => {
     if (event.target.value[event.target.value.length - 1] === '.')
@@ -440,6 +447,7 @@ const OwnerEdit = (props) => {
     formdata.set('lastname_1', lastname1);
     formdata.set('owner_company_name', companyName);
     formdata.set('address', address);
+    formdata.set('city', city);
     formdata.set('code_postal', postalCode);
     formdata.set('phone', phonenumber);
     formdata.set('photo_url', avatar === null ? '' : avatar)
@@ -511,6 +519,7 @@ const OwnerEdit = (props) => {
               setEmail(ownerInfo.email);
               setPhoneNumber(ownerInfo.phone);
               setAddress(ownerInfo.address);
+              setCity(ownerInfo.city ? ownerInfo.city : '');
               setPostalCode(ownerInfo.code_postal ? ownerInfo.code_postal : '');
               setStripeCustomerID(ownerInfo.customerID ? ownerInfo.customerID : '');
               if (ownerInfo.owner_role === 'subaccount') {
@@ -1006,7 +1015,7 @@ const OwnerEdit = (props) => {
           <Grid item container spacing={5}>
             <Grid item container ></Grid>
             <Grid item container spacing={1} direction="column">
-              <Grid item><p className={classes.itemTitle}>Adresse (Ville)</p></Grid>
+              <Grid item><p className={classes.itemTitle}>Adresse</p></Grid>
               <Grid item container direction="column">
                 <TextField
                   className={classes.text}
@@ -1019,6 +1028,21 @@ const OwnerEdit = (props) => {
                 />
                 {errorsAddress.length > 0 &&
                   <span className={classes.error}>{errorsAddress}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container spacing={1} direction="column">
+              <Grid item><p className={classes.itemTitle}>Ville</p></Grid>
+              <Grid item container direction="column">
+                <TextField
+                  className={classes.text}
+                  variant="outlined"
+                  value={city}
+                  onChange={handleChangeCity}
+                  disabled={(accessOwners === 'see' ? true : false)}
+                  style={{width:'50%'}}
+                />
+                {errorsCity.length > 0 &&
+                  <span className={classes.error}>{errorsCity}</span>}
               </Grid>
             </Grid>
             <Grid item container spacing={1} direction="column">
