@@ -28,7 +28,7 @@ const OrderEdit = (props) => {
   const billingCycleList = ['une fois', 'annuellement', 'trimestrielle', 'mensuelle'];
   const en_billingCycleList = ['one_time', 'annually', '3_monthly', 'monthly'];
   const orderStatusList = ['Terminé', 'Actif', 'En attente', 'Annulée'];
-  const en_orderstatusList = ['terminated', 'active', 'on hold', 'cancelled'];
+  const en_orderstatusList = ['terminated', 'active', 'on_hold', 'cancelled'];
   const [orderStatus, setOrderStatus] = React.useState(0);
   const paymentList = ['carte bancaire', 'SEPA'];
   const en_paymentList = ['credit_card', 'SEPA'];
