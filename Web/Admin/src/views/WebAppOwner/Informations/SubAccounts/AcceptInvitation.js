@@ -111,9 +111,7 @@ const AcceptInvitation = (props) => {
           <img src={logo.url} className={classes.logo} alt="" />
         </Grid>
         <Grid item container justify="center">
-          <p className={classes.title}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce accumsan mauris risus, ut
-          tincidunt augue dictum eu. Donec molestie nibh purus, non sollicitudin nisl condimentum vitae.
-         Suspendisse vehicula laoreet ullamcorper. </p>
+          <p className={classes.title}>Bienvenue sur votre espace personnel de connexion.Veuillez entrer votre identifiant Email et votre mot de passe personnel pour vous connecter. </p>
         </Grid>
       </Grid>
       <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_RIGHT} />
