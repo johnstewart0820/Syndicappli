@@ -67,9 +67,6 @@ const OrderEdit = (props) => {
   const [errorsProduct, setErrorsProduct] = useState('');
   const [errorsClient, setErrorsClient] = useState('');
   const [stateLot, setStateLot] = useState(true);
-  useEffect(() => {
-    getOrder();
-  }, []);
   const handleClickSave = () => {
     let cnt = 0;
     if (productID === -1) { setErrorsProduct('please select product'); cnt++; }
@@ -140,9 +137,9 @@ const OrderEdit = (props) => {
         }
       );
   }
-  const getOrder = () => {
+  const getOrder = async () => {
     setVisibleIndicator(true);
-    AdminService.getOrder(props.match.params.id)
+    await AdminService.getOrder(props.match.params.id)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -248,11 +245,23 @@ const OrderEdit = (props) => {
     setApartNumber(+event.target.value);
   }
   useEffect(() => {
-    getProductList(categorie);
-    getCodeList(categorie);
-    getBuyerList(categorie);
+    getOrder();
+  }, []);
+  useEffect(async () => {
+    await getBuyerList(categorie);
+    // await getOrder();
+    await getProductList(categorie);
+    // await getOrder();
+    await getCodeList(categorie);
+    await getOrder();
   }, [categorie]);
-  const getProductList = (id) => {
+  // useEffect(async ()=>{
+
+  // },[categorie])
+  // useEffect(async ()=>{
+
+  // },[categorie])
+  const getProductList = async (id) => {
     const requestData = {
       'search_key': '',
       'page_num': 0,
@@ -263,7 +272,7 @@ const OrderEdit = (props) => {
       'type': en_categorieList[id]
     }
     setVisibleIndicator(true);
-    AdminService.getProductList(requestData)
+    await AdminService.getProductList(requestData)
       .then(
         response => {
           setVisibleIndicator(false);
@@ -299,14 +308,14 @@ const OrderEdit = (props) => {
         }
       );
   }
-  const getBuyerList = (id) => {
+  const getBuyerList = async (id) => {
     let data = {
       'buyer_type': en_categorieList[id]
     }
     setVisibleIndicator(true);
-    AdminService.getBuyerList(data)
+     await AdminService.getBuyerList(data)
       .then(
-        async response => {
+        response => {
           setVisibleIndicator(false);
           switch (response.data.code) {
             case 200:
@@ -344,12 +353,12 @@ const OrderEdit = (props) => {
         }
       );
   }
-  const getCodeList = (id) => {
+  const getCodeList = async (id) => {
     let data = {
       'user_type': en_categorieList[id]
     }
     setVisibleIndicator(true);
-    AdminService.getCodeList(data)
+    await AdminService.getCodeList(data)
       .then(
         async response => {
           setVisibleIndicator(false);
@@ -367,7 +376,8 @@ const OrderEdit = (props) => {
               setCodeList([{ discount_codeID: -1 }, ...data.discountcodelist]);
               if (data.discountcodelist.length !== 0) {
                 setCodes(codes);
-                setCodeID(data.discountcodelist[0].discount_codeID);
+                // if(data.discountcodelist[0].discount_codeID !== -1)
+                  setCodeID(-1);
               }
               break;
             case 401:
