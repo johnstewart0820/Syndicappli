@@ -240,7 +240,10 @@ function getOrderList(uid, data) {
                         billing_cycle = "one_time", "-", 
                             if (billing_cycle = "monthly", 
                                 DATE_ADD(start_date, interval 1 month), 
-                                DATE_ADD(start_date, interval 1 year)
+                                if (billing_cycle = "yearly",
+                                    DATE_ADD(start_date, interval 1 year),
+                                    DATE_ADD(start_date, interval 3 month)
+                                )
                             )
                         ) end_date,
                     ROUND(if (discount_type = "fixed", 

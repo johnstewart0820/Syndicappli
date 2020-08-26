@@ -84,8 +84,9 @@ module.exports = ({ name, address, email, invoice_number, invoice_date, order_id
                 </div>
                 <div class="col-md-6">
                     <h2><b>Syndicappli</b></h2>
-                    <p>66 avenue des Champs Elysees</p>
-                    <p>75008 Paris</p>
+                    <p>6, rue Léonard De Vinci</p>
+                    <p>CS 20119</p>
+                    <p>53001 LAVAL</p>
                     <br/>
                     <p>Tel : 01 02 03 04 05</p>
                     <p>mail : contact@syndicappli.fr</p>
@@ -102,7 +103,7 @@ module.exports = ({ name, address, email, invoice_number, invoice_date, order_id
                     <p>Numéro de facture : #${invoice_number}</p>
                     <p>Date de la facture : ${invoice_date}</p>
                     <p>Numéro de la commande : #${order_id}</p>
-                    <p>Date de la commende : ${order_date}</p>
+                    <p>Date de la commande : ${order_date}</p>
                     <p>Méthode de paiement : ${payment_method}</p>
                 </div>
             </div>
@@ -128,7 +129,10 @@ module.exports = ({ name, address, email, invoice_number, invoice_date, order_id
                     <b>${vat_result}€</b>
             </div>
             <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-            <p class="bottom_class center">Syndicappli - 66 avenue des Champs Elysées 75008 Paris - Société par actions simplifiée au capital de 2000,00 Euros immatriculée au RCS de Paris sous le numéro 123456789 R.C.S Paris - Siren 123 456 789 - Siret 123456789123 </p>
+            <p class="bottom_class center">
+                <span>Syndicappli SAS au Capital de 30 000€ - RCS de Laval 881 641 468</span><br/>
+                <span>Maison de la Technopole 6, rue Léonard De Vinci CS 20119 53001 LAVAL</span>
+            </p>
            </body>
         </html>
         `;

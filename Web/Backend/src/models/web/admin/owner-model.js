@@ -201,8 +201,8 @@ function createOwner_info(uid, data, files) {
                     let randomPassword = randtoken.generate(15);
                     let randomToken = randtoken.generate(50);
                     let password = bcrypt.hashSync(randomPassword)
-                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, firstname_1, lastname_1, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at, stripe_customerID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                    db.query(query, ["owner", data.type, data.owner_role, data.firstname, data.lastname, data.firstname_1, data.lastname_1, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id], function (error, rows, fields)  {
+                    let query = `Insert into ` + table.USERS + ` (usertype, type, owner_role, firstname, lastname, firstname_1, lastname_1, owner_company_name, password, email, address, phone, photo_url, identity_card_front, identity_card_back, status, permission, created_by, created_at, updated_at, stripe_customerID, code_postal) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                    db.query(query, ["owner", data.type, data.owner_role, data.firstname, data.lastname, data.firstname_1, data.lastname_1, data.owner_company_name, password, data.email, data.address, data.phone, photo_url, id_front, id_back, "active", "active", uid, timeHelper.getCurrentTime(), timeHelper.getCurrentTime(), data.customer_id, data.code_postal], function (error, rows, fields)  {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR })
                         } else {
@@ -403,8 +403,8 @@ function updateOwner_info(id, data, files) {
                         id_front = result[0].identity_card_front
                     if (id_back == "")
                         id_back = result[0].identity_card_back
-                    let query = `Update ` + table.USERS + ` set type = ?, owner_role = ?, firstname = ?, lastname = ?, firstname_1 = ?, lastname_1 = ?, owner_company_name = ?, email = ?, address = ?, phone = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ?, updated_at = ? where userID = ? `
-                    db.query(query, [data.type, data.owner_role, data.firstname, data.lastname, data.firstname_1, data.lastname_1, data.owner_company_name, data.email, data.address, data.phone, photo_url, id_front, id_back, timeHelper.getCurrentTime(), id], async function (error, result, fields) {
+                    let query = `Update ` + table.USERS + ` set type = ?, owner_role = ?, firstname = ?, lastname = ?, firstname_1 = ?, lastname_1 = ?, owner_company_name = ?, email = ?, address = ?, phone = ?, photo_url = ?, identity_card_front = ?, identity_card_back = ?, updated_at = ?, code_postal = ?  where userID = ? `
+                    db.query(query, [data.type, data.owner_role, data.firstname, data.lastname, data.firstname_1, data.lastname_1, data.owner_company_name, data.email, data.address, data.phone, photo_url, id_front, id_back, timeHelper.getCurrentTime(), data.code_postal, id], async function (error, result, fields) {
                         if (error) {
                             reject({ message: message.INTERNAL_SERVER_ERROR });
                         } else {
