@@ -584,20 +584,6 @@ const MyAccount = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid item><p className={classes.itemTitle}>Ville</p></Grid>
-              <Grid xs item container alignItems="stretch" direction="column">
-                <Grid item>
-                  <TextField
-                    variant="outlined"
-                    value={city}
-                    onChange={handleChangeCity}
-                  />
-                </Grid>
-                {errorsCity.length > 0 &&
-                  <span className={classes.error}>{errorsCity}</span>}
-              </Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={1}>
               <Grid item><p className={classes.itemTitle}>Code postal</p></Grid>
               <Grid xs item container alignItems="stretch" direction="column">
                 <Grid item>
@@ -609,6 +595,20 @@ const MyAccount = (props) => {
                 </Grid>
                 {errorsPostalCode.length > 0 &&
                   <span className={classes.error}>{errorsPostalCode}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid item><p className={classes.itemTitle}>Ville</p></Grid>
+              <Grid xs item container alignItems="stretch" direction="column">
+                <Grid item>
+                  <TextField
+                    variant="outlined"
+                    value={city}
+                    onChange={handleChangeCity}
+                  />
+                </Grid>
+                {errorsCity.length > 0 &&
+                  <span className={classes.error}>{errorsCity}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

@@ -658,19 +658,6 @@ const SubAccounts = (props) => {
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>
-              <Grid xs={2} item><p className={classes.backTitle}>Ville</p></Grid>
-              <Grid xs={10} item container alignItems="stretch" direction="column">
-                <TextField
-                  variant="outlined"
-                  value={city}
-                  onChange={handleChangeCity}
-                  fullWidth
-                />
-                {errorsCity.length > 0 &&
-                  <span className={classes.error}>{errorsCity}</span>}
-              </Grid>
-            </Grid>
-            <Grid item container alignItems="center" spacing={1}>
               <Grid xs={2} item><p className={classes.backTitle}>Code postal</p></Grid>
               <Grid xs={10} item container alignItems="stretch" direction="column">
                 <TextField
@@ -681,6 +668,19 @@ const SubAccounts = (props) => {
                 />
                 {errorsPostalCode.length > 0 &&
                   <span className={classes.error}>{errorsPostalCode}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container alignItems="center" spacing={1}>
+              <Grid xs={2} item><p className={classes.backTitle}>Ville</p></Grid>
+              <Grid xs={10} item container alignItems="stretch" direction="column">
+                <TextField
+                  variant="outlined"
+                  value={city}
+                  onChange={handleChangeCity}
+                  fullWidth
+                />
+                {errorsCity.length > 0 &&
+                  <span className={classes.error}>{errorsCity}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

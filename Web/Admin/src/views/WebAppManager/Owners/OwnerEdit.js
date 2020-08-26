@@ -1029,21 +1029,6 @@ const OwnerEdit = (props) => {
               </Grid>
             </Grid>
             <Grid item container spacing={1} direction="column">
-              <Grid item><p className={classes.itemTitle}>Ville</p></Grid>
-              <Grid item container direction="column">
-                <TextField
-                  className={classes.text}
-                  variant="outlined"
-                  value={city}
-                  onChange={handleChangeCity}
-                  disabled={(accessOwners === 'see' ? true : false)}
-                  style={{width:'50%'}}
-                />
-                {errorsCity.length > 0 &&
-                  <span className={classes.error}>{errorsCity}</span>}
-              </Grid>
-            </Grid>
-            <Grid item container spacing={1} direction="column">
               <Grid item><p className={classes.itemTitle}>Code postal</p></Grid>
               <Grid item container direction="column">
                 <TextField
@@ -1056,6 +1041,21 @@ const OwnerEdit = (props) => {
                 />
                 {errorsPostalCode.length > 0 &&
                   <span className={classes.error}>{errorsPostalCode}</span>}
+              </Grid>
+            </Grid>
+            <Grid item container spacing={1} direction="column">
+              <Grid item><p className={classes.itemTitle}>Ville</p></Grid>
+              <Grid item container direction="column">
+                <TextField
+                  className={classes.text}
+                  variant="outlined"
+                  value={city}
+                  onChange={handleChangeCity}
+                  disabled={(accessOwners === 'see' ? true : false)}
+                  style={{width:'50%'}}
+                />
+                {errorsCity.length > 0 &&
+                  <span className={classes.error}>{errorsCity}</span>}
               </Grid>
             </Grid>
             <Grid item container alignItems="center" spacing={1}>

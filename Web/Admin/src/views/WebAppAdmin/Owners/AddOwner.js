@@ -656,20 +656,6 @@ const AddOwner = (props) => {
                             </Grid>
                         </Grid>
                         <Grid item container spacing={1} alignItems="center">
-                            <Grid item><p className={classes.title}>Ville</p></Grid>
-                            <Grid xs item container direction="column">
-                                <TextField
-                                    className={classes.text}
-                                    variant="outlined"
-                                    value={city}
-                                    onChange={handleChangeCity}
-                                    fullWidth
-                                />
-                                {errorsCity.length > 0 &&
-                                    <span className={classes.error}>{errorsCity}</span>}
-                            </Grid>
-                        </Grid>
-                        <Grid item container spacing={1} alignItems="center">
                             <Grid item><p className={classes.title}>Code postal</p></Grid>
                             <Grid xs item container direction="column">
                                 <TextField
@@ -681,6 +667,20 @@ const AddOwner = (props) => {
                                 />
                                 {errorsPostalCode.length > 0 &&
                                     <span className={classes.error}>{errorsPostalCode}</span>}
+                            </Grid>
+                        </Grid>
+                        <Grid item container spacing={1} alignItems="center">
+                            <Grid item><p className={classes.title}>Ville</p></Grid>
+                            <Grid xs item container direction="column">
+                                <TextField
+                                    className={classes.text}
+                                    variant="outlined"
+                                    value={city}
+                                    onChange={handleChangeCity}
+                                    fullWidth
+                                />
+                                {errorsCity.length > 0 &&
+                                    <span className={classes.error}>{errorsCity}</span>}
                             </Grid>
                         </Grid>
                         <Grid item container alignItems="center" spacing={1}>
