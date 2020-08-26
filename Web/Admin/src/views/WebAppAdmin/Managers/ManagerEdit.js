@@ -308,6 +308,8 @@ const ManagerEdit = (props) => {
     else setErrorsFirstname('');
     if (companyID === -1) { setErrorsCompanies('please select companies'); cnt++; }
     else setErrorsCompanies('');
+    if (buildings.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+    else setErrorsBuildings('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
     if (phonenumber.length === 0) { setErrorsPhonenumber('please enter your phone number'); cnt++; }

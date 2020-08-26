@@ -244,6 +244,8 @@ const TeamMemberEdit = (props) => {
     else setErrorsLastname('');
     if (firstname.length === 0) { setErrorsFirstname('please enter your first name'); cnt++; }
     else setErrorsFirstname('');
+    if (multiID.length === 0) { setErrorsBuildings('please select buildings'); cnt++; }
+    else setErrorsBuildings('');
     if (email.length === 0) { setErrorsEmail('please enter your email'); cnt++; }
     else setErrorsEmail('');
     if (phonenumber.length === 0) { setErrorsPhonenumber('please enter your phone number'); cnt++; }
