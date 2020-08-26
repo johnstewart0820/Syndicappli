@@ -171,6 +171,8 @@ const OrderEdit = (props) => {
               setClientID(data.buyerID);
               setProductID(data.productID);
               setCodeID(data.discount_codeID);
+              setPayment(en_paymentList.indexOf(data.payment_method));
+              setOrderStatus(en_orderstatusList.indexOf(data.status));
               break;
             case 401:
               authService.logout();
@@ -363,11 +365,9 @@ const OrderEdit = (props) => {
                 codes.push(item.name)
               )
               setCodeList([{ discount_codeID: -1 }, ...data.discountcodelist]);
-              setCodes(codes);
               if (data.discountcodelist.length !== 0) {
-              } else {
-                setCode(0);
-                setCodeID(-1);
+                setCodes(codes);
+                setCodeID(data.discountcodelist[0].discount_codeID);
               }
               break;
             case 401:
