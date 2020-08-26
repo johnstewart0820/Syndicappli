@@ -490,13 +490,13 @@ function createCharge(data) {
     return new Promise(async (resolve, reject) => {
         var price;
         if (data.discount_type == "fixed") {
-            if (data.vat_option = "true") {
+            if (data.vat_option === "true") {
                 price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 - data.discount_amount
             } else {
                 price = data.price * data.apartment_amount - data.discount_amount
             }
         } else {
-            if (data.vat_option = "true") {
+            if (data.vat_option === "true") {
                 price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 * (100 - data.discount_amount) / 100
             } else {
                 price = data.price * data.apartment_amount * (100 - data.discount_amount) / 100 
@@ -828,7 +828,7 @@ function downloadInvoiceOrder(data, res) {
             } else {
                 data = rows[0]
                 if (data.vat_option === "false")
-                    data.vat_result = "No Vat"
+                    data.vat_result = "Montant de la TVA : 0"
                 else
                     data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}
@@ -879,7 +879,7 @@ function downloadInvoiceBuilding(data, res) {
             } else {
                 data = rows[0]
                 if (data.vat_option === "false")
-                    data.vat_result = "No Vat"
+                    data.vat_result = "Montant de la TVA : 0"
                 else
                     data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}
@@ -924,7 +924,7 @@ function downloadInvoiceOwner(data, res) {
             } else {
                 data = rows[0]
                 if (data.vat_option === "false")
-                    data.vat_result = "No Vat"
+                    data.vat_result = "Montant de la TVA : 0"
                 else
                     data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}
@@ -1024,9 +1024,9 @@ function downloadZipOrder(data, res) {
                 options = {format: "A3"}
                 for (var i in rows) {
                     if (rows[i].vat_option === "false")
-                        rows[i].vat_result = "No Vat"
+                        rows[i].vat_result = "Montant de la TVA : 0"
                     else
-                        rows[i].vat_result = "VAT Fee("+ rows[i].vat_fee + "%): " + rows[i].vat_amount
+                        rows[i].vat_result = "Montant de la TVA à "+ rows[i].vat_fee + "% : " + rows[i].vat_amount
                     await orderPDF(rows[i], options)
                 }
                 const file = new zip();
@@ -1086,9 +1086,10 @@ function downloadZipBuilding(data, res) {
                 options = {format: "A3"}
                 for (var i in rows) {
                     if (rows[i].vat_option === "false")
-                        rows[i].vat_result = "No Vat"
+                        rows[i].vat_result = "Montant de la TVA : 0"
                     else
-                        rows[i].vat_result = "VAT Fee("+ rows[i].vat_fee + "%): " + rows[i].vat_amount
+                        rows[i].vat_result = "Montant de la TVA à "+ rows[i].vat_fee + "% : " + rows[i].vat_amount
+                        
                     await buildingPDF(rows[i], options)
                 }
                 const file = new zip();
@@ -1147,7 +1148,7 @@ function downloadZipOwner(data, res) {
                 options = {format: "A3"}
                 for (var i in rows) {
                     if (rows[i].vat_option === "false")
-                        rows[i].vat_result = "No Vat"
+                        rows[i].vat_result = "Montant de la TVA : 0"
                     else
                         rows[i].vat_result = "Montant de la TVA à "+ rows[i].vat_fee + "% : " + rows[i].vat_amount
                     await ownerPDF(rows[i], options)

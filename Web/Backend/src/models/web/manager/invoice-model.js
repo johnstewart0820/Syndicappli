@@ -172,7 +172,7 @@ function downloadInvoiceAddon(data, res) {
             } else {
                 data = rows[0]
                 if (data.vat_option === "false")
-                    data.vat_result = "No Vat"
+                    data.vat_result = "Montant de la TVA : 0"
                 else
                     data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}
@@ -222,7 +222,7 @@ function downloadInvoiceOrder(data, res) {
             } else {
                 data = rows[0]
                 if (data.vat_option === "false")
-                    data.vat_result = "No Vat"
+                    data.vat_result = "Montant de la TVA : 0"
                 else
                     data.vat_result = "Montant de la TVA à "+ data.vat_fee + "% : " + data.vat_amount
                 options = {format: "A3"}

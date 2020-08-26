@@ -77,13 +77,13 @@ function createCharge(data) {
     return new Promise(async (resolve, reject) => {
         var price;
         if (data.discount_type == "fixed") {
-            if (data.vat_option = "true") {
+            if (data.vat_option === "true") {
                 price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 - data.discount_amount
             } else {
                 price = data.price * data.apartment_amount - data.discount_amount
             }
         } else {
-            if (data.vat_option = "true") {
+            if (data.vat_option === "true") {
                 price = data.price * data.apartment_amount * (100 + data.vat_fee) / 100 * (100 - data.discount_amount) / 100
             } else {
                 price = data.price * data.apartment_amount * (100 - data.discount_amount) / 100 
