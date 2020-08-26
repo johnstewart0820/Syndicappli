@@ -25,11 +25,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     [theme.breakpoints.up('lg')]: {
       width: 'calc(100% - 233px)',
-      height: '146px'
     },
     [theme.breakpoints.up('xl')]: {
       width: 'calc(100% - 333px)',
-      height: '146px'
     },
     '& .MuiButton-root': {
       textTransform: 'none'
@@ -173,7 +171,7 @@ const useStyles = makeStyles(theme => ({
   logo_size: {
     [theme.breakpoints.up('xl')]: {
       height: 209,
-      paddingTop: 50,
+      padding: 30,
     },
     [theme.breakpoints.down('lg')]: {
       height: 146,
