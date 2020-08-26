@@ -25,9 +25,11 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     [theme.breakpoints.up('lg')]: {
       width: 'calc(100% - 233px)',
+      height: 146
     },
     [theme.breakpoints.up('xl')]: {
       width: 'calc(100% - 333px)',
+      height: 209
     },
     '& .MuiButton-root': {
       textTransform: 'none'
