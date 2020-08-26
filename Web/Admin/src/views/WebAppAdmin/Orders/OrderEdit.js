@@ -106,7 +106,7 @@ const OrderEdit = (props) => {
       'price_type': en_priceTypeList[priceType],
       'price': price,
       'vat_option': vat_state ? 'true' : 'false',
-      'vat_fee': vat_fee,
+      'vat_fee': vat_state ? vat_fee : '0',
       'apartment_amount': apartNumber,
       'start_date': startDate,
       'end_date': endDate,
