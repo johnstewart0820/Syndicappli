@@ -644,6 +644,8 @@ function importOwnerCSV(uid, file, data) {
             'lastname_1': '',
             'owner_company_name': '',
             'address': '',
+            'code_postal': '',
+            'city': '',
             'email': '',
             'phone': '',
             'vote_value_list': []
@@ -667,6 +669,8 @@ function importOwnerCSV(uid, file, data) {
                     owner.lastname_1 = ''
                     owner.owner_company_name = ''
                     owner.address = ''
+                    owner.ville = ''
+                    owner.code_postal = ''
                     owner.email = ''
                     owner.phone = ''
                     owner.vote_value_list = []
@@ -681,6 +685,8 @@ function importOwnerCSV(uid, file, data) {
                 owner.lastname_1 = row['last name 2']
                 owner.owner_company_name = row['company name']
                 owner.address = row['address']
+                owner.code_postal = row['code_postal']
+                owner.city = row['ville']
                 owner.phone = row['phone number']
                 var temp = []
                 if (owner_role != "subaccount")
@@ -728,6 +734,8 @@ function getOwnerForCSV(data, ownerID) {
         lastname_1 = owner.ownerInfo.lastname_1
         company_name = owner.ownerInfo.owner_company_name
         address = owner.ownerInfo.address
+        code_postal = owner.ownerInfo.code_postal
+        city = owner.ownerInfo.city
         email = owner.ownerInfo.email
         phone_number = owner.ownerInfo.phone
         subaccount = owner.ownerInfo.owner_role == "subaccount" ? "yes" : "no"
@@ -740,6 +748,8 @@ function getOwnerForCSV(data, ownerID) {
             owner_result['lastname_1'] = lastname_1
             owner_result['company_name'] = company_name
             owner_result['address'] = address
+            owner_result['city'] = city
+            owner_result['code_postal'] = code_postal
             owner_result['email'] = email
             owner_result['phone_number'] = phone_number
             owner_result['subaccount'] = subaccount
@@ -758,6 +768,8 @@ function getOwnerForCSV(data, ownerID) {
                         owner_result['lastname_1'] = lastname_1
                         owner_result['company_name'] = company_name
                         owner_result['address'] = address
+                        owner_result['city'] = city
+                        owner_result['code_postal'] = code_postal
                         owner_result['email'] = email
                         owner_result['phone_number'] = phone_number
                         owner_result['subaccount'] = subaccount
@@ -793,6 +805,8 @@ function exportOwnerCSV(data, res) {
             {id: 'lastname_1', title: 'last name 2'},
             {id: 'company_name', title: 'company name'},
             {id: 'address', title: 'address'},
+            {id: 'code_postal', title: 'code_postal'},
+            {id: 'city', title: 'ville'},
             {id: 'email', title: 'email'},
             {id: 'phone_number', title: 'phone number'},
             {id: 'subaccount', title: 'subaccount'},
