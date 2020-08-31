@@ -46,8 +46,8 @@ const Resolutions = (props) => {
         globalActions.setPostalID(id);
     }
     useEffect(() => {
-        if (accessAssemblies !== 'denied')
-            getPostalVotes();
+        // if (accessAssemblies !== 'denied')
+        //     getPostalVotes();
     }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
     const handleChangeSelect = (value) => {

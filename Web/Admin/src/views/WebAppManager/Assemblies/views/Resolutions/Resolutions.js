@@ -47,10 +47,10 @@ const Resolutions = (props) => {
   const handleClickEdit = (id) => {
     globalActions.setResolutionID(id);
   }
-  useEffect(() => {
-    if (accessAssemblies !== 'denied')
-      getDecisions();
-  }, [page_num, row_count, sort_column, sort_method, props.refresh]);
+  // useEffect(() => {
+  //   if (accessAssemblies !== 'denied')
+  //     getDecisions();
+  // }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   const handleChangeSelect = (value) => {
     setRowCount(selectList[value]);

@@ -116,9 +116,9 @@ const TrashResolutions = (props) => {
       );
   }
 
-  useEffect(() => {
-    getTrashPostalVotes();
-  }, [page_num, row_count, sort_column, sort_method, props.refresh]);
+  // useEffect(() => {
+  //   getTrashPostalVotes();
+  // }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
   return (
     <>
