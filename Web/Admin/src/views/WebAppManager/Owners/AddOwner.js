@@ -432,6 +432,7 @@ const AddOwner = (props) => {
         formdata.set('id_card_front', idcards[0] === null ? '' : idcards[0])
         formdata.set('id_card_back', idcards[1] === null ? '' : idcards[1])
         formdata.set('vote_value_list', JSON.stringify(voteLists));
+        console.log(formdata)
         setVisibleIndicator(true);
         ManagerService.createOwner(formdata)
             .then(

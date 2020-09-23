@@ -224,6 +224,7 @@ function validFileType(file) {
   return fileTypes.includes(file.type);
 }
 export default function SelectTable(props) {
+  
   const { onClickEdit, ...rest } = props;
 
   const classes = useStyles();
@@ -245,6 +246,7 @@ export default function SelectTable(props) {
   const [check, setCheck] = useState([]);
   const [value, setValue] = React.useState(0);
   useEffect(() => {
+    console.log(props.products)
     setItems(props.products);
     let tempItems = [...props.products];
     for (let i = 0; i < props.products.length; i++) {

@@ -9,13 +9,15 @@ import { Checkbox } from '@material-ui/core';
 import MyButton from 'components/MyButton';
 import TextField from '@material-ui/core/TextField';
 import MySelect from 'components/MySelect.js';
+import { ManagerService as Service } from '../../../../../services/api.js';
+const ManagerService = new Service();
 const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
 const validateForm = (errors) => {
-  let valid = true;
-  Object.values(errors).forEach(
-    (val) => val.length > 0 && (valid = false)
-  );
-  return valid;
+    let valid = true;
+    Object.values(errors).forEach(
+        (val) => val.length > 0 && (valid = false)
+    );
+    return valid;
 }
 const EditResolution = (props) => {
     const classes = useStyles();
@@ -27,14 +29,17 @@ const EditResolution = (props) => {
     const [description, setDescription] = useState('');
     const [vote, setVote] = useState(0);
     const [votes, setVotes] = useState(['']);
+    const [voteList, setVoteList] = useState([]);
+    const [voteID, setVoteID] = useState(-1);
     const [calcMode, setCalcMode] = useState(0);
     const calcModeList = ['majorité simple', 'majorité double', 'majorité absolue'];
     const en_calcModeList = ['simple majority', 'double majority', 'absolute majority'];
     const [result, setResult] = useState(0);
     const resultList = ['adopté', 'rejeté', 'en attente'];
-    const en_resultList = ['adopted', 'rejected', 'on hold'];
+    const en_resultList = ['adopted', 'rejected', 'onhold'];
     const [externalSpeaker, setExternalSpeaker] = useState(false);
     const [externalEmail, setExternalEmail] = useState('');
+    const [intervention, setIntervention] = useState(0);
     const [transfer, setTransfer] = useState(false);
     const [emailNewUnion, setEmailNewUnion] = useState('');
 
@@ -42,6 +47,8 @@ const EditResolution = (props) => {
     const [errorsVote, setErrorsVote] = useState('');
     const [errorsExternalEmail, setErrorsExternalEmail] = useState('');
     const [errorsEmailNewUnion, setErrorsEmailNewUnion] = useState('');
+    const [currentBuildingID, setCurrentBuildingID] = useState(-1);
+    const [currentAssemblyID, setCurrentAssemblyID] = useState(-1);
 
     const handleChangeDecisionName = (event) => {
         setDecisionName(event.target.value);
@@ -52,6 +59,7 @@ const EditResolution = (props) => {
     }
     const handleChangeVote = (val) => {
         setVote(val);
+        setVoteID(voteList[val].voteID);
     }
     const handleChangeCalcMode = (val) => {
         setCalcMode(val);
@@ -63,15 +71,14 @@ const EditResolution = (props) => {
         setExternalSpeaker(event.target.checked);
         setErrorsExternalEmail('');
         setExternalEmail('');
+        setIntervention(event.target.checked);
     }
     const handleChangeExternalEmail = (event) => {
         event.preventDefault();
-        let errorsMail =
-            validEmailRegex.test(event.target.value)
-                ? ''
-                : 'Email is not valid!';
+        let errorsMail = validEmailRegex.test(event.target.value) ? '' : 'Email is not valid!';
         setExternalEmail(event.target.value);
         setErrorsExternalEmail(errorsMail);
+        setIntervention(event.target.checked);
     }
     const handleChangeTransfer = (event) => {
         setTransfer(event.target.checked);
@@ -80,10 +87,7 @@ const EditResolution = (props) => {
     }
     const handleChangeEmailNewUnion = (event) => {
         event.preventDefault();
-        let errorsMail =
-            validEmailRegex.test(event.target.value)
-                ? ''
-                : 'Email is not valid!';
+        let errorsMail = validEmailRegex.test(event.target.value) ? '' : 'Email is not valid!';
         setEmailNewUnion(event.target.value);
         setErrorsEmailNewUnion(errorsMail);
     }
@@ -94,28 +98,125 @@ const EditResolution = (props) => {
         if (votes.length === 0) { setErrorsVote('please select vote branch'); cnt++; }
         else setErrorsVote('');
         if (externalSpeaker) {
-            if (externalEmail.length === 0) { setErrorsExternalEmail('please enter external email'); cnt++; }
-            else {
-                if (!validateForm(errorsExternalEmail)) { setErrorsExternalEmail('Email is not valid!'); cnt++; }
-                else setErrorsExternalEmail('');
+            if (externalEmail.length === 0) { 
+                setErrorsExternalEmail('please enter external email'); 
+                cnt++; 
+            } else {
+                if (!validateForm(errorsExternalEmail)) {
+                    setErrorsExternalEmail('Email is not valid!');
+                    cnt++; 
+                } else setErrorsExternalEmail('');
             }
         } else setErrorsExternalEmail('');
         if (transfer) {
-            if (emailNewUnion.length === 0) { setErrorsEmailNewUnion('please enter email new union'); cnt++; }
-            else {
-                if (!validateForm(errorsEmailNewUnion)) { setErrorsEmailNewUnion('Email is not valid!'); cnt++; }
-                else setErrorsEmailNewUnion('');
+            if (emailNewUnion.length === 0) {
+                setErrorsEmailNewUnion('please enter email new union');
+                cnt++;
+            } else {
+                if (!validateForm(errorsEmailNewUnion)) {
+                    setErrorsEmailNewUnion('Email is not valid!');
+                    cnt++;
+                } else setErrorsEmailNewUnion('');
             }
         } else setErrorsEmailNewUnion('');
         if (cnt === 0) {
-            // createBuilding();
+            updateAssemblyDecision();            
         }
     };
+    useEffect(() => {
+        if (accessAssemblies !== 'denied') {
+            getInfos();
+        }
+    }, [currentBuildingID]);
+    const getInfos = () => {
+        let url = window.location;
+        let parts = url.href.split('/');
+        const decisionID = Number(parts[parts.length - 1]);
+        ManagerService.getDecision(decisionID)
+        .then(
+            response => {
+                switch (response.data.code) {
+                    case 200:
+                        const data = response.data.data;
+                        console.log(data)
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        setCurrentBuildingID(data.assembly[0].buildingID)
+                        setCurrentAssemblyID(data.assembly[0].assemblyID)
+                        votes.splice(0, data.votelist.length);
+                        data.votelist.map((item) => (
+                            votes.push(item.description)
+                        ));
+                        setVotes(votes);
+                        setVoteList(data.votelist);
+                        setVoteID(data.votelist[0].voteID);
+                        setVote(0);
+                        setDecisionName(data.decision[0].name)
+                        setDescription(data.decision[0].description)
+                        if (data.decision[0].enable_external_speaker) {
+                            setExternalSpeaker(true)
+                            setExternalEmail(data.decision[0].enable_external_speaker)
+                        }
+                        if (data.decision[0].enable_company_transfer) {
+                            setTransfer(true)
+                            setEmailNewUnion(data.decision[0].enable_company_transfer)
+                        }
+                        break;
+                    case 401:
+                        authService.logout();
+                        history.push('/login');
+                        window.location.reload();
+                        break;
+                    default:
+                        ToastsStore.error(response.data.message);
+                }
+            },
+            error => {
+                ToastsStore.error("Can't connect to the server!");
+            }
+        );
+    }
+    const updateAssemblyDecision = () => {
+        let url = window.location;
+        let parts = url.href.split('/');
+        const decisionID = Number(parts[parts.length - 1]);
+        let form = {
+            'assemblyID': currentAssemblyID,
+            'name' : decisionName,
+            'description': description,
+            'vote_branch': voteList[vote].description,
+            'calc_mode': en_calcModeList[calcMode],
+            'vote_result': en_resultList[result],
+            'intervention': intervention,
+            'enable_external_speaker': externalEmail,
+            'enable_company_transfer': emailNewUnion,
+        }
+        ManagerService.updateDecision(decisionID, form)
+        .then(
+            response => {
+                switch (response.data.code) {
+                    case 200:
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        history.goBack();
+                        break;
+                    case 401:
+                        authService.logout();
+                        history.push('/login');
+                        window.location.reload();
+                        break;
+                    default:
+                        ToastsStore.error(response.data.message);
+                }
+            },
+            error => {
+                ToastsStore.error("Can't connect to the server!");
+            }
+        );
+    }
+
     return (
         <div className={classes.root}>
-            {
-                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-            }
+            { visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null }
             <div className={classes.title}>
             </div>
             <div className={classes.body}>
@@ -236,7 +337,7 @@ const EditResolution = (props) => {
                             null
                     }
                     <Grid item container style={{ paddingTop: '50px', paddingBottom: '50px' }}>
-                        <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessAssemblies === 'see' ? true : false)} />
+                        <MyButton name={"Sauvegarder"} color={"1"} onClick={handleClickSave} disabled={(accessAssemblies === 'see' ? false : true)} />
                     </Grid>
                 </Grid>
             </div>

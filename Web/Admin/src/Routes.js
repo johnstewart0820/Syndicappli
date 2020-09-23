@@ -61,6 +61,7 @@ import ManagerMyAccount from './views/WebAppManager/Informations/MyAccount';
 import ManagerMyCompany from './views/WebAppManager/Informations/MyCompany';
 import ManagerPaymentMethods from './views/WebAppManager/Informations/PaymentMethods';
 import ManagerAddonsPayment from './views/WebAppManager/Addons/ModulePayment';
+import ManagerAssemblyDecisionEdit from './views/WebAppManager/Assemblies/views/Resolutions/EditResolution';
 
 //Owner import
 import OwnerInvoices from './views/WebAppOwner/Informations/Invoices';
@@ -442,6 +443,12 @@ const Routes = () => {
         exact
         layout={NormalLayout}
         path="/not-found"
+      />
+      <RouteWithLayout
+        component={ManagerAssemblyDecisionEdit}
+        exact
+        layout={MainLayout}
+        path="/manager/assemblies/decision/edit/:id"
       />
       <Redirect to="/not-found" />
     </Switch>

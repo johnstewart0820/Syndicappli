@@ -218,6 +218,7 @@ export default function ResolutionTable(props) {
   const [globalState, globalActions] = useGlobal();
   const tempDirection = props.columns;
   let tempDirect = [];
+  const { products } = props;
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
       tempDirect[i] = '/images/sort_down.png';
@@ -231,22 +232,11 @@ export default function ResolutionTable(props) {
   const resultList = ['adopté', 'rejeté', 'en attente'];
   const en_resultList = ['adopted', 'rejected', 'on hold'];
   const dataList = [20, 50, 100, 200, "all"];
-  const [items, setItems] = useState([
-    { ID: 1, name: 'asd1', title: 'asdf1', vote_branch: 'vote1', calc_mode: 'simple1', result: 'ok1' },
-    { ID: 2, name: 'asd2', title: 'asdf2', vote_branch: 'vote2', calc_mode: 'simple2', result: 'ok2' },
-    { ID: 3, name: 'asd3', title: 'asdf3', vote_branch: 'vote3', calc_mode: 'simple3', result: 'ok3' },
-    { ID: 4, name: 'asd4', title: 'asdf4', vote_branch: 'vote4', calc_mode: 'simple4', result: 'ok4' },
-  ]);
+  const [items, setItems] = useState([]);
   const [value, setValue] = React.useState(0);
   const [result, setResult] = useState(Array.from({ length: 1000 }, () => 0));
   const [vote, setVote] = useState(Array.from({ length: 1000 }, () => 0));
   const [calcMode, setCalcMode] = useState(Array.from({ length: 1000 }, () => 0));
-
-  // fake data generator
-  useEffect(() => {
-    setItems(items)
-    console.log('items:', items);
-  }, [items])
 
   // a little function to help us with reordering the result
   const reorder = (list, startIndex, endIndex) => {
@@ -278,8 +268,6 @@ export default function ResolutionTable(props) {
       result.source.index,
       result.destination.index
     );
-    // items.splice(0,items.length);
-    // setItems([])
     setItems(items1)
     console.log('items1:', items1)
   }
@@ -312,10 +300,18 @@ export default function ResolutionTable(props) {
     props.onClick();
   }
   const handleClickEdit = (id) => {
-    props.onClickEdit(items[id].ID);
+    if (props.type === "resolution") {
+      props.onClickEdit(products[id].decisionID);
+    } else {
+      props.onClickEdit(items[id].ID);
+    }
   }
   const handleClickDelete = (id) => {
-    props.onClickDelete(items[id].ID);
+    if (props.type === "resolution") {
+      props.onClickDelete(products[id].decisionID);
+    } else {
+      props.onClickDelete(items[id].ID);
+    }
   }
   const handleChangeVote = (val, i) => {
     let select = [...vote];
@@ -378,77 +374,39 @@ export default function ResolutionTable(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <TableBody style={getListStyle(snapshot.isDraggingOver)}>
-                    {items.map((item, i) => (
-                      <Draggable key={item.ID} draggableId={`${item.ID}`} index={i}>
-                        {(provided, snapshot) => (
-                          <TableRow
-                            style={getItemStyle(
-                              snapshot.isDragging,
-                              provided.draggableProps.style
-                            )}
-                            ref={provided.innerRef}
-                          >
-                            <TableCell onClick={() => handleClickEdit(item.ID)}>
-                              {item.ID}
+                    {products.map((item, i) => (
+                          <TableRow>
+                            <TableCell onClick={() => handleClickEdit(i)}>
+                              {item.decisionID}
                             </TableCell>
-                            <TableCell onClick={() => handleClickEdit(item.ID)}>
+                            <TableCell onClick={() => handleClickEdit(i)}>
                               {item.name}
                             </TableCell>
-                            <TableCell>
-                              <TableItemSelect
-                                color="gray"
-                                data={votes}
-                                onChangeSelect={handleChangeVote}
-                                value={vote[i]}
-                                pos={i}
-                                width="100%"
-                              />
+                            <TableCell onClick={() => handleClickEdit(i)}>
+                              {item.vote_branch}
                             </TableCell>
-                            <TableCell>
-                              <TableItemSelect
-                                color="gray"
-                                data={calcModeList}
-                                onChangeSelect={handleChangeCalcMode}
-                                value={calcMode[i]}
-                                pos={i}
-                                width="100%"
-                              />
+                            <TableCell onClick={() => handleClickEdit(i)}>
+                              {item.calc_mode}
                             </TableCell>
-                            <TableCell>
-                              <TableItemSelect
-                                color="gray"
-                                data={resultList}
-                                onChangeSelect={handleChangeResult}
-                                pos={i}
-                                value={result[i]}
-                                width="100%"
-                              />
+                            <TableCell onClick={() => handleClickEdit(i)}>
+                              {item.vote_result}
                             </TableCell>
                             <TableCell align="right">
-                              <IconButton
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                <MenuIcon className={classes.menu} />
-                              </IconButton>
-                                  &nbsp;&nbsp;
                               <IconButton>
                                 <EditIcon
                                   className={classes.editItem}
-                                  onClick={() => handleClickEdit(item.ID)}
+                                  onClick={() => handleClickEdit(i)}
                                 />
                               </IconButton>
                                   &nbsp;&nbsp;
                               <IconButton>
                                 <DeleteIcon
                                   className={classes.editItem}
-                                  onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
+                                  onClick={props.access === 'see' ? () => handleClickDelete(i) : null}
                                 />
                               </IconButton>
                             </TableCell>
                           </TableRow>
-                        )}
-                      </Draggable>
                     ))}
                     {provided.placeholder}
                   </TableBody>
@@ -484,7 +442,7 @@ export default function ResolutionTable(props) {
             name={props.leftBtn}
             color={"1"}
             onClick={handleClick}
-            style={{ visibility: props.leftBtn && props.access === 'edit' ? 'visible' : 'hidden' }}
+            style={{ visibility: props.leftBtn && props.access === 'see' ? 'visible' : 'hidden' }}
           />
         </Grid>
         <Grid xs={12} sm={6} item container direction="row-reverse">

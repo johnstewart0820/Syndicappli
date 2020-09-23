@@ -368,13 +368,6 @@ const Topbar = props => {
           </Grid>
           <Grid item xs={12} sm={7} style={{ display: 'flex' }} alignItems="center">
             <div className={classes.flexGrow} />
-            {/* <SearchBar
-            className={classes.searchBar}
-            onChange={handleChange}
-            value={value}
-            placeholder="Rechercher..."
-            onRequestSearch={() => console.log('onRequestSearch')}
-          /> */}
             <div className={classes.row}>
               <SearchInput
                 className={classes.searchInput}

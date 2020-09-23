@@ -502,16 +502,18 @@ export class ManagerService {
   emptyTrashProvider(status) {
     return axios.post(API_URL + 'web/manager/trash/provider/deleteAll', status, { headers: authHeader() });
   }
-  //Assembly Part
   ///Decision Part
-  getDecisionList(data) {
-    return axios.post(API_URL + 'web/manager/assembly/DecisionList', data, { headers: authHeader() });
+  getDecisionList(id, data) {
+    return axios.post(API_URL + 'web/manager/assembly/DecisionList/' + id, data, { headers: authHeader() });
   }
   createDecision(data) {
     return axios.post(API_URL + 'web/manager/assembly/Decision', data, { headers: authHeader() });
   }
-  getDecision(id, data) {
-    return axios.post(API_URL + 'web/manager/assembly/Decision/' + id, data, { headers: authHeader() });
+  updateDecision(id, data) {
+    return axios.put(API_URL + 'web/manager/assembly/Decision/' + id, data, { headers: authHeader() });
+  }
+  getDecision(id) {
+    return axios.get(API_URL + 'web/manager/assembly/Decision/' + id, { headers: authHeader() });
   }
   deleteDecision(id) {
     return axios.delete(API_URL + 'web/manager/assembly/Decision/' + id, { headers: authHeader() });
@@ -534,6 +536,26 @@ export class ManagerService {
   }
   emptyTrashPostalVotes(status) {
     return axios.post(API_URL + 'web/manager/assembly/postalVote/deleteAll', status, { headers: authHeader() });
+  }
+  //Assembly Part
+  createAssembly(data) {
+    return axios.post(API_URL + 'web/manager/assembly', data, { headers: authHeader() });
+  }
+  getAssemblyList(data) {
+    return axios.post(API_URL + 'web/manager/assemblyList', data, { headers: authHeader() });
+  }
+  deleteAssembly(id) {
+    return axios.delete(API_URL + 'web/manager/assembly/' + id, { headers: authHeader() });
+  }
+  getAssembly(id) {
+    return axios.get(API_URL + 'web/manager/assembly/' + id, { headers: authHeader() });
+  }
+  updateAssembly(id, data) {
+    return axios.put(API_URL + 'web/manager/assembly/' + id, data, { headers: authHeader() });
+  }
+  //Document Part
+  createAssemblyFile(data) {
+    return axios.post(API_URL + 'web/manager/assembly/File', data, { headers: authHeader() });
   }
 }
 

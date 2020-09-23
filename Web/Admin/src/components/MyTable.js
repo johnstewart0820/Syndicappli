@@ -305,6 +305,8 @@ export default function ProductTable(props) {
   const handleClickEdit = (id) => {
     if (props.type === 'owner') {
       props.onClickEdit(items[id].ID, items[id].buildingID);
+    } else if (props.type === 'assembly') {
+      props.onClickEdit(items[id].assemblyID);
     } else {
       props.onClickEdit(items[id].ID);
     }
@@ -312,6 +314,8 @@ export default function ProductTable(props) {
   const handleClickDelete = (id) => {
     if (props.type === 'owner') {
       props.onClickDelete(items[id].ID, items[id].buildingID);
+    } else if (props.type === 'assembly') {
+      props.onClickDelete(items[id].assemblyID);
     } else {
       props.onClickDelete(items[id].ID);
     }
@@ -366,7 +370,7 @@ export default function ProductTable(props) {
                       <TableCell
                         key={j}
                         onClick={() => handleClickEdit(i)}
-                        disabled={(props.access === 'see' ? true : false)}
+                        disabled={(props.access === 'edit' ? false : true)}
                         style={{width: 100/(props.columns.length + 1) + '%'}}
                       >
                         {
@@ -383,10 +387,7 @@ export default function ProductTable(props) {
                     />
                   </IconButton>
                       &nbsp;&nbsp;
-                  <IconButton 
-                    onClick={props.access === 'see' ? null : () => handleClickDelete(i)}
-                    style={{ visibility: item.userID === globalState.ID ? 'hidden' : 'visible' }}
-                  >
+                  <IconButton onClick={props.access === 'see' ? () => handleClickDelete(i) : null}>
                     <DeleteIcon
                       className={classes.editItem}    
                     />
