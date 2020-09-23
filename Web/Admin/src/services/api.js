@@ -557,6 +557,9 @@ export class ManagerService {
   createAssemblyFile(data) {
     return axios.post(API_URL + 'web/manager/assembly/File', data, { headers: authHeader() });
   }
+  getAssemblyFiles(id) {
+    return axios.get(API_URL + 'web/manager/assembly/FileList/' + id, { headers: authHeader() });
+  }
 }
 
 export default new AdminService();

@@ -10,6 +10,7 @@ import AdminService from 'services/api.js';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Badge from '@material-ui/core/Badge';
 import CloseIcon from '@material-ui/icons/Close';
+import Document from 'components/Document';
 import { ManagerService as Service } from '../../../../../services/api.js';
 const ManagerService = new Service();
 const Documents = (props) => {
@@ -19,8 +20,16 @@ const Documents = (props) => {
     const [visibleIndicator, setVisibleIndicator] = useState(false);
     const [docurl, setDocUrl] = React.useState("");
     const [doc, setDoc] = React.useState(null);
-    const [doc_name, setDocName] = useState('');    
-    const [currentAssemblyID, setAssemblyID] = useState(-1);
+    const [doc_name, setDocName] = useState('');
+    const [dataList, setDataList] = useState([]);
+    const [thumbnails, setThumbnails] = useState([]);
+
+    useEffect(() => {
+        if (accessAssemblies !== 'denied') {
+            getAssemblyDocuments();
+        }
+    }, [window.location]);
+    
     const handleLoadDocument = (event) => {
         if (event.target.files[0].size > 5 * 1048576) {
             ToastsStore.warning('Document size should be low than 5 MB.');
@@ -45,33 +54,15 @@ const Documents = (props) => {
             }
         }
     }
-    const handleClose = (k)=>{
-        console.log("index =", k)
+    const handleClickDelete = (index)=>{
+        console.log("index =", index)
     }
-    useEffect(() => {
-        if (accessAssemblies !== 'denied') {
-            getAssemblyIDInfo();
-        }
-    }, [docurl]);
-    const getAssemblyIDInfo = () => {
+    const getAssemblyDocuments = () => {
         let url = window.location;
         let parts = url.href.split('/');
         const assemblyID = Number(parts[parts.length - 1]);
-        setAssemblyID(assemblyID);
-    }
-    const handleClickAdd = () => {
-        let form = {
-            'assemblyID': currentAssemblyID,
-            'file' : doc,
-            'url' : docurl,
-        }
-        let formdata = new FormData();
-        formdata.set('assemblyID', assemblyID);
-        formdata.set('file', doc);
-        formdata.set('url', docurl);
-        console.log(formdata)
         setVisibleIndicator(true);
-        ManagerService.createAssemblyFile(formdata)
+        ManagerService.getAssemblyFiles(assemblyID)
         .then(
             response => {
                 setVisibleIndicator(false);
@@ -79,7 +70,10 @@ const Documents = (props) => {
                     case 200:
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
-                        setDocUrl("");
+                        console.log(data.files)
+                        setDataList(data.files);
+                        for (var i = 0; i < dataList.length; i++) {
+                        }
                         break;
                     case 401:
                         authService.logout();
@@ -96,113 +90,82 @@ const Documents = (props) => {
             }
         );
     }
+    const handleClickAdd = () => {
+        let url = window.location;
+        let parts = url.href.split('/');
+        const assemblyID = Number(parts[parts.length - 1]);
+        let formdata = new FormData();
+        formdata.set('assemblyID', assemblyID);
+        formdata.set('file', doc);
+        formdata.set('url', docurl);
+        console.log(formdata)
+        setVisibleIndicator(true);
+        ManagerService.createAssemblyFile(formdata)
+        .then(
+            response => {
+                setVisibleIndicator(false);
+                switch (response.data.code) {
+                    case 200:
+                        thumbnails.splice(0, thumbnails.length);
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        setDocUrl("");
+                        getAssemblyDocuments();
+                        break;
+                    case 401:
+                        authService.logout();
+                        history.push('/login');
+                        window.location.reload();
+                        break;
+                    default:
+                        ToastsStore.error(response.data.message);
+                }
+            },
+            error => {
+                ToastsStore.error("Can't connect to the server!");
+                setVisibleIndicator(false);
+            }
+        );
+    }
+
     return (
         <div className={classes.root}>
             { visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null }
-            <div className={classes.title}>
-            </div>
-            <div className={classes.body}>
-                <Grid item container spacing={5} direction="column">
-                    <Grid item>
-                        <Grid item container direction="row" spacing={3}>
-                            <Grid item>
-                                <Grid item container direction="column">
-                                    <Badge  
-                                        key={0}
-                                        overlap="circle"
-                                        anchorOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                            border: '1px solid gray',
-                                            padding: '1px 4px',
-                                        }}
-                                        badgeContent={<CloseIcon onClick={()=>handleClose(0)}
-                                            className={classes.close}/>}
-                                    >
-                                        <div className={classes.documents}>
-                                            <img className={classes.size} alt="" src='/images/pdf.png' />
-                                        </div>
-                                    </Badge>
-                                    <p className={classes.doc_tip}>doc.pdf</p>
-                                </Grid>
-                            </Grid>
-                            <Grid item>
-                                <Grid item container direction="column">
-                                    <Badge  
-                                        key={1}
-                                        overlap="circle"
-                                        anchorOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                            border: '2px solid gray',
-                                            padding: '1px 4px',
-                                        }}
-                                        badgeContent={<CloseIcon onClick={()=>handleClose(1)}
-                                            className={classes.close}/>}
-                                    >
-                                        <div className={classes.documents}>
-                                            <img src='/images/doc.png' className={classes.size} />
-                                        </div>
-                                    </Badge>
-                                    <p className={classes.doc_tip}>doc.docx</p>
-                                </Grid>
-                            </Grid>
-                            <Grid item>
-                                <Grid item container direction="column">
-                                    <Badge  
-                                        key={2}
-                                        overlap="circle"
-                                        anchorOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                            border: '2px solid gray',
-                                            padding: '1px 4px',
-                                        }}
-                                        badgeContent={<CloseIcon onClick={()=>handleClose(2)}
-                                            className={classes.close}/>}
-                                    >
-                                        <div className={classes.documents}>
-                                            <img src='/images/png.png' className={classes.sizepng} />
-                                        </div>
-                                    </Badge>
-                                    <p className={classes.doc_tip}>doc.png</p>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item container spacing={3} direction="column">
-                        <Grid item justify="center" container>
-                            <p className={classes.uploadHelp}>Cliquez ou glissez pour déposer de nouveaux documents...</p>
-                        </Grid>
-                        <Grid item alignItems="center" justify="center" container>
-                            <input 
-                                className={classes.input} 
-                                accept="*"
-                                type="file" 
-                                id="docpicker" 
-                                onChange={accessAssemblies === 'see' ? handleLoadDocument : null } 
-                            />
-                            <label htmlFor="docpicker">
-                                {
-                                    docurl === '' ?
-                                    <div  
-                                        className={classes.img} 
-                                        onDragOver={accessAssemblies === 'see' ? handleDragOverDocument : null} 
-                                        onDrop={accessAssemblies === 'see' ? handleDropDocument : null}
-                                    >
-                                        <AddCircleOutlineIcon className={classes.plus} />
-                                    </div>
-                                    :
-                                    <div>
-                                        <img className={classes.img} src='/images/attachment.png' alt="" />
-                                        <p className={classes.doc_name}>{doc_name}</p>
-                                    </div>
-                                }
-                            </label>
-                        </Grid>
-                    </Grid>
+            <Document
+                onClickDelete={handleClickDelete}
+                files={dataList}
+            />
+            <Grid item container spacing={3} direction="column">
+                <Grid item justify="center" container>
+                    <p className={classes.uploadHelp}>Cliquez ou glissez pour déposer de nouveaux documents...</p>
                 </Grid>
-            </div>
+                <Grid item alignItems="center" justify="center" container>
+                    <input 
+                        className={classes.input} 
+                        accept="*"
+                        type="file" 
+                        id="docpicker" 
+                        onChange={accessAssemblies === 'see' ? handleLoadDocument : null } 
+                    />
+                    <label htmlFor="docpicker">
+                        {
+                            docurl === '' ?
+                            <div  
+                                className={classes.img} 
+                                onDragOver={accessAssemblies === 'see' ? handleDragOverDocument : null} 
+                                onDrop={accessAssemblies === 'see' ? handleDropDocument : null}
+                            >
+                                <AddCircleOutlineIcon className={classes.plus} />
+                            </div>
+                            :
+                            <div>
+                                <img className={classes.img} src='/images/attachment.png' alt="" />
+                                <p className={classes.doc_name}>{doc_name}</p>
+                            </div>
+                        }
+                    </label>
+                </Grid>
+            </Grid>            
             <div className={classes.footer} style={{ paddingTop: '10px', paddingBottom: '10px' }}>
                 <Grid container justify="center">
                     <MyButton name={"Añadir"} color={"1"} onClick={handleClickAdd} />
