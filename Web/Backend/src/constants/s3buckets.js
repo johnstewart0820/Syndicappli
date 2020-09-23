@@ -15,7 +15,8 @@
 const buckets = {
     AVATAR : 'syndicappli-avatars',
     COMPANY_LOGO : 'syndicappli-company-logos',
-    IDENTITY_IMAGE : 'syndicappli-identity-card-image'
+    IDENTITY_IMAGE : 'syndicappli-identity-card-image',
+    FILE : 'syndicappli-avatars',
 }
 
 module.exports = buckets

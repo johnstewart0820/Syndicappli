@@ -23,6 +23,7 @@ const ownerService = require('../../services/web/manager/owner-service')
 const addonService = require('../../services/web/manager/addon-service')
 const invoiceService = require('../../services/web/manager/invoice-service')
 const cardService = require('../../services/web/manager/card-service')
+const assemblyService = require('../../services/web/manager/assembly-service')
 
 var multer  = require('multer')
 var upload = multer({ dest: process.env.UPLOAD_ORIGIN || '/tmp/', limits: {fileSize: parseInt(process.env.UPLOAD_MAX_FILE_SIZE)} })
@@ -105,6 +106,28 @@ router.put('/card/:id', authMiddleware.checkToken, updateCard)
 router.delete('/card/:id', authMiddleware.checkToken, deleteCard)
 
 /**
+ * assembly api
+ */
+router.post('/assembly', authMiddleware.checkToken, createAssembly)
+router.put('/assembly/:id', authMiddleware.checkToken, updateAssembly)
+router.get('/assembly/:id', authMiddleware.checkToken, getAssembly)
+router.delete('/assembly/:id', authMiddleware.checkToken, deleteAssembly)
+router.post('/assemblyList', authMiddleware.checkToken, getAssemblyList)
+router.post('/assembly/import_csv', authMiddleware.checkToken, upload.single('csv'), importAssemblyCSV)
+router.post('/assembly/export_csv', authMiddleware.checkToken, exportAssemblyCSV)
+router.get('/assembly/FileList/:id', authMiddleware.checkToken, getAssemblyFileList)
+router.post('/assembly/File', authMiddleware.checkToken, upload.fields([{name: 'file', maxCount: 1}]), createAssemblyFile)
+router.delete('/assembly/File/:id', authMiddleware.checkToken, deleteAssemblyFile)
+router.post('/assembly/Decision', authMiddleware.checkToken, createAssemblyDecision)
+router.put('/assembly/Decision/:id', authMiddleware.checkToken, updateAssemblyDecision)
+router.delete('/assembly/Decision/:id', authMiddleware.checkToken, deleteAssemblyDecision)
+router.get('/assembly/Decision/:id', authMiddleware.checkToken, getAssemblyDecision)
+router.post('/assembly/DecisionList/:id', authMiddleware.checkToken, getAssemblyDecisionList)
+router.post('/assembly/Decision/import_csv', authMiddleware.checkToken, upload.single('csv'), importAssemblyDecisionCSV)
+router.post('/assembly/Decision/export_csv', authMiddleware.checkToken, exportAssemblyDecisionCSV)
+router.post('/assembly/Vote', authMiddleware.checkToken, createAssemblyVote)
+
+/**
  * Function that get profile data
  *
  * @author  Taras Hryts <streaming9663@gmail.com>
@@ -156,9 +179,6 @@ function updateProfile(req, res) {
 function getCompany(req, res) {
     let userId = req.decoded.uid
     let userdata = req.decoded.userdata
-    console.log('userdata:', userdata)
-    console.log('uid:', userId)
-
     adminService.getCompany(userId, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
@@ -1047,6 +1067,359 @@ function deleteCard(req, res) {
     let userdata = req.decoded.userdata
     let id = req.params.id
     cardService.deleteCard(userId, userdata, id).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+
+///////////////////////Assembly//////////////////////
+
+/**
+ * Function that add assembly
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createAssembly(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    assemblyService.createAssembly(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that update assembly
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateAssembly(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    assemblyService.updateAssembly(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get assembly
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAssembly(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    assemblyService.getAssembly(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get assembly list
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAssemblyList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    assemblyService.getAssemblyList(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete assembly
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAssembly(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id
+    assemblyService.deleteAssembly(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that import CSV for assembly
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function importAssemblyCSV(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let data = req.body
+    
+    assemblyService.importAssemblyCSV(userId, userdata, file, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that export CSV for Building
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function exportAssemblyCSV(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    assemblyService.exportAssemblyCSV(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that create assembly file
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createAssemblyFile(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let files = req.files    
+    let data = req.body
+    assemblyService.createAssemblyFile(userId, data, files, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete assembly file
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAssemblyFile(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    assemblyService.deleteAssemblyFile(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get assembly file list
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAssemblyFileList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    assemblyService.getAssemblyFileList(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that add assembly decision
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createAssemblyDecision(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    assemblyService.createAssemblyDecision(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that edit assembly decision
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function updateAssemblyDecision(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    assemblyService.updateAssemblyDecision(userId, id, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that delete assembly decision
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAssemblyDecision(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    assemblyService.deleteAssemblyDecision(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get assembly decision
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAssemblyDecision(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    assemblyService.getAssemblyDecision(userId, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get assembly decision list
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAssemblyDecisionList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let id = req.params.id
+    let data = req.body
+    assemblyService.getAssemblyDecisionList(userId, data, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that import CSV for assembly dicision
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function importAssemblyDecisionCSV(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let file = req.file
+    let data = req.body    
+    assemblyService.importAssemblyDecisionCSV(userId, userdata, file, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that export CSV for assembly decision
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function exportAssemblyDecisionCSV(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body    
+    assemblyService.exportAssemblyDecisionCSV(userId, userdata, data, res).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that add assembly vote
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function createAssemblyVote(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    assemblyService.createAssemblyVote(userId, userdata, data).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

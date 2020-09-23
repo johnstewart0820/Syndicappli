@@ -28,6 +28,10 @@ const tables = {
     PRODUCTS: 'products',
     DISCOUNTCODES: 'discount_codes',
     ORDERS: 'orders',
+    ASSEMBLIES: 'assemblies',
+    ASSEMBLY_FILE: 'assembly_file',
+    ASSEMBLY_DECISION: 'assembly_decision',
+    ASSEMBLY_VOTE: 'assembly_correspondence_vote',
 }
 
 module.exports = tables
