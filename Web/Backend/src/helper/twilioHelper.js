@@ -18,7 +18,7 @@ function sendSMS(to, body){
     // Initialise account credentials
     const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACOUNT_SID
     const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN
-    const TWILIO_NUMBER = '+12055965192'
+    const TWILIO_NUMBER = '+19285827715'
 
     // Create new twilio client
     const client = new twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
