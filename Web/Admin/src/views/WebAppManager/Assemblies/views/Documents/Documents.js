@@ -6,7 +6,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import { withRouter } from 'react-router-dom';
 import useStyles from './useStyles';
-import AdminService from 'services/api.js';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Badge from '@material-ui/core/Badge';
 import CloseIcon from '@material-ui/icons/Close';
@@ -28,7 +27,7 @@ const Documents = (props) => {
         if (accessAssemblies !== 'denied') {
             getAssemblyDocuments();
         }
-    }, [window.location]);
+    }, [thumbnails]);
     
     const handleLoadDocument = (event) => {
         if (event.target.files[0].size > 5 * 1048576) {
@@ -56,13 +55,7 @@ const Documents = (props) => {
     }
     const handleClickDelete = (index)=>{
         console.log("index =", index)
-    }
-    const getAssemblyDocuments = () => {
-        let url = window.location;
-        let parts = url.href.split('/');
-        const assemblyID = Number(parts[parts.length - 1]);
-        setVisibleIndicator(true);
-        ManagerService.getAssemblyFiles(assemblyID)
+        ManagerService.deleteAssemblyFile(index)
         .then(
             response => {
                 setVisibleIndicator(false);
@@ -70,10 +63,7 @@ const Documents = (props) => {
                     case 200:
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
-                        console.log(data.files)
-                        setDataList(data.files);
-                        for (var i = 0; i < dataList.length; i++) {
-                        }
+                        getAssemblyDocuments();
                         break;
                     case 401:
                         authService.logout();
@@ -89,6 +79,66 @@ const Documents = (props) => {
                 setVisibleIndicator(false);
             }
         );
+
+    }
+    const getAssemblyDocuments = () => {
+        let url = window.location;
+        let parts = url.href.split('/');
+        const assemblyID = Number(parts[parts.length - 1]);
+        setVisibleIndicator(true);
+        ManagerService.getAssemblyFiles(assemblyID)
+        .then(
+            response => {
+                setVisibleIndicator(false);
+                switch (response.data.code) {
+                    case 200:
+                        thumbnails.splice(0, thumbnails.length);
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        for (var i = 0; i < data.files.length; i++) {
+                            const extend = data.files[i].name.split('.')[1];
+                            if (extend.includes("doc")) {
+                                thumbnails.push("/images/doc.png")
+                            } else if (extend.includes("pdf")) {
+                                thumbnails.push("/images/pdf.png")
+                            } else if (extend.includes("png")) {
+                                thumbnails.push(data.files[i].url)
+                            } else {
+                                thumbnails.push("/images/attachment.png")
+                            }
+                            setThumbnails(thumbnails);
+                        }
+                        setDataList(data.files);
+                        break;
+                    case 401:
+                        authService.logout();
+                        history.push('/login');
+                        window.location.reload();
+                        break;
+                    default:
+                        ToastsStore.error(response.data.message);
+                }
+            },
+            error => {
+                ToastsStore.error("Can't connect to the server!");
+                setVisibleIndicator(false);
+            }
+        );
+    }
+    const getThumbnails = () => {
+        for (var i = 0; i < dataList.length; i++) {
+            const extend = dataList[i].name.split('.')[1];
+            if (extend.includes("doc")) {
+                thumbnails.push("/images/doc.png")
+            } else if (extend.includes("pdf")) {
+                thumbnails.push("/images/pdf.png")
+            } else if (extend.includes("png")) {
+                thumbnails.push(dataList[i].url)
+            } else {
+                thumbnails.push("/images/attachment.png")
+            }
+            setThumbnails(thumbnails);
+        }
     }
     const handleClickAdd = () => {
         let url = window.location;
@@ -132,8 +182,9 @@ const Documents = (props) => {
         <div className={classes.root}>
             { visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null }
             <Document
-                onClickDelete={handleClickDelete}
-                files={dataList}
+                onClickDelete = {handleClickDelete}
+                files = {dataList}
+                thumbnails = {thumbnails}
             />
             <Grid item container spacing={3} direction="column">
                 <Grid item justify="center" container>

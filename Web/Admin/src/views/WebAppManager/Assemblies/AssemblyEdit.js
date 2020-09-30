@@ -71,15 +71,6 @@ const AssemblyEdit = (props) => {
   const handleClick = () => {
     history.goBack();
   };
-  const handleClickStart = () => {
-
-  };
-  const handleClickExport = () => {
-
-  };
-  const handleClickImport = () => {
-
-  };
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -99,31 +90,6 @@ const AssemblyEdit = (props) => {
         <Grid container justify="space-between">
           <Grid item>
             <p onClick={handleClick} className={classes.backTitle}>&lt; Retour à la liste des AG</p>
-          </Grid>
-          <Grid item>
-            <Grid item container direction="row-reverse" spacing={2}>
-              <Grid item>
-                <MyButton
-                  name={"Démarrer"}
-                  color={"1"}
-                  onClick={handleClickStart}
-                />
-              </Grid>
-              <Grid item>
-                <MyButton
-                  name={"Exporter"}
-                  bgColor={"#00C9FF"}
-                  onClick={handleClickExport}
-                />
-              </Grid>
-              <Grid item>
-                <MyButton
-                  name={"Importer"}
-                  bgColor={"#00C9FF"}
-                  onClick={handleClickImport}
-                />
-              </Grid>
-            </Grid>
           </Grid>
         </Grid>
         <Tabs value={value} onChange={handleChange}

@@ -224,7 +224,6 @@ function validFileType(file) {
   return fileTypes.includes(file.type);
 }
 export default function SelectTable(props) {
-  
   const { onClickEdit, ...rest } = props;
 
   const classes = useStyles();
@@ -246,8 +245,6 @@ export default function SelectTable(props) {
   const [check, setCheck] = useState([]);
   const [value, setValue] = React.useState(0);
   useEffect(() => {
-    console.log(props.products)
-    setItems(props.products);
     let tempItems = [...props.products];
     for (let i = 0; i < props.products.length; i++) {
       tempItems[i].isChecked = false;
@@ -256,6 +253,9 @@ export default function SelectTable(props) {
     setCheck([]);
     setSelectAll(-1);
   }, [props.state]);
+  useEffect(() => {
+    setItems(props.products);
+  })
   const handleChange = (event) => {
     let tempItems = [...items];
     for (let i = 0; i < items.length; i++) {
@@ -385,6 +385,9 @@ export default function SelectTable(props) {
   const handleClickEdit = (id) => {
     if (props.type === 'owner') {
       props.onClickEdit(items[id].ID, items[id].buildingID);
+    } else if (props.type === 'assembly') {
+      console.log(items[id])
+      props.onClickEdit(items[id].assemblyID);
     } else {
       props.onClickEdit(items[id].ID);
     }

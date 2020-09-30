@@ -219,6 +219,7 @@ export default function ResolutionTable(props) {
   const tempDirection = props.columns;
   let tempDirect = [];
   const { products } = props;
+  const { votelist } = props;
   if (tempDirection) {
     for (let i = 0; i < tempDirection.length; i++)
       tempDirect[i] = '/images/sort_down.png';
@@ -230,13 +231,21 @@ export default function ResolutionTable(props) {
   const calcModeList = ['majorité simple', 'majorité double', 'majorité absolue'];
   const en_calcModeList = ['simple majority', 'double majority', 'absolute majority'];
   const resultList = ['adopté', 'rejeté', 'en attente'];
-  const en_resultList = ['adopted', 'rejected', 'on hold'];
+  const en_resultList = ['adopted', 'rejected', 'onhold'];
   const dataList = [20, 50, 100, 200, "all"];
   const [items, setItems] = useState([]);
   const [value, setValue] = React.useState(0);
   const [result, setResult] = useState(Array.from({ length: 1000 }, () => 0));
   const [vote, setVote] = useState(Array.from({ length: 1000 }, () => 0));
   const [calcMode, setCalcMode] = useState(Array.from({ length: 1000 }, () => 0));
+
+  useEffect(() => {
+    setItems(products)
+  }, [products])
+  useEffect(() => {
+    console.log(votelist)
+    setVotes(votelist)
+  }, [votelist])
 
   // a little function to help us with reordering the result
   const reorder = (list, startIndex, endIndex) => {
@@ -374,24 +383,60 @@ export default function ResolutionTable(props) {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <TableBody style={getListStyle(snapshot.isDraggingOver)}>
-                    {products.map((item, i) => (
-                          <TableRow>
+                    {items.map((item, i) => (
+                      <Draggable key={item.decisionID} draggableId={`${item.decisionID}`} index={i}>
+                        {(provided, snapshot) => (
+                          <TableRow
+                            style={getItemStyle(
+                              snapshot.isDragging,
+                              provided.draggableProps.style
+                            )}
+                            ref={provided.innerRef}
+                          >
                             <TableCell onClick={() => handleClickEdit(i)}>
-                              {item.decisionID}
+                              {i + 1}
                             </TableCell>
                             <TableCell onClick={() => handleClickEdit(i)}>
                               {item.name}
                             </TableCell>
-                            <TableCell onClick={() => handleClickEdit(i)}>
-                              {item.vote_branch}
+                            <TableCell>
+                              <TableItemSelect
+                                color="gray"
+                                data={votes}
+                                onChangeSelect={handleChangeVote}
+                                value={vote[i]}
+                                pos={i}
+                                width="100%"
+                              />
                             </TableCell>
-                            <TableCell onClick={() => handleClickEdit(i)}>
-                              {item.calc_mode}
+                            <TableCell>
+                              <TableItemSelect
+                                color="gray"
+                                data={calcModeList}
+                                onChangeSelect={handleChangeCalcMode}
+                                value={calcMode[i]}
+                                pos={i}
+                                width="100%"
+                              />
                             </TableCell>
-                            <TableCell onClick={() => handleClickEdit(i)}>
-                              {item.vote_result}
+                            <TableCell>
+                              <TableItemSelect
+                                color="gray"
+                                data={resultList}
+                                onChangeSelect={handleChangeResult}
+                                pos={i}
+                                value={result[i]}
+                                width="100%"
+                              />
                             </TableCell>
                             <TableCell align="right">
+                              <IconButton
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <MenuIcon className={classes.menu} />
+                              </IconButton>
+                                  &nbsp;&nbsp;
                               <IconButton>
                                 <EditIcon
                                   className={classes.editItem}
@@ -407,6 +452,8 @@ export default function ResolutionTable(props) {
                               </IconButton>
                             </TableCell>
                           </TableRow>
+                        )}
+                      </Draggable>
                     ))}
                     {provided.placeholder}
                   </TableBody>

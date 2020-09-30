@@ -515,6 +515,13 @@ export class ManagerService {
   getDecision(id) {
     return axios.get(API_URL + 'web/manager/assembly/Decision/' + id, { headers: authHeader() });
   }
+  importAssemblyDecisions(data) {
+    return axios.post(API_URL + 'web/manager/assembly/Decision/import_csv', data, { headers: authHeader() });
+  }
+  exportAssemblyDecisions(data) {
+    return axios.post(API_URL + 'web/manager/assembly/Decision/export_csv', data, { headers: authHeader() ,responseType: 'blob'});
+  }
+  
   deleteDecision(id) {
     return axios.delete(API_URL + 'web/manager/assembly/Decision/' + id, { headers: authHeader() });
   }
@@ -522,17 +529,20 @@ export class ManagerService {
     return axios.post(API_URL + 'web/manager/assembly/Decision/deleteAll', status, { headers: authHeader() });
   }
   ///PostalVote Part
+  getOwnerListForVote() {
+    return axios.get(API_URL + 'web/manager/assembly/postalVote/OwnerList', { headers: authHeader() });
+  }
   getPostalVoteList(data) {
-    return axios.post(API_URL + 'web/manager/assembly/posstalVoteList', data, { headers: authHeader() });
+    return axios.post(API_URL + 'web/manager/assembly/postalVoteList', data, { headers: authHeader() });
   }
   createPostalVote(data) {
     return axios.post(API_URL + 'web/manager/assembly/postalVote', data, { headers: authHeader() });
   }
-  getPostalVote(id, data) {
-    return axios.post(API_URL + 'web/manager/assembly/postalVote/' + id, data, { headers: authHeader() });
+  getPostalVoteDetail(id, data) {
+    return axios.post(API_URL + 'web/manager/assembly/postalVoteDetail/' + id, data, { headers: authHeader() });
   }
-  deletePostalVote(id) {
-    return axios.delete(API_URL + 'web/manager/assembly/postalVote/' + id, { headers: authHeader() });
+  deletePostalVote(id, data) {
+    return axios.post(API_URL + 'web/manager/assembly/postalVote/' + id, data, { headers: authHeader() });
   }
   emptyTrashPostalVotes(status) {
     return axios.post(API_URL + 'web/manager/assembly/postalVote/deleteAll', status, { headers: authHeader() });
@@ -553,12 +563,21 @@ export class ManagerService {
   updateAssembly(id, data) {
     return axios.put(API_URL + 'web/manager/assembly/' + id, data, { headers: authHeader() });
   }
+  exportAssembly(data) {
+    return axios.post(API_URL + 'web/manager/assembly/export_csv', data, { headers: authHeader() ,responseType: 'blob'});
+  }
+  importAssembly(data) {
+    return axios.post(API_URL + 'web/manager/assembly/import_csv', data, { headers: authHeader() });
+  }
   //Document Part
   createAssemblyFile(data) {
     return axios.post(API_URL + 'web/manager/assembly/File', data, { headers: authHeader() });
   }
   getAssemblyFiles(id) {
     return axios.get(API_URL + 'web/manager/assembly/FileList/' + id, { headers: authHeader() });
+  }
+  deleteAssemblyFile(id) {
+    return axios.delete(API_URL + 'web/manager/assembly/File/' + id, { headers: authHeader() });
   }
 }
 

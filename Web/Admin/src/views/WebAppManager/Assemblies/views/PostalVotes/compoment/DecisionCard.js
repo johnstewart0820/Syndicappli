@@ -128,7 +128,7 @@ const DecisionCard = (props) => {
         { img: 'url("/images/default.png")', text : 'Défaillant'},
         { img: 'url("/images/onhold.png")', text :'En attente'}
     ];
-    const en_dataList = ['yes', 'no', 'abstention', 'deficient', 'on hold'];
+    const en_dataList = ['yes', 'no', 'abstention', 'deficient', 'onhold'];
     const [value, setValue] = React.useState({pos : 0, img : dataList[0]});
     const handleChange = (event) => {
         setValue({pos : event.target.value, img : dataList[event.target.value]});

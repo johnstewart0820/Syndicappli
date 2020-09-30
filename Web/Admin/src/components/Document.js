@@ -9,7 +9,7 @@ import useStyles from '../views/WebAppManager/Assemblies/views/Documents/useStyl
 export default function Document(props) {
     const classes = useStyles();
     var files = props.files;
-    console.log(files)
+    var thumbnails = props.thumbnails;
     const handleClickDelete = (index)=> {
         props.onClickDelete(files[index].fileID);
     }
@@ -33,10 +33,10 @@ export default function Document(props) {
                                 className={classes.close}/>}
                             >
                                 <div className={classes.documents}>
-                                    <img className={classes.size} alt="" src='/images/pdf.png' />
+                                    <img className={classes.size} alt="" src={thumbnails[i]} />
                                 </div>
                             </Badge>
-                            <p className={classes.doc_tip}>{file.name}</p>
+                            <p className={classes.doc_tip} style={{ width: '100px' }}>{file.name}</p>
                         </Grid>
                     </Grid>
                 ))

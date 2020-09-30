@@ -33,9 +33,9 @@ const Resolutions = (props) => {
     const [sort_method, setSortMethod] = useState('asc');
     const selectList = [20, 50, 100, 200, -1];
     const cellList = [
-        { key: 'owner', field: 'Copropriétaire' },
-        { key: 'amount', field: 'Lots' },
-        { key: 'type_of_vote', field: 'Type de vote' },
+        { key: 'fullname', field: 'Copropriétaire' },
+        { key: 'apartments', field: 'Lots' },
+        { key: 'type', field: 'Type de vote' },
     ];
 
     const columns = [];
@@ -46,8 +46,8 @@ const Resolutions = (props) => {
         globalActions.setPostalID(id);
     }
     useEffect(() => {
-        // if (accessAssemblies !== 'denied')
-        //     getPostalVotes();
+        if (accessAssemblies !== 'denied')
+            getPostalVotes();
     }, [page_num, row_count, sort_column, sort_method, props.refresh]);
 
     const handleChangeSelect = (value) => {
@@ -71,7 +71,6 @@ const Resolutions = (props) => {
     };
     const handleDelete = () => {
         handleCloseDelete();
-        setDeleteId(-1);
         setVisibleIndicator(true);
         let data = {
             'status': 'trash'
@@ -86,6 +85,7 @@ const Resolutions = (props) => {
                             localStorage.setItem("token", JSON.stringify(data.token));
                             ToastsStore.success("Deleted successfully!");
                             getPostalVotes();
+                            setDeleteId(-1);
                             break;
                         case 401:
                             authService.logout();
@@ -103,13 +103,18 @@ const Resolutions = (props) => {
             );
     }
     const getPostalVotes = () => {
+        let url = window.location;
+        let parts = url.href.split('/');
+        const assemblyID = Number(parts[parts.length - 1]);
+        setVisibleIndicator(true);
+        ManagerService.getAssemblyFiles(assemblyID)
         const requestData = {
             'search_key': '',
             'page_num': page_num - 1,
             'row_count': row_count,
             'sort_column': sort_column,
             'sort_method': sort_method,
-            'status': 'active'
+            'assemblyID': assemblyID,
         }
         setVisibleIndicator(true);
         ManagerService.getPostalVoteList(requestData)
@@ -120,7 +125,7 @@ const Resolutions = (props) => {
                         case 200:
                             const data = response.data.data;
                             localStorage.setItem("token", JSON.stringify(data.token));
-
+                            setDataList(data.votes)
                             break;
                         case 401:
                             authService.logout();
@@ -139,9 +144,7 @@ const Resolutions = (props) => {
     }
     return (
         <div>
-            {
-                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-            }
+            { visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null }
             <div className={classes.title}>
             </div>
             <div >

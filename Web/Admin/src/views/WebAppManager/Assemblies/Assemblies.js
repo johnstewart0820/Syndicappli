@@ -58,7 +58,6 @@ const Assemblies = (props) => {
     const handleCloseDialog = (val) => {
         setOpenDialog(val);
     };
-
     const handleChangeSelect = (value) => {
         setRowCount(selectList[value]);
     }
@@ -105,11 +104,64 @@ const Assemblies = (props) => {
         setOpenDelete(true);
         setDeleteId(id);
     };
-    const handleClickImport = () => {
-        // setPageNum();
+    const handleClickImport = (csvData) => {
+        let requestData = new FormData();
+        requestData.set('csv', csvData);
+        requestData.set('companyID', companyID);
+        setVisibleIndicator(true);
+        ManagerService.importAssembly(requestData)
+        .then(
+            response => {
+                setVisibleIndicator(false);
+                switch (response.data.code) {
+                    case 200:
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        getAssemblies();
+                        ToastsStore.success('Imported Assemblies Successfully');
+                        break;
+                    case 401:
+                        authService.logout();
+                        history.push('/login');
+                        window.location.reload();
+                        break;
+                    default:
+                    ToastsStore.error(response.data.message);
+                }
+            },
+            error => {
+                ToastsStore.error("Can't connect to the server!");
+                setVisibleIndicator(false);
+            }
+        );
     }
-    const handleClickExport = () => {
-        // setPageNum();
+    const handleClickExport = (check) => {
+        let assemblyIDs = [];
+        for(let i = 0 ; i < check.length ; i++){
+            assemblyIDs.push(dataList[check[i]].assemblyID);
+        }
+        let year = new Date().getFullYear();
+        let month = new Date().getMonth() + 1;
+        let date1 = new Date().getDate();
+        let date = year + '_' + month + '_' + date1;
+        const requestData = {
+            'assemblyIDs': JSON.stringify(assemblyIDs),
+        }
+        setVisibleIndicator(true);
+        ManagerService.exportAssembly(requestData)
+        .then(
+            ({ data }) => {
+                setVisibleIndicator(false);
+                console.log("complete")
+                const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.setAttribute('download', 'Assemblies_' + date + '.csv');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+        );
     }
     const handleDelete = () => {
         handleCloseDelete();
@@ -264,9 +316,7 @@ const Assemblies = (props) => {
 
     return (
         <>
-        {
-            visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-        }
+        { visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null }
         <div className={classes.tool}>
             <Grid xs={6} sm={5} md={4} lg={3} xl={2} item container alignItems="center" spacing={2}>
                 <Grid item ><p className={classes.subTitle}>Immeuble</p></Grid>
@@ -281,8 +331,9 @@ const Assemblies = (props) => {
                 </Grid>
             </Grid>
         </div>
+        <div className={classes.title}></div>
         <div className={classes.body}>
-            <MyTable 
+            <SelectTable 
                 onChangeSelect={handleChangeSelect}
                 onChangePage={handleChangePagination}
                 onSelectSort={handleSort}

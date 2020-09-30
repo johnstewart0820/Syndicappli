@@ -273,10 +273,10 @@ export default function PostalVotesTable(props) {
     }
   }
   const handleClickEdit = (id) => {
-    props.onClickEdit(items[id].ID);
+    props.onClickEdit(items[id].correspondenceID);
   }
   const handleClickDelete = (id) => {
-    props.onClickDelete(items[id].ID);
+    props.onClickDelete(items[id].correspondenceID);
   }
   return (
     <Grid item container direction="column" spacing={2}>

@@ -25,6 +25,7 @@ const Resolutions = (props) => {
     const [openDelete, setOpenDelete] = React.useState(false);
     const [deleteId, setDeleteId] = React.useState(-1);
     const [dataList, setDataList] = useState([]);
+    const [voteList, setVoteList] = useState([]);
     const [totalpage, setTotalPage] = useState(1);
     const [row_count, setRowCount] = useState(20);
     const [page_num, setPageNum] = useState(1);
@@ -32,7 +33,7 @@ const Resolutions = (props) => {
     const [sort_method, setSortMethod] = useState('asc');
     const selectList = [20, 50, 100, 200, -1];
     const cellList = [
-        { key: 'decisionID', field: 'No' },
+        { key: 'decisionID', field: 'N°' },
         { key: 'name', field: 'Titre' },
         { key: 'vote_branch', field: 'Clef de répartition' },
         { key: 'calc_mode', field: 'Type de majorité' },
@@ -103,7 +104,6 @@ const Resolutions = (props) => {
             getDecisions();
         }
     }, [page_num, row_count, sort_column, sort_method, props.refresh])
-
     const getDecisions = () => {
         let form = {
             'search_key': '',
@@ -122,9 +122,14 @@ const Resolutions = (props) => {
                 setVisibleIndicator(false);
                 switch (response.data.code) {
                     case 200:
+                        voteList.splice(0, voteList.length);
                         const data = response.data.data;
                         localStorage.setItem("token", JSON.stringify(data.token));
                         setDataList(data.assemblyDecisionList)
+                        data.votelist.map((item) => (
+                            voteList.push(item.description)
+                        ));
+                        setVoteList(voteList)
                         break;
                     case 401:
                         authService.logout();
@@ -161,6 +166,7 @@ const Resolutions = (props) => {
                     onClickDelete={handleClickDelete}
                     access={accessAssemblies}
                     type="resolution"
+                    votelist={voteList}
                 />
             </div>
             <DeleteConfirmDialog

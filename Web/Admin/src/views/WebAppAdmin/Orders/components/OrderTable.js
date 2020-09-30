@@ -324,7 +324,7 @@ export default function OrderTable(props) {
                       style={{ display: 'flex', alignItems: 'center' }}
                     >
                       {cell.field}
-                      <img style={{ width: "30px" }} src={direct[i]}></img>
+                      <img style={{ width: "30px" }} src={direct[i]} alt=""></img>
                     </button>
 
                   </TableCell>
@@ -355,7 +355,7 @@ export default function OrderTable(props) {
                   })
                 }
                 <TableCell align="center" style={{ justifyContent: 'center' }}>
-                  <img src="/images/pdf.png" className={classes.downItem} onClick={() => props.onClickDownload(item.ID)}></img>
+                  <img src="/images/pdf.png" className={classes.downItem} onClick={() => props.onClickDownload(item.ID)}  alt=""></img>
                 </TableCell>
                 <TableCell align="right" style={{ display: 'flex' }}>
                   <IconButton onClick={() => handleClickDelete(i)} disabled={(props.access === 'see' ? true : false)}>

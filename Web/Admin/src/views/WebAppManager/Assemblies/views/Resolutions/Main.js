@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ToastsContainer, ToastsContainerPosition, ToastsStore } from 'react-toasts';
 import Grid from '@material-ui/core/Grid';
 import MyButton from 'components/MyButton';
@@ -64,6 +64,7 @@ const Main = (props) => {
     const [refresh, setRefresh] = React.useState(false);
     const [openDelete, setOpenDelete] = React.useState(false);
     const [visibleIndicator, setVisibleIndicator] = React.useState(false);
+    const inputFile = useRef(null);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -85,6 +86,41 @@ const Main = (props) => {
     };
     const handleCloseDelete = () => {
         setOpenDelete(false);
+    };
+    const handleClickExport = () => {        
+    };
+    const handleClickImport = (csvData) => {
+        let url = window.location;
+        let parts = url.href.split('/');
+        const assemblyID = Number(parts[parts.length - 1]);
+        let requestData = new FormData();
+        requestData.set('csv', csvData);
+        requestData.set('assemblyID', assemblyID);
+        console.log(csvData);
+        ManagerService.importAssemblyDecisions(requestData)
+        .then(
+            response => {
+                setVisibleIndicator(false);
+                switch (response.data.code) {
+                    case 200:
+                        const data = response.data.data;
+                        localStorage.setItem("token", JSON.stringify(data.token));
+                        ToastsStore.success('Imported Assemblies Successfully');
+                        break;
+                    case 401:
+                        authService.logout();
+                        history.push('/login');
+                        window.location.reload();
+                        break;
+                    default:
+                    ToastsStore.error(response.data.message);
+                }
+            },
+            error => {
+                ToastsStore.error("Can't connect to the server!");
+                setVisibleIndicator(false);
+            }
+        );        
     };
     const handleDelete = () => {
         handleCloseDelete();
@@ -119,18 +155,31 @@ const Main = (props) => {
                 }
             );
     }
+    const handleChangeImport = (event) => {
+        if (event.target.files[0] !== undefined) {
+            handleClickImport(event.target.files[0]);
+        }
+    }
     return (
         <div >
-            {
-                visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null
-            }
+            { visibleIndicator ? <div className={classes.div_indicator}> <CircularProgress className={classes.indicator} /> </div> : null }
             <div className={classes.title}>
-                <MyButton
-                    name={value === 0 ? "Nouvelle Résolution" : "Vider la Poubelle"}
-                    color={"1"}
-                    onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashResolution}
-                    style={{ visibility: accessAssemblies !== 'edit' ? 'visible' : 'hidden' }}
-                />
+                <Grid item container spacing={2}>
+                    <Grid item>
+                        <MyButton
+                            name={value === 0 ? "Nouvelle Résolution" : "Vider la Poubelle"}
+                            color={"1"}
+                            onClick={value === 0 ? handleClickAdd : handleClickEmptyTrashResolution}
+                            style={{ visibility: accessAssemblies !== 'edit' ? 'visible' : 'hidden' }}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <MyButton name={"Exporter"} bgColor={"#00C9FF"} onClick={handleClickExport} />
+                    </Grid>
+                    <Grid item>
+                        <MyButton name={"Importer"} bgColor={"#00C9FF"} onClick={handleClickImport} />
+                    </Grid>
+                </Grid>
                 <Dialog
                     open={open}
                     onClose={handleClose}
