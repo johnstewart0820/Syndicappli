@@ -20,6 +20,9 @@ const {sendMail} = require('../../../helper/mailHelper')
 var mail = require('../../../constants/mail')
 var randtoken = require('rand-token');
 var code = require('../../../constants/code')
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const fs = require('fs');
+const csv = require('csv-parser');
 
 var assemblyModel = {
   createAssembly: createAssembly,
@@ -43,6 +46,10 @@ var assemblyModel = {
   importAssemblyDecisionCSV: importAssemblyDecisionCSV,
   exportAssemblyDecisionCSV: exportAssemblyDecisionCSV,
   createAssemblyVote: createAssemblyVote,
+  getPostalVoteOwnerList: getPostalVoteOwnerList,
+  getAssemblyVoteList: getAssemblyVoteList,
+  deleteAssemblyVote: deleteAssemblyVote,
+  getAssemblyVoteDetail: getAssemblyVoteDetail,
 }
 
 /**
@@ -266,40 +273,42 @@ function getBuildingList(uid, data) {
  */
 function importAssemblyCSV(uid, file, data) {
     return new Promise((resolve, reject) => {
-        let assemblys = []
-        let assembly = {
-            buildingID: '',
-            title: '',
-            description: '',
-            date: '',
-            time: '',
-            address: '',
-            additional_address: '',
-            is_published: '',
-            created_at: '',
-            updated_at: '',
-        }
+        let assemblies = []
         fs.createReadStream(file.path)
         .pipe(csv())
         .on('data', async (row) => {
-            console.log(row);
-            if (row['title'] !== '' && row['title'] !== null && row['title'] !== undefined) { 
+            let assembly = {
+                buildingID: '',
+                title: '',
+                description: '',
+                date: '',
+                time: '',
+                address: '',
+                additional_address: '',
+                is_published: '',
+                created_by: '',
+                created_at: '',
+                updated_at: '',
+            }
+            let date = row['date'].split("/")
+            if (row['created_by'] !== '' && row['created_by'] !== null && row['created_by'] !== undefined && row['created_by'] !== uid) {
                 assembly.buildingID = row['buildingID']
                 assembly.title = row['title']
                 assembly.description = row['description']
-                assembly.date = row['date']
+                assembly.date = date[2] + '-' + date[0] + '-' + date[1]
                 assembly.time = row['time']
                 assembly.address = row['address']
                 assembly.additional_address = row['additional_address']
                 assembly.is_published = row['is_published']
+                assembly.created_by = row['created_by']
                 assembly.created_at = row['created_at']
                 assembly.updated_at = row['updated_at']
+                assemblies.push(assembly)            
             }
         })
         .on('end', async () => {
-            assemblys.push(assembly)
-            for (var i in assemblys) {
-                var item = JSON.parse(JSON.stringify(assemblys[i]));
+            for (var i in assemblies) {
+                var item = JSON.parse(JSON.stringify(assemblies[i]));
                 await createAssembly(uid, item)                
             }
             resolve("OK")
@@ -309,7 +318,7 @@ function importAssemblyCSV(uid, file, data) {
 
 function getAssemblyForCSV(assemblyID) {
     return new Promise((resolve, reject) => {
-        let assemblys = []
+        let assemblies = []
         let query = 'Select * from assemblies where assemblyID = ?'
         db.query(query, [assemblyID], (error, rows, fields) => {
             if (error) {
@@ -318,11 +327,11 @@ function getAssemblyForCSV(assemblyID) {
                 var vote_branch_name = []
                 for (var j in rows) {
                     if (j == 0)
-                        assemblys.push({assemblyID: rows[0].assemblyID, buildingID: rows[0].buildingID, title: rows[0].title, description: rows[0].description, date: rows[0].date, time: rows[0].time, address: rows[0].address, additional_address: rows[0].additional_address, is_published: rows[0].is_published, created_at: rows[0].created_at, updated_at: rows[0].updated_at})
+                        assemblies.push({assemblyID: rows[0].assemblyID, buildingID: rows[0].buildingID, title: rows[0].title, description: rows[0].description, date: rows[0].date, time: rows[0].time, address: rows[0].address, additional_address: rows[0].additional_address, is_published: rows[0].is_published, created_by: rows[0].created_by, created_at: rows[0].created_at, updated_at: rows[0].updated_at})
                     else
-                        assemblys.push({assemblyID: '', buildingID: '', title: '', description: '', date: '', time: '', address: '', additional_address: '', is_published: '', created_at: '', updated_at: ''})
+                        assemblies.push({assemblyID: '', buildingID: '', title: '', description: '', date: '', time: '', address: '', additional_address: '', is_published: '', created_by: '', created_at: '', updated_at: ''})
                 }
-                resolve(assemblys)
+                resolve(assemblies)
             }
         })  
     })
@@ -338,7 +347,8 @@ function getAssemblyForCSV(assemblyID) {
  */
 function exportAssemblyCSV(data, res) {
     return new Promise(async (resolve, reject) => {
-        time = timeHelper.getCurrentTime()
+        // time = timeHelper.getCurrentTime()
+        time = "Assemblies.csv"
         const csvWriter = createCsvWriter({
             path: 'public/upload/' + time,
             header: [
@@ -351,12 +361,13 @@ function exportAssemblyCSV(data, res) {
                 {id: 'address', title: 'address'},
                 {id: 'additional_address', title: 'additional_address'},
                 {id: 'is_published', title: 'is_published'},
+                {id: 'created_by', title: 'created_by'},
                 {id: 'created_at', title: 'created_at'},
                 {id: 'updated_at', title: 'updated_at'},
             ]
         });
         let assemblys = []
-        let assemblyIDs = JSON.parse(data.assemblyID)
+        let assemblyIDs = JSON.parse(data.assemblyIDs)
         for (var i in assemblyIDs) {
             result = await getAssemblyForCSV(assemblyIDs[i])
             for (var j in result) {
@@ -648,41 +659,34 @@ function getCountAssemblyDecisionList(id, data){
  */
 function importAssemblyDecisionCSV(uid, file, data) {
     return new Promise((resolve, reject) => {
-        let decisions = []
-
-        let decision = {
-            assemblyID: '',
-            name: '',
-            description: '',
-            vote_branch: [],
-            vote_result: '',
-            calc_mode: '',
-            intervention: '',
-            enable_external_speaker: '',
-            enable_company_transfer: '',
-        }
+        let decisions = []        
         fs.createReadStream(file.path)
         .pipe(csv())
         .on('data', async (row) => {
             console.log(row);
+            let decision = {
+                assemblyID: '',
+                name: '',
+                description: '',
+                vote_branch: '',
+                vote_result: '',
+                calc_mode: '',
+                intervention: '',
+                enable_external_speaker: '',
+                enable_company_transfer: '',
+            }
 
             if (row['name'] !== '' && row['name'] !== null && row['name'] !== undefined) { 
-                if (decision.vote_branch.length != 0) {
-                    item = JSON.parse(JSON.stringify(decision));
-                    decisions.push(item)
-                    decision.vote_branch = []
-                }
-                decision.assemblyID = row['assemblyID']
+                decision.assemblyID = data.assemblyID
                 decision.name = row['name']
-                decision.description = row['address']
-                decision.vote_branch.push(row['Key'])
-                decision.vote_result = row['vote_result']
+                decision.description = row['description']
+                decision.vote_branch = row['vote_branch']
+                decision.vote_result = 'onhold'
                 decision.calc_mode = row['calc_mode']
-                decision.intervention = row['intervention']
-                decision.enable_external_speaker = row['enable_external_speaker']
-                decision.enable_company_transfer = row['enable_company_transfer']
-            } else {
-                decision.vote_branch.push(row['Key'])
+                decision.intervention = ''
+                decision.enable_external_speaker = ''
+                decision.enable_company_transfer = ''
+                decisions.push(decision)
             }
         })
         .on('end', async () => {
@@ -775,16 +779,194 @@ function exportAssemblyDecisionCSV(data, res) {
  */
 function createAssemblyVote(uid, data) {
     return new Promise( async (resolve, reject) => {
+        let query = 'select * from ' + table.USERS + ' where userID = ?'
+        db.query(query, [data.ownerID], async (error, users, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                if (error) {
+                    reject({ message: message.INTERNAL_SERVER_ERROR});
+                } else {
+                    let query = 'select * from ' + table.ASSEMBLIES + ' where assemblyID = ?'
+                    db.query(query, [data.assemblyID], async (error, assemblies, fields) => {
+                        if (error) {
+                            reject({ message: message.INTERNAL_SERVER_ERROR })
+                        } else {
+                            if (error) {
+                                reject({ message: message.INTERNAL_SERVER_ERROR});
+                            } else {
+                                let query = 'select apartment_number from ' + table.APARTMENTS + ' where created_by = ? and buildingID = ?'
+                                db.query(query, [data.ownerID, assemblies[0].buildingID], async (error, apartment_numbers, fields) => {
+                                    if (error) {
+                                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                                    } else {
+                                        if (error) {
+                                            reject({ message: message.INTERNAL_SERVER_ERROR});
+                                        } else {
+                                            let numbers;
+                                            if (apartment_numbers.length > 0) {
+                                                numbers = '' + apartment_numbers[0].apartment_number;
+                                                if (apartment_numbers.length > 1) {
+                                                    for (var i = 1; i < apartment_numbers.length; i ++) {
+                                                        numbers = numbers + ', ';
+                                                        numbers = numbers + apartment_numbers[i].apartment_number;
+                                                    }
+                                                }
+                                            }
+                                            let fullname = users[0].firstname + ' ' + users[0].lastname;
+                                            console.log(fullname);
+                                            let query = 'Insert into ' + table.ASSEMBLY_VOTE + ' (assemblyID, userID, fullname, apartments, type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+                                            let params = [data.assemblyID, data.ownerID, fullname, numbers, "postal", data.status, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
+                                            db.query(query, params, async (error, votes, fields) => {
+                                                if (error) {
+                                                    reject({ message: message.INTERNAL_SERVER_ERROR })
+                                                } else {
+                                                    resolve(votes)
+                                                }
+                                            })
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+            }
+        })
+    })
+}
+
+/**
+ * function that get owner list for vote
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object data
+ * @return  object If success returns object else returns message
+ */
+function getPostalVoteOwnerList(uid) {
+    return new Promise( async (resolve, reject) => {
+        let query = `select *
+            from ` + table.USERS + ` 
+            where created_by = ? and usertype = ?`
+
+        db.query(query, [uid, "owner"], async (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve({owners: rows})
+            }
+        })
+    })
+}
+
+/**
+ * function that get vote list
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object data
+ * @return  object If success returns object else returns message
+ */
+function getAssemblyVoteList(uid, data) {
+    console.log(data)
+    return new Promise( async (resolve, reject) => {
+        let query = `select * 
+                    from ` + table.ASSEMBLY_VOTE + ` 
+                    where assemblyID = ? and status = 'active'`
+
+        sort_column = Number(data.sort_column);
+        row_count = Number(data.row_count);
+        page_num = Number(data.page_num);
+        search_key = '%' + data.search_key + '%'
+
+        let params = [data.assemblyID];
+
+        if (sort_column === -1)
+            query += ' order by correspondenceID desc';
+        else {
+            if (sort_column === 0)
+                query += ' order by fullname ';
+            else if (sort_column === 1)
+                query += ' order by apartments ';
+            else if (sort_column === 2)
+                query += ' order by type ';
+            query += data.sort_method;
+        }
+        query += ' limit ' + page_num * row_count + ',' + row_count
+
+        db.query(query, params, async (error, rows, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                resolve({votes: rows})
+            }
+        })
+    })
+}
+
+/**
+ * function that delete vote
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object data
+ * @return  object If success returns object else returns message
+ */
+function deleteAssemblyVote(id, data){
+    return new Promise( async (resolve, reject) => {
         let query
         let params = []
-        query = 'Insert into ' + table.ASSEMBLY_VOTE + ' (assemblyID, userID, created_at, updated_at) VALUES (?, ?, ?, ?)'
-        params = [data.assemblyID, data.userID, timeHelper.getCurrentTime(), timeHelper.getCurrentTime()]
-
+        query = 'UPDATE ' + table.ASSEMBLY_VOTE + ' SET status = ? WHERE correspondenceID = ?'
+        params = [data.status, id ]
+        console.log(query)
+        console.log(params)
         db.query(query, params, (error, rows, fields) => {
             if (error) {
                 reject({ message: message.INTERNAL_SERVER_ERROR })
             } else {
                 resolve(rows);
+            }
+        })
+    })
+}
+
+/**
+ * function that get vote detail
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object data
+ * @return  object If success returns object else returns message
+ */
+function getAssemblyVoteDetail(uid, id, data) {
+    return new Promise( async (resolve, reject) => {
+        let query = `select * from ` + table.ASSEMBLY_VOTE + ` where correspondenceID = ? and status = 'active'`
+        let params = [id];
+
+        db.query(query, params, async (error, votes, fields) => {
+            if (error) {
+                reject({ message: message.INTERNAL_SERVER_ERROR })
+            } else {
+                let query = `select * from ` + table.ASSEMBLY_DECISION + ` where assemblyID = ?`
+                let params = [data.assemblyID];
+
+                db.query(query, params, async (error, decisions, fields) => {
+                    if (error) {
+                        reject({ message: message.INTERNAL_SERVER_ERROR })
+                    } else {
+                        let query = `select * from ` + table.USERS + ` where userID = ?`
+                        let params = [votes[0].userID];
+
+                        db.query(query, params, async (error, users, fields) => {
+                            if (error) {
+                                reject({ message: message.INTERNAL_SERVER_ERROR })
+                            } else {
+                                resolve({votes: votes, decisions: decisions, users: users,})
+                            }
+                        })
+                    }
+                })
             }
         })
     })

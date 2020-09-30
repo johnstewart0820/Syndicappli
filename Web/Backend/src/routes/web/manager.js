@@ -125,7 +125,11 @@ router.get('/assembly/Decision/:id', authMiddleware.checkToken, getAssemblyDecis
 router.post('/assembly/DecisionList/:id', authMiddleware.checkToken, getAssemblyDecisionList)
 router.post('/assembly/Decision/import_csv', authMiddleware.checkToken, upload.single('csv'), importAssemblyDecisionCSV)
 router.post('/assembly/Decision/export_csv', authMiddleware.checkToken, exportAssemblyDecisionCSV)
-router.post('/assembly/Vote', authMiddleware.checkToken, createAssemblyVote)
+router.post('/assembly/postalVote', authMiddleware.checkToken, createAssemblyVote)
+router.get('/assembly/postalVote/OwnerList', authMiddleware.checkToken, getPostalVoteOwnerList)
+router.post('/assembly/postalVoteList', authMiddleware.checkToken, getAssemblyVoteList)
+router.post('/assembly/postalVote/:id', authMiddleware.checkToken, deleteAssemblyVote)
+router.post('/assembly/postalVoteDetail/:id', authMiddleware.checkToken, getAssemblyVoteDetail)
 
 /**
  * Function that get profile data
@@ -1420,6 +1424,84 @@ function createAssemblyVote(req, res) {
     let userdata = req.decoded.userdata
     let data = req.body
     assemblyService.createAssemblyVote(userId, userdata, data).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get owner list for vote
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getPostalVoteOwnerList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    assemblyService.getPostalVoteOwnerList(userId, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get vote list
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAssemblyVoteList(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    assemblyService.getAssemblyVoteList(userId, data, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+
+/**
+ * Function that get vote list
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function deleteAssemblyVote(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id
+    assemblyService.deleteAssemblyVote(userId, data, id, userdata).then((result) => {
+        res.json(result)
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+
+/**
+ * Function that get owner list for vote
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object req
+ * @param   object res
+ * @return  json
+ */
+function getAssemblyVoteDetail(req, res) {
+    let userId = req.decoded.uid
+    let userdata = req.decoded.userdata
+    let data = req.body
+    let id = req.params.id
+    assemblyService.getAssemblyVoteDetail(userId, data, id, userdata).then((result) => {
         res.json(result)
     }).catch((err) => {
         res.json(err)

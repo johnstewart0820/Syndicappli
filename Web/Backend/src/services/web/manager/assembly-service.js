@@ -37,6 +37,10 @@ var assemblyService = {
     importAssemblyDecisionCSV: importAssemblyDecisionCSV,
     exportAssemblyDecisionCSV: exportAssemblyDecisionCSV,
     createAssemblyVote: createAssemblyVote,
+    getPostalVoteOwnerList: getPostalVoteOwnerList,
+    getAssemblyVoteList: getAssemblyVoteList,
+    deleteAssemblyVote: deleteAssemblyVote,
+    getAssemblyVoteDetail: getAssemblyVoteDetail,
 }
 
 /**
@@ -106,7 +110,7 @@ function updateAssembly(uid, id, userdata, data) {
  * Function that get assembly
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
@@ -138,7 +142,7 @@ function getAssembly(uid, id, userdata) {
  * Function that get assembly list
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
@@ -172,18 +176,18 @@ function getAssemblyList(uid, userdata, data) {
  * Function that delete assembly
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
  * @return  json
  */
-function deleteAssembly(userId, id, userdata) {
+function deleteAssembly(uid, id, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             assemblyModel.deleteAssembly(id).then((result) => {
                 if (result) {
-                    let token = jwt.sign({ uid: userId, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token } })
@@ -301,18 +305,18 @@ function exportAssemblyCSV(uid, userdata, data, res) {
  * Function that create assembly file
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object file
  * @param   object userdata
  * @return  json
  */
-function createAssemblyFile(userId, data, file, userdata) {
+function createAssemblyFile(uid, data, file, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
-            assemblyModel.createAssemblyFile(userId, data, file).then((result) => {
+            assemblyModel.createAssemblyFile(uid, data, file).then((result) => {
                 if (result) {
-                    let token = jwt.sign({ uid: userId, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token } })
@@ -333,18 +337,18 @@ function createAssemblyFile(userId, data, file, userdata) {
  * Function that delete assembly file
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
  * @return  json
  */
-function deleteAssemblyFile(userId, id, userdata) {
+function deleteAssemblyFile(uid, id, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             assemblyModel.deleteAssemblyFile(id).then((result) => {
                 if (result) {
-                    let token = jwt.sign({ uid: userId, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token } })
@@ -365,7 +369,7 @@ function deleteAssemblyFile(userId, id, userdata) {
  * Function that get assembly file list
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
@@ -375,7 +379,6 @@ function getAssemblyFileList(uid, id, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             assemblyModel.getAssemblyFileList(id, uid).then((result) => {
-                console.log("result = ", result)
                 if (result) {
                     let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
@@ -461,7 +464,7 @@ function updateAssemblyDecision(uid, id, userdata, data) {
  * Function that get assembly decision
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
@@ -493,18 +496,18 @@ function getAssemblyDecision(uid, id, userdata) {
  * Function that delete assembly decision
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
  * @return  json
  */
-function deleteAssemblyDecision(userId, id, userdata) {
+function deleteAssemblyDecision(uid, id, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             assemblyModel.deleteAssemblyDecision(id).then((result) => {
                 if (result) {
-                    let token = jwt.sign({ uid: userId, userdata: userdata }, key.JWT_SECRET_KEY, {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token } })
@@ -525,22 +528,28 @@ function deleteAssemblyDecision(userId, id, userdata) {
  * Function that get assembly decision list
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
  * @return  json
  */
-function getAssemblyDecisionList(userId, data, id, userdata) {
+function getAssemblyDecisionList(uid, data, id, userdata) {
     return new Promise((resolve, reject) => {
         authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
             assemblyModel.getAssemblyDecisionList(id, data).then((assemblyDecisionList) => {
                 if (assemblyDecisionList) {
                     assemblyModel.getCountAssemblyDecisionList(id, data).then((assemblyDicisionCount) => {
-                        let token = jwt.sign({ uid: userId, userdata: userdata }, key.JWT_SECRET_KEY, {
-                            expiresIn: timer.TOKEN_EXPIRATION
-                        })
-                        resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(assemblyDicisionCount / Number(data.row_count)), 'assemblyDecisionList': assemblyDecisionList, 'totalcount': assemblyDicisionCount} })
+                        if (assemblyDicisionCount) {
+                            assemblyModel.getAssembly(id).then((result) => {
+                                if (result) {
+                                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                                        expiresIn: timer.TOKEN_EXPIRATION
+                                    })
+                                    resolve({ code: code.OK, message: '', data: { 'token': token, 'totalpage': Math.ceil(assemblyDicisionCount / Number(data.row_count)), 'assemblyDecisionList': assemblyDecisionList, 'totalcount': assemblyDicisionCount, 'assembly': result.assembly, 'votelist': result.votelist} })
+                                }
+                            })
+                        }
                     })
                 }
             }).catch((err) => {
@@ -559,7 +568,7 @@ function getAssemblyDecisionList(userId, data, id, userdata) {
  * Function that import assembly decision list from CSV
  *
  * @author  Talent Developer <talentdeveloper59@gmail.com>
- * @param   object userId
+ * @param   object uid
  * @param   object data
  * @param   object id
  * @param   object userdata
@@ -638,6 +647,130 @@ function createAssemblyVote(uid, userdata, data) {
                         expiresIn: timer.TOKEN_EXPIRATION
                     })
                     resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that get owner list for vote
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object userdata
+ * @param   object data
+ * @return  json
+ */
+function getPostalVoteOwnerList(uid, userdata) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            assemblyModel.getPostalVoteOwnerList(uid).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+                    resolve({ code: code.OK, message: '', data: { 'token': token, 'owners': result.owners, } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that get vote list
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object userdata
+ * @param   object data
+ * @return  json
+ */
+function getAssemblyVoteList(uid, data, userdata) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            assemblyModel.getAssemblyVoteList(uid, data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+                    resolve({ code: code.OK, message: '', data: { 'token': token, 'votes': result.votes, } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that delete vote
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object userdata
+ * @param   object data
+ * @return  json
+ */
+function deleteAssemblyVote(uid, data, id, userdata) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            assemblyModel.deleteAssemblyVote(id, data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+                    resolve({ code: code.OK, message: '', data: { 'token': token } })
+                }
+            }).catch((err) => {
+                if (err.message === message.INTERNAL_SERVER_ERROR)
+                    reject({ code: code.INTERNAL_SERVER_ERROR, message: err.message, data: {} })
+                else
+                    reject({ code: code.BAD_REQUEST, message: err.message, data: {} })
+            })
+        }).catch((error) => {
+            reject({ code: code.BAD_REQUEST, message: error.message, data: {} })
+        })
+    })
+}
+
+/**
+ * Function that get vote detail
+ *
+ * @author  Talent Developer <talentdeveloper59@gmail.com>
+ * @param   object uid
+ * @param   object userdata
+ * @param   object data
+ * @return  json
+ */
+function getAssemblyVoteDetail(uid, data, id, userdata) {
+    return new Promise((resolve, reject) => {
+        authHelper.hasAssemblyPermission(userdata, [code.EDIT_PERMISSION]).then((response) => {
+            assemblyModel.getAssemblyVoteDetail(uid, id, data).then((result) => {
+                if (result) {
+                    let token = jwt.sign({ uid: uid, userdata: userdata }, key.JWT_SECRET_KEY, {
+                        expiresIn: timer.TOKEN_EXPIRATION
+                    })
+                    resolve({ code: code.OK, message: '', data: { 'token': token, 'votes': result.votes, 'decisions': result.decisions, 'users': result.users} })
                 }
             }).catch((err) => {
                 if (err.message === message.INTERNAL_SERVER_ERROR)
