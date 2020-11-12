@@ -32,6 +32,7 @@ public/origin
 public/resume
 public/maillist
 public/upload
+public/download
 
 # GCS account
 turing-d8f2f59ffc97.json

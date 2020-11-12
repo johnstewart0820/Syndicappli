@@ -3,7 +3,7 @@
  *
  * @package   backend/src/constants
  * @author    Zecharias <zecharias.a@turing.com>
- * @copyright 2018 Turing Company
+ * @copyright 2020 Say Digital Company
  * @license   Turing License
  * @version   2.0
  * @link      https://turing.ly/
